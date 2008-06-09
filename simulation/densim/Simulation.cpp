@@ -36,7 +36,7 @@ Simulation::Start( boost::gregorian::date startDate, boost::gregorian::date endD
 
 
 
-sim::output::DensimOutput *
+sim::output::DensimData *
 Simulation::GetSimOutput(void)
 {
   return SimLocation_->GetSimOutput();
