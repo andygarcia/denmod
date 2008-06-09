@@ -250,8 +250,10 @@ MainForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
   lboxWeather->ValueMember = "Index";
   lboxWeather->DataBindings->Add( "DataSource", LocationBinding, "Weather.YearsBindingList" );
 
+  // TODO - start using a pre compiled assembly
   // load xml serializer assembly during splash screen
-  gcnew Xml::Serialization::XmlSerializer( gui::Location::typeid );
+  Xml::Serialization::XmlSerializer ^ xs = gcnew Xml::Serialization::XmlSerializer( gui::Location::typeid );
+  delete xs;
 
   //ActiveDocument->GetLocation()->IsDirty = false;
 
