@@ -16,7 +16,7 @@ typedef System::Collections::Generic::Dictionary<int,OutputSeries^> SerotypeOutp
 
 DensimOutputForm::DensimOutputForm( gui::Location ^ location )
 : Location_(location),
-  SimOutput_(location->DensimOutput)
+  SimOutput_(location->DensimData)
 {
 	InitializeComponent();
 

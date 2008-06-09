@@ -18,6 +18,26 @@ CimsimOutputForm::CimsimOutputForm( gui::Location ^ location )
 : _location(location)
 {
 	InitializeComponent();
+  gui::output::CimsimOutput ^ co = _location->CimsimOutput;
+
+  Collections::Generic::List<output::Output^> ^ outputs = gcnew Collections::Generic::List<output::Output^>();
+  outputs->Add( co->Location[(int)output::OutputTypes::Cimsim::Location::TotalEggs] );
+  outputs->Add( co->Location[(int)output::OutputTypes::Cimsim::Location::TotalLarvae] );
+  outputs->Add( co->Location[(int)output::OutputTypes::Cimsim::Location::TotalPupae] );
+  outputs->Add( co->Location[(int)output::OutputTypes::Cimsim::Location::TotalFemales] );
+    
+  for each( output::Output ^ output in outputs ) {
+    Series ^ s = gcnew Series( output->Name );
+    s->ChartType = "Line";
+    s->YAxisType = AxisType::Primary;
+
+    s->Points->DataBindXY( co->Weeks, output->GetWeeklyData( output::TimePeriodFunction::Average ) );
+
+    chartOutput->Series->Add( s );
+  }
+
+  chartOutput->Title = "Total per hectare - weekly averages";
+
 }
 
 
@@ -34,12 +54,6 @@ CimsimOutputForm::~CimsimOutputForm()
 System::Void
 CimsimOutputForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
 {
-  gui::output::CimsimOutput ^ co = _location->CimsimOutput;
-
-  chartMainPlot->Series["Eggs"]->Points->DataBindXY( co->Weeks, co->Location[(int)gui::output::OutputTypes::Cimsim::Location::TotalEggs]->GetWeeklyData( output::TimePeriodFunction::Average ) );
-  chartMainPlot->Series["Larvae"]->Points->DataBindXY( co->Weeks, co->Location[(int)gui::output::OutputTypes::Cimsim::Location::TotalLarvae]->GetWeeklyData( output::TimePeriodFunction::Average ));
-  chartMainPlot->Series["Pupae"]->Points->DataBindXY( co->Weeks, co->Location[(int)gui::output::OutputTypes::Cimsim::Location::TotalPupae]->GetWeeklyData( output::TimePeriodFunction::Average ));
-  chartMainPlot->Series["Females"]->Points->DataBindXY( co->Weeks, co->Location[(int)gui::output::OutputTypes::Cimsim::Location::TotalFemales]->GetWeeklyData( output::TimePeriodFunction::Average ));
 }
 
 
@@ -76,7 +90,7 @@ CimsimOutputForm::OnSave(System::Object^  sender, System::EventArgs^  e)
 
   try {
     System::IO::StreamWriter ^ sw = gcnew System::IO::StreamWriter( newFilename );
-    sw->Write( ExcelOutput::GetXml(chartMainPlot) );
+    sw->Write( ExcelOutput::GetXml(chartOutput) );
     sw->Close();
   }
   catch( System::IO::IOException ^ ioe ) {

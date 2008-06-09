@@ -199,6 +199,7 @@ namespace gui {
       chartArea1->BorderStyle = Dundas::Charting::WinControl::ChartDashStyle::Solid;
       chartArea1->CursorX->UserEnabled = true;
       chartArea1->CursorX->UserSelection = true;
+      chartArea1->CursorY->Interval = 0.1;
       chartArea1->CursorY->UserEnabled = true;
       chartArea1->CursorY->UserSelection = true;
       chartArea1->InnerPlotPosition->Auto = false;

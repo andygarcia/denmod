@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "MainForm.h"
+#include "SplashForm.h"
 #include "WeatherForm.h"
 
 using namespace gui;
@@ -240,6 +241,8 @@ MainForm::UpdateBindings(void)
 System::Void
 MainForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
 {
+  SplashForm::ShowSplash( 50, "" );
+
   tboxLocName->DataBindings->Add( "Text", LocationBinding, "Name" );
   rboxNotes->DataBindings->Add( "Text", LocationBinding, "Notes" );
   
@@ -247,7 +250,12 @@ MainForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
   lboxWeather->ValueMember = "Index";
   lboxWeather->DataBindings->Add( "DataSource", LocationBinding, "Weather.YearsBindingList" );
 
+  // load xml serializer assembly during splash screen
+  gcnew Xml::Serialization::XmlSerializer( gui::Location::typeid );
+
   //ActiveDocument->GetLocation()->IsDirty = false;
+
+  SplashForm::Fadeout();
 }
 
 

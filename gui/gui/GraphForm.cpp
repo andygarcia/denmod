@@ -76,9 +76,11 @@ GraphForm::GraphForm( gui::Location ^ location, output::Graph ^ graph, output::T
     chartMainPlot->ChartAreas["Default"]->AxisX->Title = "Date";
   }
   else if( timePeriod == output::TimePeriod::Weekly ) {
+    chartMainPlot->Title += " - weekly averages";
     chartMainPlot->ChartAreas["Default"]->AxisX->Title = "Week";
   }
   else if( timePeriod == output::TimePeriod::Monthly ) {
+    chartMainPlot->Title += " - monthly averages";
     chartMainPlot->ChartAreas["Default"]->AxisX->Title = "Month";
   }
 
@@ -176,6 +178,9 @@ GraphForm::GraphForm( gui::Location ^ location, DensimGraphType graphType )
   }
 
   else if( graphType == DensimGraphType::PersonsIncubating ) {
+    chartMainPlot->ChartAreas["Default"]->AxisY->Minimum = 0;
+    chartMainPlot->ChartAreas["Default"]->AxisY->Maximum= 1;
+
     Series ^ d1 = Location_->SerotypeSeries_[1]["Incubating"];
     Series ^ d2 = Location_->SerotypeSeries_[2]["Incubating"];
     Series ^ d3 = Location_->SerotypeSeries_[3]["Incubating"];
@@ -188,6 +193,9 @@ GraphForm::GraphForm( gui::Location ^ location, DensimGraphType graphType )
   }
 
   else if( graphType == DensimGraphType::PersonsViremic ) {
+    chartMainPlot->ChartAreas["Default"]->AxisY->Minimum = 0;
+    chartMainPlot->ChartAreas["Default"]->AxisY->Maximum= 1;
+
     Series ^ d1 = Location_->SerotypeSeries_[1]["Viremic"];
     Series ^ d2 = Location_->SerotypeSeries_[2]["Viremic"];
     Series ^ d3 = Location_->SerotypeSeries_[3]["Viremic"];
@@ -200,6 +208,9 @@ GraphForm::GraphForm( gui::Location ^ location, DensimGraphType graphType )
   }
 
   else if( graphType == DensimGraphType::PersonsWithVirus ) {
+    chartMainPlot->ChartAreas["Default"]->AxisY->Minimum = 0;
+    chartMainPlot->ChartAreas["Default"]->AxisY->Maximum= 1;
+
     Series ^ d1 = Location_->SerotypeSeries_[1]["Virus"];
     Series ^ d2 = Location_->SerotypeSeries_[2]["Virus"];
     Series ^ d3 = Location_->SerotypeSeries_[3]["Virus"];

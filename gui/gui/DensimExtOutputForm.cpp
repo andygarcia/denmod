@@ -11,7 +11,7 @@ DensimExtOutputForm::DensimExtOutputForm( gui::Location ^ location, DateTime beg
 : Location_( location ),
   BeginDate_(beginDate),
   EndDate_(endDate),
-  SimOutput_(location->DensimOutput)
+  SimOutput_(location->DensimData)
 {
 	InitializeComponent();
 }

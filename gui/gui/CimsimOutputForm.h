@@ -31,15 +31,10 @@ namespace gui {
 
   private: System::Windows::Forms::Button^  btnExit;
   private: System::Windows::Forms::Button^  btnMore;
-
-
-  private: Dundas::Charting::WinControl::Chart^  chartMainPlot;
   private: System::Windows::Forms::Button^  btnSave;
   private: System::Windows::Forms::Button^  btnSaveAll;
-
+  private: Dundas::Charting::WinControl::Chart^  chartOutput;
   private: System::ComponentModel::IContainer^  components;
-
-
 
 	private:
 		/// <summary>
@@ -56,17 +51,12 @@ namespace gui {
 		{
       Dundas::Charting::WinControl::ChartArea^  chartArea1 = (gcnew Dundas::Charting::WinControl::ChartArea());
       Dundas::Charting::WinControl::Legend^  legend1 = (gcnew Dundas::Charting::WinControl::Legend());
-      Dundas::Charting::WinControl::Series^  series1 = (gcnew Dundas::Charting::WinControl::Series());
-      Dundas::Charting::WinControl::Series^  series2 = (gcnew Dundas::Charting::WinControl::Series());
-      Dundas::Charting::WinControl::Series^  series3 = (gcnew Dundas::Charting::WinControl::Series());
-      Dundas::Charting::WinControl::Series^  series4 = (gcnew Dundas::Charting::WinControl::Series());
-      Dundas::Charting::WinControl::Title^  title1 = (gcnew Dundas::Charting::WinControl::Title());
       this->btnExit = (gcnew System::Windows::Forms::Button());
       this->btnMore = (gcnew System::Windows::Forms::Button());
-      this->chartMainPlot = (gcnew Dundas::Charting::WinControl::Chart());
       this->btnSave = (gcnew System::Windows::Forms::Button());
       this->btnSaveAll = (gcnew System::Windows::Forms::Button());
-      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->chartMainPlot))->BeginInit();
+      this->chartOutput = (gcnew Dundas::Charting::WinControl::Chart());
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->chartOutput))->BeginInit();
       this->SuspendLayout();
       // 
       // btnExit
@@ -76,7 +66,7 @@ namespace gui {
       this->btnExit->Location = System::Drawing::Point(929, 706);
       this->btnExit->Name = L"btnExit";
       this->btnExit->Size = System::Drawing::Size(75, 23);
-      this->btnExit->TabIndex = 1;
+      this->btnExit->TabIndex = 4;
       this->btnExit->Text = L"Close";
       this->btnExit->UseVisualStyleBackColor = true;
       // 
@@ -86,27 +76,48 @@ namespace gui {
       this->btnMore->Location = System::Drawing::Point(848, 706);
       this->btnMore->Name = L"btnMore";
       this->btnMore->Size = System::Drawing::Size(75, 23);
-      this->btnMore->TabIndex = 0;
+      this->btnMore->TabIndex = 3;
       this->btnMore->Text = L"Graphs...";
       this->btnMore->UseVisualStyleBackColor = true;
       this->btnMore->Click += gcnew System::EventHandler(this, &CimsimOutputForm::OnMore);
       // 
-      // chartMainPlot
+      // btnSave
       // 
-      this->chartMainPlot->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom) 
+      this->btnSave->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
+      this->btnSave->Location = System::Drawing::Point(12, 706);
+      this->btnSave->Name = L"btnSave";
+      this->btnSave->Size = System::Drawing::Size(75, 23);
+      this->btnSave->TabIndex = 1;
+      this->btnSave->Text = L"Save";
+      this->btnSave->UseVisualStyleBackColor = true;
+      this->btnSave->Click += gcnew System::EventHandler(this, &CimsimOutputForm::OnSave);
+      // 
+      // btnSaveAll
+      // 
+      this->btnSaveAll->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
+      this->btnSaveAll->Location = System::Drawing::Point(93, 706);
+      this->btnSaveAll->Name = L"btnSaveAll";
+      this->btnSaveAll->Size = System::Drawing::Size(75, 23);
+      this->btnSaveAll->TabIndex = 2;
+      this->btnSaveAll->Text = L"Save All";
+      this->btnSaveAll->UseVisualStyleBackColor = true;
+      this->btnSaveAll->Click += gcnew System::EventHandler(this, &CimsimOutputForm::OnSaveAll);
+      // 
+      // chartOutput
+      // 
+      this->chartOutput->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom) 
         | System::Windows::Forms::AnchorStyles::Left) 
         | System::Windows::Forms::AnchorStyles::Right));
-      this->chartMainPlot->BackColor = System::Drawing::Color::WhiteSmoke;
-      this->chartMainPlot->BackGradientEndColor = System::Drawing::Color::White;
-      this->chartMainPlot->BackGradientType = Dundas::Charting::WinControl::GradientType::DiagonalLeft;
-      this->chartMainPlot->BorderLineColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(26)), 
+      this->chartOutput->BackColor = System::Drawing::Color::WhiteSmoke;
+      this->chartOutput->BackGradientEndColor = System::Drawing::Color::White;
+      this->chartOutput->BackGradientType = Dundas::Charting::WinControl::GradientType::DiagonalLeft;
+      this->chartOutput->BorderLineColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(26)), 
         static_cast<System::Int32>(static_cast<System::Byte>(59)), static_cast<System::Int32>(static_cast<System::Byte>(105)));
-      this->chartMainPlot->BorderLineStyle = Dundas::Charting::WinControl::ChartDashStyle::Solid;
-      this->chartMainPlot->BorderSkin->FrameBackColor = System::Drawing::Color::CornflowerBlue;
-      this->chartMainPlot->BorderSkin->FrameBackGradientEndColor = System::Drawing::Color::CornflowerBlue;
-      this->chartMainPlot->BorderSkin->PageColor = System::Drawing::SystemColors::Control;
-      this->chartMainPlot->BorderSkin->SkinStyle = Dundas::Charting::WinControl::BorderSkinStyle::Emboss;
-      chartArea1->AxisX->LabelStyle->Interval = 0;
+      this->chartOutput->BorderLineStyle = Dundas::Charting::WinControl::ChartDashStyle::Solid;
+      this->chartOutput->BorderSkin->FrameBackColor = System::Drawing::Color::CornflowerBlue;
+      this->chartOutput->BorderSkin->FrameBackGradientEndColor = System::Drawing::Color::CornflowerBlue;
+      this->chartOutput->BorderSkin->PageColor = System::Drawing::SystemColors::Control;
+      this->chartOutput->BorderSkin->SkinStyle = Dundas::Charting::WinControl::BorderSkinStyle::Emboss;
       chartArea1->AxisX->LabelStyle->IntervalOffset = 0;
       chartArea1->AxisX->LabelStyle->IntervalOffsetType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
       chartArea1->AxisX->LabelStyle->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
@@ -116,12 +127,13 @@ namespace gui {
       chartArea1->AxisX->MajorGrid->IntervalOffsetType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
       chartArea1->AxisX->MajorGrid->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
       chartArea1->AxisX->MajorGrid->LineColor = System::Drawing::Color::Silver;
+      chartArea1->AxisX->MajorTickMark->Interval = 0;
+      chartArea1->AxisX->MajorTickMark->IntervalOffset = 0;
       chartArea1->AxisX->MajorTickMark->IntervalOffsetType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
       chartArea1->AxisX->MajorTickMark->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
       chartArea1->AxisX->Margin = false;
       chartArea1->AxisX->MinorGrid->LineColor = System::Drawing::Color::Silver;
-      chartArea1->AxisX->MinorTickMark->Disabled = false;
-      chartArea1->AxisX->Title = L"Date";
+      chartArea1->AxisX->Title = L"Week";
       chartArea1->AxisX2->LabelStyle->Interval = 0;
       chartArea1->AxisX2->LabelStyle->IntervalOffset = 0;
       chartArea1->AxisX2->LabelStyle->IntervalOffsetType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
@@ -149,6 +161,7 @@ namespace gui {
       chartArea1->AxisY->MajorTickMark->IntervalOffset = 0;
       chartArea1->AxisY->MajorTickMark->IntervalOffsetType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
       chartArea1->AxisY->MajorTickMark->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
+      chartArea1->AxisY->Margin = false;
       chartArea1->AxisY->MinorGrid->LineColor = System::Drawing::Color::Silver;
       chartArea1->AxisY->Title = L"# / ha";
       chartArea1->AxisY2->LabelStyle->Interval = 0;
@@ -185,7 +198,7 @@ namespace gui {
       chartArea1->Position->X = 3.756811F;
       chartArea1->Position->Y = 15.82769F;
       chartArea1->ShadowOffset = 2;
-      this->chartMainPlot->ChartAreas->Add(chartArea1);
+      this->chartOutput->ChartAreas->Add(chartArea1);
       legend1->Alignment = System::Drawing::StringAlignment::Far;
       legend1->BackColor = System::Drawing::Color::White;
       legend1->BorderColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(26)), static_cast<System::Int32>(static_cast<System::Byte>(59)), 
@@ -193,63 +206,13 @@ namespace gui {
       legend1->Docking = Dundas::Charting::WinControl::LegendDocking::Top;
       legend1->Name = L"Default";
       legend1->ShadowOffset = 2;
-      this->chartMainPlot->Legends->Add(legend1);
-      this->chartMainPlot->Location = System::Drawing::Point(12, 12);
-      this->chartMainPlot->Name = L"chartMainPlot";
-      this->chartMainPlot->Palette = Dundas::Charting::WinControl::ChartColorPalette::Dundas;
-      series1->ChartType = L"Line";
-      series1->Name = L"Eggs";
-      series1->XValueIndexed = true;
-      series1->XValueType = Dundas::Charting::WinControl::ChartValueTypes::DateTime;
-      series2->ChartType = L"Line";
-      series2->Name = L"Larvae";
-      series2->XValueIndexed = true;
-      series2->XValueType = Dundas::Charting::WinControl::ChartValueTypes::DateTime;
-      series3->ChartType = L"Line";
-      series3->Name = L"Pupae";
-      series3->XValueIndexed = true;
-      series3->XValueType = Dundas::Charting::WinControl::ChartValueTypes::DateTime;
-      series4->ChartType = L"Line";
-      series4->Name = L"Females";
-      series4->XValueIndexed = true;
-      series4->XValueType = Dundas::Charting::WinControl::ChartValueTypes::DateTime;
-      this->chartMainPlot->Series->Add(series1);
-      this->chartMainPlot->Series->Add(series2);
-      this->chartMainPlot->Series->Add(series3);
-      this->chartMainPlot->Series->Add(series4);
-      this->chartMainPlot->Size = System::Drawing::Size(992, 688);
-      this->chartMainPlot->TabIndex = 1;
-      this->chartMainPlot->Text = L"chart1";
-      title1->Name = L"Title1";
-      title1->Position->Auto = false;
-      title1->Position->Height = 1.951419F;
-      title1->Position->Width = 92.10797F;
-      title1->Position->X = 3.756811F;
-      title1->Position->Y = 4.091703F;
-      title1->Text = L"Totals / ha";
-      this->chartMainPlot->Titles->Add(title1);
-      // 
-      // btnSave
-      // 
-      this->btnSave->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
-      this->btnSave->Location = System::Drawing::Point(12, 706);
-      this->btnSave->Name = L"btnSave";
-      this->btnSave->Size = System::Drawing::Size(75, 23);
-      this->btnSave->TabIndex = 0;
-      this->btnSave->Text = L"Save";
-      this->btnSave->UseVisualStyleBackColor = true;
-      this->btnSave->Click += gcnew System::EventHandler(this, &CimsimOutputForm::OnSave);
-      // 
-      // btnSaveAll
-      // 
-      this->btnSaveAll->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
-      this->btnSaveAll->Location = System::Drawing::Point(93, 706);
-      this->btnSaveAll->Name = L"btnSaveAll";
-      this->btnSaveAll->Size = System::Drawing::Size(75, 23);
-      this->btnSaveAll->TabIndex = 0;
-      this->btnSaveAll->Text = L"Save All";
-      this->btnSaveAll->UseVisualStyleBackColor = true;
-      this->btnSaveAll->Click += gcnew System::EventHandler(this, &CimsimOutputForm::OnSaveAll);
+      this->chartOutput->Legends->Add(legend1);
+      this->chartOutput->Location = System::Drawing::Point(12, 12);
+      this->chartOutput->Name = L"chartOutput";
+      this->chartOutput->Palette = Dundas::Charting::WinControl::ChartColorPalette::Dundas;
+      this->chartOutput->Size = System::Drawing::Size(992, 688);
+      this->chartOutput->TabIndex = 0;
+      this->chartOutput->Text = L"chartOutput";
       // 
       // CimsimOutputForm
       // 
@@ -258,7 +221,7 @@ namespace gui {
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
       this->CancelButton = this->btnExit;
       this->ClientSize = System::Drawing::Size(1016, 741);
-      this->Controls->Add(this->chartMainPlot);
+      this->Controls->Add(this->chartOutput);
       this->Controls->Add(this->btnSaveAll);
       this->Controls->Add(this->btnSave);
       this->Controls->Add(this->btnMore);
@@ -269,7 +232,7 @@ namespace gui {
       this->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;
       this->Text = L"CIMSiM Output";
       this->Load += gcnew System::EventHandler(this, &CimsimOutputForm::OnLoad);
-      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->chartMainPlot))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->chartOutput))->EndInit();
       this->ResumeLayout(false);
 
     }
