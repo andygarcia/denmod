@@ -7,7 +7,7 @@
 #include "SimClasses.h"
 #include "../input/Location.h"
 #include "../input/Control.h"
-#include "../output/DensimData.h"
+#include "../output/DensimOutput.h"
 #include "../output/MosData.h"
 #include "../output/PopData.h"
 
@@ -28,10 +28,10 @@ public:
   void Start(void);
   void Start( boost::gregorian::date startDate, boost::gregorian::date stopDate );
 
-  output::DensimData * GetSimOutput(void);
+  output::DensimOutput * GetSimOutput(void);
 
 private:
-  output::DensimData::DailyLocationOutput & GetLocationOutputByIndex( int index );
+  output::DensimOutput::DailyLocationOutput & GetLocationOutputByIndex( int index );
 
 public:
   void ReadWeather( int year );
@@ -82,7 +82,7 @@ public:
 private:
   const input::Location * Location_;
   output::MosData * MosData_;
-  output::DensimData * Output_;
+  output::DensimOutput * Output_;
   
 public:
   boost::gregorian::date BeginDate_;

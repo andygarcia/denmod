@@ -17,7 +17,6 @@ date BoostDateFromYearAndDayOfYear( int year, int day )
 SimLocation::SimLocation( const input::Location * location, sim::output::MosData * mosData )
 : Location_(location),
   MosData_(mosData),
-  Output_(new output::DensimData()),
   GasCoef(1.987f),
   CumDeaths(std::vector<double>( 18+1, 0 )),
   CumBirths(std::vector<double>( 18+1, 0 )),
@@ -181,7 +180,7 @@ SimLocation::Start( boost::gregorian::date startDate, boost::gregorian::date sto
 
 
   
-sim::output::DensimData *
+sim::output::DensimOutput *
 SimLocation::GetSimOutput(void)
 {
   return Output_;
@@ -191,6 +190,9 @@ SimLocation::GetSimOutput(void)
 void
 SimLocation::denmain(void)
 {
+  // create output
+  Output_ = new output::DensimOutput( BeginDate_, EndDate_ );
+
   //DiskSpooler DiskData;
   int SpRecNum;
 
@@ -2242,7 +2244,7 @@ SimLocation::PurgeHFDeaths(void)
 void
 SimLocation::SpoolToDisk( int SpRecNum )
 {
-  output::DensimData::DailyLocationOutput dlo;
+  output::DensimOutput::DailyLocationOutput dlo;
 
   dlo.Incubate1 = TotDlyIncub[1];
   dlo.Incubate2 = TotDlyIncub[2];

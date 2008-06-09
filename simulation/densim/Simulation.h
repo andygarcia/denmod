@@ -2,7 +2,7 @@
 #define DS_SIMULATION_H
 
 #include "../input/Location.h"
-#include "../output/DensimData.h"
+#include "../output/DensimOutput.h"
 #include "SimLocation.h"
 
 
@@ -19,7 +19,7 @@ public:
   void Start(void);
   void Start( boost::gregorian::date startDate, boost::gregorian::date endDate );
 
-  sim::output::DensimData * GetSimOutput(void);
+  sim::output::DensimOutput * GetSimOutput(void);
 
 private:
   sim::ds::SimLocation * SimLocation_;

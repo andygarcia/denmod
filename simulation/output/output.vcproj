@@ -150,7 +150,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\DensimData.cpp"
+				RelativePath=".\DensimOutput.cpp"
 				>
 			</File>
 			<File
@@ -196,7 +196,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\DensimData.h"
+				RelativePath=".\DensimOutput.h"
 				>
 			</File>
 			<File
@@ -205,6 +205,10 @@
 			</File>
 			<File
 				RelativePath=".\MosData.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Output.h"
 				>
 			</File>
 			<File
