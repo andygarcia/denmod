@@ -23,7 +23,7 @@ Location::Location(void)
   _isCimsimCompleted(false),
   _isDensimCompleted(false),
   MosData_(NULL),
-  DensimOutput_(NULL),
+  DensimData_(NULL),
   DensimSeries_(gcnew OutputSeries()),
   SerotypeSeries_(gcnew SerotypeOutputSeries())
 {
@@ -466,7 +466,7 @@ Location::RunDensim( int startYear, int stopYear )
   dssim->Start( startDate, stopDate );
 
   // process output
-  DensimOutput_ = dssim->GetSimOutput();
+  DensimData_ = dssim->GetSimOutput();
   _isDensimCompleted = true;
 
   delete loc;     // delete input object (no longer needed, regenerated on next run)

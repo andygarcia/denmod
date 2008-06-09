@@ -302,9 +302,9 @@ public:
   }
 
   [XmlIgnore]
-  property sim::output::DensimData * DensimOutput {
+  property sim::output::DensimData * DensimData {
     sim::output::DensimData * get(void) {
-      return DensimOutput_;
+      return DensimData_;
     }
   }
 
@@ -336,7 +336,7 @@ private:
   bool _isDensimCompleted;
   gui::output::CimsimOutput ^ CimsimOutput_;
   sim::output::MosData * MosData_;
-  sim::output::DensimData * DensimOutput_;
+  sim::output::DensimData * DensimData_;
 };
 
 };
