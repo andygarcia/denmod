@@ -6,7 +6,7 @@ using namespace sim::cs;
 
 
 
-Simulation::Simulation( const input::Location * location, boost::gregorian::date startDate, boost::gregorian::date stopDate, bool usePop )
+Simulation::Simulation( input::Location * location, boost::gregorian::date startDate, boost::gregorian::date stopDate, bool usePop )
 : _startDate(startDate),
   _stopDate(stopDate),
   _popData(NULL),
@@ -17,12 +17,21 @@ Simulation::Simulation( const input::Location * location, boost::gregorian::date
     boost::gregorian::date popStartDate = boost::gregorian::date( _startDate.year(), 1, 1 );
     boost::gregorian::date popStopDate = boost::gregorian::date( _startDate.year(), 12, 31 );
 
-    // generate equillbrium population from simulation
+    // disable controls for generating established population
+    std::vector<input::Control*> disabledControls = std::vector<input::Control*>( location->Controls_ );
+    location->Controls_.clear();
+
+    // run simulation for year
     SimLocation * popSim = new SimLocation( location, popStartDate, popStopDate );
     popSim->Start();
     output::CimsimOutput * output = popSim->GetSimOutput();
+
+    // save population
     _popData = output->GetPopData();
     delete output;
+
+    // restore controls
+    location->Controls_ = disabledControls;
   }
 
   SimLocation_ = new SimLocation( location, startDate, stopDate, _popData );
@@ -56,20 +65,22 @@ Simulation::GetSimOutput(void)
 
 
 
-FoodFitSimulation::FoodFitSimulation( const input::Location * location, boost::gregorian::date surveyStartDate, boost::gregorian::date surveyStopDate )
+FoodFitSimulation::FoodFitSimulation( input::Location * location, boost::gregorian::date surveyStartDate, boost::gregorian::date surveyStopDate )
+: _location(location)
 {
-  // all food runs will use same location and random food
-  _location = location;
-  _location->Biology_->Larvae->Food->UseRandomFood = true;
+  // all food runs will use same location and random food, see case 151.
+  //_location->Biology_->Larvae->Food->UseRandomFood = true;
 
-  // all food runs will use same starting equillbrium population
+  // all food runs will use same starting equillbrium population (controls have no effect)
   boost::gregorian::date popStartDate = boost::gregorian::date( surveyStartDate.year(), 1, 1 );
   boost::gregorian::date popStopDate = boost::gregorian::date( surveyStartDate.year(), 12, 31 );
+  std::vector<input::Control*> disabledControls = std::vector<input::Control*>( location->Controls_ );
   SimLocation * popSim = new SimLocation( location, popStartDate, popStopDate );
   popSim->Start();
   output::CimsimOutput * output = popSim->GetSimOutput();
   _popData = output->GetPopData();
   delete output;
+  location->Controls_ = disabledControls;
 
   // all food runs will run the same period of time (based on survey)
   _surveyStartDate = surveyStartDate;
@@ -88,7 +99,7 @@ FoodFitSimulation::~FoodFitSimulation(void)
 }
 
 
-
+// TODO use container id to pass info back to managed code
 std::map<std::string,double>
 FoodFitSimulation::DoIteration( int numberOfRuns )
 {

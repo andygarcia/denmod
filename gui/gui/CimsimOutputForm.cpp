@@ -1,16 +1,14 @@
 #include "StdAfx.h"
 #include "CimsimOutputForm.h"
 #include "CimsimExtOutputForm.h"
+#include "RunDensimForm.h"
+#include "DensimOutputForm.h"
 #include "ExcelOutput.h"
 #include "../objs/Util.h"
 
 using namespace gui;
 using namespace boost::gregorian;
 using namespace Dundas::Charting::WinControl;
-
-typedef System::Collections::Generic::Dictionary<System::String^,Dundas::Charting::WinControl::Series^> OutputSeries;
-typedef System::Collections::Generic::Dictionary<System::String^,OutputSeries^> ContainerOutputSeries;
-typedef System::Collections::Generic::Dictionary<int,OutputSeries^> SerotypeOutputSeries;
 
 
 
@@ -25,7 +23,7 @@ CimsimOutputForm::CimsimOutputForm( gui::Location ^ location )
   outputs->Add( co->Location[(int)output::OutputTypes::Cimsim::Location::TotalLarvae] );
   outputs->Add( co->Location[(int)output::OutputTypes::Cimsim::Location::TotalPupae] );
   outputs->Add( co->Location[(int)output::OutputTypes::Cimsim::Location::TotalFemales] );
-    
+
   for each( output::Output ^ output in outputs ) {
     Series ^ s = gcnew Series( output->Name );
     s->ChartType = "Line";
@@ -104,62 +102,57 @@ CimsimOutputForm::OnSave(System::Object^  sender, System::EventArgs^  e)
 System::Void
 CimsimOutputForm::OnSaveAll(System::Object^  sender, System::EventArgs^  e)
 {
-  //// save all output to a directory
-  //FolderBrowserDialog ^ fbd = gcnew FolderBrowserDialog();
-  //if( fbd->ShowDialog() != ::DialogResult::OK ) {
-  //  return;
-  //}
-  //String ^ directory = fbd->SelectedPath;
+  // save all output to a directory
+  FolderBrowserDialog ^ fbd = gcnew FolderBrowserDialog();
+  if( fbd->ShowDialog() != ::DialogResult::OK ) {
+    return;
+  }
+  String ^ directory = fbd->SelectedPath;
 
-  //// just need to create chart objects with specified series and save them all
-  //Dundas::Charting::WinControl::Chart ^ locationChart = gcnew Dundas::Charting::WinControl::Chart();
-  //locationChart->Series->Add( _location->CimsimSeries_["Eggs"] );
-  //locationChart->Series->Add( _location->CimsimSeries_["Larvae"] );
-  //locationChart->Series->Add( _location->CimsimSeries_["Pupae"] );
-  //locationChart->Series->Add( _location->CimsimSeries_["Total Females"] );
-  //locationChart->Series->Add( _location->CimsimSeries_["New Females"] );
-  //locationChart->Series->Add( _location->CimsimSeries_["Average Female Weight"] );
-  //locationChart->Series->Add( _location->CimsimSeries_["Oviposition"] );
+  String ^ locationFile = directory + "\\CIMSiM - Location Totals - " + _location->Name + ".xml";
+  try {
+    System::IO::StreamWriter ^ sw = gcnew System::IO::StreamWriter( locationFile );
+    sw->Write( _location->CimsimOutput->GetLocationExcelXml() );
+    sw->Close();
+  }
+  catch( System::IO::IOException ^ ioe ) {
+    Diagnostics::Debug::WriteLine( ioe->ToString() );
+    MessageBox::Show( "Unable to save files.  " + locationFile + " is open.  Please close output files and try again" );
+    return;
+  }
 
-  //String ^ locationFile = directory + "\\CIMSiM - Location Totals - " + _location->Name + ".xml";
-  //try {
-  //  System::IO::StreamWriter ^ sw = gcnew System::IO::StreamWriter( locationFile );
-  //  sw->Write( ExcelOutput::GetXml(locationChart) );
-  //  sw->Close();
-  //}
-  //catch( System::IO::IOException ^ ioe ) {
-  //  Diagnostics::Debug::WriteLine( ioe->ToString() );
-  //  MessageBox::Show( "Unable to save files.  " + locationFile + " is open.  Please close output files and try again" );
-  //  return;
-  //}
+  for each( gui::Container ^ c in _location->Containers ) {
+    String ^ containerFile = directory + "\\CIMSiM - " + c->Name + ".xml";
+    try {
+      System::IO::StreamWriter ^ sw = gcnew System::IO::StreamWriter( containerFile );
+      sw->Write( _location->CimsimOutput->GetContainerExcelXml(c->Id) );
+      sw->Close();
+    }
+    catch( System::IO::IOException ^ ioe ) {
+      Diagnostics::Debug::WriteLine( ioe->ToString() );
+      MessageBox::Show( "Unable to save files.  " + containerFile + "is currently open.  Please close output files and try again" );
+      return;
+    }
+  }
+}
 
-  //for each( gui::Container ^ c in _location->Containers ) {
-  //  Dundas::Charting::WinControl::Chart ^ containerChart = gcnew Dundas::Charting::WinControl::Chart();
-  //  containerChart->Series->Add( _location->ContainerSeries_[c->Name]["Depth"] );
-  //  containerChart->Series->Add( _location->ContainerSeries_[c->Name]["Food"] );
-  //  containerChart->Series->Add( _location->ContainerSeries_[c->Name]["Maximum Temperature"] );
-  //  containerChart->Series->Add( _location->ContainerSeries_[c->Name]["Minimum Temperature"] );
-  //  containerChart->Series->Add( _location->ContainerSeries_[c->Name]["Eggs"] );
-  //  containerChart->Series->Add( _location->ContainerSeries_[c->Name]["Larvae"] );
-  //  containerChart->Series->Add( _location->ContainerSeries_[c->Name]["Pupae"] );
-  //  containerChart->Series->Add( _location->ContainerSeries_[c->Name]["Average Pupal Weight"] );
-  //  containerChart->Series->Add( _location->ContainerSeries_[c->Name]["New Females"] );
-  //  containerChart->Series->Add( _location->ContainerSeries_[c->Name]["Cumulative Females"] );
-  //  containerChart->Series->Add( _location->ContainerSeries_[c->Name]["Oviposition"] );
-  //  containerChart->Series->Add( _location->ContainerSeries_[c->Name]["Untreated Density"] );
-  //  containerChart->Series->Add( _location->ContainerSeries_[c->Name]["Treated Density"] );
-  //  containerChart->Series->Add( _location->ContainerSeries_[c->Name]["Excluded Density"] );
 
-  //  String ^ containerFile = directory + "\\CIMSiM - " + c->Name + ".xml";
-  //  try {
-  //    System::IO::StreamWriter ^ sw = gcnew System::IO::StreamWriter( containerFile );
-  //    sw->Write( ExcelOutput::GetXml(containerChart) );
-  //    sw->Close();
-  //  }
-  //  catch( System::IO::IOException ^ ioe ) {
-  //    Diagnostics::Debug::WriteLine( ioe->ToString() );
-  //    MessageBox::Show( "Unable to save files.  " + containerFile + "is currently open.  Please close output files and try again" );
-  //    return;
-  //  }
-  //}
+System::Void
+CimsimOutputForm::OnRunDensim(System::Object^  sender, System::EventArgs^  e)
+{
+  BindingSource ^ locBinding = gcnew BindingSource();
+  locBinding->DataSource = _location;
+
+  RunDensimForm ^ rdf = gcnew RunDensimForm( locBinding );
+  if( rdf->ShowDialog(this) == ::DialogResult::OK ) {
+    // run simulation
+    gui::Location::RunDensimOptions ^ rdo = rdf->RunDensimOptions;
+    _location->RunDensim( rdo->StartDate.Year, rdo->StopDate.Year );
+    rdf->Close();
+
+    // process output
+    DensimOutputForm ^ dof = gcnew DensimOutputForm( _location );
+    dof->ShowDialog(this);
+    dof->Close();    
+  }
 }

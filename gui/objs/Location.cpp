@@ -249,7 +249,7 @@ Location::RunCimsim( bool usePop, DateTime startDate, DateTime stopDate )
 
 
   // get unmanaged simulation object, representing input parameters for simulation
-  const input::Location * loc = GetSimObject();
+  input::Location * loc = GetSimObject();
   sim::cs::Simulation * cssim;
 
   // find start and stop dates for simulation
@@ -307,14 +307,23 @@ Location::ProcessCimsimOutput( sim::output::CimsimOutput * uco, DateTime startDa
   CopyVectorToOutput( uco->GetAverageFemaleWeight(bStartDate, bStopDate), mco->Location[(int)output::OutputTypes::Cimsim::Location::AverageFemaleWeight] );
   CopyVectorToOutput( uco->GetOviposition(bStartDate, bStopDate), mco->Location[(int)output::OutputTypes::Cimsim::Location::Oviposition] );
 
-  // TODO - should we cache weather information again? hmmm, dunno, would be useful for comparisons where different weather was used
-  // ok, how to seed this?
-  //MaximumTemperature,
-  //AverageTemperature,
-  //MinimumTemperature,
-  //Rainfall,
-  //RelativeHumidity,
-  //SaturationDeficit
+  output::Output ^ maxTemp = mco->Location[(int)output::OutputTypes::Cimsim::Location::MaximumTemperature];
+  output::Output ^ avgTemp = mco->Location[(int)output::OutputTypes::Cimsim::Location::AverageTemperature];
+  output::Output ^ minTemp = mco->Location[(int)output::OutputTypes::Cimsim::Location::MinimumTemperature];
+  output::Output ^ rainFall = mco->Location[(int)output::OutputTypes::Cimsim::Location::Rainfall];
+  output::Output ^ relHum = mco->Location[(int)output::OutputTypes::Cimsim::Location::RelativeHumidity];
+  output::Output ^ satDef = mco->Location[(int)output::OutputTypes::Cimsim::Location::SaturationDeficit];
+
+  for( DateTime dt = startDate; dt <= stopDate; dt = dt.AddDays(1) ) {
+    WeatherDay ^ wd = Weather->GetWeather( dt );
+    maxTemp->Data->Add( wd->MaxTemp );
+    avgTemp->Data->Add( wd->AvgTemp);
+    minTemp->Data->Add( wd->MinTemp);
+    rainFall->Data->Add( wd->Rain );
+    relHum->Data->Add( wd->RelHum );
+    satDef->Data->Add( wd->SatDef );
+  }
+
 
   for each( Container ^ c in Containers ) {
     int id = c->Id;
@@ -357,7 +366,7 @@ Location::TestingRunCimsim(void)
   csp1.cimmain();
 }
 
-  
+
   
 void
 Location::RunFoodFitIteration( int numberOfRuns, DateTime surveyBegin, DateTime surveyEnd )
@@ -367,7 +376,7 @@ Location::RunFoodFitIteration( int numberOfRuns, DateTime surveyBegin, DateTime 
   boost::gregorian::date surveyStopDate( surveyEnd.Year, surveyEnd.Month, surveyEnd.Day );
 
   // create simulation
-  const input::Location * loc = GetSimObject();
+  input::Location * loc = GetSimObject();
   sim::cs::FoodFitSimulation * foodSim = new sim::cs::FoodFitSimulation( loc, surveyStartDate, surveyStopDate );
   std::map<std::string,double> & predictions = foodSim->DoIteration( numberOfRuns );
 

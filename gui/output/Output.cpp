@@ -260,6 +260,112 @@ CimsimOutput::AddContainerType( int containerId )
 
 
 
+String ^
+SimOutput::GenerateExcelXml( Collections::Generic::List<DateTime> ^ dates, Collections::Generic::List<Output^> ^ columns )
+{
+  System::Text::StringBuilder ^ sb = gcnew System::Text::StringBuilder();
+
+  // write XML file header
+  sb->Append("<?xml version=\"1.0\"?>" + Environment::NewLine);
+  sb->Append("<?mso-application progid=\"Excel.Sheet\"?>" + Environment::NewLine);
+  sb->Append("<Workbook xmlns=\"urn:schemas-microsoft-com:office:spreadsheet\"" + Environment::NewLine);
+  sb->Append(" xmlns:o=\"urn:schemas-microsoft-com:office:office\"" + Environment::NewLine);
+  sb->Append(" xmlns:x=\"urn:schemas-microsoft-com:office:excel\"" + Environment::NewLine);
+  sb->Append(" xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\"" + Environment::NewLine);
+  sb->Append(" xmlns:html=\"http://www.w3.org/TR/REC-html40\">" + Environment::NewLine);
+
+  sb->Append(" <DocumentProperties xmlns=\"urn:schemas-microsoft-com:office:office\">" + Environment::NewLine);
+  sb->Append("  <Author>Dengue Models</Author>" + Environment::NewLine );
+  sb->Append("  <LastAuthor>Dengue Models</LastAuthor>" + Environment::NewLine);
+  sb->Append("  <Created>" + DateTime::Now.ToString("s") + "</Created>" + Environment::NewLine);
+  sb->Append("  <Version>12.00</Version>" + Environment::NewLine);
+  sb->Append(" </DocumentProperties>" + Environment::NewLine);
+
+  sb->AppendLine( " <Styles>");
+  sb->AppendLine( "  <Style ss:ID=\"Default\" ss:Name=\"Normal\">" );
+  sb->AppendLine( "   <Alignment ss:Vertical=\"Center\"/>" );
+  sb->AppendLine( "  </Style>" );
+  sb->AppendLine( " </Styles>" );
+  sb->AppendLine( " <Worksheet ss:Name=\"Sheet1\">" );
+  sb->AppendLine( "  <Table>");
+
+  // if any data to save exists...
+  if( columns->Count > 0 && dates->Count > 0 ) {
+
+    // date header
+    sb->AppendLine( "   <Row>" );
+    sb->AppendLine( "    <Cell><Data ss:Type=\"String\">Date</Data></Cell>" );
+
+    // header for each output column
+    for( int i = 0; i < columns->Count; ++i ) {
+      int columnIndex = i + 2;
+      String ^ cellString = String::Format( "    <Cell><Data ss:Type=\"String\">{1}</Data></Cell>", Convert::ToString( columnIndex ), columns[i]->Name );
+      sb->Append( cellString );
+      sb->Append( Environment::NewLine );
+    }
+    sb->AppendLine( "   </Row>" );
+
+
+    // daily rows of data
+    for( int i = 0; i < dates->Count; ++i ) {
+      sb->Append("   <Row>" + Environment::NewLine);
+
+      // date cell
+      String ^ cellString = String::Format( "    <Cell><Data ss:Type=\"String\">{1}</Data></Cell>", Convert::ToString(0), dates[i].ToString("yyyy-MM-dd") );
+      sb->Append(cellString + Environment::NewLine );
+      
+      // column cells
+      for( int j = 0; j < columns->Count; ++j ) {
+
+        cellString = String::Format( "    <Cell><Data ss:Type=\"Number\">{1}</Data></Cell>",
+                                     Convert::ToString( j + 2 ),
+                                     Convert::ToDouble( columns[j]->Data[i] ));
+        sb->Append(cellString + Environment::NewLine);
+      }
+
+      sb->Append("   </Row>" + Environment::NewLine);
+    }
+  }
+
+  // close all XML tags
+  sb->Append("  </Table>" + Environment::NewLine);
+  sb->Append(" </Worksheet>" + Environment::NewLine);
+  sb->Append("</Workbook>" + Environment::NewLine);
+
+  return sb->ToString();
+
+}
+
+
+  
+String ^
+CimsimOutput::GetLocationExcelXml(void)
+{
+  Array ^ ids = Enum::GetValues( output::OutputTypes::Cimsim::Location::typeid );
+  System::Collections::Generic::List<Output^> ^ outputs = gcnew System::Collections::Generic::List<Output^>();
+  for each( int id in ids ) {
+    outputs->Add( _location[id] );
+  }
+
+  return GenerateExcelXml( Dates, outputs );
+}
+
+
+
+String ^
+CimsimOutput::GetContainerExcelXml( int containerId )
+{
+  Array ^ ids = Enum::GetValues( output::OutputTypes::Cimsim::Container::typeid );
+  System::Collections::Generic::List<Output^> ^ outputs = gcnew System::Collections::Generic::List<Output^>();
+  for each( int id in ids ) {
+    outputs->Add( _containers[containerId][id] );
+  }
+
+  return GenerateExcelXml( Dates, outputs );
+}
+
+
+
 DensimOutput::DensimOutput( DateTime startDate, DateTime stopDate )
 : SimOutput( startDate, stopDate ),
   _location(OutputCollections::CreateNewOutputCollection( OutputTypes::Densim::Location::typeid )),

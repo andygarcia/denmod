@@ -128,6 +128,7 @@ typedef Collections::Generic::Dictionary<int,Output^> IndexedOutputCollection;
 
 
 
+
 public ref class OutputCollections abstract sealed
 {
 public:
@@ -151,6 +152,9 @@ public ref class SimOutput
 public:
   SimOutput( DateTime startDate, DateTime stopDate );
   virtual ~SimOutput(void);
+
+public:
+  static String ^ GenerateExcelXml( Collections::Generic::List<DateTime> ^ dates, Collections::Generic::List<Output^> ^ columns );
 
 private:
   void GenerateWeeks(void);
@@ -211,6 +215,9 @@ public:
 
 public:
   void AddContainerType( int containerId );
+
+  String ^ GetLocationExcelXml(void);
+  String ^ GetContainerExcelXml( int containerId );
 
 public:
   property IndexedOutputCollection ^ Location {

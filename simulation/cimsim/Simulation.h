@@ -13,7 +13,7 @@ namespace cs  {
 class Simulation
 {
 public:
-  Simulation( const input::Location * location, boost::gregorian::date startDate, boost::gregorian::date stopDate, bool usePop = false );
+  Simulation( input::Location * location, boost::gregorian::date startDate, boost::gregorian::date stopDate, bool usePop = false );
 public:
   virtual ~Simulation(void);
 
@@ -39,7 +39,7 @@ public:
   std::vector<double> ObservedPupae;
 
 public:
-  FoodFitSimulation( const input::Location * location, boost::gregorian::date surveyStartDate, boost::gregorian::date surveyStopDate );
+  FoodFitSimulation( input::Location * location, boost::gregorian::date surveyStartDate, boost::gregorian::date surveyStopDate );
   ~FoodFitSimulation(void);
 
   std::map<std::string,double> DoIteration( int numberOfRuns );
