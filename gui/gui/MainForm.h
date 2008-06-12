@@ -93,10 +93,10 @@ namespace gui {
   private: System::Windows::Forms::ToolStripButton^  openToolStripButton;
   private: System::Windows::Forms::ToolStripButton^  saveToolStripButton;
   private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator;
-  private: System::Windows::Forms::ToolStripButton^  cutToolStripButton;
-  private: System::Windows::Forms::ToolStripButton^  copyToolStripButton;
-  private: System::Windows::Forms::ToolStripButton^  pasteToolStripButton;
-  private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator1;
+
+
+
+
   private: System::Windows::Forms::ToolStripButton^  helpToolStripButton;
   private: System::Windows::Forms::ListBox^  lboxWeather;
   private: System::Windows::Forms::Label^  lblLocName;
@@ -118,7 +118,7 @@ namespace gui {
   private: System::Windows::Forms::BindingSource^  LocationBinding;
   private: System::Windows::Forms::Button^  btnRemoveWeather;
 
-  private: System::Windows::Forms::Button^  btnViewWeather;
+
   private: System::Windows::Forms::TabControl^  tabWeather;
   private: System::Windows::Forms::TabPage^  tabpgWeather;
 private: System::Windows::Forms::ToolStripMenuItem^  openWeatherTemplateToolStripMenuItem;
@@ -150,6 +150,7 @@ private: System::Windows::Forms::ToolStripMenuItem^  tsmiOpenSampleLocation;
       this->fileToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
       this->newToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
       this->openToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+      this->tsmiOpenSampleLocation = (gcnew System::Windows::Forms::ToolStripMenuItem());
       this->toolStripSeparator2 = (gcnew System::Windows::Forms::ToolStripSeparator());
       this->saveToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
       this->saveAsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -165,10 +166,6 @@ private: System::Windows::Forms::ToolStripMenuItem^  tsmiOpenSampleLocation;
       this->openToolStripButton = (gcnew System::Windows::Forms::ToolStripButton());
       this->saveToolStripButton = (gcnew System::Windows::Forms::ToolStripButton());
       this->toolStripSeparator = (gcnew System::Windows::Forms::ToolStripSeparator());
-      this->cutToolStripButton = (gcnew System::Windows::Forms::ToolStripButton());
-      this->copyToolStripButton = (gcnew System::Windows::Forms::ToolStripButton());
-      this->pasteToolStripButton = (gcnew System::Windows::Forms::ToolStripButton());
-      this->toolStripSeparator1 = (gcnew System::Windows::Forms::ToolStripSeparator());
       this->helpToolStripButton = (gcnew System::Windows::Forms::ToolStripButton());
       this->lboxWeather = (gcnew System::Windows::Forms::ListBox());
       this->lblLocName = (gcnew System::Windows::Forms::Label());
@@ -180,13 +177,11 @@ private: System::Windows::Forms::ToolStripMenuItem^  tsmiOpenSampleLocation;
       this->tabpgDensim = (gcnew System::Windows::Forms::TabPage());
       this->tabLocation = (gcnew System::Windows::Forms::TabControl());
       this->tabpgLocation = (gcnew System::Windows::Forms::TabPage());
-      this->btnViewWeather = (gcnew System::Windows::Forms::Button());
       this->btnRemoveWeather = (gcnew System::Windows::Forms::Button());
       this->btnAddWeather = (gcnew System::Windows::Forms::Button());
       this->LocationBinding = (gcnew System::Windows::Forms::BindingSource(this->components));
       this->tabWeather = (gcnew System::Windows::Forms::TabControl());
       this->tabpgWeather = (gcnew System::Windows::Forms::TabPage());
-      this->tsmiOpenSampleLocation = (gcnew System::Windows::Forms::ToolStripMenuItem());
       this->menuStrip->SuspendLayout();
       this->toolStrip->SuspendLayout();
       this->tabSimulations->SuspendLayout();
@@ -238,6 +233,15 @@ private: System::Windows::Forms::ToolStripMenuItem^  tsmiOpenSampleLocation;
       this->openToolStripMenuItem->Size = System::Drawing::Size(185, 22);
       this->openToolStripMenuItem->Text = L"&Open";
       this->openToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::MenuItemHandler);
+      // 
+      // tsmiOpenSampleLocation
+      // 
+      this->tsmiOpenSampleLocation->Image = (cli::safe_cast<System::Drawing::Image^  >(resources->GetObject(L"tsmiOpenSampleLocation.Image")));
+      this->tsmiOpenSampleLocation->ImageTransparentColor = System::Drawing::Color::Magenta;
+      this->tsmiOpenSampleLocation->Name = L"tsmiOpenSampleLocation";
+      this->tsmiOpenSampleLocation->Size = System::Drawing::Size(185, 22);
+      this->tsmiOpenSampleLocation->Text = L"O&pen Sample Location";
+      this->tsmiOpenSampleLocation->Click += gcnew System::EventHandler(this, &MainForm::MenuItemHandler);
       // 
       // toolStripSeparator2
       // 
@@ -310,9 +314,8 @@ private: System::Windows::Forms::ToolStripMenuItem^  tsmiOpenSampleLocation;
       // toolStrip
       // 
       this->toolStrip->GripStyle = System::Windows::Forms::ToolStripGripStyle::Hidden;
-      this->toolStrip->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(9) {this->newToolStripButton, 
-        this->openToolStripButton, this->saveToolStripButton, this->toolStripSeparator, this->cutToolStripButton, this->copyToolStripButton, 
-        this->pasteToolStripButton, this->toolStripSeparator1, this->helpToolStripButton});
+      this->toolStrip->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(5) {this->newToolStripButton, 
+        this->openToolStripButton, this->saveToolStripButton, this->toolStripSeparator, this->helpToolStripButton});
       this->toolStrip->Location = System::Drawing::Point(0, 24);
       this->toolStrip->Name = L"toolStrip";
       this->toolStrip->RenderMode = System::Windows::Forms::ToolStripRenderMode::System;
@@ -354,38 +357,6 @@ private: System::Windows::Forms::ToolStripMenuItem^  tsmiOpenSampleLocation;
       // 
       this->toolStripSeparator->Name = L"toolStripSeparator";
       this->toolStripSeparator->Size = System::Drawing::Size(6, 25);
-      // 
-      // cutToolStripButton
-      // 
-      this->cutToolStripButton->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
-      this->cutToolStripButton->Image = (cli::safe_cast<System::Drawing::Image^  >(resources->GetObject(L"cutToolStripButton.Image")));
-      this->cutToolStripButton->ImageTransparentColor = System::Drawing::Color::Magenta;
-      this->cutToolStripButton->Name = L"cutToolStripButton";
-      this->cutToolStripButton->Size = System::Drawing::Size(23, 22);
-      this->cutToolStripButton->Text = L"C&ut";
-      // 
-      // copyToolStripButton
-      // 
-      this->copyToolStripButton->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
-      this->copyToolStripButton->Image = (cli::safe_cast<System::Drawing::Image^  >(resources->GetObject(L"copyToolStripButton.Image")));
-      this->copyToolStripButton->ImageTransparentColor = System::Drawing::Color::Magenta;
-      this->copyToolStripButton->Name = L"copyToolStripButton";
-      this->copyToolStripButton->Size = System::Drawing::Size(23, 22);
-      this->copyToolStripButton->Text = L"&Copy";
-      // 
-      // pasteToolStripButton
-      // 
-      this->pasteToolStripButton->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
-      this->pasteToolStripButton->Image = (cli::safe_cast<System::Drawing::Image^  >(resources->GetObject(L"pasteToolStripButton.Image")));
-      this->pasteToolStripButton->ImageTransparentColor = System::Drawing::Color::Magenta;
-      this->pasteToolStripButton->Name = L"pasteToolStripButton";
-      this->pasteToolStripButton->Size = System::Drawing::Size(23, 22);
-      this->pasteToolStripButton->Text = L"&Paste";
-      // 
-      // toolStripSeparator1
-      // 
-      this->toolStripSeparator1->Name = L"toolStripSeparator1";
-      this->toolStripSeparator1->Size = System::Drawing::Size(6, 25);
       // 
       // helpToolStripButton
       // 
@@ -505,18 +476,9 @@ private: System::Windows::Forms::ToolStripMenuItem^  tsmiOpenSampleLocation;
       this->tabpgLocation->Text = L"Location";
       this->tabpgLocation->UseVisualStyleBackColor = true;
       // 
-      // btnViewWeather
-      // 
-      this->btnViewWeather->Location = System::Drawing::Point(6, 35);
-      this->btnViewWeather->Name = L"btnViewWeather";
-      this->btnViewWeather->Size = System::Drawing::Size(75, 23);
-      this->btnViewWeather->TabIndex = 35;
-      this->btnViewWeather->Text = L"View";
-      this->btnViewWeather->UseVisualStyleBackColor = true;
-      // 
       // btnRemoveWeather
       // 
-      this->btnRemoveWeather->Location = System::Drawing::Point(6, 64);
+      this->btnRemoveWeather->Location = System::Drawing::Point(6, 35);
       this->btnRemoveWeather->Name = L"btnRemoveWeather";
       this->btnRemoveWeather->Size = System::Drawing::Size(75, 23);
       this->btnRemoveWeather->TabIndex = 34;
@@ -546,7 +508,6 @@ private: System::Windows::Forms::ToolStripMenuItem^  tsmiOpenSampleLocation;
       // 
       // tabpgWeather
       // 
-      this->tabpgWeather->Controls->Add(this->btnViewWeather);
       this->tabpgWeather->Controls->Add(this->lboxWeather);
       this->tabpgWeather->Controls->Add(this->btnRemoveWeather);
       this->tabpgWeather->Controls->Add(this->btnAddWeather);
@@ -557,15 +518,6 @@ private: System::Windows::Forms::ToolStripMenuItem^  tsmiOpenSampleLocation;
       this->tabpgWeather->TabIndex = 0;
       this->tabpgWeather->Text = L"Weather";
       this->tabpgWeather->UseVisualStyleBackColor = true;
-      // 
-      // tsmiOpenSampleLocation
-      // 
-      this->tsmiOpenSampleLocation->Image = (cli::safe_cast<System::Drawing::Image^  >(resources->GetObject(L"tsmiOpenSampleLocation.Image")));
-      this->tsmiOpenSampleLocation->ImageTransparentColor = System::Drawing::Color::Magenta;
-      this->tsmiOpenSampleLocation->Name = L"tsmiOpenSampleLocation";
-      this->tsmiOpenSampleLocation->Size = System::Drawing::Size(185, 22);
-      this->tsmiOpenSampleLocation->Text = L"O&pen Sample Location";
-      this->tsmiOpenSampleLocation->Click += gcnew System::EventHandler(this, &MainForm::MenuItemHandler);
       // 
       // MainForm
       // 

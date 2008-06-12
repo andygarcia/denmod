@@ -57,29 +57,50 @@ TargetedControlForm<T>::OnLoad(System::Object^  sender, System::EventArgs^  e)
   dgvTargets->DataSource = _targetedControl->Targets;
 
   dgvTargets->SuspendLayout();
-  // look for column named IsValid (for now a workaround to implementing ICustomTypeDescriptor, etc.)
-  int isValidIndex = 0;
-  for( int i = 0; i < dgvTargets->Columns->Count; ++i ) {
-    if( dgvTargets->Columns[i]->Name == "IsValid" ) {
-      isValidIndex = i;
-      break;
+  // TODO this is fucked, it relies on the framework binding to properties in the same order each time
+  // evidence shoes this doesn't always happen.  This causes the wrong columns to be displayed.
+  // In fact it seems one machine running Vista flip flops the order, that means the very columns we are
+  // looking to display are hidden.
+
+//  // look for column named IsValid (for now a workaround to implementing ICustomTypeDescriptor, etc.)
+//  int isValidIndex = 0;
+//  for( int i = 0; i < dgvTargets->Columns->Count; ++i ) {
+//    if( dgvTargets->Columns[i]->Name == "IsValid" ) {
+//      isValidIndex = i;
+//      break;
+//    }
+//  }
+//
+//  // rearrange columns before IsValid column, and set Name as read only
+//  for( int i = 0; i < isValidIndex; ++i ) {
+//    dgvTargets->Columns[i]->DisplayIndex = (isValidIndex - 1) - i;
+//    if( dgvTargets->Columns[i]->Name == "Name" ) {
+//      dgvTargets->Columns[i]->ReadOnly = true;
+//      dgvTargets->Columns[i]->DefaultCellStyle->BackColor = SystemColors::Control;
+//    }
+//  }
+//
+//  // hide IsValid columns and on
+//  for( int i = isValidIndex; i < dgvTargets->Columns->Count; ++i ) {
+//    dgvTargets->Columns[i]->Visible = false;
+//  }
+//  dgvTargets->ResumeLayout();
+
+  // look for Name column and "Rate*" columns
+  Collections::Generic::List<DataGridViewColumn^> ^ columnsToRemove = gcnew Collections::Generic::List<DataGridViewColumn^>();
+  int displayIndex = 1;
+  for each( DataGridViewColumn ^ dgvc in dgvTargets->Columns ) {
+    if( dgvc->Name == "Name" ) {
+      dgvc->DisplayIndex = 0;
+      continue;
     }
+    else if(  dgvc->Name->StartsWith( "Rate" ) ) {
+      dgvc->DisplayIndex = displayIndex++;
+      continue;
+    }
+    dgvc->Visible = false;
   }
 
-  // rearrange columns before IsValid column, and set Name as read only
-  for( int i = 0; i < isValidIndex; ++i ) {
-    dgvTargets->Columns[i]->DisplayIndex = (isValidIndex - 1) - i;
-    if( dgvTargets->Columns[i]->Name == "Name" ) {
-      dgvTargets->Columns[i]->ReadOnly = true;
-      dgvTargets->Columns[i]->DefaultCellStyle->BackColor = SystemColors::Control;
-    }
-  }
-
-  // hide IsValid columns and on
-  for( int i = isValidIndex; i < dgvTargets->Columns->Count; ++i ) {
-    dgvTargets->Columns[i]->Visible = false;
-  }
-  dgvTargets->ResumeLayout();
 
 
   // select current schedule

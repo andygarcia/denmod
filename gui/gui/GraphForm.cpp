@@ -70,7 +70,7 @@ GraphForm::GraphForm( gui::Location ^ location, output::Graph ^ graph, output::T
     }
   }
 
-  // all graphs of this type are time series
+  // set title and x axis based on time period of summary
   chartMainPlot->Title = graph->Title;
   if( timePeriod == output::TimePeriod::Daily ) {
     chartMainPlot->ChartAreas["Default"]->AxisX->Title = "Date";
@@ -85,6 +85,9 @@ GraphForm::GraphForm( gui::Location ^ location, output::Graph ^ graph, output::T
   }
 
   chartMainPlot->ChartAreas["Default"]->AxisY->Title = graph->AxisY;
+
+  // set zoom intervals
+  chartMainPlot->ChartAreas["Default"]->CursorX->Interval = 0;
 }
 
 

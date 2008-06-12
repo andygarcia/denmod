@@ -15,6 +15,12 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_14748E0150F34E198CF4D19FA561B66B"
+        "OwnerKey" = "8:_7635DA79104A4A198EAD2EEFCC0A110B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_238342DCD1C59F9E1CB9AA93C9FDDC35"
         "OwnerKey" = "8:_BD70629C72BCCC6F73AE60A9B6714E23"
         "MsmSig" = "8:_UNDEFINED"
@@ -51,12 +57,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_849E3618593341BCBCBC07DE04E0134F"
-        "OwnerKey" = "8:_E8401651250F4ECD8EBC967DC179E741"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_A23633980A774EA39CC08D9F4CE06EC9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -81,8 +81,8 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_E8401651250F4ECD8EBC967DC179E741"
-        "OwnerKey" = "8:_7635DA79104A4A198EAD2EEFCC0A110B"
+        "MsmKey" = "8:_F27AA9AB3035453989EE8F8A52E2CEBF"
+        "OwnerKey" = "8:_14748E0150F34E198CF4D19FA561B66B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -241,7 +241,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:output, Version=1.0.3083.25525, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:output, Version=1.0.3084.21817, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_37A9E0A8FC85B04C167D2D7100C693FD"
@@ -354,7 +354,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:objs, Version=1.0.3083.25545, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:objs, Version=1.0.3085.24891, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_BD70629C72BCCC6F73AE60A9B6714E23"
@@ -481,14 +481,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Dengue Models"
-        "ProductCode" = "8:{DC49B97A-E3F2-4CA0-BA57-6D22AFDFA92C}"
-        "PackageCode" = "8:{C8CADE11-354E-404A-AA74-F93FE9395028}"
+        "ProductCode" = "8:{1008EE7F-66F4-4C03-837C-AACFA8847422}"
+        "PackageCode" = "8:{4218A5E4-620C-48F5-B1CC-D6F57BD50AB5}"
         "UpgradeCode" = "8:{EED99F1C-8421-42B5-9763-21628AF82B25}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.0.15"
+        "ProductVersion" = "8:1.0.16"
         "Manufacturer" = "8:ID-Analysis"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -1025,11 +1025,11 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_849E3618593341BCBCBC07DE04E0134F"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_14748E0150F34E198CF4D19FA561B66B"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:policy_8_0_microsoft_vc80_crt_x86.msm"
+            "SourcePath" = "8:Microsoft_VC80_CRT_x86.msm"
                 "Properties"
                 {
                 }
@@ -1039,11 +1039,11 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_E8401651250F4ECD8EBC967DC179E741"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_F27AA9AB3035453989EE8F8A52E2CEBF"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:Microsoft_VC80_CRT_x86.msm"
+            "SourcePath" = "8:policy_8_0_microsoft_vc80_crt_x86.msm"
                 "Properties"
                 {
                 }

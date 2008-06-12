@@ -160,8 +160,10 @@ namespace gui {
       chartArea1->BorderColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(26)), static_cast<System::Int32>(static_cast<System::Byte>(59)), 
         static_cast<System::Int32>(static_cast<System::Byte>(105)));
       chartArea1->BorderStyle = Dundas::Charting::WinControl::ChartDashStyle::Solid;
+      chartArea1->CursorX->Interval = 0;
       chartArea1->CursorX->UserEnabled = true;
       chartArea1->CursorX->UserSelection = true;
+      chartArea1->CursorY->Interval = 0;
       chartArea1->CursorY->UserEnabled = true;
       chartArea1->CursorY->UserSelection = true;
       chartArea1->InnerPlotPosition->Auto = false;
