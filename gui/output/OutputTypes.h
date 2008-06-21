@@ -9,11 +9,6 @@ using namespace System;
 namespace gui {
 namespace output {
 
-public enum class OutputsTypes2 : int
-{
-
-
-};
 
 
 public ref class OutputTypes abstract sealed
