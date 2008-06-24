@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Enums.h"
+#include "OutputTypes.h"
 
 using namespace System;
 
@@ -10,14 +11,28 @@ namespace gui {
 namespace output {
 
 ref class Output;
+ref class CimsimOutput;
+ref class DensimOutput;
 
-public ref class OutputInfoAttribute : public Attribute
+
+
+public ref class OutputInfo
 {
 public:
-  OutputInfoAttribute(void)
-  {}
-  virtual ~OutputInfoAttribute(void)
-  {}
+  enum class Type : int {
+    CimsimLocation = 0,
+    CimsimContainer,
+    DensimLocation,
+    DensimSerotype
+  };
+
+public:
+  OutputInfo( OutputInfoAttribute ^ outputInfoAttribute );
+  OutputInfo( String ^ name, String ^ units );
+  virtual ~OutputInfo(void);
+
+public:
+  Output ^ CreateOutput(void);
 
 public:
   property String ^ Name {
@@ -42,38 +57,7 @@ private:
   String ^ _name;
   String ^ _units;
 };
-
-
-
-public ref class OutputInfo
-{
-private:
-public:
-  OutputInfo( int id, OutputInfoAttribute ^ OutputInfoAttribute );
-  virtual ~OutputInfo(void);
-
-public:
-  Output ^ CreateNewOutput(void);
-
-public:
-  property int Id {
-    int get(void) {
-      return _id;
-    }
-  }
-
-  property gui::output::OutputInfoAttribute ^ OutputInfoAttribute {
-    gui::output::OutputInfoAttribute ^ get(void) {
-      return _outputInfoAttribute;
-    }
-  }
-
-private:
-  int _id;
-  gui::output::OutputInfoAttribute ^ _outputInfoAttribute;
-};
-typedef Collections::Generic::Dictionary<int,OutputInfo^> OutputInfoCollection;
-
+typedef Collections::Generic::List<OutputInfo^> OutputInfoCollection;
 
 
 public ref class Output
@@ -83,28 +67,16 @@ public:
   : _outputInfo(oi),
     _data(gcnew Collections::Generic::List<double>())
   {}
-  virtual ~Output(void)
-  {}
 
 public:
-  Collections::Generic::List<double> ^ GetWeeklyData( TimePeriodFunction function );
-  Collections::Generic::List<double> ^ GetMonthlyData( DateTime startDate, DateTime stopDate, TimePeriodFunction function );
-
-public:
-  property int Id {
-    int get(void) {
-      return _outputInfo->Id;
-    }
-  }
-
   property String ^ Name {
     String ^ get(void) {
-      return _outputInfo->OutputInfoAttribute->Name;
+      return _outputInfo->Name;
     }
   }
   property String ^ Units {
     String ^ get(void) {
-      return _outputInfo->OutputInfoAttribute->Units;
+      return _outputInfo->Units;
     }
   }
 
@@ -124,27 +96,45 @@ private:
   gui::output::OutputInfo ^ _outputInfo;
   Collections::Generic::List<double> ^ _data;
 };
-typedef Collections::Generic::Dictionary<int,Output^> IndexedOutputCollection;
+typedef Collections::Generic::Dictionary<OutputInfo^,Output^> OutputMap;
 
 
 
-
-public ref class OutputCollections abstract sealed
+public ref class DatedOutput : public Output
 {
 public:
-  static IndexedOutputCollection ^ CreateNewOutputCollection( System::Type ^ outputType );
+  DatedOutput( gui::output::OutputInfo ^ outputInfo );
+public:
+  Collections::Generic::List<double> ^ GetWeeklyData( TimePeriodFunction function );
+  Collections::Generic::List<double> ^ GetMonthlyData( DateTime startDate, DateTime stopDate, TimePeriodFunction function );
+};
+
+
+public ref class ClassOutput : public Output
+{
+  ClassOutput( gui::output::OutputInfo ^ outputInfo );
+};
+
+
+
+public ref class OutputInfos abstract sealed
+{
+public:
+  static OutputMap ^ CreateNewOutputMap( gui::output::Group outputGroup );
 
 private:
-  static OutputCollections(void);
-  static OutputInfoCollection ^ GetOutputInfoCollection( System::Type ^ type );
+  static OutputInfos(void);
+  static OutputInfoCollection ^ GetOutputInfoCollection( Type ^ type );
   static OutputInfoAttribute ^ GetOutputInfoAttribute( Reflection::FieldInfo ^ fi );
 
 private:
+  static Collections::Generic::Dictionary<Group,OutputInfoCollection^> ^ _groupToCollection;
   static OutputInfoCollection ^ _cimsimLocation;
   static OutputInfoCollection ^ _cimsimContainer;
   static OutputInfoCollection ^ _densimLocation;
   static OutputInfoCollection ^ _densimSerotype;
 };
+
 
 
 public ref class SimOutput
@@ -220,22 +210,23 @@ public:
   String ^ GetContainerExcelXml( int containerId );
 
 public:
-  property IndexedOutputCollection ^ Location {
-    IndexedOutputCollection ^ get(void) {
+  property OutputMap ^ Location {
+    OutputMap ^ get(void) {
       return _location;
     }
   }
 
-  property Collections::Generic::Dictionary<int,IndexedOutputCollection^> ^ Containers {
-    Collections::Generic::Dictionary<int,IndexedOutputCollection^> ^ get(void) {
+  property Collections::Generic::Dictionary<int,OutputMap^> ^ Containers {
+    Collections::Generic::Dictionary<int,OutputMap^> ^ get(void) {
       return _containers;
     }
   }
 
 private:
-  IndexedOutputCollection ^ _location;
-  Collections::Generic::Dictionary<int,IndexedOutputCollection^> ^ _containers;
+  OutputMap ^ _location;
+  Collections::Generic::Dictionary<int,OutputMap^> ^ _containers;
 };
+
 
 
 public ref class DensimOutput : public SimOutput
@@ -245,21 +236,21 @@ public:
   virtual ~DensimOutput(void);
 
 public:
-  property IndexedOutputCollection ^ Location {
-    IndexedOutputCollection ^ get(void) {
+  property OutputMap ^ OutputMapLocation {
+    OutputMap ^ get(void) {
       return _location;
     }
   }
 
-  property Collections::Generic::Dictionary<int,IndexedOutputCollection^> ^ Serotypes {
-    Collections::Generic::Dictionary<int,IndexedOutputCollection^> ^ get(void) {
+  property Collections::Generic::Dictionary<int,OutputMap^> ^ Serotypes {
+    Collections::Generic::Dictionary<int,OutputMap^> ^ get(void) {
       return _serotypes;
     }
   }
 
 private:
-  IndexedOutputCollection ^ _location;
-  Collections::Generic::Dictionary<int,IndexedOutputCollection^> ^ _serotypes;
+  OutputMap ^_location;
+  Collections::Generic::Dictionary<int,OutputMap^> ^ _serotypes;
 };
 
 };

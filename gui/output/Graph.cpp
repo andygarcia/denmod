@@ -12,17 +12,17 @@ Graph::CreateGraph( GraphTypes::Cimsim::Location graphType, CimsimOutput ^ cimsi
   GraphInfo ^ gi = GraphCollections::GetGraphInfo( graphType );
   Graph ^ g = gcnew Graph( gi );
 
-  // add primary outputs
-  for each( int outputId in gi->GraphPrimaryOutputAttribute->OutputIds ) {
-    g->_primaryOutputs->Add( cimsimOutput->Location[outputId] );
-  }
+  //// add primary outputs
+  //for each( int outputId in gi->GraphPrimaryOutputAttribute->OutputIds ) {
+  //  g->_primaryOutputs->Add( cimsimOutput->Location[outputId] );
+  //}
 
-  // add secondary outputs if any
-  if( gi->GraphSecondaryOutputAttribute != nullptr ) {
-    for each( int outputId in gi->GraphSecondaryOutputAttribute->OutputIds ) {
-      g->_secondaryOutputs->Add( cimsimOutput->Location[outputId] );
-    }
-  }
+  //// add secondary outputs if any
+  //if( gi->GraphSecondaryOutputAttribute != nullptr ) {
+  //  for each( int outputId in gi->GraphSecondaryOutputAttribute->OutputIds ) {
+  //    g->_secondaryOutputs->Add( cimsimOutput->Location[outputId] );
+  //  }
+  //}
 
   return g;
 }

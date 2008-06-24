@@ -7,9 +7,9 @@ using namespace gui::output;
 
 
 
-OutputInfo::OutputInfo( int id, gui::output::OutputInfoAttribute ^ OutputInfoAttribute )
-: _id(id),
-  _outputInfoAttribute( OutputInfoAttribute )
+OutputInfo::OutputInfo( gui::output::OutputInfoAttribute ^ outputInfoAttribute )
+: _name( outputInfoAttribute->Name ),
+  _units( outputInfoAttribute->Units )
 {}
 
 
@@ -20,47 +20,52 @@ OutputInfo::~OutputInfo(void)
 
 
 Output ^
-OutputInfo::CreateNewOutput(void)
+OutputInfo::CreateOutput(void)
 {
-  Output ^ newOutput = gcnew Output(this);
-  return newOutput;
+  Output ^ output = gcnew Output(this);
+  return output;
 }
 
 
 
 static
-OutputCollections::OutputCollections(void)
+OutputInfos::OutputInfos(void)
 {
-  _cimsimLocation = GetOutputInfoCollection( OutputTypes::Cimsim::Location::typeid );
-  _cimsimContainer = GetOutputInfoCollection( OutputTypes::Cimsim::Container::typeid );
-  _densimLocation = GetOutputInfoCollection( OutputTypes::Densim::Location::typeid );
-  _densimSerotype = GetOutputInfoCollection( OutputTypes::Densim::Serotype::typeid );
+  _cimsimLocation = GetOutputInfoCollection( CimsimOutputs::Location::typeid );
+  _cimsimContainer = GetOutputInfoCollection( CimsimOutputs::Container::typeid );
+  _densimLocation = GetOutputInfoCollection( DensimOutputs::Location::typeid );
+  _densimSerotype = GetOutputInfoCollection( DensimOutputs::Serotype::typeid );
+
+  _groupToCollection = gcnew Collections::Generic::Dictionary<Group,OutputInfoCollection^>();
+  _groupToCollection->Add( Group::CimsimLocation, _cimsimLocation );
+  _groupToCollection->Add( Group::CimsimContainer, _cimsimContainer );
+  _groupToCollection->Add( Group::DensimLocation, _densimLocation );
+  _groupToCollection->Add( Group::DensimSerotype, _densimSerotype );
 }
 
 
 
 OutputInfoCollection ^
-OutputCollections::GetOutputInfoCollection( System::Type ^ type )
+OutputInfos::GetOutputInfoCollection( Type ^ type )
 {
   // generate a collection of OutputInfo object for this type by using
   // reflection to access OutputInfoAttribute on members
-  OutputInfoCollection ^ Output = gcnew OutputInfoCollection();
+  OutputInfoCollection ^ outputInfos = gcnew OutputInfoCollection();
 
   array<Reflection::FieldInfo^> ^ fields = type->GetFields( Reflection::BindingFlags::Static | Reflection::BindingFlags::GetField | Reflection::BindingFlags::Public );
   for each( Reflection::FieldInfo ^ fi in fields ) {
-    OutputInfoAttribute ^ sia = GetOutputInfoAttribute( fi );
-    int id = Convert::ToInt32( fi->GetValue(nullptr) );
-    OutputInfo ^ si = gcnew OutputInfo( id, sia );
-    Output->Add( id, si );
+    OutputInfoAttribute ^ oia = GetOutputInfoAttribute( fi );
+    OutputInfo ^ oi = gcnew OutputInfo( oia );
+    outputInfos->Add( oi );
   }
 
-  return Output;
+  return outputInfos;
 }
 
 
 
 OutputInfoAttribute ^
-OutputCollections::GetOutputInfoAttribute( Reflection::FieldInfo ^ fi )
+OutputInfos::GetOutputInfoAttribute( Reflection::FieldInfo ^ fi )
 {
   // find a OutputInfoAttribute on this member
   array<Object^> ^ OutputInfoAttributes = fi->GetCustomAttributes( OutputInfoAttribute::typeid, false );
@@ -76,33 +81,15 @@ OutputCollections::GetOutputInfoAttribute( Reflection::FieldInfo ^ fi )
 
 
 
-IndexedOutputCollection ^
-OutputCollections::CreateNewOutputCollection( System::Type ^ outputType )
+OutputMap ^
+OutputInfos::CreateNewOutputMap( Group outputGroup )
 {
-  OutputInfoCollection ^ sic = nullptr;
+  OutputInfoCollection ^ oic = _groupToCollection[outputGroup];
 
-  // find which collection of OutputInfo to use to create new Output collection
-  if( outputType == OutputTypes::Cimsim::Location::typeid ) {
-    sic = _cimsimLocation;
-  }
-  else if( outputType == OutputTypes::Cimsim::Container::typeid ) {
-    sic = _cimsimContainer;
-  }
-  else if( outputType == OutputTypes::Densim::Location::typeid ) {
-    sic = _densimLocation;
-  }
-  else if( outputType == OutputTypes::Densim::Serotype::typeid ) {
-    sic = _densimSerotype;
-  }
-  else {
-    // invalid type argument
-    throw gcnew System::ArgumentException( "GetOutputCollection(), invalid outputType" );
-  }
-
-  IndexedOutputCollection ^ outputs = gcnew IndexedOutputCollection();
-  for each( OutputInfo ^ oi in sic->Values ) {
-    Output ^ o = oi->CreateNewOutput();
-    outputs->Add( oi->Id, o );
+  OutputMap ^ outputs = gcnew OutputMap();
+  for each( OutputInfo ^ oi in oic ) {
+    Output ^ o = oi->CreateOutput();
+    outputs->Add( oi, o );
   }
   return outputs;
 }
@@ -110,11 +97,11 @@ OutputCollections::CreateNewOutputCollection( System::Type ^ outputType )
 
 
 Collections::Generic::List<double> ^ 
-Output::GetWeeklyData( TimePeriodFunction function )
+DatedOutput::GetWeeklyData( TimePeriodFunction function )
 {
   Collections::Generic::List<double> ^ weeklyData = gcnew Collections::Generic::List<double>();
 
-  int numDays = _data->Count;
+  int numDays = Data->Count;
   int intervalSize = 7;
 
   // go from current date for period of 7 days (include current day)
@@ -122,7 +109,7 @@ Output::GetWeeklyData( TimePeriodFunction function )
 
     // get data for current week
     int count = numDays - i >= intervalSize ? intervalSize : numDays - i;
-    Collections::Generic::List<double> ^ week = _data->GetRange( i, count );
+    Collections::Generic::List<double> ^ week = Data->GetRange( i, count );
 
     // sum and average current week
     double sum = 0.0;
@@ -145,7 +132,7 @@ Output::GetWeeklyData( TimePeriodFunction function )
 
 
 Collections::Generic::List<double> ^ 
-Output::GetMonthlyData( DateTime startDate, DateTime stopDate, TimePeriodFunction function )
+DatedOutput::GetMonthlyData( DateTime startDate, DateTime stopDate, TimePeriodFunction function )
 {
   Collections::Generic::List<double> ^ monthlyData = gcnew Collections::Generic::List<double>();
 
@@ -163,7 +150,7 @@ Output::GetMonthlyData( DateTime startDate, DateTime stopDate, TimePeriodFunctio
     int count = (endOfMonth - dt).Days + 1;
 
     // get data for current month
-    Collections::Generic::List<double> ^ month = _data->GetRange( i, count );
+    Collections::Generic::List<double> ^ month = Data->GetRange( i, count );
 
     // sum and average current month
     double sum = 0.0;
@@ -239,9 +226,9 @@ SimOutput::GenerateMonths(void)
 
 
 CimsimOutput::CimsimOutput( DateTime startDate, DateTime stopDate )
-: SimOutput( startDate, stopDate ),
-  _location(OutputCollections::CreateNewOutputCollection( OutputTypes::Cimsim::Location::typeid )),
-  _containers(gcnew Collections::Generic::Dictionary<int,IndexedOutputCollection^>())
+: SimOutput(startDate, stopDate),
+  _location(OutputInfos::CreateNewOutputMap(Group::CimsimLocation)),
+  _containers(gcnew Collections::Generic::Dictionary<int,OutputMap^>())
 {}
 
 
@@ -254,7 +241,7 @@ CimsimOutput::~CimsimOutput(void)
 void
 CimsimOutput::AddContainerType( int containerId )
 {
-  IndexedOutputCollection ^ containerOutput = OutputCollections::CreateNewOutputCollection( OutputTypes::Cimsim::Container::typeid );
+  OutputMap ^ containerOutput = OutputInfos::CreateNewOutputMap( Group::CimsimContainer );
   _containers->Add( containerId, containerOutput );
 }
 
