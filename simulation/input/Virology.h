@@ -10,6 +10,7 @@ class VirusSerotype
 {
 public:
   VirusSerotype(void);
+  VirusSerotype( int serotype, double viremia, int incubationDuration, int viremicDuration );
   virtual ~VirusSerotype(void);
 
 public:
@@ -24,7 +25,12 @@ public:
 class VirusDevelopment
 {
 public:
-  VirusDevelopment(void) {}
+  VirusDevelopment(void)
+  : RO25(3.359079E-3),
+    DHA(15004.63),
+    DHH(6.203379E+30),
+    THALF(-2.17611E+30)
+  {}
   ~VirusDevelopment(void) {}
 
 public:
@@ -38,7 +44,12 @@ public:
 class HumanToMosquitoInfection
 {
 public:
-  HumanToMosquitoInfection(void) {}
+  HumanToMosquitoInfection(void)
+  : LowTiterSetPoint_(4.00),
+    LowTiterInfection_(0.100),
+    HighTiterSetPoint_(8.00),
+    HighTiterInfection_(1.00)
+  {}
   virtual ~HumanToMosquitoInfection(void) {}
 
 public:
@@ -53,7 +64,12 @@ public:
 class EipTiterModification
 {
 public:
-  EipTiterModification(void) {}
+  EipTiterModification(void)
+  : LowSetPoint_(1E+3),
+    LowFactor_(1.25),
+    HighSetPoint_(1E+8),
+    HighFactor_(0.750)
+  {}
   virtual ~EipTiterModification(void) {}
 
 public:

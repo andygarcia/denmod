@@ -51,6 +51,8 @@ namespace gui {
     System::Void OnRemoveWeather( System::Object ^ sender, System::EventArgs ^ e );
     void OpenWeatherTemplate(void);
 
+    void ShowAbout(void);
+
   private:
     CimsimPanel ^ CimsimPanel_;
     DensimPanel ^ DensimPanel_;
@@ -84,11 +86,12 @@ namespace gui {
 
   private: System::Windows::Forms::ToolStripMenuItem^  optionsToolStripMenuItem;
   private: System::Windows::Forms::ToolStripMenuItem^  helpToolStripMenuItem;
+  private: System::Windows::Forms::ToolStripMenuItem^  tsmiHelpAbout;
 
 
 
 
-  private: System::Windows::Forms::ToolStripMenuItem^  aboutToolStripMenuItem;
+
   private: System::Windows::Forms::ToolStripButton^  newToolStripButton;
   private: System::Windows::Forms::ToolStripButton^  openToolStripButton;
   private: System::Windows::Forms::ToolStripButton^  saveToolStripButton;
@@ -160,7 +163,7 @@ private: System::Windows::Forms::ToolStripMenuItem^  tsmiOpenSampleLocation;
       this->optionsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
       this->openWeatherTemplateToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
       this->helpToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-      this->aboutToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+      this->tsmiHelpAbout = (gcnew System::Windows::Forms::ToolStripMenuItem());
       this->toolStrip = (gcnew System::Windows::Forms::ToolStrip());
       this->newToolStripButton = (gcnew System::Windows::Forms::ToolStripButton());
       this->openToolStripButton = (gcnew System::Windows::Forms::ToolStripButton());
@@ -300,16 +303,17 @@ private: System::Windows::Forms::ToolStripMenuItem^  tsmiOpenSampleLocation;
       // 
       // helpToolStripMenuItem
       // 
-      this->helpToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->aboutToolStripMenuItem});
+      this->helpToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->tsmiHelpAbout});
       this->helpToolStripMenuItem->Name = L"helpToolStripMenuItem";
       this->helpToolStripMenuItem->Size = System::Drawing::Size(41, 20);
       this->helpToolStripMenuItem->Text = L"&Help";
       // 
-      // aboutToolStripMenuItem
+      // tsmiHelpAbout
       // 
-      this->aboutToolStripMenuItem->Name = L"aboutToolStripMenuItem";
-      this->aboutToolStripMenuItem->Size = System::Drawing::Size(114, 22);
-      this->aboutToolStripMenuItem->Text = L"&About...";
+      this->tsmiHelpAbout->Name = L"tsmiHelpAbout";
+      this->tsmiHelpAbout->Size = System::Drawing::Size(152, 22);
+      this->tsmiHelpAbout->Text = L"&About...";
+      this->tsmiHelpAbout->Click += gcnew System::EventHandler(this, &MainForm::MenuItemHandler);
       // 
       // toolStrip
       // 

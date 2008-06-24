@@ -40,7 +40,7 @@ gui::Container::Container(void)
   FoodGainNov_(0.0),
   FoodGainDec_(0.0),
   FoodDecayRate_(0.0),
-  InitEggs_(0.0),
+  InitEggs_(100),
   ObservedPerContainer_(0.0),
   PreFitFood_(0.0),
   PredictedPerContainer_(0.0)

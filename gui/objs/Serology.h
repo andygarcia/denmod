@@ -121,6 +121,7 @@ public:
   }
 
   [XmlElement(ElementName="MANADuration",Order=1)]
+  [CompareIntRule( 0, CompareOperator::GreaterThan, ErrorMessage = "Duration must be greater than 0 days." )]
   [ParameterDisplayAttribute(0,true,ScientificNotationOptions::Never)]
   property int MANADuration{
     int get(void) {
@@ -133,6 +134,7 @@ public:
   }
 
   [XmlElement(ElementName="MAEADuration",Order=2)]
+  [CompareIntRule( 0, CompareOperator::GreaterThan, ErrorMessage = "Duration must be greater than 0 days." )]
   [ParameterDisplayAttribute(0,true,ScientificNotationOptions::Never)]
   property int MAEADuration{
     int get(void) {
@@ -145,6 +147,7 @@ public:
   }
 
   [XmlElement(ElementName="HeterologousImmunityDuration",Order=3)]
+  [CompareIntRule( 0, CompareOperator::GreaterThan, ErrorMessage = "Duration must be greater than 0 days." )]
   [ParameterDisplayAttribute(0,true,ScientificNotationOptions::Never)]
   property int HetDuration{
     int get(void) {

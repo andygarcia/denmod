@@ -47,6 +47,11 @@ DemographicParameters::DemographicParameters(void)
       DemoClasses_->Add( dc );
     }
   }
+
+  input::Demographics defVals;
+
+  this->InitialPopulationSize_ = defVals.InitialPopulationSize;
+  this->HumanHostDensity = defVals.HumanHostDensity;
 }
 
 

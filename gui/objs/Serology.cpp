@@ -46,6 +46,12 @@ SerologyParameters::SerologyParameters(void)
       SeroClasses_->Add( dc );
     }
   }
+
+  // get default values for duration periods
+  input::Serology defVals;
+  this->MANADuration = defVals.ManaDuration_;
+  this->MAEADuration = defVals.MaeaDuration_;
+  this->HetDuration = defVals.HetDuration_;
 }
 
 

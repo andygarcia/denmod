@@ -37,7 +37,14 @@ SerotypeParameters::GetSimObject(void)
 
 
 EnzymeKineticDevelopmentParameters::EnzymeKineticDevelopmentParameters(void)
-{}
+{
+  input::VirusDevelopment defVals;
+
+  this->RO25_ = defVals.RO25;
+  this->DHA_ = defVals.DHA;
+  this->DHH_ = defVals.DHH;
+  this->THALF_ = defVals.THALF;
+}
 
 
 
@@ -60,8 +67,15 @@ EnzymeKineticDevelopmentParameters::GetSimObject(void)
 }
 
 
+
 HumanToMosquitoInfectionParameters::HumanToMosquitoInfectionParameters(void)
-{}
+{
+  input::HumanToMosquitoInfection defVals;
+  this->LowTiterSetPoint_ = defVals.LowTiterSetPoint_;
+  this->LowTiterInfection_ = defVals.LowTiterInfection_;
+  this->HighTiterSetPoint_ = defVals.HighTiterSetPoint_;
+  this->HighTiterInfection_ = defVals.HighTiterInfection_;
+}
 
 
 
@@ -86,7 +100,14 @@ HumanToMosquitoInfectionParameters::GetSimObject(void)
 
 
 EIPTiterModificationParameters::EIPTiterModificationParameters(void)
-{}
+{
+  input::EipTiterModification defVals;
+
+  this->LowSetPoint_ = defVals.LowSetPoint_;
+  this->LowFactor_ = defVals.LowFactor_;
+  this->HighSetPoint_ = defVals.HighSetPoint_;
+  this->HighFactor_ = defVals.HighFactor_;
+}
 
 
 
@@ -143,6 +164,26 @@ VirologyParameters::VirologyParameters(void)
   HumanToMosquitoInfection_(gcnew HumanToMosquitoInfectionParameters()),
   EIP_(gcnew EIPParameters())
 {
+  input::Virology defVals;
+
+  Dengue1_->Viremia = defVals.Dengue1_.Viremia_;
+  Dengue1_->IncubationDuration = defVals.Dengue1_.IncubationDuration_;
+  Dengue1_->ViremicDuration = defVals.Dengue1_.ViremicDuration_;
+
+  Dengue2_->Viremia = defVals.Dengue2_.Viremia_;
+  Dengue2_->IncubationDuration = defVals.Dengue2_.IncubationDuration_;
+  Dengue2_->ViremicDuration = defVals.Dengue2_.ViremicDuration_;
+
+  Dengue3_->Viremia = defVals.Dengue3_.Viremia_;
+  Dengue3_->IncubationDuration = defVals.Dengue3_.IncubationDuration_;
+  Dengue3_->ViremicDuration = defVals.Dengue3_.ViremicDuration_;
+
+  Dengue4_->Viremia = defVals.Dengue4_.Viremia_;
+  Dengue4_->IncubationDuration = defVals.Dengue4_.IncubationDuration_;
+  Dengue4_->ViremicDuration = defVals.Dengue4_.ViremicDuration_;
+
+  this->MosquitoToHumanNominalProbabilityOfInfection_ = defVals.MosquitoToHumanNominalProbabilityOfInfection_;
+  this->MosquitoCountForStochasticity_ = defVals.MosquitoCountForStochasticity;
 }
 
 

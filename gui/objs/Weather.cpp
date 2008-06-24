@@ -595,20 +595,28 @@ WeatherYear ^ WeatherYear::OpenFromDly( String ^ filename )
   sr->ReadLine();
   System::Collections::Generic::List<WeatherDay^> ^ days = gcnew System::Collections::Generic::List<WeatherDay^>(366);
   while( !sr->EndOfStream ) {
-    System::Text::RegularExpressions::Regex ^ r = gcnew System::Text::RegularExpressions::Regex( "\\d+\\.?\\d*" );
-    System::Text::RegularExpressions::MatchCollection ^ mc = r->Matches( sr->ReadLine() );
+    try {
+      System::Text::RegularExpressions::Regex ^ r = gcnew System::Text::RegularExpressions::Regex( "\\d+\\.?\\d*" );
+      System::Text::RegularExpressions::MatchCollection ^ mc = r->Matches( sr->ReadLine() );
 
-    gui::WeatherDay ^ wd = gcnew gui::WeatherDay();
-    wd->Index = Convert::ToInt32(mc[0]->Value);
-    wd->MaxTemp = Convert::ToDouble(mc[1]->Value);
-    wd->MinTemp = Convert::ToDouble(mc[2]->Value);
-    wd->AvgTemp = Convert::ToDouble(mc[3]->Value);
-    wd->SatDef = Convert::ToDouble(mc[4]->Value);
-    wd->Rain = Convert::ToDouble(mc[5]->Value);
-    wd->RelHum = Convert::ToDouble(mc[6]->Value);
+      gui::WeatherDay ^ wd = gcnew gui::WeatherDay();
+      wd->Index = Convert::ToInt32(mc[0]->Value);
+      wd->MaxTemp = Convert::ToDouble(mc[1]->Value);
+      wd->MinTemp = Convert::ToDouble(mc[2]->Value);
+      wd->AvgTemp = Convert::ToDouble(mc[3]->Value);
+      wd->SatDef = Convert::ToDouble(mc[4]->Value);
+      wd->Rain = Convert::ToDouble(mc[5]->Value);
+      wd->RelHum = Convert::ToDouble(mc[6]->Value);
 
-    days->Add( wd );
+      days->Add( wd );
+    }
+    catch( Exception ^ e ) {
+      int dayIndex = days->Count + 1;
+      sr->Close();
+      throw gcnew DlyWeatherDataException( dayIndex, e );
+    }
   }
+  sr->Close();
 
   // correct for possible leap year
   if( DateTime::IsLeapYear(wy->Index) ) {
@@ -638,6 +646,8 @@ WeatherYear ^ WeatherYear::OpenFromDly( String ^ filename )
     wy->Days->Add( wd ); 
   }
 
+
+  // tag weather as coming from dly
   wy->ImportSource_ = ImportSourceEnum::Dly;
   return wy;
 }

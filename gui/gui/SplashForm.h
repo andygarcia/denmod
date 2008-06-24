@@ -49,7 +49,7 @@ namespace gui {
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
       this->BackColor = System::Drawing::Color::Fuchsia;
-      this->ClientSize = System::Drawing::Size(320, 240);
+      this->ClientSize = System::Drawing::Size(320, 260);
       this->ControlBox = false;
       this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::None;
       this->Name = L"SplashForm";

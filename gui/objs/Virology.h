@@ -43,7 +43,7 @@ public:
     }
   }
 
-  [ParameterDisplayAttribute(5,true,ScientificNotationOptions::Always)]
+  [ParameterDisplayAttribute(6,true,ScientificNotationOptions::Always)]
   property double DHH {
     virtual double get(void) {
       return DevelopmentParameters::DHH;

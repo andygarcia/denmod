@@ -58,7 +58,6 @@ public:
 
   void BeginFoodFit(void);
   void EndFoodFit( bool save );
-
 #pragma region Validation
 private:
   static void CheckValidLength( System::Object ^ sender, CustomValidationEventArgs ^ e );
@@ -73,7 +72,7 @@ private:
 #pragma region Properties
 public:
   [XmlElementAttribute(Order=0)]
-  [RequiredStringRuleAttribute( ErrorMessage = "Container name cannot be empty." )]
+  [RequiredStringRuleAttribute( ErrorMessage = "Container name must be specified." )]
   property System::String ^ Name {
     System::String ^ get(void) {
       return Name_;
@@ -574,6 +573,7 @@ public:
 
 
   [XmlIgnore]
+  [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
   property double DailyFood {
     double get(void) {
       return FoodGainJan_;

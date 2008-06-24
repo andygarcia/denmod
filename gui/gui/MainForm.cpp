@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "MainForm.h"
 #include "SplashForm.h"
+#include "AboutDialog.h"
 #include "WeatherForm.h"
 
 using namespace gui;
@@ -243,8 +244,8 @@ MainForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
 {
   SplashForm::ShowSplash( 50, "" );
 
-  tboxLocName->DataBindings->Add( "Text", LocationBinding, "Name" );
-  rboxNotes->DataBindings->Add( "Text", LocationBinding, "Notes" );
+  tboxLocName->DataBindings->Add( "Text", LocationBinding, "Name", false, DataSourceUpdateMode::OnPropertyChanged );
+  rboxNotes->DataBindings->Add( "Text", LocationBinding, "Notes", false, DataSourceUpdateMode::OnPropertyChanged );
   
   lboxWeather->DisplayMember = "Index";
   lboxWeather->ValueMember = "Index";
@@ -286,6 +287,9 @@ MainForm::MenuItemHandler( System::Object^ sender, System::EventArgs^ e )
   else if( sender->Equals(exitToolStripMenuItem) ) {
     Application::Exit();
   }
+  else if( sender->Equals(tsmiHelpAbout) ) {
+    ShowAbout();
+  }
 }
 
 
@@ -320,7 +324,13 @@ MainForm::OnImportWeather( System::Object ^ sender, System::EventArgs ^ e )
     }
   }
   else if( String::Compare(fi->Extension, ".dly", StringComparison::CurrentCultureIgnoreCase) == 0 ) {
-    wy = WeatherYear::OpenFromDly( ofd->FileName );
+    try {
+      wy = WeatherYear::OpenFromDly( ofd->FileName );
+    }
+    catch( gui::DlyWeatherDataException ^ e ) {
+      MessageBox::Show( "Error in DLY file for day " + e->RowIndex + ".  Make sure DLY data is valid." );
+      return;
+    }
   }
   else {
     MessageBox::Show( "Unrecognized file type." );
@@ -392,4 +402,13 @@ MainForm::UpdateTitleBar(void)
 
   
   Text = String::Format( "{0} {1} - [{2} - {3}]", filename, readOnly, productName, version );
+}
+
+
+
+void
+MainForm::ShowAbout(void)
+{
+  AboutDialog ^ ad = gcnew AboutDialog();
+  ad->ShowDialog();
 }

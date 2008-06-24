@@ -280,6 +280,26 @@ protected:
 
 
 
+public ref class DlyWeatherDataException : public System::Exception
+{
+public:
+  DlyWeatherDataException( int rowIndex, System::Exception ^ innerException )
+  : Exception("Error in excel file at row " + rowIndex, innerException),
+    _rowIndex(rowIndex)
+  {}
+
+public:
+  property int RowIndex {
+    int get(void) {
+      return _rowIndex;
+    }
+  }
+protected:
+  int _rowIndex;
+};
+
+
+
 public ref class WeatherData : public NotifyValidateEditBase, IXmlSerializable
 {
 // Constructors
