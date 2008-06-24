@@ -10,16 +10,19 @@ RunCimsimForm::RunCimsimForm(BindingSource ^ locationBinding)
 {
 	InitializeComponent();
 
-  // load years into combo boxes
+  // initialize combo boxes with year values
   gui::Location ^ location = (gui::Location^) _locationBinding->DataSource;
-  for each( int i in location->Weather->Years->Keys ) {
+  int firstYear = location->Weather->MinDate.Year;
+  int lastYear = location->Weather->MaxDate.Year;
+
+  for( int i = firstYear; i <= lastYear; ++i ) {
     cboxStartYear->Items->Add( i );
     cboxStopYear->Items->Add( i );
   }
 
   // set intially to start and stop with all available years
-  cboxStartYear->SelectedIndex = 0;
-  cboxStopYear->SelectedIndex = cboxStopYear->Items->Count - 1;
+  cboxStartYear->SelectedItem = firstYear;
+  cboxStopYear->SelectedItem = lastYear;
 }
 
 
