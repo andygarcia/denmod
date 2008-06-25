@@ -1,21 +1,22 @@
 #include "stdafx.h"
 #include "Output.h"
-#include "OutputTypes.h"
 #include <cmath>
 
 using namespace gui::output;
 
 
 
-OutputInfo::OutputInfo( gui::output::OutputInfoAttribute ^ outputInfoAttribute )
+OutputInfo::OutputInfo( gui::output::OutputInfoAttribute ^ outputInfoAttribute, Group outputGroup )
 : _name( outputInfoAttribute->Name ),
   _units( outputInfoAttribute->Units )
-{}
+{
+}
 
 
 
 OutputInfo::~OutputInfo(void)
-{}
+{
+}
 
 
 
@@ -31,10 +32,16 @@ OutputInfo::CreateOutput(void)
 static
 OutputInfos::OutputInfos(void)
 {
-  _cimsimLocation = GetOutputInfoCollection( CimsimOutputs::Location::typeid );
-  _cimsimContainer = GetOutputInfoCollection( CimsimOutputs::Container::typeid );
-  _densimLocation = GetOutputInfoCollection( DensimOutputs::Location::typeid );
-  _densimSerotype = GetOutputInfoCollection( DensimOutputs::Serotype::typeid );
+  _groupToType = gcnew Collections::Generic::Dictionary<Group,Type^>();
+  _groupToType->Add( Group::CimsimLocation, CimsimLocation::typeid );
+  _groupToType->Add( Group::CimsimContainer, CimsimContainer::typeid );
+  _groupToType->Add( Group::DensimLocation, DensimLocation::typeid );
+  _groupToType->Add( Group::DensimSerotype, DensimSerotype::typeid );
+
+  _cimsimLocation = GetOutputInfoCollection( Group::CimsimLocation );
+  _cimsimContainer = GetOutputInfoCollection( Group::CimsimContainer );
+  _densimLocation = GetOutputInfoCollection( Group::DensimLocation );
+  _densimSerotype = GetOutputInfoCollection( Group::DensimSerotype );
 
   _groupToCollection = gcnew Collections::Generic::Dictionary<Group,OutputInfoCollection^>();
   _groupToCollection->Add( Group::CimsimLocation, _cimsimLocation );
@@ -46,16 +53,18 @@ OutputInfos::OutputInfos(void)
 
 
 OutputInfoCollection ^
-OutputInfos::GetOutputInfoCollection( Type ^ type )
+OutputInfos::GetOutputInfoCollection( Group outputGroup )
 {
   // generate a collection of OutputInfo object for this type by using
   // reflection to access OutputInfoAttribute on members
   OutputInfoCollection ^ outputInfos = gcnew OutputInfoCollection();
 
+  Type ^ type = _groupToType[outputGroup];
+
   array<Reflection::FieldInfo^> ^ fields = type->GetFields( Reflection::BindingFlags::Static | Reflection::BindingFlags::GetField | Reflection::BindingFlags::Public );
   for each( Reflection::FieldInfo ^ fi in fields ) {
     OutputInfoAttribute ^ oia = GetOutputInfoAttribute( fi );
-    OutputInfo ^ oi = gcnew OutputInfo( oia );
+    OutputInfo ^ oi = gcnew OutputInfo( oia, outputGroup );
     outputInfos->Add( oi );
   }
 
@@ -328,10 +337,9 @@ SimOutput::GenerateExcelXml( Collections::Generic::List<DateTime> ^ dates, Colle
 String ^
 CimsimOutput::GetLocationExcelXml(void)
 {
-  Array ^ ids = Enum::GetValues( output::OutputTypes::Cimsim::Location::typeid );
-  System::Collections::Generic::List<Output^> ^ outputs = gcnew System::Collections::Generic::List<Output^>();
-  for each( int id in ids ) {
-    outputs->Add( _location[id] );
+  OutputCollection ^ outputs = gcnew OutputCollection();
+  for each( Output ^ output in _location->Values ) {
+    outputs->Add( output );
   }
 
   return GenerateExcelXml( Dates, outputs );
@@ -342,10 +350,9 @@ CimsimOutput::GetLocationExcelXml(void)
 String ^
 CimsimOutput::GetContainerExcelXml( int containerId )
 {
-  Array ^ ids = Enum::GetValues( output::OutputTypes::Cimsim::Container::typeid );
-  System::Collections::Generic::List<Output^> ^ outputs = gcnew System::Collections::Generic::List<Output^>();
-  for each( int id in ids ) {
-    outputs->Add( _containers[containerId][id] );
+  OutputCollection ^ outputs = gcnew OutputCollection();
+  for each( Output ^ output in _containers[containerId]->Values ) {
+    outputs->Add( output );
   }
 
   return GenerateExcelXml( Dates, outputs );
@@ -354,12 +361,12 @@ CimsimOutput::GetContainerExcelXml( int containerId )
 
 
 DensimOutput::DensimOutput( DateTime startDate, DateTime stopDate )
-: SimOutput( startDate, stopDate ),
-  _location(OutputCollections::CreateNewOutputCollection( OutputTypes::Densim::Location::typeid )),
-  _serotypes( gcnew Collections::Generic::Dictionary<int,IndexedOutputCollection^>())
+: SimOutput(startDate, stopDate),
+  _location(OutputInfos::CreateNewOutputMap(Group::DensimLocation)),
+  _serotypes(gcnew Collections::Generic::Dictionary<int,OutputMap^>())
 {
   for( int serotypeId = 1; serotypeId <= 4; ++serotypeId ) {
-    IndexedOutputCollection ^ serotypeOutput = OutputCollections::CreateNewOutputCollection( OutputTypes::Densim::Serotype::typeid );
+    OutputMap ^ serotypeOutput = OutputInfos::CreateNewOutputMap( Group::DensimSerotype );
     _serotypes->Add( serotypeId, serotypeOutput );
   }
 }
