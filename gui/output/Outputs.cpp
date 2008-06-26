@@ -1,5 +1,6 @@
 #include "stdafx.h"
-#include "Output.h"
+#include "Enums.h"
+#include "Outputs.h"
 #include <cmath>
 
 using namespace gui::output;
@@ -8,7 +9,8 @@ using namespace gui::output;
 
 OutputInfo::OutputInfo( gui::output::OutputInfoAttribute ^ outputInfoAttribute, Group outputGroup )
 : _name( outputInfoAttribute->Name ),
-  _units( outputInfoAttribute->Units )
+  _units( outputInfoAttribute->Units ),
+  _outputGroup( outputGroup )
 {
 }
 
@@ -63,29 +65,13 @@ OutputInfos::GetOutputInfoCollection( Group outputGroup )
 
   array<Reflection::FieldInfo^> ^ fields = type->GetFields( Reflection::BindingFlags::Static | Reflection::BindingFlags::GetField | Reflection::BindingFlags::Public );
   for each( Reflection::FieldInfo ^ fi in fields ) {
-    OutputInfoAttribute ^ oia = GetOutputInfoAttribute( fi );
+    OutputInfoAttribute ^ oia = GetCustomAttribute<OutputInfoAttribute^>( fi, true );
     OutputInfo ^ oi = gcnew OutputInfo( oia, outputGroup );
     outputInfos->Add( oi );
+    fi->SetValue( type, oi );
   }
 
   return outputInfos;
-}
-
-
-
-OutputInfoAttribute ^
-OutputInfos::GetOutputInfoAttribute( Reflection::FieldInfo ^ fi )
-{
-  // find a OutputInfoAttribute on this member
-  array<Object^> ^ OutputInfoAttributes = fi->GetCustomAttributes( OutputInfoAttribute::typeid, false );
-  if( OutputInfoAttributes->Length > 0 ) {
-    OutputInfoAttribute ^ sia = (OutputInfoAttribute^) OutputInfoAttributes[0];
-    return sia;
-  }
-  else {
-    // should only be called on enum types
-    throw gcnew Exception( "No OutputInfoAttribute was found on " + fi->Name );
-  }
 }
 
 
@@ -106,7 +92,7 @@ OutputInfos::CreateNewOutputMap( Group outputGroup )
 
 
 Collections::Generic::List<double> ^ 
-DatedOutput::GetWeeklyData( TimePeriodFunction function )
+Output::GetWeeklyData( TimePeriodFunction function )
 {
   Collections::Generic::List<double> ^ weeklyData = gcnew Collections::Generic::List<double>();
 
@@ -141,7 +127,7 @@ DatedOutput::GetWeeklyData( TimePeriodFunction function )
 
 
 Collections::Generic::List<double> ^ 
-DatedOutput::GetMonthlyData( DateTime startDate, DateTime stopDate, TimePeriodFunction function )
+Output::GetMonthlyData( DateTime startDate, DateTime stopDate, TimePeriodFunction function )
 {
   Collections::Generic::List<double> ^ monthlyData = gcnew Collections::Generic::List<double>();
 

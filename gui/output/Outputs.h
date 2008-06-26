@@ -13,6 +13,16 @@ ref class Output;
 
 
 
+public enum class Group : int
+{
+  CimsimLocation = 0,
+  CimsimContainer,
+  DensimLocation,
+  DensimSerotype
+};
+
+
+
 public ref class OutputInfoAttribute : public Attribute
 {
 public:
@@ -34,20 +44,21 @@ public:
     }
   }
 
+  //property gui::output::AxisType AxisType {
+  //  gui::output::AxisType get(void) {
+  //    return _axisType;
+  //  }
+  //  void set(gui::output::AxisType at) {
+  //    _axisType = at;
+  //  }
+  //}
+
 private:
   String ^ _name;
   String ^ _units;
+  //gui::output::AxisType _axisType;
 };
 
-
-
-public enum class Group : int
-{
-  CimsimLocation = 0,
-  CimsimContainer,
-  DensimLocation,
-  DensimSerotype
-};
 
 
 public ref class OutputInfo
@@ -78,10 +89,16 @@ public:
     }
   }
 
+  property Group OutputGroup {
+    Group get(void) {
+      return _outputGroup;
+    }
+  }
+
 private:
   String ^ _name;
   String ^ _units;
-  Group ^ _outputGroup;
+  Group _outputGroup;
 };
 typedef Collections::Generic::List<OutputInfo^> OutputInfoCollection;
 
@@ -94,6 +111,10 @@ public:
   : _outputInfo(oi),
     _data(gcnew Collections::Generic::List<double>())
   {}
+
+public:
+  Collections::Generic::List<double> ^ GetWeeklyData( TimePeriodFunction function );
+  Collections::Generic::List<double> ^ GetMonthlyData( DateTime startDate, DateTime stopDate, TimePeriodFunction function );
 
 public:
   property String ^ Name {
@@ -128,24 +149,6 @@ typedef Collections::Generic::Dictionary<OutputInfo^,Output^> OutputMap;
 
 
 
-public ref class DatedOutput : public Output
-{
-public:
-  DatedOutput( gui::output::OutputInfo ^ outputInfo );
-public:
-  Collections::Generic::List<double> ^ GetWeeklyData( TimePeriodFunction function );
-  Collections::Generic::List<double> ^ GetMonthlyData( DateTime startDate, DateTime stopDate, TimePeriodFunction function );
-};
-
-
-
-public ref class ClassOutput : public Output
-{
-  ClassOutput( gui::output::OutputInfo ^ outputInfo );
-};
-
-
-
 public ref class OutputInfos abstract sealed
 {
 public:
@@ -154,7 +157,6 @@ public:
 private:
   static OutputInfos(void);
   static OutputInfoCollection ^ GetOutputInfoCollection( Group outputGroup );
-  static OutputInfoAttribute ^ GetOutputInfoAttribute( Reflection::FieldInfo ^ fi );
 
 private:
   static Collections::Generic::Dictionary<Group,Type^> ^ _groupToType;
@@ -429,7 +431,7 @@ public:
   virtual ~DensimOutput(void);
 
 public:
-  property OutputMap ^ OutputMapLocation {
+  property OutputMap ^ Location {
     OutputMap ^ get(void) {
       return _location;
     }

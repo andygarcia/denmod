@@ -188,11 +188,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Graph.cpp"
+				RelativePath=".\Charts.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Output.cpp"
+				RelativePath=".\Enums.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Graphs.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Outputs.cpp"
 				>
 			</File>
 			<File
@@ -222,15 +230,19 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\Charts.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Enums.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Graph.h"
+				RelativePath=".\Graphs.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Output.h"
+				RelativePath=".\Outputs.h"
 				>
 			</File>
 			<File
