@@ -23,84 +23,53 @@ public enum class Group : int
 
 
 
-public ref class OutputInfoAttribute : public Attribute
-{
-public:
-  property String ^ Name {
-    String ^ get(void) {
-      return _name;
-    }
-    void set(String ^ s) {
-      _name = s;
-    }
-  }
-
-  property String ^ Units {
-    String ^ get(void) {
-      return _units;
-    }
-    void set( String ^ s ) {
-      _units = s;
-    }
-  }
-
-  //property gui::output::AxisType AxisType {
-  //  gui::output::AxisType get(void) {
-  //    return _axisType;
-  //  }
-  //  void set(gui::output::AxisType at) {
-  //    _axisType = at;
-  //  }
-  //}
-
-private:
-  String ^ _name;
-  String ^ _units;
-  //gui::output::AxisType _axisType;
-};
-
-
-
 public ref class OutputInfo
 {
 public:
-  OutputInfo( OutputInfoAttribute ^ outputInfoAttribute, Group outputGroup );
+  OutputInfo( Group outputGroup, String ^ name, String ^ units );
   virtual ~OutputInfo(void);
 
 public:
-  Output ^ CreateOutput(void);
-
-public:
-  property String ^ Name {
-    String ^ get(void) {
-      return _name;
-    }
-    void set(String ^ s) {
-      _name = s;
-    }
-  }
-
-  property String ^ Units {
-    String ^ get(void) {
-      return _units;
-    }
-    void set( String ^ s ) {
-      _units = s;
-    }
-  }
-
   property Group OutputGroup {
     Group get(void) {
       return _outputGroup;
     }
   }
 
+  property String ^ Name {
+    String ^ get(void) {
+      return _name;
+    }
+    void set(String ^ s) {
+      _name = s;
+    }
+  }
+
+  property String ^ Units {
+    String ^ get(void) {
+      return _units;
+    }
+    void set( String ^ s ) {
+      _units = s;
+    }
+  }
+
 private:
+  Group _outputGroup;
   String ^ _name;
   String ^ _units;
-  Group _outputGroup;
 };
 typedef Collections::Generic::List<OutputInfo^> OutputInfoCollection;
+
+
+
+public ref class DatedOutputInfo : public OutputInfo
+{
+public:
+  DatedOutputInfo( Group outputGroup, String ^ name, String ^ units )
+  : OutputInfo(outputGroup, name, units)
+  {}
+};
 
 
 
@@ -111,10 +80,6 @@ public:
   : _outputInfo(oi),
     _data(gcnew Collections::Generic::List<double>())
   {}
-
-public:
-  Collections::Generic::List<double> ^ GetWeeklyData( TimePeriodFunction function );
-  Collections::Generic::List<double> ^ GetMonthlyData( DateTime startDate, DateTime stopDate, TimePeriodFunction function );
 
 public:
   property String ^ Name {
@@ -149,10 +114,31 @@ typedef Collections::Generic::Dictionary<OutputInfo^,Output^> OutputMap;
 
 
 
+public ref class DatedOutput : public Output
+{
+public:
+  DatedOutput( output::OutputInfo ^ oi, DateTime startDate, DateTime stopDate )
+  : Output(oi),
+    _startDate(startDate),
+    _stopDate(stopDate)
+    
+  {}
+
+public:
+  Collections::Generic::List<double> ^ GetWeeklyData( TimePeriodFunction function );
+  Collections::Generic::List<double> ^ GetMonthlyData( DateTime startDate, DateTime stopDate, TimePeriodFunction function );
+
+private:
+  DateTime _startDate;
+  DateTime _stopDate;
+};
+
+
+
 public ref class OutputInfos abstract sealed
 {
 public:
-  static OutputMap ^ CreateNewOutputMap( gui::output::Group outputGroup );
+  static OutputMap ^ CreateNewOutputMap( gui::output::Group outputGroup, DateTime startDate, DateTime stopDate );
 
 private:
   static OutputInfos(void);
@@ -171,133 +157,65 @@ public:
   ref class CimsimLocation
   {
   public:
-    [OutputInfoAttribute(Name="Total Eggs",Units="#/ha")]
-    static OutputInfo ^ TotalEggs;
+    static CimsimLocation(void);
 
-    [OutputInfoAttribute(Name="Total Larvae",Units="#/ha")]
-    static OutputInfo ^ TotalLarvae;
-
-    [OutputInfoAttribute(Name="Total Pupae",Units="#/ha")]
-    static OutputInfo ^ TotalPupae;
-
-    [OutputInfoAttribute(Name="Total Females",Units="#/ha")]
-    static OutputInfo ^ TotalFemales;
-
-    [OutputInfoAttribute(Name="New Females",Units="#/ha")]
-    static OutputInfo ^ NewFemales;
-
-    [OutputInfoAttribute(Name="Average Female Weight",Units="mg")]
-    static OutputInfo ^ AverageFemaleWeight;
-
-    [OutputInfoAttribute(Name="Oviposition",Units="#")]
-    static OutputInfo ^ Oviposition;
-
-    [OutputInfoAttribute(Name="Maximum Temperature",Units="C")]
-    static OutputInfo ^ MaximumTemperature;
-
-    [OutputInfoAttribute(Name="Average Temperature",Units="C")]
-    static OutputInfo ^ AverageTemperature;
-
-    [OutputInfoAttribute(Name="Minimum Temperature",Units="C")]
-    static OutputInfo ^ MinimumTemperature;
-
-    [OutputInfoAttribute(Name="Rainfall",Units="mm")]
-    static OutputInfo ^ Rainfall;
-
-    [OutputInfoAttribute(Name="Relative Humidity",Units="%")]
-    static OutputInfo ^ RelativeHumidity;
-
-    [OutputInfoAttribute(Name="Saturation Deficit",Units="mbars")]
-    static OutputInfo ^ SaturationDeficit;
+  public:
+    static DatedOutputInfo ^ TotalEggs;
+    static DatedOutputInfo ^ TotalLarvae;
+    static DatedOutputInfo ^ TotalPupae;
+    static DatedOutputInfo ^ TotalFemales;
+    static DatedOutputInfo ^ NewFemales;
+    static DatedOutputInfo ^ AverageFemaleWeight;
+    static DatedOutputInfo ^ Oviposition;
+    static DatedOutputInfo ^ MaximumTemperature;
+    static DatedOutputInfo ^ AverageTemperature;
+    static DatedOutputInfo ^ MinimumTemperature;
+    static DatedOutputInfo ^ Rainfall;
+    static DatedOutputInfo ^ RelativeHumidity;
+    static DatedOutputInfo ^ SaturationDeficit;
   };
 
   ref class CimsimContainer
   {
   public:
-    [OutputInfoAttribute(Name="Depth",Units="cm")]
-    static OutputInfo ^ Depth;
+    static CimsimContainer(void);
 
-    [OutputInfoAttribute(Name="Food",Units="mg")]
-    static OutputInfo ^ Food;
-
-    [OutputInfoAttribute(Name="Maximum Water Temperature",Units="C")]
-    static OutputInfo ^ MaximumTemperature;
-
-    [OutputInfoAttribute(Name="Minimum Water Temperature",Units="C")]
-    static OutputInfo ^ MinimumTemperature;
-
-    [OutputInfoAttribute(Name="Eggs",Units="#")]
-    static OutputInfo ^ Eggs;
-
-    [OutputInfoAttribute(Name="Larvae",Units="#")]
-    static OutputInfo ^ Larvae;
-
-    [OutputInfoAttribute(Name="Pupae",Units="#")]
-    static OutputInfo ^ Pupae;
-
-    [OutputInfoAttribute(Name="Average Pupal Weight",Units="mg")]
-    static OutputInfo ^ AveragePupalWeight;
-
-    [OutputInfoAttribute(Name="New Females",Units="#")]
-    static OutputInfo ^ NewFemales;
-
-    [OutputInfoAttribute(Name="Cumulative Females",Units="#")]
-    static OutputInfo ^ CumulativeFemales;
-
-    [OutputInfoAttribute(Name="Oviposition",Units="#")]
-    static OutputInfo ^ Oviposition;
-
-    [OutputInfoAttribute(Name="Untreated Density",Units="#/ha")]
-    static OutputInfo ^ UntreatedDensity;
-
-    [OutputInfoAttribute(Name="Treated Density",Units="#/ha")]
-    static OutputInfo ^ TreatedDensity;
-
-    [OutputInfoAttribute(Name="Excluded Density",Units="#/ha")]
-    static OutputInfo ^ ExcludedDensity;
+  public:
+    static DatedOutputInfo ^ Depth;
+    static DatedOutputInfo ^ Food;
+    static DatedOutputInfo ^ MaximumTemperature;
+    static DatedOutputInfo ^ MinimumTemperature;
+    static DatedOutputInfo ^ Eggs;
+    static DatedOutputInfo ^ Larvae;
+    static DatedOutputInfo ^ Pupae;
+    static DatedOutputInfo ^ AveragePupalWeight;
+    static DatedOutputInfo ^ NewFemales;
+    static DatedOutputInfo ^ CumulativeFemales;
+    static DatedOutputInfo ^ Oviposition;
+    static DatedOutputInfo ^ UntreatedDensity;
+    static DatedOutputInfo ^ TreatedDensity;
+    static DatedOutputInfo ^ ExcludedDensity;
   };
 
   ref class DensimLocation
   {
   public:
-    [OutputInfoAttribute(Name="Initial Age Distribution",Units="# of individuals")]
+    static DensimLocation(void);
+
+  public:
     static OutputInfo ^ InitialAgeDistribution;
-
-    [OutputInfoAttribute(Name="Final Age Distribution",Units="# of individuals")]
     static OutputInfo ^ FinalAgeDistribution;
-
-    [OutputInfoAttribute(Name="Simulation Area",Units="ha")]
-    static OutputInfo ^ SimulationArea;
-
-    [OutputInfoAttribute(Name="Population Size",Units="# of individuals")]
-    static OutputInfo ^ PopulationSize;
-
-    [OutputInfoAttribute(Name="Births by Class",Units="# births")]
+    static DatedOutputInfo ^ SimulationArea;
+    static DatedOutputInfo ^ PopulationSize;
     static OutputInfo ^ BirthsByClass;
-
-    [OutputInfoAttribute(Name="Deaths by Class",Units="# of individuals")]
     static OutputInfo ^ DeathsByClass;
-    
-    [OutputInfoAttribute(Name="Birth Percentages by Class",Units="# of individuals")]
     static OutputInfo ^ BirthPercentagesByClass;
-    
-    [OutputInfoAttribute(Name="Death Percentages by Class",Units="# of individuals")]
     static OutputInfo ^ DeathPercentagesByClass;
-
-    [OutputInfoAttribute(Name="Female Mosquitoes in Area",Units="# in area")]
-    static OutputInfo ^ FemaleMosquitoesInSimulationArea;
-
-    [OutputInfoAttribute(Name="Female Mosquitoes per Hectare",Units="# / ha")]
-    static OutputInfo ^ FemaleMosquitoesPerHectare;
-
-    [OutputInfoAttribute(Name="Female Mosquitoes per Person",Units="# / person")]
-    static OutputInfo ^ FemaleMosquitoesPerPerson;
-
-    [OutputInfoAttribute(Name="Female Survival",Units="")]
-    static OutputInfo ^ FemaleMosquitoSurvival;
-
-    [OutputInfoAttribute(Name="Female Mosquitoes Wet Weight",Units="mg")]
-    static OutputInfo ^ FemaleMosquitoWetWeight;
+    static DatedOutputInfo ^ FemaleMosquitoesInSimulationArea;
+    static DatedOutputInfo ^ FemaleMosquitoesPerHectare;
+    static DatedOutputInfo ^ FemaleMosquitoesPerPerson;
+    static DatedOutputInfo ^ FemaleMosquitoSurvival;
+    static DatedOutputInfo ^ FemaleMosquitoWetWeight;
 
     //GeneralSeroprevalence,
     //DetailedSeroprevalence,
@@ -310,23 +228,15 @@ public:
   ref class DensimSerotype
   {
   public:
-    [OutputInfoAttribute(Name="EIP Development Rate",Units="1/day")]
-    static OutputInfo ^ EipDevelopmentRate;
+    static DensimSerotype(void);
 
-    [OutputInfoAttribute(Name="Infective Mosquitoes",Units="# of infective mosquitoes")]
-    static OutputInfo ^ InfectiveMosquitoes;
-
-    [OutputInfoAttribute(Name="Potentially Infective Bites",Units="# of bites")]
-    static OutputInfo ^ PotentiallyInfectiveBites;
-
-    [OutputInfoAttribute(Name="Persons Incubating",Units="# of persons incubating")]
-    static OutputInfo ^ PersonsIncubating;
-
-    [OutputInfoAttribute(Name="Persons Viremic",Units="# of persons viremic")]
-    static OutputInfo ^ PersonsViremic;
-
-    [OutputInfoAttribute(Name="Persons with Virus",Units="# of persons incubating or viremic")]
-    static OutputInfo ^ PersonsWithVirus;
+  public:
+    static DatedOutputInfo ^ EipDevelopmentRate;
+    static DatedOutputInfo ^ InfectiveMosquitoes;
+    static DatedOutputInfo ^ PotentiallyInfectiveBites;
+    static DatedOutputInfo ^ PersonsIncubating;
+    static DatedOutputInfo ^ PersonsViremic;
+    static DatedOutputInfo ^ PersonsWithVirus;
   };
 };
 
@@ -382,7 +292,7 @@ public:
     }
   }
 
-private:
+protected:
   DateTime _startDate;
   DateTime _stopDate;
   Collections::Generic::List<DateTime> ^ _dates;

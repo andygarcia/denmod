@@ -7,26 +7,16 @@ using namespace gui::output;
 
 
 
-OutputInfo::OutputInfo( gui::output::OutputInfoAttribute ^ outputInfoAttribute, Group outputGroup )
-: _name( outputInfoAttribute->Name ),
-  _units( outputInfoAttribute->Units ),
-  _outputGroup( outputGroup )
-{
-}
+OutputInfo::OutputInfo( Group outputGroup, String ^ name, String ^ units )
+: _name(name),
+  _units(units),
+  _outputGroup(outputGroup)
+{}
 
 
 
 OutputInfo::~OutputInfo(void)
 {
-}
-
-
-
-Output ^
-OutputInfo::CreateOutput(void)
-{
-  Output ^ output = gcnew Output(this);
-  return output;
 }
 
 
@@ -65,8 +55,7 @@ OutputInfos::GetOutputInfoCollection( Group outputGroup )
 
   array<Reflection::FieldInfo^> ^ fields = type->GetFields( Reflection::BindingFlags::Static | Reflection::BindingFlags::GetField | Reflection::BindingFlags::Public );
   for each( Reflection::FieldInfo ^ fi in fields ) {
-    OutputInfoAttribute ^ oia = GetCustomAttribute<OutputInfoAttribute^>( fi, true );
-    OutputInfo ^ oi = gcnew OutputInfo( oia, outputGroup );
+    OutputInfo ^ oi = (OutputInfo^) fi->GetValue( type );
     outputInfos->Add( oi );
     fi->SetValue( type, oi );
   }
@@ -77,13 +66,19 @@ OutputInfos::GetOutputInfoCollection( Group outputGroup )
 
 
 OutputMap ^
-OutputInfos::CreateNewOutputMap( Group outputGroup )
+OutputInfos::CreateNewOutputMap( Group outputGroup, DateTime startDate, DateTime stopDate )
 {
   OutputInfoCollection ^ oic = _groupToCollection[outputGroup];
 
   OutputMap ^ outputs = gcnew OutputMap();
   for each( OutputInfo ^ oi in oic ) {
-    Output ^ o = oi->CreateOutput();
+    Output ^ o;
+    if( oi->GetType() == DatedOutputInfo::typeid ) {
+      o = gcnew DatedOutput( oi, startDate, stopDate );
+    }
+    else {
+      o = gcnew Output( oi );
+    }
     outputs->Add( oi, o );
   }
   return outputs;
@@ -91,8 +86,81 @@ OutputInfos::CreateNewOutputMap( Group outputGroup )
 
 
 
+static
+OutputInfos::CimsimLocation::CimsimLocation(void)
+{
+  TotalEggs = gcnew DatedOutputInfo( Group::CimsimLocation, "TotalEggs", "#/ha" );
+  TotalLarvae = gcnew DatedOutputInfo( Group::CimsimLocation, "TotalLarvae", "#/ha" );
+  TotalPupae = gcnew DatedOutputInfo( Group::CimsimLocation, "TotalPupae", "#/ha" );
+  TotalFemales = gcnew DatedOutputInfo( Group::CimsimLocation, "TotalFemales", "#/ha" );
+  NewFemales = gcnew DatedOutputInfo( Group::CimsimLocation, "NewFemales", "#/ha" );
+  AverageFemaleWeight = gcnew DatedOutputInfo( Group::CimsimLocation, "AverageFemaleWeight", "mg" );
+  Oviposition = gcnew DatedOutputInfo( Group::CimsimLocation, "Oviposition", "#" );
+  MaximumTemperature = gcnew DatedOutputInfo( Group::CimsimLocation, "MaximumTemperature", "C" );
+  AverageTemperature = gcnew DatedOutputInfo( Group::CimsimLocation, "AverageTemperature", "C" );
+  MinimumTemperature = gcnew DatedOutputInfo( Group::CimsimLocation, "MinimumTemperature", "C" );
+  Rainfall = gcnew DatedOutputInfo( Group::CimsimLocation, "Rainfall", "mm" );
+  RelativeHumidity = gcnew DatedOutputInfo( Group::CimsimLocation, "RelativeHumidity", "%" );
+  SaturationDeficit = gcnew DatedOutputInfo( Group::CimsimLocation, "SaturationDeficit", "mbars" );
+}
+
+
+
+static
+OutputInfos::CimsimContainer::CimsimContainer()
+{
+  Depth = gcnew DatedOutputInfo( Group::CimsimContainer, "Depth", "cm" );
+  Food = gcnew DatedOutputInfo( Group::CimsimContainer, "Food", "mg" );
+  MaximumTemperature = gcnew DatedOutputInfo( Group::CimsimContainer, "MaximumTemperature", "C" );
+  MinimumTemperature = gcnew DatedOutputInfo( Group::CimsimContainer, "MinimumTemperature", "C" );
+  Eggs = gcnew DatedOutputInfo( Group::CimsimContainer, "Eggs", "#" );
+  Larvae = gcnew DatedOutputInfo( Group::CimsimContainer, "Larvae", "#" );
+  Pupae = gcnew DatedOutputInfo( Group::CimsimContainer, "Pupae", "#" );
+  AveragePupalWeight = gcnew DatedOutputInfo( Group::CimsimContainer, "AveragePupalWeight", "mg" );
+  NewFemales = gcnew DatedOutputInfo( Group::CimsimContainer, "NewFemales", "#" );
+  CumulativeFemales = gcnew DatedOutputInfo( Group::CimsimContainer, "CumulativeFemales", "#" );
+  Oviposition = gcnew DatedOutputInfo( Group::CimsimContainer, "Oviposition", "#" );
+  UntreatedDensity = gcnew DatedOutputInfo( Group::CimsimContainer, "UntreatedDensity", "#/ha" );
+  TreatedDensity = gcnew DatedOutputInfo( Group::CimsimContainer, "TreatedDensity", "#/ha" );
+  ExcludedDensity = gcnew DatedOutputInfo( Group::CimsimContainer, "ExcludedDensity", "#/ha" );
+}
+
+
+
+static
+OutputInfos::DensimLocation::DensimLocation()
+{
+  InitialAgeDistribution = gcnew DatedOutputInfo( Group::DensimLocation, "InitialAgeDistribution", "# of individuals" );
+  FinalAgeDistribution = gcnew DatedOutputInfo( Group::DensimLocation, "FinalAgeDistribution", "# of individuals" );
+  SimulationArea = gcnew DatedOutputInfo( Group::DensimLocation, "SimulationArea", "ha" );
+  PopulationSize = gcnew DatedOutputInfo( Group::DensimLocation, "PopulationSize", "# of individuals" );
+  BirthsByClass = gcnew DatedOutputInfo( Group::DensimLocation, "BirthsByClass", "# births" );
+  DeathsByClass = gcnew DatedOutputInfo( Group::DensimLocation, "DeathsByClass", "# of individuals" );
+  BirthPercentagesByClass = gcnew DatedOutputInfo( Group::DensimLocation, "BirthPercentagesByClass", "# of individuals" );
+  DeathPercentagesByClass = gcnew DatedOutputInfo( Group::DensimLocation, "DeathPercentagesByClass", "# of individuals" );
+  FemaleMosquitoesInSimulationArea = gcnew DatedOutputInfo( Group::DensimLocation, "FemaleMosquitoesInSimulationArea", "# in area" );
+  FemaleMosquitoesPerHectare = gcnew DatedOutputInfo( Group::DensimLocation, "FemaleMosquitoesPerHectare", "# / ha" );
+  FemaleMosquitoesPerPerson = gcnew DatedOutputInfo( Group::DensimLocation, "FemaleMosquitoesPerPerson", "# / person" );
+  FemaleMosquitoSurvival = gcnew DatedOutputInfo( Group::DensimLocation, "FemaleMosquitoSurvival", "" );
+  FemaleMosquitoWetWeight = gcnew DatedOutputInfo( Group::DensimLocation, "FemaleMosquitoWetWeight", "mg" );
+}
+
+
+
+static
+OutputInfos::DensimSerotype::DensimSerotype()
+{
+  EipDevelopmentRate = gcnew DatedOutputInfo( Group::DensimSerotype, "EipDevelopmentRate", "1/day" );
+  InfectiveMosquitoes = gcnew DatedOutputInfo( Group::DensimSerotype, "InfectiveMosquitoes", "# of infective mosquitoes" );
+  PotentiallyInfectiveBites = gcnew DatedOutputInfo( Group::DensimSerotype, "PotentiallyInfectiveBites", "# of bites" );
+  PersonsIncubating = gcnew DatedOutputInfo( Group::DensimSerotype, "PersonsIncubating", "# of persons incubating" );
+  PersonsViremic = gcnew DatedOutputInfo( Group::DensimSerotype, "PersonsViremic", "# of persons viremic" );
+  PersonsWithVirus = gcnew DatedOutputInfo( Group::DensimSerotype, "PersonsWithVirus", "# of persons incubating or viremic" );
+}
+
+
 Collections::Generic::List<double> ^ 
-Output::GetWeeklyData( TimePeriodFunction function )
+DatedOutput::GetWeeklyData( TimePeriodFunction function )
 {
   Collections::Generic::List<double> ^ weeklyData = gcnew Collections::Generic::List<double>();
 
@@ -127,7 +195,7 @@ Output::GetWeeklyData( TimePeriodFunction function )
 
 
 Collections::Generic::List<double> ^ 
-Output::GetMonthlyData( DateTime startDate, DateTime stopDate, TimePeriodFunction function )
+DatedOutput::GetMonthlyData( DateTime startDate, DateTime stopDate, TimePeriodFunction function )
 {
   Collections::Generic::List<double> ^ monthlyData = gcnew Collections::Generic::List<double>();
 
@@ -222,7 +290,7 @@ SimOutput::GenerateMonths(void)
 
 CimsimOutput::CimsimOutput( DateTime startDate, DateTime stopDate )
 : SimOutput(startDate, stopDate),
-  _location(OutputInfos::CreateNewOutputMap(Group::CimsimLocation)),
+  _location(OutputInfos::CreateNewOutputMap( Group::CimsimLocation, startDate, stopDate)),
   _containers(gcnew Collections::Generic::Dictionary<int,OutputMap^>())
 {}
 
@@ -236,7 +304,7 @@ CimsimOutput::~CimsimOutput(void)
 void
 CimsimOutput::AddContainerType( int containerId )
 {
-  OutputMap ^ containerOutput = OutputInfos::CreateNewOutputMap( Group::CimsimContainer );
+  OutputMap ^ containerOutput = OutputInfos::CreateNewOutputMap( Group::CimsimContainer, _startDate, _stopDate );
   _containers->Add( containerId, containerOutput );
 }
 
@@ -348,11 +416,11 @@ CimsimOutput::GetContainerExcelXml( int containerId )
 
 DensimOutput::DensimOutput( DateTime startDate, DateTime stopDate )
 : SimOutput(startDate, stopDate),
-  _location(OutputInfos::CreateNewOutputMap(Group::DensimLocation)),
+  _location(OutputInfos::CreateNewOutputMap(Group::DensimLocation, startDate, stopDate)),
   _serotypes(gcnew Collections::Generic::Dictionary<int,OutputMap^>())
 {
   for( int serotypeId = 1; serotypeId <= 4; ++serotypeId ) {
-    OutputMap ^ serotypeOutput = OutputInfos::CreateNewOutputMap( Group::DensimSerotype );
+    OutputMap ^ serotypeOutput = OutputInfos::CreateNewOutputMap( Group::DensimSerotype, startDate, stopDate );
     _serotypes->Add( serotypeId, serotypeOutput );
   }
 }
