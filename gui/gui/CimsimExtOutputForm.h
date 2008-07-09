@@ -31,6 +31,7 @@ namespace gui {
 
   private:
     System::Void OnLoad(System::Object^  sender, System::EventArgs^  e);
+    System::Void OnView(System::Object^  sender, System::EventArgs^  e);
     System::Void OnViewLocationGraph(System::Object^  sender, System::EventArgs^  e);
     System::Void OnViewContainerGraph(System::Object^  sender, System::EventArgs^  e);
 
@@ -39,10 +40,12 @@ namespace gui {
   private: System::Windows::Forms::TabPage^  tabPageContainer;
   private: System::Windows::Forms::ListBox^  lboxLocationGraphs;
   private: System::Windows::Forms::ListBox^  lboxContainerGraphs;
-  private: System::Windows::Forms::Button^  btnViewLocation;
+  private: System::Windows::Forms::Button^  btnView;
+
 
   private: System::Windows::Forms::ComboBox^  cboxContainers;
-  private: System::Windows::Forms::Button^  btnExitLocation;
+  private: System::Windows::Forms::Button^  btnExit;
+
 
 
 	private:
@@ -64,8 +67,8 @@ namespace gui {
       this->tabPageContainer = (gcnew System::Windows::Forms::TabPage());
       this->cboxContainers = (gcnew System::Windows::Forms::ComboBox());
       this->lboxContainerGraphs = (gcnew System::Windows::Forms::ListBox());
-      this->btnExitLocation = (gcnew System::Windows::Forms::Button());
-      this->btnViewLocation = (gcnew System::Windows::Forms::Button());
+      this->btnExit = (gcnew System::Windows::Forms::Button());
+      this->btnView = (gcnew System::Windows::Forms::Button());
       this->cboxTimePeriod = (gcnew System::Windows::Forms::ComboBox());
       this->lblTimePeriod = (gcnew System::Windows::Forms::Label());
       this->tabGraphType->SuspendLayout();
@@ -141,25 +144,25 @@ namespace gui {
       this->lboxContainerGraphs->TabIndex = 1;
       this->lboxContainerGraphs->DoubleClick += gcnew System::EventHandler(this, &CimsimExtOutputForm::OnViewContainerGraph);
       // 
-      // btnExitLocation
+      // btnExit
       // 
-      this->btnExitLocation->DialogResult = System::Windows::Forms::DialogResult::OK;
-      this->btnExitLocation->Location = System::Drawing::Point(210, 272);
-      this->btnExitLocation->Name = L"btnExitLocation";
-      this->btnExitLocation->Size = System::Drawing::Size(75, 23);
-      this->btnExitLocation->TabIndex = 3;
-      this->btnExitLocation->Text = L"Exit";
-      this->btnExitLocation->UseVisualStyleBackColor = true;
+      this->btnExit->DialogResult = System::Windows::Forms::DialogResult::OK;
+      this->btnExit->Location = System::Drawing::Point(210, 272);
+      this->btnExit->Name = L"btnExit";
+      this->btnExit->Size = System::Drawing::Size(75, 23);
+      this->btnExit->TabIndex = 3;
+      this->btnExit->Text = L"Exit";
+      this->btnExit->UseVisualStyleBackColor = true;
       // 
-      // btnViewLocation
+      // btnView
       // 
-      this->btnViewLocation->Location = System::Drawing::Point(129, 272);
-      this->btnViewLocation->Name = L"btnViewLocation";
-      this->btnViewLocation->Size = System::Drawing::Size(75, 23);
-      this->btnViewLocation->TabIndex = 2;
-      this->btnViewLocation->Text = L"View";
-      this->btnViewLocation->UseVisualStyleBackColor = true;
-      this->btnViewLocation->Click += gcnew System::EventHandler(this, &CimsimExtOutputForm::OnViewLocationGraph);
+      this->btnView->Location = System::Drawing::Point(129, 272);
+      this->btnView->Name = L"btnView";
+      this->btnView->Size = System::Drawing::Size(75, 23);
+      this->btnView->TabIndex = 2;
+      this->btnView->Text = L"View";
+      this->btnView->UseVisualStyleBackColor = true;
+      this->btnView->Click += gcnew System::EventHandler(this, &CimsimExtOutputForm::OnView);
       // 
       // cboxTimePeriod
       // 
@@ -183,14 +186,16 @@ namespace gui {
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-      this->CancelButton = this->btnExitLocation;
+      this->CancelButton = this->btnExit;
       this->ClientSize = System::Drawing::Size(297, 307);
       this->Controls->Add(this->lblTimePeriod);
       this->Controls->Add(this->tabGraphType);
       this->Controls->Add(this->cboxTimePeriod);
-      this->Controls->Add(this->btnExitLocation);
-      this->Controls->Add(this->btnViewLocation);
-      this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;
+      this->Controls->Add(this->btnExit);
+      this->Controls->Add(this->btnView);
+      this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedToolWindow;
+      this->MaximizeBox = false;
+      this->MinimizeBox = false;
       this->Name = L"CimsimExtOutputForm";
       this->ShowInTaskbar = false;
       this->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;
@@ -204,5 +209,5 @@ namespace gui {
 
     }
 #pragma endregion
-};
+  };
 }

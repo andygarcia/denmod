@@ -299,20 +299,20 @@ Location::ProcessCimsimOutput( sim::output::CimsimOutput * uco, DateTime startDa
   boost::gregorian::date bStopDate = boost::gregorian::date( stopDate.Year, stopDate.Month, stopDate.Day );
 
   // copy data
-  CopyVectorToOutput( uco->GetTotalEggs(bStartDate, bStopDate), mco->Location[(int)output::OutputTypes::Cimsim::Location::TotalEggs] );
-  CopyVectorToOutput( uco->GetTotalLarvae(bStartDate, bStopDate), mco->Location[(int)output::OutputTypes::Cimsim::Location::TotalLarvae] );
-  CopyVectorToOutput( uco->GetTotalPupae(bStartDate, bStopDate), mco->Location[(int)output::OutputTypes::Cimsim::Location::TotalPupae] );
-  CopyVectorToOutput( uco->GetFemales(bStartDate, bStopDate), mco->Location[(int)output::OutputTypes::Cimsim::Location::TotalFemales] );
-  CopyVectorToOutput( uco->GetNewFemales( bStartDate, bStopDate ), mco->Location[(int)output::OutputTypes::Cimsim::Location::NewFemales] );
-  CopyVectorToOutput( uco->GetAverageFemaleWeight(bStartDate, bStopDate), mco->Location[(int)output::OutputTypes::Cimsim::Location::AverageFemaleWeight] );
-  CopyVectorToOutput( uco->GetOviposition(bStartDate, bStopDate), mco->Location[(int)output::OutputTypes::Cimsim::Location::Oviposition] );
+  CopyVectorToOutput( uco->GetTotalEggs(bStartDate, bStopDate), mco->Location[output::OutputInfos::CimsimLocation::TotalEggs] );
+  CopyVectorToOutput( uco->GetTotalLarvae(bStartDate, bStopDate), mco->Location[output::OutputInfos::CimsimLocation::TotalLarvae] );
+  CopyVectorToOutput( uco->GetTotalPupae(bStartDate, bStopDate), mco->Location[output::OutputInfos::CimsimLocation::TotalPupae] );
+  CopyVectorToOutput( uco->GetFemales(bStartDate, bStopDate), mco->Location[output::OutputInfos::CimsimLocation::TotalFemales] );
+  CopyVectorToOutput( uco->GetNewFemales( bStartDate, bStopDate ), mco->Location[output::OutputInfos::CimsimLocation::NewFemales] );
+  CopyVectorToOutput( uco->GetAverageFemaleWeight(bStartDate, bStopDate), mco->Location[output::OutputInfos::CimsimLocation::AverageFemaleWeight] );
+  CopyVectorToOutput( uco->GetOviposition(bStartDate, bStopDate), mco->Location[output::OutputInfos::CimsimLocation::Oviposition] );
 
-  output::Output ^ maxTemp = mco->Location[(int)output::OutputTypes::Cimsim::Location::MaximumTemperature];
-  output::Output ^ avgTemp = mco->Location[(int)output::OutputTypes::Cimsim::Location::AverageTemperature];
-  output::Output ^ minTemp = mco->Location[(int)output::OutputTypes::Cimsim::Location::MinimumTemperature];
-  output::Output ^ rainFall = mco->Location[(int)output::OutputTypes::Cimsim::Location::Rainfall];
-  output::Output ^ relHum = mco->Location[(int)output::OutputTypes::Cimsim::Location::RelativeHumidity];
-  output::Output ^ satDef = mco->Location[(int)output::OutputTypes::Cimsim::Location::SaturationDeficit];
+  output::Output ^ maxTemp = mco->Location[output::OutputInfos::CimsimLocation::MaximumTemperature];
+  output::Output ^ avgTemp = mco->Location[output::OutputInfos::CimsimLocation::AverageTemperature];
+  output::Output ^ minTemp = mco->Location[output::OutputInfos::CimsimLocation::MinimumTemperature];
+  output::Output ^ rainFall = mco->Location[output::OutputInfos::CimsimLocation::Rainfall];
+  output::Output ^ relHum = mco->Location[output::OutputInfos::CimsimLocation::RelativeHumidity];
+  output::Output ^ satDef = mco->Location[output::OutputInfos::CimsimLocation::SaturationDeficit];
 
   for( DateTime dt = startDate; dt <= stopDate; dt = dt.AddDays(1) ) {
     WeatherDay ^ wd = Weather->GetWeather( dt );
@@ -330,20 +330,20 @@ Location::ProcessCimsimOutput( sim::output::CimsimOutput * uco, DateTime startDa
 
     mco->AddContainerType( id );
 
-    CopyVectorToOutput( uco->GetDepth(bStartDate, bStopDate, id), mco->Containers[id][(int)gui::output::OutputTypes::Cimsim::Container::Depth] );
-    CopyVectorToOutput( uco->GetFood(bStartDate, bStopDate, id), mco->Containers[id][(int)gui::output::OutputTypes::Cimsim::Container::Food] );
-    CopyVectorToOutput( uco->GetMaxTemp(bStartDate, bStopDate, id), mco->Containers[id][(int)gui::output::OutputTypes::Cimsim::Container::MaximumTemperature] );
-    CopyVectorToOutput( uco->GetMinTemp(bStartDate, bStopDate, id), mco->Containers[id][(int)gui::output::OutputTypes::Cimsim::Container::MinimumTemperature] );
-    CopyVectorToOutput( uco->GetEggs(bStartDate, bStopDate, id), mco->Containers[id][(int)gui::output::OutputTypes::Cimsim::Container::Eggs] );
-    CopyVectorToOutput( uco->GetLarvae(bStartDate, bStopDate, id), mco->Containers[id][(int)gui::output::OutputTypes::Cimsim::Container::Larvae] );
-    CopyVectorToOutput( uco->GetPupae(bStartDate, bStopDate, id), mco->Containers[id][(int)gui::output::OutputTypes::Cimsim::Container::Pupae] );
-    CopyVectorToOutput( uco->GetAvgDryPupWt(bStartDate, bStopDate, id), mco->Containers[id][(int)gui::output::OutputTypes::Cimsim::Container::AveragePupalWeight] );
-    CopyVectorToOutput( uco->GetNewFemales(bStartDate, bStopDate, id), mco->Containers[id][(int)gui::output::OutputTypes::Cimsim::Container::NewFemales] );
-    CopyVectorToOutput( uco->GetCumulativeFemales(bStartDate, bStopDate, id), mco->Containers[id][(int)gui::output::OutputTypes::Cimsim::Container::CumulativeFemales] );
-    CopyVectorToOutput( uco->GetOviposition(bStartDate, bStopDate, id), mco->Containers[id][(int)gui::output::OutputTypes::Cimsim::Container::Oviposition] );
-    CopyVectorToOutput( uco->GetUntreatedDensity(bStartDate, bStopDate, id), mco->Containers[id][(int)gui::output::OutputTypes::Cimsim::Container::UntreatedDensity] );
-    CopyVectorToOutput( uco->GetTreatedDensity(bStartDate, bStopDate, id), mco->Containers[id][(int)gui::output::OutputTypes::Cimsim::Container::TreatedDensity] );
-    CopyVectorToOutput( uco->GetExcludedDensity(bStartDate, bStopDate, id), mco->Containers[id][(int)gui::output::OutputTypes::Cimsim::Container::ExcludedDensity] );
+    CopyVectorToOutput( uco->GetDepth(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::Depth] );
+    CopyVectorToOutput( uco->GetFood(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::Food] );
+    CopyVectorToOutput( uco->GetMaxTemp(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::MaximumTemperature] );
+    CopyVectorToOutput( uco->GetMinTemp(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::MinimumTemperature] );
+    CopyVectorToOutput( uco->GetEggs(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::Eggs] );
+    CopyVectorToOutput( uco->GetLarvae(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::Larvae] );
+    CopyVectorToOutput( uco->GetPupae(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::Pupae] );
+    CopyVectorToOutput( uco->GetAvgDryPupWt(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::AveragePupalWeight] );
+    CopyVectorToOutput( uco->GetNewFemales(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::NewFemales] );
+    CopyVectorToOutput( uco->GetCumulativeFemales(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::CumulativeFemales] );
+    CopyVectorToOutput( uco->GetOviposition(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::Oviposition] );
+    CopyVectorToOutput( uco->GetUntreatedDensity(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::UntreatedDensity] );
+    CopyVectorToOutput( uco->GetTreatedDensity(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::TreatedDensity] );
+    CopyVectorToOutput( uco->GetExcludedDensity(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::ExcludedDensity] );
   }
 
   return mco;

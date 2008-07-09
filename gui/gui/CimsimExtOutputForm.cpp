@@ -29,14 +29,12 @@ System::Void
 CimsimExtOutputForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
 {
   // location graphs
-  lboxLocationGraphs->DisplayMember = "Title";
-  lboxLocationGraphs->ValueMember = "Id";
-  lboxLocationGraphs->DataSource = gui::output::GraphCollections::GetGraphInfoBindingList( gui::output::GraphTypes::Cimsim::Location::typeid );
+  lboxLocationGraphs->DisplayMember = "Name";
+  lboxLocationGraphs->DataSource = output::ChartInfos::GetChartInfoCollection( output::Group::CimsimLocation );
 
   // container graphs
-  lboxContainerGraphs->DisplayMember = "Title";
-  lboxContainerGraphs->ValueMember = "Id";
-  lboxContainerGraphs->DataSource = gui::output::GraphCollections::GetGraphInfoBindingList( gui::output::GraphTypes::Cimsim::Container::typeid );
+  lboxContainerGraphs->DisplayMember = "Name";
+  lboxContainerGraphs->DataSource = output::ChartInfos::GetChartInfoCollection( output::Group::CimsimContainer );
 
   // container names
   cboxContainers->DisplayMember = "Name";
@@ -55,6 +53,22 @@ CimsimExtOutputForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
 
 
 System::Void
+CimsimExtOutputForm::OnView(System::Object^  sender, System::EventArgs^  e)
+{
+  if( tabGraphType->SelectedTab == tabPageLocation ) {
+    OnViewLocationGraph( btnView, nullptr );
+  }
+  else if( tabGraphType->SelectedTab == tabPageContainer ) {
+    OnViewContainerGraph( btnView, nullptr );
+  }
+  else {
+    // TODO ?
+  }
+}
+
+
+
+System::Void
 CimsimExtOutputForm::OnViewLocationGraph(System::Object^  sender, System::EventArgs^  e)
 {
   if( lboxLocationGraphs->SelectedItem == nullptr ) {
@@ -62,11 +76,12 @@ CimsimExtOutputForm::OnViewLocationGraph(System::Object^  sender, System::EventA
     return;
   }
 
-  output::GraphTypes::Cimsim::Location graphType = output::GraphTypes::Cimsim::Location( lboxLocationGraphs->SelectedValue );
-  output::Graph ^ graph = output::Graph::CreateGraph( graphType, Location_->CimsimOutput);
-  output::TimePeriod timePeriod = output::TimePeriod( cboxTimePeriod->SelectedValue );
+  using namespace output;
 
-  GraphForm ^ gf = gcnew GraphForm( Location_, graph, timePeriod, output::TimePeriodFunction::Average );
+  ChartInfo ^ chartInfo = (ChartInfo^) lboxLocationGraphs->SelectedValue;
+  TimePeriod timePeriod = TimePeriod( cboxTimePeriod->SelectedValue );
+
+  GraphForm ^ gf = gcnew GraphForm( Location_, chartInfo, timePeriod, output::TimePeriodFunction::Average );
   gf->ShowDialog(this);
   gf->Close();
 }
@@ -80,12 +95,16 @@ CimsimExtOutputForm::OnViewContainerGraph(System::Object^  sender, System::Event
     MessageBox::Show( "Please select a container and graph to view." );
   }
 
-  output::GraphTypes::Cimsim::Container graphType = output::GraphTypes::Cimsim::Container( lboxContainerGraphs->SelectedValue );
-  int containerId = Convert::ToInt32( cboxContainers->SelectedValue );
-  output::Graph ^ graph = output::Graph::CreateGraph( graphType, Location_->CimsimOutput, containerId );
-  output::TimePeriod timePeriod = output::TimePeriod( cboxTimePeriod->SelectedValue );
+  using namespace output;
 
-  GraphForm ^ gf = gcnew GraphForm( Location_, graph, timePeriod, output::TimePeriodFunction::Average );
+  ChartInfo ^ chartInfo= (ChartInfo^) lboxContainerGraphs->SelectedValue;
+  for each( GraphInfo ^ graphInfo in chartInfo->GraphInfos ) {
+    graphInfo->ContainerId = Convert::ToInt32( cboxContainers->SelectedValue );
+  }
+
+  TimePeriod timePeriod = TimePeriod( cboxTimePeriod->SelectedValue );
+
+  GraphForm ^ gf = gcnew GraphForm( Location_, chartInfo, timePeriod, output::TimePeriodFunction::Average );
   gf->ShowDialog(this);
   gf->Close();
 }

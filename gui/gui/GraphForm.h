@@ -47,6 +47,7 @@ namespace gui {
   public ref class GraphForm : public System::Windows::Forms::Form
 	{
 	public:
+    GraphForm( gui::Location ^ location, output::ChartInfo ^ chartInfo, output::TimePeriod timePeriod, output::TimePeriodFunction timePeriodFunction );
     GraphForm( gui::Location ^ location, output::Graph ^ graph, output::TimePeriod timePeriod, output::TimePeriodFunction timePeriodFunction );
     GraphForm( gui::Location ^ location, DensimGraphType graphType );
 	protected:
@@ -58,8 +59,9 @@ namespace gui {
   private:
     gui::Location ^ Location_;
     gui::Container ^ Container_;
+  private: Dundas::Charting::WinControl::Chart^  chart;
 
-  private: Dundas::Charting::WinControl::Chart^  chartMainPlot;
+
   private: System::Windows::Forms::Button^  btnExit;
   private: System::Windows::Forms::Button^  btnSave;
   protected: 
@@ -77,122 +79,43 @@ namespace gui {
 		/// </summary>
 		void InitializeComponent(void)
 		{
-      Dundas::Charting::WinControl::ChartArea^  chartArea1 = (gcnew Dundas::Charting::WinControl::ChartArea());
       Dundas::Charting::WinControl::Legend^  legend1 = (gcnew Dundas::Charting::WinControl::Legend());
-      this->chartMainPlot = (gcnew Dundas::Charting::WinControl::Chart());
+      this->chart = (gcnew Dundas::Charting::WinControl::Chart());
       this->btnExit = (gcnew System::Windows::Forms::Button());
       this->btnSave = (gcnew System::Windows::Forms::Button());
-      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->chartMainPlot))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->chart))->BeginInit();
       this->SuspendLayout();
       // 
-      // chartMainPlot
+      // chart
       // 
-      this->chartMainPlot->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom) 
+      this->chart->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom) 
         | System::Windows::Forms::AnchorStyles::Left) 
         | System::Windows::Forms::AnchorStyles::Right));
-      this->chartMainPlot->BackColor = System::Drawing::Color::WhiteSmoke;
-      this->chartMainPlot->BackGradientEndColor = System::Drawing::Color::White;
-      this->chartMainPlot->BackGradientType = Dundas::Charting::WinControl::GradientType::DiagonalLeft;
-      this->chartMainPlot->BorderLineColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(26)), 
-        static_cast<System::Int32>(static_cast<System::Byte>(59)), static_cast<System::Int32>(static_cast<System::Byte>(105)));
-      this->chartMainPlot->BorderLineStyle = Dundas::Charting::WinControl::ChartDashStyle::Solid;
-      this->chartMainPlot->BorderSkin->FrameBackColor = System::Drawing::Color::CornflowerBlue;
-      this->chartMainPlot->BorderSkin->FrameBackGradientEndColor = System::Drawing::Color::CornflowerBlue;
-      this->chartMainPlot->BorderSkin->PageColor = System::Drawing::SystemColors::Control;
-      this->chartMainPlot->BorderSkin->SkinStyle = Dundas::Charting::WinControl::BorderSkinStyle::Emboss;
-      chartArea1->AxisX->LabelStyle->IntervalOffset = 0;
-      chartArea1->AxisX->LabelStyle->IntervalOffsetType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisX->LabelStyle->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisX->MajorGrid->Enabled = false;
-      chartArea1->AxisX->MajorGrid->Interval = 0;
-      chartArea1->AxisX->MajorGrid->IntervalOffset = 0;
-      chartArea1->AxisX->MajorGrid->IntervalOffsetType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisX->MajorGrid->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisX->MajorGrid->LineColor = System::Drawing::Color::Silver;
-      chartArea1->AxisX->MajorTickMark->Interval = 0;
-      chartArea1->AxisX->MajorTickMark->IntervalOffset = 0;
-      chartArea1->AxisX->MajorTickMark->IntervalOffsetType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisX->MajorTickMark->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisX->MinorGrid->LineColor = System::Drawing::Color::Silver;
-      chartArea1->AxisX2->LabelStyle->Interval = 0;
-      chartArea1->AxisX2->LabelStyle->IntervalOffset = 0;
-      chartArea1->AxisX2->LabelStyle->IntervalOffsetType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisX2->LabelStyle->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisX2->MajorGrid->Interval = 0;
-      chartArea1->AxisX2->MajorGrid->IntervalOffset = 0;
-      chartArea1->AxisX2->MajorGrid->IntervalOffsetType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisX2->MajorGrid->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisX2->MajorGrid->LineColor = System::Drawing::Color::Silver;
-      chartArea1->AxisX2->MajorTickMark->Interval = 0;
-      chartArea1->AxisX2->MajorTickMark->IntervalOffset = 0;
-      chartArea1->AxisX2->MajorTickMark->IntervalOffsetType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisX2->MajorTickMark->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisX2->MinorGrid->LineColor = System::Drawing::Color::Silver;
-      chartArea1->AxisY->LabelStyle->Interval = 0;
-      chartArea1->AxisY->LabelStyle->IntervalOffset = 0;
-      chartArea1->AxisY->LabelStyle->IntervalOffsetType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisY->LabelStyle->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisY->MajorGrid->Interval = 0;
-      chartArea1->AxisY->MajorGrid->IntervalOffset = 0;
-      chartArea1->AxisY->MajorGrid->IntervalOffsetType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisY->MajorGrid->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisY->MajorGrid->LineColor = System::Drawing::Color::Silver;
-      chartArea1->AxisY->MajorTickMark->Interval = 0;
-      chartArea1->AxisY->MajorTickMark->IntervalOffset = 0;
-      chartArea1->AxisY->MajorTickMark->IntervalOffsetType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisY->MajorTickMark->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisY->MinorGrid->LineColor = System::Drawing::Color::Silver;
-      chartArea1->AxisY2->LabelStyle->Interval = 0;
-      chartArea1->AxisY2->LabelStyle->IntervalOffset = 0;
-      chartArea1->AxisY2->LabelStyle->IntervalOffsetType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisY2->LabelStyle->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisY2->MajorGrid->Interval = 0;
-      chartArea1->AxisY2->MajorGrid->IntervalOffset = 0;
-      chartArea1->AxisY2->MajorGrid->IntervalOffsetType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisY2->MajorGrid->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisY2->MajorGrid->LineColor = System::Drawing::Color::Silver;
-      chartArea1->AxisY2->MajorTickMark->Interval = 0;
-      chartArea1->AxisY2->MajorTickMark->IntervalOffset = 0;
-      chartArea1->AxisY2->MajorTickMark->IntervalOffsetType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisY2->MajorTickMark->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
-      chartArea1->AxisY2->MinorGrid->LineColor = System::Drawing::Color::Silver;
-      chartArea1->BackColor = System::Drawing::Color::White;
-      chartArea1->BorderColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(26)), static_cast<System::Int32>(static_cast<System::Byte>(59)), 
+      this->chart->BackColor = System::Drawing::Color::WhiteSmoke;
+      this->chart->BackGradientEndColor = System::Drawing::Color::White;
+      this->chart->BackGradientType = Dundas::Charting::WinControl::GradientType::DiagonalLeft;
+      this->chart->BorderLineColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(26)), static_cast<System::Int32>(static_cast<System::Byte>(59)), 
         static_cast<System::Int32>(static_cast<System::Byte>(105)));
-      chartArea1->BorderStyle = Dundas::Charting::WinControl::ChartDashStyle::Solid;
-      chartArea1->CursorX->Interval = 0;
-      chartArea1->CursorX->UserEnabled = true;
-      chartArea1->CursorX->UserSelection = true;
-      chartArea1->CursorY->Interval = 0;
-      chartArea1->CursorY->UserEnabled = true;
-      chartArea1->CursorY->UserSelection = true;
-      chartArea1->InnerPlotPosition->Auto = false;
-      chartArea1->InnerPlotPosition->Height = 91.31669F;
-      chartArea1->InnerPlotPosition->Width = 90.36408F;
-      chartArea1->InnerPlotPosition->X = 5.64604F;
-      chartArea1->InnerPlotPosition->Y = 1.98027F;
-      chartArea1->Name = L"Default";
-      chartArea1->Position->Auto = false;
-      chartArea1->Position->Height = 79.53476F;
-      chartArea1->Position->Width = 92.10797F;
-      chartArea1->Position->X = 3.756811F;
-      chartArea1->Position->Y = 15.82769F;
-      chartArea1->ShadowOffset = 2;
-      this->chartMainPlot->ChartAreas->Add(chartArea1);
+      this->chart->BorderLineStyle = Dundas::Charting::WinControl::ChartDashStyle::Solid;
+      this->chart->BorderSkin->FrameBackColor = System::Drawing::Color::CornflowerBlue;
+      this->chart->BorderSkin->FrameBackGradientEndColor = System::Drawing::Color::CornflowerBlue;
+      this->chart->BorderSkin->PageColor = System::Drawing::SystemColors::Control;
+      this->chart->BorderSkin->SkinStyle = Dundas::Charting::WinControl::BorderSkinStyle::Emboss;
       legend1->Alignment = System::Drawing::StringAlignment::Far;
       legend1->BackColor = System::Drawing::Color::White;
       legend1->BorderColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(26)), static_cast<System::Int32>(static_cast<System::Byte>(59)), 
         static_cast<System::Int32>(static_cast<System::Byte>(105)));
       legend1->Docking = Dundas::Charting::WinControl::LegendDocking::Top;
+      legend1->Enabled = false;
       legend1->Name = L"Default";
       legend1->ShadowOffset = 2;
-      this->chartMainPlot->Legends->Add(legend1);
-      this->chartMainPlot->Location = System::Drawing::Point(12, 12);
-      this->chartMainPlot->Name = L"chartMainPlot";
-      this->chartMainPlot->Palette = Dundas::Charting::WinControl::ChartColorPalette::Dundas;
-      this->chartMainPlot->Size = System::Drawing::Size(992, 688);
-      this->chartMainPlot->TabIndex = 2;
-      this->chartMainPlot->Text = L"chart1";
+      this->chart->Legends->Add(legend1);
+      this->chart->Location = System::Drawing::Point(12, 12);
+      this->chart->Name = L"chart";
+      this->chart->Palette = Dundas::Charting::WinControl::ChartColorPalette::Dundas;
+      this->chart->Size = System::Drawing::Size(992, 688);
+      this->chart->TabIndex = 2;
+      this->chart->Text = L"chart1";
       // 
       // btnExit
       // 
@@ -224,12 +147,12 @@ namespace gui {
       this->ClientSize = System::Drawing::Size(1016, 741);
       this->Controls->Add(this->btnSave);
       this->Controls->Add(this->btnExit);
-      this->Controls->Add(this->chartMainPlot);
+      this->Controls->Add(this->chart);
       this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::SizableToolWindow;
       this->Name = L"GraphForm";
       this->ShowInTaskbar = false;
       this->Text = L"GraphForm";
-      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->chartMainPlot))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->chart))->EndInit();
       this->ResumeLayout(false);
 
     }
