@@ -1,10 +1,6 @@
 #include "StdAfx.h"
 #include "RunDensimForm.h"
 
-#pragma managed( push, off )
-#include "../../simulation/output/MosData.h"
-#pragma managed( pop )
-
 using namespace gui;
 
 
@@ -16,11 +12,8 @@ RunDensimForm::RunDensimForm(BindingSource ^ locationBinding)
 
   // load years into combo boxes based on what years of MosData are available
   gui::Location ^ location = (gui::Location^) _locationBinding->DataSource;
-  sim::output::MosData * mosData = location->MosData;
-  
-  boost::gregorian::date_period availableMosData = mosData->GetMosDataPeriod();
-  _mosDataStartYear = availableMosData.begin().year();
-  _mosDataStopYear = availableMosData.end().year();
+  _mosDataStartYear = location->CimsimOutput->StartDate.Year;
+  _mosDataStopYear = location->CimsimOutput->StopDate.Year;
 
   for( int i = _mosDataStartYear; i <= _mosDataStopYear; ++i ) {
     cboxStartYear->Items->Add( i );
