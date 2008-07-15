@@ -23,8 +23,14 @@ namespace gui {
 
   static System::DateTime ToDateTime( boost::gregorian::date d )
   {
-    // convert .NET DateTime to boost::gregorian::date
+    // convert boost date to .net date
     return System::DateTime( d.year(), d.month(), d.day() );
+  }
+
+  static boost::gregorian::date ToBoostDate( System::DateTime dt )
+  {
+    // convert .net date to boost date
+    return boost::gregorian::date( dt.Year, dt.Month, dt.Day );
   }
 
 }

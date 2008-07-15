@@ -18,12 +18,12 @@
 #include "../../simulation/csport/csport.h"
 #include "../../simulation/densim/Simulation.h"
 #include "../../simulation/output/CimsimOutput.h"
-#include "../../simulation/output/DensimData.h"
+#include "../../simulation/output/DensimOutput.h"
 #include "../../simulation/output/MosData.h"
 #pragma managed(pop)
 
 #pragma make_public(sim::output::CimsimOutput)
-#pragma make_public(sim::output::DensimData)
+#pragma make_public(sim::output::DensimOutput)
 #pragma make_public(sim::output::MosData)
 #pragma make_public(sim::output::DailyMosData)
 
@@ -89,7 +89,8 @@ public:
   FoodFitTotals ^ GetFoodFitTotals(void);
   void EndFoodFit(bool saveFitData);
 
-  void RunDensim( int startYear, int stopYear );
+  void RunDensim( DateTime startDate, DateTime stopDate );
+  output::DensimOutput ^ ProcessDensimOutput( sim::output::DensimOutput * udo, DateTime startDate, DateTime stopDate );
 
 // Properties
 public:
@@ -302,9 +303,9 @@ public:
   }
 
   [XmlIgnore]
-  property sim::output::DensimData * DensimData {
-    sim::output::DensimData * get(void) {
-      return DensimData_;
+  property gui::output::DensimOutput ^ DensimOutput {
+    gui::output::DensimOutput ^ get(void) {
+      return DensimOutput_;
     }
   }
 
@@ -336,7 +337,7 @@ private:
   bool _isDensimCompleted;
   gui::output::CimsimOutput ^ CimsimOutput_;
   sim::output::MosData * MosData_;
-  sim::output::DensimData * DensimData_;
+  gui::output::DensimOutput ^ DensimOutput_;
 };
 
 };

@@ -21,11 +21,10 @@ Location::Location(void)
   InfectionIntroduction_(gcnew InfectionIntroductionParameters()),
   SequentialInfections_(gcnew SequentialInfectionParameters()),
   _isCimsimCompleted(false),
+  CimsimOutput_(nullptr),
   _isDensimCompleted(false),
-  MosData_(NULL),
-  DensimData_(NULL),
-  DensimSeries_(gcnew OutputSeries()),
-  SerotypeSeries_(gcnew SerotypeOutputSeries())
+  DensimOutput_(nullptr),
+  MosData_(NULL)
 {
 }
 
@@ -51,22 +50,15 @@ Location::GetSimObject(void)
   }
 
   for each( gui::Control ^ ctrl in this->Controls ) {
-    input::Control * simCtrl = ctrl->GetSimObject();
-    location->Controls_.push_back( simCtrl );
+    location->Controls_.push_back( ctrl->GetSimObject() );
   }
 
   location->Biology_ = Biology_->GetSimObject();
-
   location->Weather_ = Weather_->GetSimObject();
-
   location->Demographics_ = Demographics_->GetSimObject();
-
   location->Serology_ = Serology_->GetSimObject();
-
   location->Virology_ = Virology_->GetSimObject();
-
   location->InfectionIntroduction_ = InfectionIntroduction_->GetSimObject();
-
   location->SequentialInfections_ = SequentialInfections_->GetSimObject();
 
   return location;
@@ -269,7 +261,6 @@ Location::RunCimsim( bool usePop, DateTime startDate, DateTime stopDate )
   // copy output to managed classes
   CimsimOutput_ = ProcessCimsimOutput( cd, startDate, stopDate );
 
-
   // delete input object, simulation, and managed output
   delete loc;
   delete cssim;
@@ -283,7 +274,15 @@ void CopyVectorToOutput( std::vector<double> & vector, output::Output ^ output )
   for( unsigned int i = 0; i < vector.size(); ++i ) {
     output->Data->Add( vector[i] );
   }
+}
 
+
+
+void CopyVectorToOutput( std::vector<int> & vector, output::Output ^ output )
+{
+  for( unsigned int i = 0; i < vector.size(); ++i ) {
+    output->Data->Add( vector[i] );
+  }
 }
 
 
@@ -435,8 +434,11 @@ Location::GetFoodFitTotals(void)
 
 
 void
-Location::RunDensim( int startYear, int stopYear )
+Location::RunDensim( DateTime startDate, DateTime stopDate )
 {
+  int startYear = startDate.Year;
+  int stopYear = stopDate.Year;
+
   if( !Weather_->IsWeatherYearAvailable(startYear) ) {
     throw gcnew System::ArgumentOutOfRangeException( "startYear", "startYear must have weather available" );
   }
@@ -450,17 +452,6 @@ Location::RunDensim( int startYear, int stopYear )
   }
 
   if( _isDensimCompleted ) {
-    for each( Dundas::Charting::WinControl::Series ^ series in DensimSeries_->Values ) {
-      delete series;
-    }
-    DensimSeries_->Clear();
-
-    for each( OutputSeries ^ outputSeries in SerotypeSeries_->Values ) {
-      for each( Dundas::Charting::WinControl::Series ^ series in outputSeries->Values ) {
-        delete series;
-      }
-    }
-    SerotypeSeries_->Clear();
   }
 
   // TODO - why regenerate a new object - especially if old one was what was used for CIMSiM
@@ -468,16 +459,81 @@ Location::RunDensim( int startYear, int stopYear )
   const input::Location * loc = GetSimObject();
 
   // find start and stop dates for simulation
-  boost::gregorian::date startDate = boost::gregorian::date( startYear, 1, 1 );
-  boost::gregorian::date stopDate = boost::gregorian::date( stopYear, 12, 31 );
+  boost::gregorian::date bStartDate = boost::gregorian::date( startYear, 1, 1 );
+  boost::gregorian::date bStopDate = boost::gregorian::date( stopYear, 12, 31 );
 
   sim::ds::Simulation * dssim = new sim::ds::Simulation( loc, MosData_ );
-  dssim->Start( startDate, stopDate );
-
-  // process output
-  DensimData_ = dssim->GetSimOutput();
+  dssim->Start( bStartDate, bStopDate );
   _isDensimCompleted = true;
+
+  // simulation complete, process output for use by gui
+  sim::output::DensimOutput * dd = dssim->GetSimOutput();
+  DensimOutput_ = ProcessDensimOutput( dd, startDate, stopDate );
 
   delete loc;     // delete input object (no longer needed, regenerated on next run)
   delete dssim;   // delete sim and its output (now processed into managed data)
+}
+
+
+
+output::DensimOutput ^
+Location::ProcessDensimOutput( sim::output::DensimOutput * udo, DateTime startDate, DateTime stopDate )
+{
+  // managed cimsim output
+  output::DensimOutput ^ mdo = gcnew output::DensimOutput( startDate, stopDate );
+
+  // get dates in boost format
+  boost::gregorian::date bStartDate = boost::gregorian::date( startDate.Year, startDate.Month, startDate.Day );
+  boost::gregorian::date bStopDate = boost::gregorian::date( stopDate.Year, stopDate.Month, stopDate.Day );
+
+  // copy data
+  CopyVectorToOutput( udo->GetInitialAgeDsitribution(), mdo->Location[output::OutputInfos::DensimLocation::InitialAgeDistribution] );
+  CopyVectorToOutput( udo->GetFinalAgeDistribution(), mdo->Location[output::OutputInfos::DensimLocation::FinalAgeDistribution] );
+  CopyVectorToOutput( udo->GetBirths(), mdo->Location[output::OutputInfos::DensimLocation::BirthsByClass] );
+  int totalBirths = 0;
+  for each( double d in mdo->Location[output::OutputInfos::DensimLocation::BirthsByClass]->Data ) {
+    totalBirths += d;
+  }
+  for each( double d in mdo->Location[output::OutputInfos::DensimLocation::BirthsByClass]->Data ) {
+    mdo->Location[output::OutputInfos::DensimLocation::BirthPercentagesByClass]->Data->Add( d / totalBirths );
+  }
+
+  CopyVectorToOutput( udo->GetDeaths(), mdo->Location[output::OutputInfos::DensimLocation::DeathsByClass] );
+  int totalDeaths = 0;
+  for each( double d in mdo->Location[output::OutputInfos::DensimLocation::DeathsByClass]->Data ) {
+    totalDeaths += d;
+  }
+  for each( double d in mdo->Location[output::OutputInfos::DensimLocation::DeathsByClass]->Data ) {
+    mdo->Location[output::OutputInfos::DensimLocation::DeathPercentagesByClass]->Data->Add( d / totalDeaths );
+  }
+
+  CopyVectorToOutput( udo->GetNumberOfHumans(bStartDate, bStopDate), mdo->Location[output::OutputInfos::DensimLocation::PopulationSize] );
+  CopyVectorToOutput( udo->GetMosqTotal(bStartDate, bStopDate), mdo->Location[output::OutputInfos::DensimLocation::FemaleMosquitoesInSimulationArea] );
+
+  for( DateTime dt = startDate; dt <= stopDate; dt = dt.AddDays(1) ) {
+    int i = dt.Subtract( startDate ).Days;
+    int humans = mdo->Location[output::OutputInfos::DensimLocation::PopulationSize]->Data[i];
+    double mosquitoes = mdo->Location[output::OutputInfos::DensimLocation::FemaleMosquitoesInSimulationArea]->Data[i];
+
+    double simarea = humans / this->Demographics->HumanHostDensity;
+    double mosquitoesPerPerson = mosquitoes / humans;
+    double survival = MosData_->GetMosData( ToBoostDate(dt) ).OverallSurvival;
+    double weight = MosData_->GetMosData( ToBoostDate(dt) ).AverageWeight;
+
+    mdo->Location[output::OutputInfos::DensimLocation::SimulationArea]->Data->Add( simarea );
+    mdo->Location[output::OutputInfos::DensimLocation::FemaleMosquitoesPerPerson]->Data->Add( mosquitoesPerPerson );
+    mdo->Location[output::OutputInfos::DensimLocation::FemaleMosquitoSurvival]->Data->Add( survival );
+    mdo->Location[output::OutputInfos::DensimLocation::FemaleMosquitoWetWeight]->Data->Add( weight );
+  }
+
+  for( int i = 1; i <= 4; ++i ) {
+    int serotype = i;
+    CopyVectorToOutput( udo->GetEipDevelopmentRate(bStartDate, bStopDate, serotype), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::EipDevelopmentRate] );
+    CopyVectorToOutput( udo->GetInfectiveMosquitoes(bStartDate, bStopDate, serotype), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::InfectiveMosquitoes] );
+    CopyVectorToOutput( udo->GetPersonsIncubating(bStartDate, bStopDate, serotype), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::PersonsIncubating] );
+    CopyVectorToOutput( udo->GetPersonsViremic(bStartDate, bStopDate, serotype), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::PersonsViremic] );
+    CopyVectorToOutput( udo->GetPersonsWithVirus(bStartDate, bStopDate, serotype), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::PersonsWithVirus] );
+  }
+
+  return mdo;
 }
