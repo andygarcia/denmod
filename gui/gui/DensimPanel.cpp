@@ -115,7 +115,7 @@ DensimPanel::RunDensim(System::Void)
   if( rdf->ShowDialog(this) == ::DialogResult::OK ) {
     // run simulation
     gui::Location::RunDensimOptions ^ rdo = rdf->RunDensimOptions;
-    GetLocation()->RunDensim( rdo->StartDate.Year, rdo->StopDate.Year );
+    GetLocation()->RunDensim( rdo->StartDate, rdo->StopDate );
     rdf->Close();
 
     // process output

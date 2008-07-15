@@ -674,10 +674,6 @@
 				</File>
 			</File>
 			<File
-				RelativePath=".\SimOutput.h"
-				>
-			</File>
-			<File
 				RelativePath=".\SingleSchedulePanel.h"
 				FileType="4"
 				>

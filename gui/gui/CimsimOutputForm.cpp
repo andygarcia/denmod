@@ -147,7 +147,7 @@ CimsimOutputForm::OnRunDensim(System::Object^  sender, System::EventArgs^  e)
   if( rdf->ShowDialog(this) == ::DialogResult::OK ) {
     // run simulation
     gui::Location::RunDensimOptions ^ rdo = rdf->RunDensimOptions;
-    _location->RunDensim( rdo->StartDate.Year, rdo->StopDate.Year );
+    _location->RunDensim( rdo->StartDate, rdo->StopDate );
     rdf->Close();
 
     // process output

@@ -62,7 +62,6 @@ CimsimExtOutputForm::OnView(System::Object^  sender, System::EventArgs^  e)
     OnViewContainerGraph( btnView, nullptr );
   }
   else {
-    // TODO ?
   }
 }
 

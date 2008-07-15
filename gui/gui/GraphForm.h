@@ -11,45 +11,10 @@ using namespace System::Drawing;
 namespace gui {
 
 
-    enum class DensimGraphType : int {
-      InitialAgeDistribution,
-      FinalAgeDistribution,
-
-      SimulationArea,
-      PopulationSize,
-
-      BirthsByClass,
-      DeathsByClass,
-      BirthPercentagesByClass,
-      DeathPercentagesByClass,
-
-      FemaleMosquitoesInSimulationArea,
-      FemaleMosquitoesPerHectare,
-      FemaleMosquitoesPerPerson,
-      FemaleMosquitoSurvival,
-      FemaleMosquitoWetWeight,
-
-      EipDevelopmentRate,
-      InfectiveMosquitoes,
-      PotentiallyInfectiveBites,
-      PersonsIncubating,
-      PersonsViremic,
-      PersonsWithVirus,
-
-      //GeneralSeroprevalence,
-      //DetailedSeroprevalence,
-
-      //NewCases,
-      //PredictedHFSS,
-      //DeathsHFSS
-    };
-
   public ref class GraphForm : public System::Windows::Forms::Form
 	{
 	public:
     GraphForm( gui::Location ^ location, output::ChartInfo ^ chartInfo, output::TimePeriod timePeriod, output::TimePeriodFunction timePeriodFunction );
-    GraphForm( gui::Location ^ location, output::Graph ^ graph, output::TimePeriod timePeriod, output::TimePeriodFunction timePeriodFunction );
-    GraphForm( gui::Location ^ location, DensimGraphType graphType );
 	protected:
 		~GraphForm();
 

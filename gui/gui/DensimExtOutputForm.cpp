@@ -7,11 +7,8 @@ using namespace gui;
 
 
 
-DensimExtOutputForm::DensimExtOutputForm( gui::Location ^ location, DateTime beginDate, DateTime endDate )
-: Location_( location ),
-  BeginDate_(beginDate),
-  EndDate_(endDate),
-  SimOutput_(location->DensimData)
+DensimExtOutputForm::DensimExtOutputForm( gui::Location ^ location )
+: Location_( location )
 {
 	InitializeComponent();
 }
@@ -30,7 +27,39 @@ DensimExtOutputForm::~DensimExtOutputForm()
 System::Void
 DensimExtOutputForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
 {
-  lboxLocationGraphs->DataSource = System::Enum::GetValues( DensimGraphType::typeid );
+  ArrayList ^ tags = gcnew ArrayList();
+  lboxLocationGraphs->Tag = tags;
+
+  // place all graphs in one list box
+  lboxLocationGraphs->DisplayMember = "Name";
+  for each( output::ChartInfo ^ chartInfo in output::ChartInfos::GetChartInfoCollection(output::Group::DensimLocation) ) {
+    lboxLocationGraphs->Items->Add( chartInfo );
+    tags->Add(nullptr);
+  }
+  for each( output::ChartInfo ^ chartInfo in output::ChartInfos::GetChartInfoCollection(output::Group::DensimSerotype) ) {
+    lboxLocationGraphs->Items->Add( chartInfo );
+    tags->Add(nullptr);
+  }
+
+  output::ChartInfo ^ detailedSero = gcnew output::ChartInfo();
+  detailedSero->Name = "Detailed Seroprevalence";
+  tags->Add( gcnew output::CreateChartInfoDelegate( this, &gui::DensimExtOutputForm::DetailedSeroprevalence ) );
+  lboxLocationGraphs->Items->Add( detailedSero );
+}
+
+
+
+System::Void
+DensimExtOutputForm::OnView(System::Object^  sender, System::EventArgs^  e)
+{
+  if( tabGraphType->SelectedTab == tabPageLocation ) {
+    OnViewLocationGraph( btnView, nullptr );
+  }
+  else if( tabGraphType->SelectedTab == tabPageVirus ) {
+    OnViewVirusGraph( btnView, nullptr );
+  }
+  else {
+  }
 }
 
 
@@ -43,7 +72,61 @@ DensimExtOutputForm::OnViewLocationGraph(System::Object^  sender, System::EventA
     return;
   }
 
-  GraphForm ^ gf = gcnew GraphForm( Location_, (DensimGraphType) lboxLocationGraphs->SelectedIndex );
+  using namespace output;
+
+  ChartInfo ^ chartInfo;
+  ArrayList ^ tags = (ArrayList^) lboxLocationGraphs->Tag;
+  if( tags[lboxLocationGraphs->SelectedIndex] != nullptr ) {
+    // use delegate to create chart
+    output::CreateChartInfoDelegate ^ ccid = (output::CreateChartInfoDelegate^) tags[lboxLocationGraphs->SelectedIndex];
+    chartInfo = ccid->Invoke();
+  }
+  else {
+    // use bound object for chart
+    ChartInfo ^ chartInfo = (ChartInfo^) lboxLocationGraphs->SelectedValue;
+  }
+
+  //TimePeriod timePeriod = TimePeriod( cboxTimePeriod->SelectedValue );
+
+  GraphForm ^ gf = gcnew GraphForm( Location_, chartInfo, output::TimePeriod::Daily, output::TimePeriodFunction::Average );
   gf->ShowDialog(this);
   gf->Close();
+}
+
+
+
+System::Void
+DensimExtOutputForm::OnViewVirusGraph( System::Object ^ sender, System::EventArgs ^ e )
+{
+  if( lboxVirusGraphs->SelectedItem == nullptr ) {
+    MessageBox::Show( this, "Please select a graph to view." );
+    return;
+  }
+
+  using namespace output;
+
+  ChartInfo ^ chartInfo = (ChartInfo^) lboxVirusGraphs->SelectedValue;
+  //TimePeriod timePeriod = TimePeriod( cboxTimePeriod->SelectedValue );
+
+  GraphForm ^ gf = gcnew GraphForm( Location_, chartInfo, output::TimePeriod::Daily, output::TimePeriodFunction::Average );
+  gf->ShowDialog(this);
+  gf->Close();
+}
+
+
+
+output::ChartInfo ^
+DensimExtOutputForm::DetailedSeroprevalence(void)
+{
+  // pop up dialog that allows selection of age class for seroprevalence summary
+  output::ChartInfo ^ chartInfo = gcnew output::ChartInfo();
+
+  // prompt user for age classes
+
+
+  // use densim output to create output
+
+
+  // create relevant outputs
+  return chartInfo;
 }
