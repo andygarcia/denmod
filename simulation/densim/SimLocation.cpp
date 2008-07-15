@@ -17,7 +17,7 @@ date BoostDateFromYearAndDayOfYear( int year, int day )
 SimLocation::SimLocation( const input::Location * location, sim::output::MosData * mosData )
 : Location_(location),
   MosData_(mosData),
-  Output_(new output::DensimData()),
+  Output_(new output::DensimOutput()),
   GasCoef(1.987f),
   CumDeaths(std::vector<double>( 18+1, 0 )),
   CumBirths(std::vector<double>( 18+1, 0 )),
@@ -181,7 +181,7 @@ SimLocation::Start( boost::gregorian::date startDate, boost::gregorian::date sto
 
 
   
-sim::output::DensimData *
+sim::output::DensimOutput *
 SimLocation::GetSimOutput(void)
 {
   return Output_;
@@ -1528,17 +1528,17 @@ SimLocation::CalcNewInocHumans( int iType, int iOldAge )
 }
 
 
-  
+
 void
 SimLocation::RankPop(void)
 {
-  AgeDistribution = std::vector<int>( 18+1, 0 );                                             // clear last tally
+  AgeDistribution = std::vector<int>( 18+1, 0 );                                      // clear last tally
   SerDistr = std::vector<std::vector<int>>( 18+1, std::vector<int>(4+1, 0) );         // clear last tally
   Incub = std::vector<std::vector<int>>( 18+1, std::vector<int>(4+1, 0) );            // clear last tally
-  Infective = std::vector<std::vector<int>>( 18+1, std::vector<int>(4+1, 0) );      // clear last tally
+  Infective = std::vector<std::vector<int>>( 18+1, std::vector<int>(4+1, 0) );        // clear last tally
   HomImm = std::vector<std::vector<int>>( 18+1, std::vector<int>(4+1, 0) );           // clear last tally
   HetImm = std::vector<std::vector<int>>( 18+1, std::vector<int>(4+1, 0) );           // clear last tally
-  MatAnti = std::vector<MaternalTransmission>( 4+1 );                              // clear last tally
+  MatAnti = std::vector<MaternalTransmission>( 4+1 );                                 // clear last tally
   TotDlyIncub = std::vector<int>( 4+1, 0 );
   TotDlyInfective = std::vector<int>( 4+1, 0 );
   TotDlyHomImm = std::vector<int>( 4+1, 0 );
@@ -2242,13 +2242,13 @@ SimLocation::PurgeHFDeaths(void)
 void
 SimLocation::SpoolToDisk( int SpRecNum )
 {
-  output::DensimData::DailyLocationOutput dlo;
+  output::DensimOutput::DailyLocationOutput dlo;
 
   dlo.Incubate1 = TotDlyIncub[1];
   dlo.Incubate2 = TotDlyIncub[2];
   dlo.Incubate3 = TotDlyIncub[3];
   dlo.Incubate4 = TotDlyIncub[4];
-      
+
   dlo.Viremic1 = TotDlyInfective[1];
   dlo.Viremic2 = TotDlyInfective[2];
   dlo.Viremic3 = TotDlyInfective[3];
@@ -2264,7 +2264,9 @@ SimLocation::SpoolToDisk( int SpRecNum )
     dlo.EIPDevRate[i] = EIPDevRate[i];
   }
   dlo.NumHumans = ArraySize;
-  
+
+  // 1  - MANA
+  // 2 - MAEA
   std::vector<double> Temp = std::vector<double>( 4+1, 0 );
   for( int i = 1; i <= 4; ++i ) {
     if( AgeDistribution[1] == 0 ) {
@@ -2276,6 +2278,7 @@ SimLocation::SpoolToDisk( int SpRecNum )
       dlo.SerPos[2][i] = (double) MatAnti[i].MAEA / AgeDistribution[1] * 100;
     }
   }
+  // 3 - 20 - the 18 age classes
   for( int i = 1; i <= 18; ++i ) {
     for( int j = 1; j <= 4; ++j ) {
       if( AgeDistribution[i] == 0 ) {
@@ -2287,6 +2290,7 @@ SimLocation::SpoolToDisk( int SpRecNum )
       Temp[j] = Temp[j] + dlo.SerPos[i + 2][j];
     }
   }
+  // 21 - age classes 5-10
   dlo.SerPos[21][1] = 0;
   dlo.SerPos[21][2] = 0;
   dlo.SerPos[21][3] = 0;
@@ -2304,6 +2308,8 @@ SimLocation::SpoolToDisk( int SpRecNum )
   for( int i = 1; i <= 4; ++i ) {
     dlo.SerPos[21][i] = dlo.SerPos[21][i] / 6;
   }
+
+  // 22 - age classes 11 through 18
   dlo.SerPos[22][1] = 0;
   dlo.SerPos[22][2] = 0;
   dlo.SerPos[22][3] = 0;

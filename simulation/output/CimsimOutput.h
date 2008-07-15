@@ -45,91 +45,31 @@ public:
   void AddDailyLocationOutput( DailyLocationOutput dlo, boost::gregorian::date d );
   void AddDailyContainerOutput( DailyContainerOutput dco, boost::gregorian::date d, int containerID );
 
-  std::vector<DailyDensimOutput> GetDensimOutput( boost::gregorian::date startDate, boost::gregorian::date endDate );
-  std::vector<DailyContainerOutput> GetContainerOutput( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-
-
-  // ================ //
-  // Location Outputs //
-  // ================ //
-
-  // Females
+  // Location outputs
   std::vector<double> GetFemales( boost::gregorian::date startDate, boost::gregorian::date endDate );
-  double GetFemales( boost::gregorian::date d );
-
-  // New Females
   std::vector<double> GetNewFemales( boost::gregorian::date startDate, boost::gregorian::date endDate );
-  double GetNewFemales( boost::gregorian::date d );
-
-  // Average Female Weight
   std::vector<double> GetAverageFemaleWeight( boost::gregorian::date startDate, boost::gregorian::date endDate );
-  double GetAverageFemaleWeight( boost::gregorian::date d );
-
-  // Oviposition
   std::vector<double> GetOviposition( boost::gregorian::date startDate, boost::gregorian::date endDate );
-  double GetOviposition( boost::gregorian::date d );
-
-  // Total Pupae
   std::vector<double> GetTotalPupae( boost::gregorian::date startDate, boost::gregorian::date endDate );
-  double GetTotalPupae( boost::gregorian::date d );
-
-  // Total Larvae
   std::vector<double> GetTotalLarvae( boost::gregorian::date startDate, boost::gregorian::date endDate );
-  double GetTotalLarvae( boost::gregorian::date d );
-
-  // Total Eggs
   std::vector<double> GetTotalEggs( boost::gregorian::date startDate, boost::gregorian::date endDate );
-  double GetTotalEggs( boost::gregorian::date d );
 
-
-  // ================= //
-  // Container Outputs //
-  // ================= //
-
+  // Container outputs
   std::vector<double> GetDepth( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-  double GetDepth( boost::gregorian::date d, int containerID);
-
   std::vector<double> GetFood( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-  double GetFood( boost::gregorian::date d, int containerID);
-
   std::vector<double> GetMaxTemp( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-  double GetMaxTemp( boost::gregorian::date d, int containerID);
-
   std::vector<double> GetMinTemp( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-  double GetMinTemp( boost::gregorian::date d, int containerID);
-
   std::vector<double> GetEggs( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-  double GetEggs( boost::gregorian::date d, int containerID );
-
   std::vector<double> GetLarvae( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-  double GetLarvae( boost::gregorian::date d, int containerID);  
-
   std::vector<double> GetPupae( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-  double GetPupae( boost::gregorian::date d, int containerID);
-
   std::vector<double> GetAvgDryPupWt( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-  double GetAvgDryPupWt( boost::gregorian::date d, int containerID);
-
   std::vector<double> GetNewFemales( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-  double GetNewFemales( boost::gregorian::date d, int containerID);
-
   std::vector<double> GetCumulativeFemales( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-  double GetCumulativeFemales( boost::gregorian::date d, int containerID);
-
   std::vector<double> GetOviposition( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-  double GetOviposition( boost::gregorian::date d, int containerID);
-
   std::vector<double> GetTotalDensity( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-  double GetTotalDensity( boost::gregorian::date d, int containerID);
-
   std::vector<double> GetUntreatedDensity( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-  double GetUntreatedDensity( boost::gregorian::date d, int containerID);
-
   std::vector<double> GetTreatedDensity( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-  double GetTreatedDensity( boost::gregorian::date d, int containerID);
-
   std::vector<double> GetExcludedDensity( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-  double GetExcludedDensity( boost::gregorian::date d, int containerID);
 
 private:
   void CalculateContainerTotals(void);
