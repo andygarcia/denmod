@@ -4,11 +4,14 @@
 using namespace gui::output;
 
 
+
 static
 ChartInfos::ChartInfos(void)
 {
   _cimsimLocation = gcnew ChartInfoCollection();
   _cimsimContainer = gcnew ChartInfoCollection();
+  _densimLocation = gcnew ChartInfoCollection();
+  _densimSerotype = gcnew ChartInfoCollection();
 
   _groupToCollection = gcnew Collections::Generic::Dictionary<Group,ChartInfoCollection^>();
   _groupToCollection->Add( Group::CimsimLocation, _cimsimLocation );
@@ -33,6 +36,21 @@ ChartInfos::ChartInfos(void)
   _cimsimContainer->Add( CimsimContainer::NewFemales );
   _cimsimContainer->Add( CimsimContainer::CumulativeFemales );
   _cimsimContainer->Add( CimsimContainer::Oviposition );
+
+  _densimLocation->Add( DensimLocation::AgeDistribution );
+  _densimLocation->Add( DensimLocation::SimulationArea );
+  _densimLocation->Add( DensimLocation::PopulationSize );
+  _densimLocation->Add( DensimLocation::BirthsAndDeaths );
+  _densimLocation->Add( DensimLocation::FemaleMosquitoesInArea );
+  _densimLocation->Add( DensimLocation::FemaleMosquitoesPerPerson );
+  _densimLocation->Add( DensimLocation::FemaleMosquitoSurvival );
+  _densimLocation->Add( DensimLocation::FemaleMosquitoWetWeight );
+
+  _densimSerotype->Add( DensimSerotype::EipDevelopmentRate );
+  _densimSerotype->Add( DensimSerotype::InfectiveMosquitoes );
+  _densimSerotype->Add( DensimSerotype::PersonsIncubating );
+  _densimSerotype->Add( DensimSerotype::PersonsViremic );
+  _densimSerotype->Add( DensimSerotype::PersonsWithVirus );
 }
 
 
@@ -164,8 +182,27 @@ ChartInfos::DensimLocation::DensimLocation(void)
 }
 
 
+
 static
 ChartInfos::DensimSerotype::DensimSerotype(void)
 {
+  EipDevelopmentRate = gcnew ChartInfo();
+  EipDevelopmentRate->Name = "EIP Development Rate";
+  EipDevelopmentRate->GraphInfos->Add( GraphInfos::DensimSerotype::EipDevelopmentRate );
 
+  InfectiveMosquitoes = gcnew ChartInfo();
+  InfectiveMosquitoes->Name = "Infective Mosquitoes";
+  InfectiveMosquitoes->GraphInfos->Add( GraphInfos::DensimSerotype::InfectiveMosquitoes );
+  
+  PersonsIncubating = gcnew ChartInfo();
+  PersonsIncubating->Name = "Persons Incubating";
+  PersonsIncubating->GraphInfos->Add( GraphInfos::DensimSerotype::PersonsIncubating );
+  
+  PersonsViremic = gcnew ChartInfo();
+  PersonsViremic->Name = "Persons Viremic";
+  PersonsViremic->GraphInfos->Add( GraphInfos::DensimSerotype::PersonsViremic );
+  
+  PersonsWithVirus = gcnew ChartInfo();
+  PersonsWithVirus->Name = "Persons With Virus";
+  PersonsWithVirus->GraphInfos->Add( GraphInfos::DensimSerotype::PersonsWithVirus );
 }

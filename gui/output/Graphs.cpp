@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+﻿#include "StdAfx.h"
 #include "Graphs.h"
 
 using namespace gui::output;
@@ -24,8 +24,10 @@ GraphInfo::CreateGraph( CimsimOutput ^ cimsimOutput, DensimOutput ^ densimOutput
       g->PrimaryOutputs->Add(output);
     }
     else if( oi->OutputGroup == Group::DensimSerotype ) {
-      Output ^ output = densimOutput->Serotypes[_serotypeId][oi];
-      g->PrimaryOutputs->Add(output);
+      for( int i = 1; i <= 4; ++i ) {
+        Output ^ output = densimOutput->Serotypes[i][oi];
+        g->PrimaryOutputs->Add(output);
+      }
     }
   }
   return g;
@@ -109,7 +111,7 @@ GraphInfos::CimsimLocation::CimsimLocation(void)
   Weather = gcnew GraphInfo();
   Weather->Title = "Weather";
   Weather->AxisX = "Date";
-  Weather->AxisY = "�C / mm / mbars";
+  Weather->AxisY = "°C / mm / mbars";
   Weather->GraphType = "Line";
   Weather->PrimaryOutputs->Add( OutputInfos::CimsimLocation::MinimumTemperature );
   Weather->PrimaryOutputs->Add( OutputInfos::CimsimLocation::AverageTemperature );
@@ -150,7 +152,7 @@ GraphInfos::CimsimContainer::CimsimContainer(void)
   WaterTemperature = gcnew GraphInfo();
   WaterTemperature->Title = "Water temperature";
   WaterTemperature->AxisX = "Date";
-  WaterTemperature->AxisY = "�C";
+  WaterTemperature->AxisY = "°C";
   WaterTemperature->GraphType = "Line";
   WaterTemperature->PrimaryOutputs->Add( OutputInfos::CimsimContainer::MaximumTemperature );
   WaterTemperature->PrimaryOutputs->Add( OutputInfos::CimsimContainer::MinimumTemperature );
@@ -214,14 +216,14 @@ GraphInfos::DensimLocation::DensimLocation(void)
   InitialAgeDistribution->Title = "Initial age distribution";
   InitialAgeDistribution->AxisX = "Age class";
   InitialAgeDistribution->AxisY = "# of individuals";
-  InitialAgeDistribution->GraphType = "Line";
+  InitialAgeDistribution->GraphType = "Column";
   InitialAgeDistribution->PrimaryOutputs->Add( OutputInfos::DensimLocation::InitialAgeDistribution );
 
   FinalAgeDistribution = gcnew GraphInfo();
   FinalAgeDistribution->Title = "Final age distribution";
   FinalAgeDistribution->AxisX = "Age class";
   FinalAgeDistribution->AxisY = "# of individuals";
-  FinalAgeDistribution->GraphType = "Line";
+  FinalAgeDistribution->GraphType = "Column";
   FinalAgeDistribution->PrimaryOutputs->Add( OutputInfos::DensimLocation::FinalAgeDistribution );
 
   SimulationArea = gcnew GraphInfo();
@@ -242,28 +244,28 @@ GraphInfos::DensimLocation::DensimLocation(void)
   BirthsByClass->Title = "Births by age class";
   BirthsByClass->AxisX = "Age class";
   BirthsByClass->AxisY = "# of individuals";
-  BirthsByClass->GraphType = "Line";
+  BirthsByClass->GraphType = "Column";
   BirthsByClass->PrimaryOutputs->Add( OutputInfos::DensimLocation::BirthsByClass );
 
   DeathsByClass = gcnew GraphInfo();
   DeathsByClass->Title = "Deaths by age class";
   DeathsByClass->AxisX = "Age class";
   DeathsByClass->AxisY = "# DeathsByClass";
-  DeathsByClass->GraphType = "Line";
+  DeathsByClass->GraphType = "Column";
   DeathsByClass->PrimaryOutputs->Add( OutputInfos::DensimLocation::DeathsByClass );
 
   BirthPercentagesByClass = gcnew GraphInfo();
   BirthPercentagesByClass->Title = "Birth percentages by age class";
   BirthPercentagesByClass->AxisX = "Age class";
   BirthPercentagesByClass->AxisY = "Percentage of births";
-  BirthPercentagesByClass->GraphType = "Line";
+  BirthPercentagesByClass->GraphType = "Column";
   BirthPercentagesByClass->PrimaryOutputs->Add( OutputInfos::DensimLocation::BirthPercentagesByClass );
 
   DeathPercentagesByClass = gcnew GraphInfo();
   DeathPercentagesByClass->Title = "Death percentages by age class";
   DeathPercentagesByClass->AxisX = "Age class";
   DeathPercentagesByClass->AxisY = "Percentage of deaths";
-  DeathPercentagesByClass->GraphType = "Line";
+  DeathPercentagesByClass->GraphType = "Column";
   DeathPercentagesByClass->PrimaryOutputs->Add( OutputInfos::DensimLocation::DeathPercentagesByClass );
 
   FemaleMosquitoesInSimulationArea = gcnew GraphInfo();
@@ -293,4 +295,45 @@ GraphInfos::DensimLocation::DensimLocation(void)
   FemaleMosquitoWetWeight->AxisY = "Wet Weight (mg)";
   FemaleMosquitoWetWeight->GraphType = "Line";
   FemaleMosquitoWetWeight->PrimaryOutputs->Add( OutputInfos::DensimLocation::FemaleMosquitoWetWeight );
+}
+
+
+
+static
+GraphInfos::DensimSerotype::DensimSerotype(void)
+{
+  EipDevelopmentRate = gcnew GraphInfo();
+  EipDevelopmentRate->Title = "EIP Development Rate";
+  EipDevelopmentRate->AxisX = "Date";
+  EipDevelopmentRate->AxisY = L"day ⁻¹";
+  EipDevelopmentRate->GraphType = "Line";
+  EipDevelopmentRate->PrimaryOutputs->Add( OutputInfos::DensimSerotype::EipDevelopmentRate );
+
+  InfectiveMosquitoes = gcnew GraphInfo();
+  InfectiveMosquitoes->Title = "Infective Mosquitoes";
+  InfectiveMosquitoes->AxisX = "Date";
+  InfectiveMosquitoes->AxisY = "# of infective mosquitoes";
+  InfectiveMosquitoes->GraphType = "Line";
+  InfectiveMosquitoes->PrimaryOutputs->Add( OutputInfos::DensimSerotype::InfectiveMosquitoes );
+
+  PersonsIncubating = gcnew GraphInfo();
+  PersonsIncubating->Title = "Persons Incubating";
+  PersonsIncubating->AxisX = "Date";
+  PersonsIncubating->AxisY = "# of persons";
+  PersonsIncubating->GraphType = "Line";
+  PersonsIncubating->PrimaryOutputs->Add( OutputInfos::DensimSerotype::PersonsIncubating );
+
+  PersonsViremic = gcnew GraphInfo();
+  PersonsViremic->Title = "Persons Viremic";
+  PersonsViremic->AxisX = "Date";
+  PersonsViremic->AxisY = "# of persons";
+  PersonsViremic->GraphType = "Line";
+  PersonsViremic->PrimaryOutputs->Add( OutputInfos::DensimSerotype::PersonsViremic );
+
+  PersonsWithVirus = gcnew GraphInfo();
+  PersonsWithVirus->Title = "Persons with Virus";
+  PersonsWithVirus->AxisX = "Date";
+  PersonsWithVirus->AxisY = "# of persons";
+  PersonsWithVirus->GraphType = "Line";
+  PersonsWithVirus->PrimaryOutputs->Add( OutputInfos::DensimSerotype::PersonsWithVirus );
 }

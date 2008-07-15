@@ -23,7 +23,7 @@ public enum class Group : int
 
 
 
-public ref class OutputInfo
+public ref class OutputInfo abstract
 {
 public:
   OutputInfo( Group outputGroup, String ^ name, String ^ units );
@@ -71,6 +71,15 @@ public:
   {}
 };
 
+
+
+public ref class ClassOutputInfo : public OutputInfo
+{
+public:
+  ClassOutputInfo( Group outputGroup, String ^ name, String ^ units )
+  : OutputInfo(outputGroup, name, units)
+  {}
+};
 
 
 public ref class Output
@@ -203,17 +212,18 @@ public:
     static DensimLocation(void);
 
   public:
-    static OutputInfo ^ InitialAgeDistribution;
-    static OutputInfo ^ FinalAgeDistribution;
+    static ClassOutputInfo ^ InitialAgeDistribution;
+    static ClassOutputInfo ^ FinalAgeDistribution;
     static DatedOutputInfo ^ SimulationArea;
     static DatedOutputInfo ^ PopulationSize;
-    static OutputInfo ^ BirthsByClass;
-    static OutputInfo ^ DeathsByClass;
-    static OutputInfo ^ BirthPercentagesByClass;
-    static OutputInfo ^ DeathPercentagesByClass;
+    static ClassOutputInfo ^ BirthsByClass;
+    static ClassOutputInfo ^ DeathsByClass;
+    static ClassOutputInfo ^ BirthPercentagesByClass;
+    static ClassOutputInfo ^ DeathPercentagesByClass;
     static DatedOutputInfo ^ FemaleMosquitoesInSimulationArea;
     static DatedOutputInfo ^ FemaleMosquitoesPerHectare;
     static DatedOutputInfo ^ FemaleMosquitoesPerPerson;
+    static DatedOutputInfo ^ PotentiallyInfectiveBites;
     static DatedOutputInfo ^ FemaleMosquitoSurvival;
     static DatedOutputInfo ^ FemaleMosquitoWetWeight;
 
@@ -233,7 +243,6 @@ public:
   public:
     static DatedOutputInfo ^ EipDevelopmentRate;
     static DatedOutputInfo ^ InfectiveMosquitoes;
-    static DatedOutputInfo ^ PotentiallyInfectiveBites;
     static DatedOutputInfo ^ PersonsIncubating;
     static DatedOutputInfo ^ PersonsViremic;
     static DatedOutputInfo ^ PersonsWithVirus;

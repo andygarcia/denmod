@@ -42,6 +42,8 @@ private:
 };
 typedef ComponentModel::BindingList<ChartInfo^> ChartInfoCollection;
 
+public delegate output::ChartInfo ^ CreateChartInfoDelegate(void);
+
 
 
 public ref class ChartInfos
@@ -112,9 +114,11 @@ public:
   public:
     static DensimSerotype(void);
   public:
-
-
-
+    static ChartInfo ^ EipDevelopmentRate;
+    static ChartInfo ^ InfectiveMosquitoes;
+    static ChartInfo ^ PersonsIncubating;
+    static ChartInfo ^ PersonsViremic;
+    static ChartInfo ^ PersonsWithVirus;
   };
 
 };
