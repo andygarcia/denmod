@@ -34,29 +34,30 @@ private:
   output::DensimOutput::DailyLocationOutput & GetLocationOutputByIndex( int index );
 
 public:
-  void ReadWeather( int year );
-  void ReadMos( int year );
-
-  // methods correlate to subs/functions in DS 1.0, in order of appearance in source code
-  // denmain() begins with module level code in DENMAIN.BAS
   void denmain(void);
+
+  void MainInitialization(void);
   void InitializePopulation(void);
   void InitializeSeroprevalence(void);
-  void AdjustEipByTiter(void);
+  void CalculateEipTiterAdjustment(void);
 
   void CalculateDeaths(void);
   void CalculateBirths(void);
   void AgePopulation(void);
 
   void IntroduceInfection(void);
-  void PurgeMaternal( int iOff );
-  double EIPEnzKin( double temp );
-  void MosqLifeCycle(void);
-  void HumToMosqTrans(void);
-  void CalcNewInocMosquitoes( int iType );
-  double Factorial( int n );
-  void MosqToHumTrans( int iOldAge );
-  void CalcNewInocHumans( int iType, int iOldAge );
+  void PurgeMaternal(void);
+
+  void CalculateEip(void);
+
+  void AdvanceMosquitoes(void);
+
+  void HumanToMosquitoTransmission(void);
+  void InnoculateMosquitoes( int iType );
+
+  void MosquitoToHumanTransmission(void);
+  void InnoculateHumans( int iType );
+
   void RankPop(void);
   void SeroRank( int iElement, int iRank );
   void CalcSeqInfs( int iVirType, int iPerAge, int iD1Inoc, int iD2Inoc, int iD3Inoc, int iD4Inoc );
@@ -67,10 +68,14 @@ public:
 private:
   void ComparePopulation(void);
   void ComparePopulationAndSerotypes(void);
+  int DeterminePosition( int IAge );
   static int CINT( double value );
   static int INT( double value );
   double RND(void);
-  int DeterminePosition( int IAge );
+  double Factorial( int n );
+  double EIPEnzKin( double temp );
+  void ReadWeather( int year );
+  void ReadMos( int year );
 
 // Fields
 public:
@@ -100,43 +105,43 @@ public:
   std::vector<int> Deng3;            // age of inoculations - dengue 3
   std::vector<int> Deng4;            // age of inoculations - dengue 4
 
+  // replace the above arrays with this one
   Population Individuals;
 
-  int InitialPopulationSize;                        // size of array at initialization
-  int PopulationSize;                               // actual size of indiv() array
-  int OldPopulationSize;                            // previous years value
+  std::vector<int> AgeDistribution;       // number of individuals currently in each age class
+  std::vector<int> InitialAgeDistribution;   // initial age distribution
 
-  std::vector<int> AgeDistribution;                 // number of individuals currently in each age class
-  std::vector<int> InitialAgeDistribution;          // initial age distribution
-  std::vector<input::DemographicClass> PopProp;     // human population statistics
+  std::vector<std::vector<int>> SerDistr;         // Num. sero-pos. individuals
+  std::vector<std::vector<int>> InitSerDistr;     // Init. serolog. distribution
+  std::vector<double> CumHFDeaths;    // number of deaths for ages 0-15
 
-  std::vector<std::vector<double>> SerProp;         // seroprevalence by class and serotype
-  std::vector<std::vector<int>> SerDistr;           // serology distribution
-  std::vector<std::vector<int>> InitSerDistr;       // initial serology distribution
-  std::vector<double> CumHFDeaths;                  // number of deaths for ages 0-15
+  std::vector<std::vector<double>> SerProp;          // Ref. - Seroprev. statistics
+                                                    // Class by prop. with den1-den4
 
-  std::vector<input::VirusSerotype> Virus;          // Virus parameters
-  int MANADurat;                                    // duration of MANA in days
-  int MAEADurat;                                    // duration of MAEA in days
-  int HetImmunDurat;                                // duration of heterologous immun. - days
+  std::vector<input::DemographicClass> PopProp;     // Reference - Human pop. statistics
+  int PopulationSize;                      // Actual size of indiv() array
 
-  int Day;                                          // Simulation day
-  int Year;                                         // Simulation year
+  std::vector<input::VirusSerotype> Virus;       // Virus parameters
+  int MANADurat;                      // Duration of MANA in days
+  int MAEADurat;                      // Duration of MAEA in days
+  int HetImmunDurat;                  // Duration of heterologous immun. - days
 
-  std::vector<std::vector<int>> Incub;              // number of humans with incubating virus by class/virus
-  std::vector<std::vector<int>> Infective;          // number of infective humans by class/virus
-  std::vector<std::vector<int>> HomImm;             // human homologous immunity by class/virus
-  std::vector<std::vector<int>> HetImm;             // human heterologous immunity by class/virus
+  int Day;                                    // Simulation day
+  int Year;                                   // Simulation year
 
+  std::vector<std::vector<int>> Incub;                    // number of humans with incubating virus by class/virus
+  std::vector<std::vector<int>> Infective;                // number of infective humans by class/virus
+  std::vector<std::vector<int>> HomImm;                   // human homologous immunity by class/virus
+  std::vector<std::vector<int>> HetImm;                    // human heterologous immunity by class/virus
   std::vector<int> TotDlyIncub;               // 
   std::vector<int> TotDlyInfective;           // Total daily values by virus
   std::vector<int> TotDlyHomImm;              // 
   std::vector<int> TotDlyHetImm;              // 
   std::vector<int> NewDlyInfective;           // New infective cases on each day
-
   std::vector<MaternalTransmission> MatAnti;  // Number of MANA and MAEA
 
-
+  int InitPopulationSize;        // size of array at initialization
+  int OldPopulationSize;         // previous years value
 
   int EndYear;              // end of simulation
   int SimYear;              // number of simulation years run
@@ -150,7 +155,6 @@ public:
   std::vector<double> RelHumid;
   std::vector<double> SD;
 
-  std::vector<double> EIPFactor;
   double EIPTempAdjust;
 
   std::vector<int> TotalBirths;           // total number of births during simulation
@@ -191,6 +195,7 @@ public:
 
   // EIP calculated daily rates
   std::vector<double> EIPDevRate;
+  std::vector<double> EIPFactor;
 
   double StochTransNum;            // mosquito count threshold, below which simulation uses stochasticity
 
@@ -220,8 +225,9 @@ public:
   std::vector<double> BitersInfdNewDB;         // Number of new double bloods from yesterday
   std::vector<double> BitersInfdOldDB;         // Number of old double bloods from yesterday
 
-  std::vector<double> CumDeaths;               // cumulative deaths by class, holds fractional deaths
-  std::vector<double> CumBirths;               // cumulative births by class, holds fractional deaths
+  // DENDYNAMIC.INC
+  std::vector<double> CumulativeDeaths;               // cumulative deaths by class - holds fractional deaths
+  std::vector<double> CumulativeBirths;               // cumulative births by class - holds fractional births 
 };
 
 };
