@@ -4,6 +4,7 @@
 #include <vector>
 
 
+
 namespace sim {
 namespace ds {
 
@@ -17,32 +18,30 @@ public:
 
 // Methods
 public:
-  void SetNewInfection( int serotype, int age );
+  bool IsSeropositive( int serotype );
 
-  bool HasNoPreviousExposure( int serotype );
+  void InitializeImmunity( int serotype );
+  bool HasInitializedImmunity( int serotype );
 
-  bool HasHeterologousImmunity( int serotype, int duration );
-  bool HasHomologousImmunity( int serotype );
-  void SetHomologousImmunity( int serotype );
-
+  void InitializeMaternallyAcquiredImmunity( int serotype );
   bool HasMaternallyAcquiredImmunity( int serotype );
-  void SetMaternallyAcquiredImmunity( int serotype );
+  void PurgeMaternalImmunity(void);
 
-  void PurgeMaternalAntibodies(void);
+  bool HasHomologousImmunity( int serotype );
 
-private:
-  void SetSerotypeValue( int serotype, int value );
-  int GetSerotypeValue( int serotype );
+  void Infect( int serotype, int age );
+  bool HasPreviousInfection( int serotype );
+  int GetAgeOfInfection( int serotype );
+  bool HasHeterologousImmunity( int serotype, int duration );
 
 // Fields
 public:
   int Age;
-  int Dengue1;
-  int Dengue2;
-  int Dengue3;
-  int Dengue4;
+  int Dengue[5];  // -2 for initialized homologous immmunity
+                  // -1 for maternally acquired immunity
+                  //  0 for no previous exposure
+                  // >0 inoculation day
 };
-
 typedef std::vector<Individual> Population;
 
 
