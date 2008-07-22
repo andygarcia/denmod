@@ -24,7 +24,7 @@ SimLocation::SimLocation( const input::Location * location, sim::output::MosData
   TotalDeaths(std::vector<int>( 18+1, 0 )),
   TotalBirths(std::vector<int>( 18+1, 0 )),
   AgeDistribution(std::vector<int>( 18+1, 0 )),
-  InitAgeDistribution(std::vector<int>( 18+1, 0 )),
+  InitialAgeDistribution(std::vector<int>( 18+1, 0 )),
   PopProp(std::vector<input::DemographicClass>( 18+1 )),
   SerProp(std::vector<std::vector<double>>( 18+1, std::vector<double>(4+1) )),
   SerDistr(std::vector<std::vector<int>>( 18+1, std::vector<int>(4+1, 0) )),
@@ -57,6 +57,7 @@ SimLocation::SimLocation( const input::Location * location, sim::output::MosData
   BitersInfdOldDB(std::vector<double>( 4+1, 0 )),
   BitersInfv(std::vector<double>( 4+1, 0 )),
   EIPDevRate(std::vector<double>( 4+1, 0 )),
+  EIPFactor(std::vector<double>( 4+1, 0 )),
   MosqInfvTotal(std::vector<double>( 4+1, 0 ))
 {
 #ifdef _DEBUG
@@ -65,6 +66,79 @@ SimLocation::SimLocation( const input::Location * location, sim::output::MosData
   // mode we accomodate repeatability and comparability of output by setting the see constant
   srand(1);
 #endif
+
+  // define age classes
+  AgeClasses[1].Rank = 1;
+  AgeClasses[1].FDay = 1;
+  AgeClasses[1].LDay = 364;
+
+  AgeClasses[2].Rank = 2;
+  AgeClasses[2].FDay = 365;
+  AgeClasses[2].LDay = 1824;
+
+  AgeClasses[3].Rank = 3;
+  AgeClasses[3].FDay = 1825;
+  AgeClasses[3].LDay = 3649;
+
+  AgeClasses[4].Rank = 4;
+  AgeClasses[4].FDay = 3650;
+  AgeClasses[4].LDay = 5474;
+
+  AgeClasses[5].Rank = 5;
+  AgeClasses[5].FDay = 5475;
+  AgeClasses[5].LDay = 7299;
+
+  AgeClasses[6].Rank = 6;
+  AgeClasses[6].FDay = 7300;
+  AgeClasses[6].LDay = 9124;
+
+  AgeClasses[7].Rank = 7;
+  AgeClasses[7].FDay = 9125;
+  AgeClasses[7].LDay = 10949;
+
+  AgeClasses[8].Rank = 8;
+  AgeClasses[8].FDay = 10950;
+  AgeClasses[8].LDay = 12774;
+
+  AgeClasses[9].Rank = 9;
+  AgeClasses[9].FDay = 12775;
+  AgeClasses[9].LDay = 14599;
+
+  AgeClasses[10].Rank = 10;
+  AgeClasses[10].FDay = 14600;
+  AgeClasses[10].LDay = 16424;
+
+  AgeClasses[11].Rank = 11;
+  AgeClasses[11].FDay = 16425;
+  AgeClasses[11].LDay = 18249;
+
+  AgeClasses[12].Rank = 12;
+  AgeClasses[12].FDay = 18250;
+  AgeClasses[12].LDay = 20074;
+
+  AgeClasses[13].Rank = 13;
+  AgeClasses[13].FDay = 20075;
+  AgeClasses[13].LDay = 21899;
+
+  AgeClasses[14].Rank = 14;
+  AgeClasses[14].FDay = 21900;
+  AgeClasses[14].LDay = 23724;
+
+  AgeClasses[15].Rank = 15;
+  AgeClasses[15].FDay = 23725;
+  AgeClasses[15].LDay = 25549;
+
+  AgeClasses[16].Rank = 16;
+  AgeClasses[16].FDay = 25550;
+  AgeClasses[16].LDay = 27374;
+
+  AgeClasses[17].Rank = 17;
+  AgeClasses[17].FDay = 27375;
+  AgeClasses[17].LDay = 29199;
+
+  AgeClasses[18].Rank = 18;
+  AgeClasses[18].FDay = 29200;
+  AgeClasses[18].LDay = 30000;
 
   // demographics
   for( int i = 0; i < 18; i++ ) {
@@ -191,31 +265,24 @@ SimLocation::GetSimOutput(void)
 void
 SimLocation::denmain(void)
 {
-  //DiskSpooler DiskData;
-  int SpRecNum;
+  // MainInitialize
+  Year = 1;
+  Day = 1;
+  SimYear = 1;
+  OldPopulationSize = 0;
+  PopulationSize = 0;
 
-  DefineAgeClasses();
-  MainInitialization();
-  InitAgeClasseses();
-  InitSeroprevalence();
+  EIPTempAdjust = 0;
+
+  // TODO fix this initialization?
+  EndYear = EndDate_.year();
+
+  InitializePopulation();
+  InitializeSeroprevalence();
+  AdjustEipByTiter();
 
 
-  // calculate EIP by titer
-  std::vector<double> EIPFactor = std::vector<double>( 4+1, 0 );
-  for( int i = 1; i <= 4; ++i ) {
-    if( Virus[i].Viremia_ < EipLTiter ) {
-      EIPFactor[i] = EipLFactor;
-    }
-    else if( Virus[i].Viremia_ > EipHTiter ) {
-      EIPFactor[i] = EipHFactor;
-    }
-    else {
-      double Slope = (EipLFactor - EipHFactor) / (EipHTiter - EipLTiter);
-      EIPFactor[i] = EipLFactor - (Virus[i].Viremia_ - EipLTiter) * Slope;
-    }
-  }
 
-  SpRecNum = 0;
   for( Year = BeginDate_.year(); Year <= EndDate_.year(); ++Year ) {
     int numDays = gregorian_calendar::is_leap_year( Year ) ? 366 : 365;
 
@@ -225,33 +292,11 @@ SimLocation::denmain(void)
     ReadMos( Year );
 
     for( Day = 1; Day <= numDays; ++Day ) {
-      CalcDeaths( CumDeaths );
-      CalcBirths( CumBirths );
+      CalculateDeaths();
+      CalculateBirths();
+      AgePopulation();
 
-      // age population
-      for( int k = 1; k <= ArraySize; ++k ) {
-        Indiv[k] = Indiv[k] + 1;
-        if( Indiv[k] > AgeClasses[18].LDay ) {
-          Indiv[k] = AgeClasses[18].LDay;           // don't age individuals older than limits of oldest class
-        }
-      }
-
-      for( Population::iterator itIndiv = Individuals.begin(); itIndiv != Individuals.end(); ++itIndiv ) {
-        itIndiv->Age++;
-      }
-
-      ComparePopulationAndSerotypes();
-
-      // add infectives if scheduled
-      date curDate = BoostDateFromYearAndDayOfYear( Year, Day );
-      if( Location_->InfectionIntroduction_->Dengue1_->Schedule_->IsDateScheduled( curDate ) ||
-          Location_->InfectionIntroduction_->Dengue2_->Schedule_->IsDateScheduled( curDate ) ||
-          Location_->InfectionIntroduction_->Dengue3_->Schedule_->IsDateScheduled( curDate ) ||
-          Location_->InfectionIntroduction_->Dengue4_->Schedule_->IsDateScheduled( curDate ) )
-      {
-        InitInfectives();
-      }
-
+      IntroduceInfection();
 
       PurgeMaternal(MANADurat + MAEADurat);
 
@@ -269,8 +314,7 @@ SimLocation::denmain(void)
       RankPop();
       PurgeHFDeaths();
 
-      SpoolToDisk( SpRecNum );
-      SpRecNum++;
+      SpoolToDisk();
     }
 
     SimYear = SimYear + 1;
@@ -290,108 +334,12 @@ SimLocation::denmain(void)
 
 
 void
-SimLocation::DefineAgeClasses(void)
+SimLocation::InitializePopulation(void)
 {
-  AgeClasses[1].Rank = 1;
-  AgeClasses[1].FDay = 1;
-  AgeClasses[1].LDay = 364;
-
-  AgeClasses[2].Rank = 2;
-  AgeClasses[2].FDay = 365;
-  AgeClasses[2].LDay = 1824;
-
-  AgeClasses[3].Rank = 3;
-  AgeClasses[3].FDay = 1825;
-  AgeClasses[3].LDay = 3649;
-
-  AgeClasses[4].Rank = 4;
-  AgeClasses[4].FDay = 3650;
-  AgeClasses[4].LDay = 5474;
-
-  AgeClasses[5].Rank = 5;
-  AgeClasses[5].FDay = 5475;
-  AgeClasses[5].LDay = 7299;
-
-  AgeClasses[6].Rank = 6;
-  AgeClasses[6].FDay = 7300;
-  AgeClasses[6].LDay = 9124;
-
-  AgeClasses[7].Rank = 7;
-  AgeClasses[7].FDay = 9125;
-  AgeClasses[7].LDay = 10949;
-
-  AgeClasses[8].Rank = 8;
-  AgeClasses[8].FDay = 10950;
-  AgeClasses[8].LDay = 12774;
-
-  AgeClasses[9].Rank = 9;
-  AgeClasses[9].FDay = 12775;
-  AgeClasses[9].LDay = 14599;
-
-  AgeClasses[10].Rank = 10;
-  AgeClasses[10].FDay = 14600;
-  AgeClasses[10].LDay = 16424;
-
-  AgeClasses[11].Rank = 11;
-  AgeClasses[11].FDay = 16425;
-  AgeClasses[11].LDay = 18249;
-
-  AgeClasses[12].Rank = 12;
-  AgeClasses[12].FDay = 18250;
-  AgeClasses[12].LDay = 20074;
-
-  AgeClasses[13].Rank = 13;
-  AgeClasses[13].FDay = 20075;
-  AgeClasses[13].LDay = 21899;
-
-  AgeClasses[14].Rank = 14;
-  AgeClasses[14].FDay = 21900;
-  AgeClasses[14].LDay = 23724;
-
-  AgeClasses[15].Rank = 15;
-  AgeClasses[15].FDay = 23725;
-  AgeClasses[15].LDay = 25549;
-
-  AgeClasses[16].Rank = 16;
-  AgeClasses[16].FDay = 25550;
-  AgeClasses[16].LDay = 27374;
-
-  AgeClasses[17].Rank = 17;
-  AgeClasses[17].FDay = 27375;
-  AgeClasses[17].LDay = 29199;
-
-  AgeClasses[18].Rank = 18;
-  AgeClasses[18].FDay = 29200;
-  AgeClasses[18].LDay = 30000;
-
-}
-
-
-
-void
-SimLocation::MainInitialization(void)
-{
-  // initialize variables
-  Year = 1;
-  Day = 1;
-  SimYear = 1;
-  ArraySize = 0;
-  OldArraySize = 0;
-  EIPTempAdjust = 0;
-
-  // TODO fix this initialization?
-  EndYear = EndDate_.year();
-}
-
-
-
-void
-SimLocation::InitAgeClasseses(void)
-{
-  ArraySize = 0;
+  PopulationSize = 0;
 
   AgeDistribution = std::vector<int>( 18+1, 0 );
-  InitAgeDistribution = std::vector<int>( 18+1, 0 );
+  InitialAgeDistribution = std::vector<int>( 18+1, 0 );
 
   Indiv = std::vector<int>( MaxPopSize+1, 0 );
 
@@ -408,10 +356,12 @@ SimLocation::InitAgeClasseses(void)
     int classSize = CINT( PopProp[iClass].Proportion * InitialPopSize );
     for( int iIndiv = 1; iIndiv <= classSize; ++iIndiv ) {
       int age = INT( (AgeClasses[iClass].LDay - AgeClasses[iClass].FDay + 1) * RND() + AgeClasses[iClass].FDay);
-      ArraySize = ArraySize + 1;
-      Indiv[ArraySize] = age;
+      PopulationSize = PopulationSize + 1;
+      Indiv[PopulationSize] = age;
+
+      InitialAgeDistribution[iClass] = InitialAgeDistribution[iClass] + 1;
       AgeDistribution[iClass] = AgeDistribution[iClass] + 1;
-      InitAgeDistribution[iClass] = InitAgeDistribution[iClass] + 1;
+
       if( age < AgeClasses[iClass].FDay || age > AgeClasses[iClass].LDay ) {
         // STOP  'debugging code
         throw;
@@ -425,13 +375,14 @@ SimLocation::InitAgeClasseses(void)
   // Indiv vector is reverse sorted, we decrement the reverse end iterator so
   // sort doesn't access position 0, which is not used in our 1's indexed vectors
   std::sort( Indiv.rbegin(), --(Indiv.rend()) );
-  OldArraySize = ArraySize;
-  InitArraySize = ArraySize;
+  OldPopulationSize = PopulationSize;
+  InitialPopulationSize = PopulationSize;
+
   std::sort( Individuals.begin(), Individuals.end(), DescendingAgeSort() );
   ComparePopulation();
 
   // save initial age distribution to output
-  Output_->SetInitialData( InitAgeDistribution );
+  Output_->SetInitialData( InitialAgeDistribution );
 }
 
 
@@ -500,7 +451,7 @@ SimLocation::RND(void)
 
 
 void
-SimLocation::InitSeroprevalence(void)
+SimLocation::InitializeSeroprevalence(void)
 {
   // Initialize the seroprevalence data
   // This data confers previous homologous immunity (designated by -2)
@@ -556,7 +507,7 @@ SimLocation::InitSeroprevalence(void)
                 break;
             }
             Population::iterator itIndiv = Individuals.begin() + iPos + iElement - 1;
-            itIndiv->SetHomologousImmunity(j);
+            itIndiv->InitializeImmunity(j);
           } while ( iSuscept != true );
         }
       }
@@ -569,7 +520,28 @@ SimLocation::InitSeroprevalence(void)
 
 
 void
-SimLocation::CalcBirths( std::vector<double> & CBirths )
+SimLocation::AdjustEipByTiter(void)
+{
+  // calculate EIP by titer
+  std::vector<double> EIPFactor = std::vector<double>( 4+1, 0 );
+  for( int i = 1; i <= 4; ++i ) {
+    if( Virus[i].Viremia_ < EipLTiter ) {
+      EIPFactor[i] = EipLFactor;
+    }
+    else if( Virus[i].Viremia_ > EipHTiter ) {
+      EIPFactor[i] = EipHFactor;
+    }
+    else {
+      double Slope = (EipLFactor - EipHFactor) / (EipHTiter - EipLTiter);
+      EIPFactor[i] = EipLFactor - (Virus[i].Viremia_ - EipLTiter) * Slope;
+    }
+  }
+}
+
+
+
+void
+SimLocation::CalculateBirths()
 {
   int iPos = 0;           // start with array pos. 1, or the oldest individuals
 
@@ -578,16 +550,16 @@ SimLocation::CalcBirths( std::vector<double> & CBirths )
     // calculate cumulative age class birth rate
     double BRate = (PopProp[i].BirthRate / 1000) * (1 / (double) YrLen);
     // only females contribute to birth
-    CBirths[i] = CBirths[i] + ((AgeDistribution[i] / (double) 2) * BRate);
+    CumBirths[i] = CumBirths[i] + ((AgeDistribution[i] / (double) 2) * BRate);
 
     // add Births to Indiv() array
-    if( CBirths[i] >= 1 ) {
-      for( int j =1; j <= INT( CBirths[i] ); ++j ) {
-        ArraySize = ArraySize + 1;            // add an element, i.e. an individual, to the array
+    if( CumBirths[i] >= 1 ) {
+      for( int j =1; j <= INT( CumBirths[i] ); ++j ) {
+        PopulationSize = PopulationSize + 1;            // add an element, i.e. an individual, to the array
 
         // TODO - figure out memory limitations
 
-        Indiv[ArraySize] = 1;        // one day old
+        Indiv[PopulationSize] = 1;        // one day old
 
         // record maternally acquired seroprev. type by randomly selecting individual
         // in this age class as the mother
@@ -596,16 +568,16 @@ SimLocation::CalcBirths( std::vector<double> & CBirths )
         int iElement = INT((AgeDistribution[i] - 1 + 1) * RND() + 1);
         if( Deng1[iPos + iElement] > 0 || Deng1[iPos + iElement] == -2 ) {
           // if positive for homologuos immunity, confer maternally acquired immunity on birth
-          Deng1[ArraySize] = -1;
+          Deng1[PopulationSize] = -1;
         }
         if( Deng2[iPos + iElement] > 0 || Deng2[iPos + iElement] == -2 ) {
-          Deng2[ArraySize] = -1;
+          Deng2[PopulationSize] = -1;
         }
         if( Deng3[iPos + iElement] > 0 || Deng3[iPos + iElement] == -2 ) {
-          Deng3[ArraySize] = -1;
+          Deng3[PopulationSize] = -1;
         }
         if( Deng4[iPos + iElement] > 0 || Deng4[iPos + iElement] == -2 ) {
-          Deng4[ArraySize] = -1;
+          Deng4[PopulationSize] = -1;
         }
 
         AgeDistribution[1] = AgeDistribution[1] + 1;        // update age distribution data
@@ -615,13 +587,13 @@ SimLocation::CalcBirths( std::vector<double> & CBirths )
         Individual & mother = *(Individuals.begin() + iPos + iElement - 1);
         for( int serotype = 1; serotype <= 4; ++serotype ) {
           if( mother.HasHomologousImmunity(serotype) ) {
-            newBirth.SetMaternallyAcquiredImmunity(serotype);
+            newBirth.InitializeMaternallyAcquiredImmunity(serotype);
           }
         }
         Individuals.push_back( newBirth );
         ComparePopulationAndSerotypes();
       }
-      CBirths[i] = CBirths[i] - INT(CBirths[i]);
+      CumBirths[i] = CumBirths[i] - INT(CumBirths[i]);
     }
     iPos = iPos + AgeDistribution[i];
   }
@@ -630,7 +602,7 @@ SimLocation::CalcBirths( std::vector<double> & CBirths )
 
 
 void
-SimLocation::CalcDeaths( std::vector<double> & CDeaths )
+SimLocation::CalculateDeaths()
 {
   int iPos = 0;     // start with array position 1, or the oldest individual
 
@@ -639,15 +611,15 @@ SimLocation::CalcDeaths( std::vector<double> & CDeaths )
     // calculate cumulative age class death rate
     double DRate = (PopProp[i].DeathRate / 1000) * (1 / (double) YrLen);
     // add deaths to previous fractional remainder
-    CDeaths[i] = CDeaths[i] + (AgeDistribution[i] * DRate);
+    CumDeaths[i] = CumDeaths[i] + (AgeDistribution[i] * DRate);
 
     // subtract deaths from Indiv() array
-    if( CDeaths[i] >= 1 && AgeDistribution[i] > 0 ) {
-      for( int j = 1; j <= INT(CDeaths[i]); ++j ) {
+    if( CumDeaths[i] >= 1 && AgeDistribution[i] > 0 ) {
+      for( int j = 1; j <= INT(CumDeaths[i]); ++j ) {
         // pick a random individual - taken from the number of individuals
         // in an age class - and remove.  Compress the array.
         int iElement = INT((AgeDistribution[i] - 1 + 1) * RND() + 1);
-        int iNumElsLeft = ArraySize - (iPos + iElement);
+        int iNumElsLeft = PopulationSize - (iPos + iElement);
 
         // Erase individual at position iPos + iElement
         std::vector<int>::iterator itIndiv = Indiv.begin() + iPos + iElement;
@@ -673,7 +645,7 @@ SimLocation::CalcDeaths( std::vector<double> & CDeaths )
         Deng4.push_back(0);
 
         // population decreased by one
-        ArraySize = ArraySize - 1;
+        PopulationSize = PopulationSize - 1;
         AgeDistribution[i] = AgeDistribution[i] - 1;
         TotalDeaths[i] = TotalDeaths[i] + 1;
         if( AgeDistribution[i] <= 0 ) {
@@ -685,15 +657,49 @@ SimLocation::CalcDeaths( std::vector<double> & CDeaths )
       }
     }
     iPos = iPos + AgeDistribution[i];
-    CDeaths[i] = CDeaths[i] - INT(CDeaths[i]);
+    CumDeaths[i] = CumDeaths[i] - INT(CumDeaths[i]);
   }
 }
 
 
 
 void
-SimLocation::InitInfectives(void)
+SimLocation::AgePopulation(void)
 {
+  // age population
+  for( int k = 1; k <= PopulationSize; ++k ) {
+    Indiv[k] = Indiv[k] + 1;
+    if( Indiv[k] > AgeClasses[18].LDay ) {
+      Indiv[k] = AgeClasses[18].LDay;           // don't age individuals older than limits of oldest class
+    }
+  }
+
+  for( Population::iterator itIndiv = Individuals.begin(); itIndiv != Individuals.end(); ++itIndiv ) {
+    itIndiv->Age++;
+    if( itIndiv->Age > AgeClasses[18].LDay ) {
+      itIndiv->Age = AgeClasses[18].LDay;
+    }
+  }
+
+  ComparePopulationAndSerotypes();
+}
+      
+
+
+void
+SimLocation::IntroduceInfection(void)
+{
+  // add infectives if scheduled
+  date curDate = BoostDateFromYearAndDayOfYear( Year, Day );
+  bool d1 = Location_->InfectionIntroduction_->Dengue1_->Schedule_->IsDateScheduled(curDate);
+  bool d2 = Location_->InfectionIntroduction_->Dengue2_->Schedule_->IsDateScheduled(curDate);
+  bool d3 = Location_->InfectionIntroduction_->Dengue3_->Schedule_->IsDateScheduled(curDate);
+  bool d4 = Location_->InfectionIntroduction_->Dengue4_->Schedule_->IsDateScheduled(curDate); 
+  if( !(d1 || d2 || d3 || d4) ) {
+    // no introduction scheduled
+    return;
+  }
+      
   // add infective humans/mosquitoes
   date curDay = BoostDateFromYearAndDayOfYear( Year, Day );
 
@@ -738,7 +744,7 @@ SimLocation::InitInfectives(void)
     if( serotypeIntro->Schedule_->IsDateScheduled( curDay ) && serotypeIntro->Humans_ > 0 ) {
       for( int i = 1; i <= serotypeIntro->Humans_; ++i ) {
         // Increase current population size
-        ArraySize = ArraySize + 1;
+        PopulationSize = PopulationSize + 1;
         int IAge = 0;
         int iPos = 0;
         switch (seroType) {
@@ -779,7 +785,7 @@ SimLocation::InitInfectives(void)
             }
             break;
         }
-        //// by incrementing ArraySize, DS 1.0 effectively added a new individual with age 0
+        //// by incrementing PopulationSize, DS 1.0 effectively added a new individual with age 0
         //Individuals.push_back( Individual(0) );
         //Population::iterator itIndiv = Individuals.begin() + iPos - 1;
         //itIndiv->Age = IAge;
@@ -792,7 +798,7 @@ SimLocation::InitInfectives(void)
         // artifact of DS arrays is new individual has previous individuals immunities
         Individual introducedIndividual = Individual( *itIndiv );
         introducedIndividual.Age = IAge;
-        introducedIndividual.SetNewInfection( seroType, IAge - Virus[seroType].IncubationDuration_ );
+        introducedIndividual.Infect( seroType, IAge - Virus[seroType].IncubationDuration_ );
 
         Individuals.insert( Individuals.begin() + iPos - 1, introducedIndividual );
         ComparePopulationAndSerotypes();
@@ -810,7 +816,7 @@ int SimLocation::DeterminePosition( int IAge )
   // check for extremes
   if( IAge >= Indiv[1] ) {
     // they become the oldest individual
-    for( int k = ArraySize; k >= 2; --k ) {
+    for( int k = PopulationSize; k >= 2; --k ) {
       Indiv[k] = Indiv[k - 1];
       Deng1[k] = Deng1[k - 1];
       Deng2[k] = Deng2[k - 1];
@@ -820,16 +826,16 @@ int SimLocation::DeterminePosition( int IAge )
     iPos = 1;
     return iPos;
   }
-  if( IAge <= Indiv[ArraySize - 1] ) {
+  if( IAge <= Indiv[PopulationSize - 1] ) {
     // they become the youngest individual
-    iPos = ArraySize;
+    iPos = PopulationSize;
     return iPos;
   }
   // somewhere in the middle
-  for( iPos = 2; iPos <= (ArraySize - 1); ++iPos ) {       // last position is new
+  for( iPos = 2; iPos <= (PopulationSize - 1); ++iPos ) {       // last position is new
     if( IAge <= Indiv[iPos - 1] && IAge >= Indiv[iPos] ) {
       // position found
-      for( int k = ArraySize; k >= iPos + 1; --k ) {
+      for( int k = PopulationSize; k >= iPos + 1; --k ) {
         Indiv[k] = Indiv[k - 1];
         Deng1[k] = Deng1[k - 1];
         Deng2[k] = Deng2[k - 1];
@@ -847,7 +853,7 @@ int SimLocation::DeterminePosition( int IAge )
 void
 SimLocation::PurgeMaternal( int iOff )
 {
-  for( int i = ArraySize; i >= 1; --i ) {
+  for( int i = PopulationSize; i >= 1; --i ) {
     if( Indiv[i] > iOff + 20 ) {
       break;                            // buffer region - ages sequential so no need for further searches
     }
@@ -873,7 +879,7 @@ SimLocation::PurgeMaternal( int iOff )
       break;
     }
     if( itIndiv->Age >= iOff ) {
-      itIndiv->PurgeMaternalAntibodies();
+      itIndiv->PurgeMaternalImmunity();
     }
   }
 
@@ -983,7 +989,7 @@ SimLocation::MosqLifeCycle(void)
   if( HumHostDensity == 0 ) {
     throw; // STOP 
   }
-  NewMosqSusc[1] = dailyMosData.NewFemales * (ArraySize / HumHostDensity);
+  NewMosqSusc[1] = dailyMosData.NewFemales * (PopulationSize / HumHostDensity);
   NewMosqSuscCD[1] = dailyMosData.AdultDevelopment;
   BitersNew = NewMosqSusc[2] + (NewMosqSusc[3] * DMealProp);
 
@@ -1148,10 +1154,10 @@ SimLocation::HumToMosqTrans(void)
   // Number of susceptible probes per individual
   BitesPerPerson[Day] = (BitersNew + BitersOld) * PropOnHum;
   BitesPerPerson[Day] = BitesPerPerson[Day] + (BitesPerPerson[Day] * (FdAttempts - 1) * PropDifHost);
-  if( ArraySize == 0 ) {
+  if( PopulationSize == 0 ) {
     throw; // STOP
   }
-  BitesPerPerson[Day] = BitesPerPerson[Day] / ArraySize;
+  BitesPerPerson[Day] = BitesPerPerson[Day] / PopulationSize;
 
 
   // randomly calculate new mosquito infections for four serotypes
@@ -1336,7 +1342,7 @@ SimLocation::CalcNewInocHumans( int iType, int iOldAge )
   for( int i = 1; i <= NewDlyHumInoc; ++i ) {
 
     // randomly select individual for new innoculation
-    int iElement = INT( (ArraySize - 1 + 1) * RND() + 1);
+    int iElement = INT( (PopulationSize - 1 + 1) * RND() + 1);
 
     switch( iType ) {
 
@@ -1507,22 +1513,28 @@ SimLocation::CalcNewInocHumans( int iType, int iOldAge )
 
     Population::iterator itIndiv = Individuals.begin() + iElement - 1;
 
-    if( itIndiv->HasMaternallyAcquiredImmunity( iType ) ) {
-      // maternally acquired, either enhanced or normal infection
-      itIndiv->SetNewInfection( iType, itIndiv->Age );
-    }
-    else if( itIndiv->HasNoPreviousExposure( iType ) ) {
-      if( !itIndiv->HasHeterologousImmunity( iType, HetImmunDurat ) ) {
-        // no heterologous immunity, normal infection
-        if( itIndiv->Age > iOldAge ) {
-          itIndiv->Age = iOldAge;
+    if( itIndiv->IsSeropositive(iType) ){
+      if( itIndiv->HasMaternallyAcquiredImmunity( iType ) ) {
+        if( itIndiv->Age > MANADurat ) {
+          // neutralizing period expired, now enhancing, infection occurs
+          itIndiv->Infect( iType, itIndiv->Age );
         }
-        itIndiv->SetNewInfection( iType, itIndiv->Age );
+      }
+      else {
+        // homologous immunity, either initialized or from previous infection
+        // i.e. serorank == -2 or serorank > 0
       }
     }
     else {
-      // homologous immunity, do nothing
+      if( !itIndiv->HasHeterologousImmunity( iType, HetImmunDurat ) ) {
+        // no heterologous immunity, infection occurs
+        if( itIndiv->Age > iOldAge ) {
+          itIndiv->Age = iOldAge;
+        }
+        itIndiv->Infect( iType, itIndiv->Age );
+      }
     }
+
     ComparePopulationAndSerotypes();
   }
 }
@@ -1562,9 +1574,9 @@ SimLocation::RankPop(void)
   DlySeqInfVals.FMT2 = 0;
   DlySeqInfVals.FMT3 = 0;
   DlySeqInfVals.FMT4 = 0;
-  
+
   int iRank = 18;                                   // assume oldest age class first
-  for( int i = 1; i <= ArraySize; ++i ) {
+  for( int i = 1; i <= PopulationSize; ++i ) {
     if( Indiv[i] >= AgeClasses[iRank].FDay ) {
       AgeDistribution[iRank] = AgeDistribution[iRank] + 1;
       SeroRank(i, iRank);
@@ -2186,7 +2198,7 @@ SimLocation::AgeAtDeath( int iPerAge )
 void
 SimLocation::PurgeHFDeaths(void)
 {
-  int iStart = ArraySize;                 // start with youngest individual
+  int iStart = PopulationSize;                 // start with youngest individual
 
   for( int i = iStart; i >= 1; --i ) {
 
@@ -2198,12 +2210,12 @@ SimLocation::PurgeHFDeaths(void)
     if( Indiv[i] == -999 ) {
       if( i == iStart ) {
         // last position, simply zero to remove
-        Indiv[ArraySize] = 0;
-        Deng1[ArraySize] = 0;
-        Deng2[ArraySize] = 0;
-        Deng3[ArraySize] = 0;
-        Deng4[ArraySize] = 0;
-        ArraySize = ArraySize - 1;
+        Indiv[PopulationSize] = 0;
+        Deng1[PopulationSize] = 0;
+        Deng2[PopulationSize] = 0;
+        Deng3[PopulationSize] = 0;
+        Deng4[PopulationSize] = 0;
+        PopulationSize = PopulationSize - 1;
       }
       else {
         // erase individual at position i
@@ -2229,7 +2241,7 @@ SimLocation::PurgeHFDeaths(void)
         Deng4.push_back(0);
 
         // population decreased by one
-        ArraySize = ArraySize - 1;
+        PopulationSize = PopulationSize - 1;
       }
 
       Individuals.erase( Individuals.begin() + i -1 );
@@ -2240,7 +2252,7 @@ SimLocation::PurgeHFDeaths(void)
 
 
 void
-SimLocation::SpoolToDisk( int SpRecNum )
+SimLocation::SpoolToDisk(void)
 {
   output::DensimOutput::DailyLocationOutput dlo;
 
@@ -2263,7 +2275,7 @@ SimLocation::SpoolToDisk( int SpRecNum )
   for( int i = 1; i <= 4; ++i ) {
     dlo.EIPDevRate[i] = EIPDevRate[i];
   }
-  dlo.NumHumans = ArraySize;
+  dlo.NumHumans = PopulationSize;
 
   // 1  - MANA
   // 2 - MAEA
@@ -2395,9 +2407,9 @@ SimLocation::ComparePopulation(void)
     return;
   }
 
-  // ArraySize is current size of population
+  // PopulationSize is current size of population
   Population::iterator itIndiv = Individuals.begin();
-  for( int i = 1; i <= ArraySize; ++i ) {
+  for( int i = 1; i <= PopulationSize; ++i ) {
     if( Indiv[i] != itIndiv->Age ) {
       std::cout << "Error in age comparison, old index = " << i << std::endl;
       throw;
@@ -2418,24 +2430,24 @@ void SimLocation::ComparePopulationAndSerotypes(void)
   }
 
   Population::iterator itIndiv = Individuals.begin();
-  for( int i = 1; i <= ArraySize; ++i ) {
+  for( int i = 1; i <= PopulationSize; ++i ) {
     if( Indiv[i] != itIndiv->Age ) {
       std::cout << "Error in age comparison, old index = " << i << std::endl;
       throw;
     }
-    if( Deng1[i] != itIndiv->Dengue1 ) {
+    if( Deng1[i] != itIndiv->Dengue[1] ) {
       std::cout << "Error in dengue 1 comparison, old index = " << i << std::endl;
       throw;
     }
-    if( Deng2[i] != itIndiv->Dengue2 ) {
+    if( Deng2[i] != itIndiv->Dengue[2] ) {
       std::cout << "Error in dengue 2 comparison, old index = " << i << std::endl;
       throw;
     }
-    if( Deng3[i] != itIndiv->Dengue3 ) {
+    if( Deng3[i] != itIndiv->Dengue[3] ) {
       std::cout << "Error in dengue 3 comparison, old index = " << i << std::endl;
       throw;
     }
-    if( Deng4[i] != itIndiv->Dengue4 ) {
+    if( Deng4[i] != itIndiv->Dengue[4] ) {
       std::cout << "Error in dengue 4 comparison, old index = " << i << std::endl;
       throw;
     }
