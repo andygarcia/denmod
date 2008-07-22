@@ -25,15 +25,11 @@ public:
 
 // Methods
 public:
+  output::DensimOutput * GetSimOutput(void);
+
   void Start(void);
   void Start( boost::gregorian::date startDate, boost::gregorian::date stopDate );
 
-  output::DensimOutput * GetSimOutput(void);
-
-private:
-  output::DensimOutput::DailyLocationOutput & GetLocationOutputByIndex( int index );
-
-public:
   void denmain(void);
 
   void MainInitialization(void);
@@ -132,13 +128,13 @@ public:
   std::vector<std::vector<int>> Incub;                    // number of humans with incubating virus by class/virus
   std::vector<std::vector<int>> Infective;                // number of infective humans by class/virus
   std::vector<std::vector<int>> HomImm;                   // human homologous immunity by class/virus
-  std::vector<std::vector<int>> HetImm;                    // human heterologous immunity by class/virus
-  std::vector<int> TotDlyIncub;               // 
-  std::vector<int> TotDlyInfective;           // Total daily values by virus
-  std::vector<int> TotDlyHomImm;              // 
-  std::vector<int> TotDlyHetImm;              // 
-  std::vector<int> NewDlyInfective;           // New infective cases on each day
-  std::vector<MaternalTransmission> MatAnti;  // Number of MANA and MAEA
+  std::vector<std::vector<int>> HetImm;                   // human heterologous immunity by class/virus
+  std::vector<int> TotDlyIncub;                           // 
+  std::vector<int> TotDlyInfective;                       // Total daily values by virus
+  std::vector<int> TotDlyHomImm;                          // 
+  std::vector<int> TotDlyHetImm;                          // 
+  std::vector<int> NewDlyInfective;                       // New infective cases on each day
+  std::vector<MaternalTransmission> MatAnti;              // Number of MANA and MAEA
 
   int InitPopulationSize;        // size of array at initialization
   int OldPopulationSize;         // previous years value
@@ -148,12 +144,7 @@ public:
 
   double HumHostDensity;    // humans per ha
 
-  std::vector<double> TemperatureMax;
-  std::vector<double> TemperatureMin;
   std::vector<double> TemperatureAvg;
-  std::vector<double> Rain;
-  std::vector<double> RelHumid;
-  std::vector<double> SD;
 
   double EIPTempAdjust;
 

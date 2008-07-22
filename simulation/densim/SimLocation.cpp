@@ -63,7 +63,7 @@ SimLocation::SimLocation( const input::Location * location, sim::output::MosData
 #ifdef _DEBUG
   // Unlike CIMSiM, where the option of random food delivery is the only stochastic process,
   // many processes in DENSiM are stochastic and cannot be done deterministically. In debug
-  // mode we accomodate repeatability and comparability of output by setting the see constant
+  // mode we accomodate repeatability and comparability of output by setting the seed constant
   srand(1);
 #endif
 
@@ -2255,21 +2255,11 @@ SimLocation::ReadWeather( int year )
 
   // adjust vector length for leap years
   int numDays = gregorian_calendar::is_leap_year( year ) ? 366 : 365;
-  TemperatureMax = std::vector<double>( numDays+1, 0.0f );
-  TemperatureMin = std::vector<double>( numDays+1, 0.0f );
   TemperatureAvg = std::vector<double>( numDays+1, 0.0f );
-  Rain = std::vector<double>( numDays+1, 0.0f );
-  RelHumid = std::vector<double>( numDays+1, 0.0f );
-  SD = std::vector<double>( numDays+1, 0.0f );
 
   for( int i = 1; i <= numDays; i++ ) {
     input::WeatherDay * wd = wy->GetDay(i);
-    TemperatureMax[i] = wd->MaxTemp_;
-    TemperatureMin[i] = wd->MinTemp_;
     TemperatureAvg[i] = wd->AvgTemp_;
-    SD[i] = wd->SatDef_;
-    Rain[i] = wd->Precip_;
-    RelHumid[i] = wd->RelHum_;
   }
 }
 
