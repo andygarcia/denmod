@@ -144,10 +144,10 @@ SimLocation::SimLocation( const input::Location * location, sim::output::MosData
   for( int i = 0; i < 18; i++ ) {
     PopProp[i+1] = Location_->Demographics_->DemographicData[i]; 
   }
-  this->InitialPopSize = Location_->Demographics_->InitialPopulationSize;
+  this->InitialPopulationSize = Location_->Demographics_->InitialPopulationSize;
   this->HumHostDensity = Location_->Demographics_->HumanHostDensity;
 
-  // size population vectors based on InitialPopSize
+  // size population vectors based on InitialPopulationSize
 
   // virology
   Virus[1] = Location_->Virology_->Dengue1_;
@@ -210,7 +210,7 @@ SimLocation::SimLocation( const input::Location * location, sim::output::MosData
   // use same initial adult population as CIMSiM
   // the population from CIMSiM is on the spatial scale of a hectare
   // so we must scale by the current simulation size
-  double initialArea = InitialPopSize / HumHostDensity;
+  double initialArea = InitialPopulationSize / HumHostDensity;
   for( sim::cs::PreOviAdultCohortCollection::iterator itAdult = MosData_->PreOviAdultCohorts.begin();
        itAdult != MosData_->PreOviAdultCohorts.end(); ++itAdult ) {
     NewMosqSusc[itAdult->Age] = itAdult->Number * initialArea;
@@ -270,7 +270,6 @@ SimLocation::denmain(void)
   Day = 1;
   SimYear = 1;
   PopulationSize = 0;
-  OldPopulationSize = 0;
   EIPTempAdjust = 0;
   // TODO fix this initialization?
   EndYear = EndDate_.year();
@@ -332,7 +331,7 @@ SimLocation::InitializePopulation(void)
 
   Indiv = std::vector<int>( MaxPopSize+1, 0 );
 
-  // Initialize the population - start with InitialPopSize
+  // Initialize the population - start with InitialPopulationSize
   // Randomly select individual ages by:
   //  1. Determine the number of individuals in the age class
   //  2. Select a random age for each individual.  Use max and min age
@@ -342,13 +341,15 @@ SimLocation::InitializePopulation(void)
   //     procedures (RankPop) rely on a presorted array.
 
   for( int iClass = 18; iClass >= 1; --iClass ) {
-    int classSize = CINT( PopProp[iClass].Proportion * InitialPopSize );
+    int classSize = CINT( PopProp[iClass].Proportion * InitialPopulationSize );
     for( int iIndiv = 1; iIndiv <= classSize; ++iIndiv ) {
       int age = INT( (AgeClasses[iClass].LDay - AgeClasses[iClass].FDay + 1) * RND() + AgeClasses[iClass].FDay);
       PopulationSize = PopulationSize + 1;
       Indiv[PopulationSize] = age;
       AgeDistribution[iClass] = AgeDistribution[iClass] + 1;
       InitialAgeDistribution[iClass] = InitialAgeDistribution[iClass] + 1;
+
+      // this is superflous - the random sampling calculation for age ensures this is always true
       if( age < AgeClasses[iClass].FDay || age > AgeClasses[iClass].LDay ) {
         // STOP  'debugging code
         throw;
@@ -362,8 +363,8 @@ SimLocation::InitializePopulation(void)
   // Indiv vector is reverse sorted, we decrement the reverse end iterator so
   // sort doesn't access position 0, which is not used in our 1's indexed vectors
   std::sort( Indiv.rbegin(), --(Indiv.rend()) );
-  OldPopulationSize = PopulationSize;
-  InitPopulationSize = PopulationSize;
+
+  // new vectors
   std::sort( Individuals.begin(), Individuals.end(), DescendingAgeSort() );
   ComparePopulation();
 
@@ -666,6 +667,7 @@ SimLocation::IntroduceInfection(void)
             Deng1[iPos] = IAge - Virus[1].IncubationDuration_;
             if( IAge - Virus[1].IncubationDuration_ <= 0) {
               // STOP  'debugging code
+              throw;
             }
             break;
           case 2:
@@ -675,6 +677,7 @@ SimLocation::IntroduceInfection(void)
             Deng2[iPos] = IAge - Virus[2].IncubationDuration_;
             if( IAge - Virus[2].IncubationDuration_ <= 0) {
               // STOP  'debugging code
+              throw;
             }
             break;
           case 3:
@@ -684,6 +687,7 @@ SimLocation::IntroduceInfection(void)
             Deng3[iPos] = IAge - Virus[3].IncubationDuration_;
             if( IAge - Virus[3].IncubationDuration_ <= 0) {
               // STOP  'debugging code
+              throw;
             }
             break;
           case 4:
@@ -693,6 +697,7 @@ SimLocation::IntroduceInfection(void)
             Deng4[iPos] = IAge - Virus[4].IncubationDuration_;
             if( IAge - Virus[4].IncubationDuration_ <= 0) {
               // STOP  'debugging code
+              throw;
             }
             break;
         }
@@ -1084,46 +1089,45 @@ void
 SimLocation::InnoculateMosquitoes( int iType )
 {
   int r;                    // for poisson distribution
-  double InocEstimate;       // Number of mosq to be infected
+  double inocEstimate;      // number of mosq to be infected
   int NewDlyMosqInoc;       // actual number of new infected mosq. (differs due to/if stochastic routines enabled)
   int OldInfd;              // new infected from old susceptible
   int NewInfd;              // new infected from new susceptible
 
   // calculate probability of infection and  estimate newly inoculated mosquitoes
   // Viremia is in scientific notation and Titers are in logs
-  double ProbInf = 0;
+  double probabilityInfection = 0.0;
   if( log(Virus[iType].Viremia_) / log(10.0) <= HumToMosLTiter ) {
-    ProbInf = HumToMosLInf;
+    probabilityInfection = HumToMosLInf;
   }
   else if( log(Virus[iType].Viremia_) / log(10.0) >= HumToMosHTiter ) {
-    ProbInf = HumToMosHInf;
+    probabilityInfection = HumToMosHInf;
   }
   else {
     if( (HumToMosHTiter - HumToMosLTiter) == 0 ) {
-      throw; // STOP
+      throw;
     }
-    double Slope = (HumToMosHInf - HumToMosLInf) / (HumToMosHTiter - HumToMosLTiter);
-    ProbInf = HumToMosHInf - ((HumToMosHTiter - (log(Virus[iType].Viremia_) / log(10.0f))) * Slope);
+    double slope = (HumToMosHInf - HumToMosLInf) / (HumToMosHTiter - HumToMosLTiter);
+    probabilityInfection = HumToMosHInf - ((HumToMosHTiter - (log(Virus[iType].Viremia_) / log(10.0f))) * slope);
   }
 
-  InocEstimate = TotDlyInfective[iType] * BitesPerPerson[Day] * ProbInf;
+  inocEstimate = TotDlyInfective[iType] * BitesPerPerson[Day] * probabilityInfection;
 
   // find new infected mosquitoes
-  if( InocEstimate > StochTransNum ) {
+  if( inocEstimate > StochTransNum ) {
     // discrete
-    //NewDlyMosqInoc = CLNG(InocEstimate) where DS 1.0 used CLNG for a 4 bit integer, an int in c++, although machine dependent, can hold a word
-    NewDlyMosqInoc = CINT(InocEstimate);
+    NewDlyMosqInoc = CINT(inocEstimate);
   }
-  else if( InocEstimate > 0 ) {
+  else if( inocEstimate > 0 ) {
     // stochastic
     double num = RND();
     double SumOfProb = 0;
     for( r = 0; r <= 150; ++r ) {
       double rfact = Factorial(r);
       if( rfact == 0 ) {
-        break; // STOP
+        throw; // STOP
       }
-      SumOfProb = SumOfProb + ( (pow(InocEstimate,r) * exp(-InocEstimate)) / rfact);
+      SumOfProb = SumOfProb + ((pow(inocEstimate,r) * exp(-inocEstimate)) / rfact);
       if( SumOfProb > num ) {
         break;  // exit for
       }
@@ -1209,25 +1213,25 @@ SimLocation::InnoculateHumans( int iType )
 {
   int iOldAge = AgeClasses[18].FDay;    // reset age for oldest age class individuals who become infected
   int r;                                // for poisson distribution
-  double InocEstimate;                  // number of infv bites to humans
+  double inocEstimate;                  // number of infv bites to humans
 
-  InocEstimate = ((BitersInfv[iType] * PropOnHum) + ((BitersInfv[iType] * PropOnHum) * (FdAttempts - 1) * PropDifHost)) * MosqToHumProb;
+  inocEstimate = ((BitersInfv[iType] * PropOnHum) + ((BitersInfv[iType] * PropOnHum) * (FdAttempts - 1) * PropDifHost)) * MosqToHumProb;
 
-  if( InocEstimate > StochTransNum ) {
+  if( inocEstimate > StochTransNum ) {
     // discrete
-    NewDlyHumInoc = CINT( InocEstimate );
+    NewDlyHumInoc = CINT( inocEstimate );
   }
 
-  else if( InocEstimate > 0 ) {
+  else if( inocEstimate > 0 ) {
     // stochastic
     double num = RND();
     double SumOfProb = 0;
     for( r = 0; r <= 150; ++r ) {
       double rfact = Factorial(r);
       if( rfact == 0 ) {
-        throw; // STOP
+        throw;
       }
-      SumOfProb = SumOfProb + ((pow(InocEstimate,r) * exp(-InocEstimate)) / rfact);
+      SumOfProb = SumOfProb + ((pow(inocEstimate,r) * exp(-inocEstimate)) / rfact);
       if( SumOfProb > num ) {
         break;
       }
@@ -2332,6 +2336,8 @@ SimLocation::ComparePopulationAndSerotypes(void)
   }
 }
 
+
+
 // emulate DS 1.0 CINT() which does banker's rounding
 int
 SimLocation::CINT( double value )
@@ -2392,6 +2398,9 @@ SimLocation::RND(void)
 {
   return rand() / (double) (RAND_MAX + 1); 
 }
+
+
+
 double
 SimLocation::Factorial( int n )
 {
