@@ -32,7 +32,6 @@ public:
 
   void denmain(void);
 
-  void MainInitialization(void);
   void InitializePopulation(void);
   void InitializeSeroprevalence(void);
   void CalculateEipTiterAdjustment(void);
@@ -62,6 +61,8 @@ public:
   void SpoolToDisk(void);
 
 private:
+  int DayAgeToAgeClass( int age );
+  int DayAgeToYearAge( int age );
   void ComparePopulation(void);
   void ComparePopulationAndSerotypes(void);
   int DeterminePosition( int IAge );

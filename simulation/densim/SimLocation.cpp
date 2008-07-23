@@ -147,8 +147,6 @@ SimLocation::SimLocation( const input::Location * location, sim::output::MosData
   this->InitialPopulationSize = Location_->Demographics_->InitialPopulationSize;
   this->HumHostDensity = Location_->Demographics_->HumanHostDensity;
 
-  // size population vectors based on InitialPopulationSize
-
   // virology
   Virus[1] = Location_->Virology_->Dengue1_;
   Virus[2] = Location_->Virology_->Dengue2_;
@@ -173,7 +171,6 @@ SimLocation::SimLocation( const input::Location * location, sim::output::MosData
   this->EnzKinEI = Location_->Virology_->Eip_.Development_.DHH;
   this->EnzKinTI = Location_->Virology_->Eip_.Development_.THALF;
 
-
   // serology
   for( int i = 0; i < 18; ++i ) {
     this->SerProp[i+1][1] = Location_->Serology_->SerologyData_[i].Dengue1_;
@@ -184,7 +181,6 @@ SimLocation::SimLocation( const input::Location * location, sim::output::MosData
   this->MANADurat = Location_->Serology_->ManaDuration_;
   this->MAEADurat = Location_->Serology_->MaeaDuration_;
   this->HetImmunDurat = Location_->Serology_->HetDuration_;
-
 
   // initialize infection schedules for available weather period
   date_period wxAvailable = Location_->Weather_->GetWeatherPeriod();
@@ -205,7 +201,6 @@ SimLocation::SimLocation( const input::Location * location, sim::output::MosData
   this->DBloodUWt = Location_->Biology_->Adult->DoubleBloodMeal->HighWeightLimit;
   this->DBloodUProp = Location_->Biology_->Adult->DoubleBloodMeal->HighWeightRatio;
   this->DBloodLProp = Location_->Biology_->Adult->DoubleBloodMeal->LowWeightRatio;
-
 
   // use same initial adult population as CIMSiM
   // the population from CIMSiM is on the spatial scale of a hectare
@@ -304,13 +299,7 @@ SimLocation::denmain(void)
 
       SpoolToDisk();
     }
-
     SimYear = SimYear + 1;
-
-    if( Year < EndYear ) {
-      ReadWeather( Year );
-      ReadMos( Year );
-    }
   }
 
   // Update end of simulation data output
@@ -515,12 +504,12 @@ SimLocation::CalculateDeaths(void)
         }
 
         Individuals.erase( Individuals.begin() + iPos + iElement - 1 );
-        ComparePopulationAndSerotypes();
       }
     }
     iPos = iPos + AgeDistribution[i];
     CumulativeDeaths[i] = CumulativeDeaths[i] - INT(CumulativeDeaths[i]);
   }
+  ComparePopulationAndSerotypes();
 }
 
 
@@ -576,12 +565,12 @@ SimLocation::CalculateBirths(void)
           }
         }
         Individuals.push_back( newBirth );
-        ComparePopulationAndSerotypes();
       }
       CumulativeBirths[i] = CumulativeBirths[i] - INT(CumulativeBirths[i]);
     }
     iPos = iPos + AgeDistribution[i];
   }
+  ComparePopulationAndSerotypes();
 }
 
 
@@ -717,51 +706,10 @@ SimLocation::IntroduceInfection(void)
         introducedIndividual.Infect( seroType, IAge - Virus[seroType].IncubationDuration_ );
 
         Individuals.insert( Individuals.begin() + iPos - 1, introducedIndividual );
-        ComparePopulationAndSerotypes();
       }
     }
   }
-}
-
-
-
-int
-SimLocation::DeterminePosition( int IAge )
-{
-  int iPos;
-  // check for extremes
-  if( IAge >= Indiv[1] ) {
-    // they become the oldest individual
-    for( int k = PopulationSize; k >= 2; --k ) {
-      Indiv[k] = Indiv[k - 1];
-      Deng1[k] = Deng1[k - 1];
-      Deng2[k] = Deng2[k - 1];
-      Deng3[k] = Deng3[k - 1];
-      Deng4[k] = Deng4[k - 1];
-    }
-    iPos = 1;
-    return iPos;
-  }
-  if( IAge <= Indiv[PopulationSize - 1] ) {
-    // they become the youngest individual
-    iPos = PopulationSize;
-    return iPos;
-  }
-  // somewhere in the middle
-  for( iPos = 2; iPos <= (PopulationSize - 1); ++iPos ) {       // last position is new
-    if( IAge <= Indiv[iPos - 1] && IAge >= Indiv[iPos] ) {
-      // position found
-      for( int k = PopulationSize; k >= iPos + 1; --k ) {
-        Indiv[k] = Indiv[k - 1];
-        Deng1[k] = Deng1[k - 1];
-        Deng2[k] = Deng2[k - 1];
-        Deng3[k] = Deng3[k - 1];
-        Deng4[k] = Deng4[k - 1];
-      }
-      return iPos;
-    }
-  }
-  return -1;    // STOP - debug
+  ComparePopulationAndSerotypes();
 }
 
 
@@ -833,13 +781,12 @@ SimLocation::AdvanceMosquitoes(void)
   // DMealProp         - Prop. taking double blood meals
   // OldAdultDev       - Yesterdays adult development
   // BitersTotal       - Total biters (susc/infd/infv).  Global
-  // InSurviving       - Indoor surviving mosquitoes
-  // OutSurviving      - Outdoor surviving mosquitoes
 
   std::vector<double> BitersInfd( 4+1, 0 );        // infected biters
   std::vector<double> EIPTranNew( 4+1, 0 );        // Infective class from infected new
   std::vector<double> EIPTranOld( 4+1, 0 );        // Infective class from infected old
   std::vector<double> EggersInfv( 4+1, 0 );        // Infective egg transfers
+
   BitersInfv = std::vector<double>( 4+1, 0 );      // total infective biters
   
   if( SimYear == 1 && Day == 1 ) {
@@ -1081,6 +1028,7 @@ SimLocation::HumanToMosquitoTransmission(void)
       break;
     }
   }
+  ComparePopulationAndSerotypes();
 }
 
 
@@ -1203,6 +1151,7 @@ SimLocation::MosquitoToHumanTransmission()
       break;
     }
   }
+  ComparePopulationAndSerotypes();
 }
 
 
@@ -1436,8 +1385,6 @@ SimLocation::InnoculateHumans( int iType )
         itIndiv->Infect( iType, itIndiv->Age );
       }
     }
-
-    ComparePopulationAndSerotypes();
   }
 }
 
@@ -1499,6 +1446,7 @@ SimLocation::RankPop(void)
       SeroRank(i, iRank);
     }
   }
+  ComparePopulationAndSerotypes();
 }
 
 
@@ -2096,7 +2044,6 @@ SimLocation::AgeAtDeath( int iPerAge )
 }
 
 
-  
 void
 SimLocation::PurgeHFDeaths(void)
 {
@@ -2251,31 +2198,7 @@ SimLocation::SpoolToDisk(void)
 
 
 
-void
-SimLocation::ReadWeather( int year )
-{
-  // read specified year's worth of weather
-  input::WeatherYear * wy = Location_->Weather_->GetWeatherForYear(year);
-
-  // adjust vector length for leap years
-  int numDays = gregorian_calendar::is_leap_year( year ) ? 366 : 365;
-  TemperatureAvg = std::vector<double>( numDays+1, 0.0f );
-
-  for( int i = 1; i <= numDays; i++ ) {
-    input::WeatherDay * wd = wy->GetDay(i);
-    TemperatureAvg[i] = wd->AvgTemp_;
-  }
-}
-
-
-
-void
-SimLocation::ReadMos( int year )
-{
-  this->YearlyMosData_ = MosData_->GetYearlyMosData(year);
-}
-
-
+#define COMPARE_DAY 365
 
 void
 SimLocation::ComparePopulation(void)
@@ -2283,11 +2206,6 @@ SimLocation::ComparePopulation(void)
   // helper method in transitioning to better population data structures
   // ensures that the population are equivalent
 
-  if( !(SimYear == 1 && Day == 1) ) {
-    return;
-  }
-
-  // PopulationSize is current size of population
   Population::iterator itIndiv = Individuals.begin();
   for( int i = 1; i <= PopulationSize; ++i ) {
     if( Indiv[i] != itIndiv->Age ) {
@@ -2303,13 +2221,6 @@ SimLocation::ComparePopulation(void)
 void
 SimLocation::ComparePopulationAndSerotypes(void)
 {
-  // helper method in transitioning to better population data structures
-  // ensures that the population and serotype statuses are equivalent
-
-  if( !(SimYear == 1 && Day < 3) ) {
-    return;
-  }
-
   Population::iterator itIndiv = Individuals.begin();
   for( int i = 1; i <= PopulationSize; ++i ) {
     if( Indiv[i] != itIndiv->Age ) {
@@ -2334,6 +2245,47 @@ SimLocation::ComparePopulationAndSerotypes(void)
     }
     ++itIndiv;
   }
+}
+
+
+
+int
+SimLocation::DeterminePosition( int IAge )
+{
+  int iPos;
+  // check for extremes
+  if( IAge >= Indiv[1] ) {
+    // they become the oldest individual
+    for( int k = PopulationSize; k >= 2; --k ) {
+      Indiv[k] = Indiv[k - 1];
+      Deng1[k] = Deng1[k - 1];
+      Deng2[k] = Deng2[k - 1];
+      Deng3[k] = Deng3[k - 1];
+      Deng4[k] = Deng4[k - 1];
+    }
+    iPos = 1;
+    return iPos;
+  }
+  if( IAge <= Indiv[PopulationSize - 1] ) {
+    // they become the youngest individual
+    iPos = PopulationSize;
+    return iPos;
+  }
+  // somewhere in the middle
+  for( iPos = 2; iPos <= (PopulationSize - 1); ++iPos ) {       // last position is new
+    if( IAge <= Indiv[iPos - 1] && IAge >= Indiv[iPos] ) {
+      // position found
+      for( int k = PopulationSize; k >= iPos + 1; --k ) {
+        Indiv[k] = Indiv[k - 1];
+        Deng1[k] = Deng1[k - 1];
+        Deng2[k] = Deng2[k - 1];
+        Deng3[k] = Deng3[k - 1];
+        Deng4[k] = Deng4[k - 1];
+      }
+      return iPos;
+    }
+  }
+  return -1;    // STOP - debug
 }
 
 
@@ -2437,3 +2389,29 @@ SimLocation::EIPEnzKin( double temp )
   double Denominator = 1 + exp(TempExpr2);
   return (Numerator / Denominator) * 24;
 }
+
+void
+SimLocation::ReadWeather( int year )
+{
+  // read specified year's worth of weather
+  input::WeatherYear * wy = Location_->Weather_->GetWeatherForYear(year);
+
+  // adjust vector length for leap years
+  int numDays = gregorian_calendar::is_leap_year( year ) ? 366 : 365;
+  TemperatureAvg = std::vector<double>( numDays+1, 0.0f );
+
+  for( int i = 1; i <= numDays; i++ ) {
+    input::WeatherDay * wd = wy->GetDay(i);
+    TemperatureAvg[i] = wd->AvgTemp_;
+  }
+}
+
+
+
+void
+SimLocation::ReadMos( int year )
+{
+  this->YearlyMosData_ = MosData_->GetYearlyMosData(year);
+}
+
+
