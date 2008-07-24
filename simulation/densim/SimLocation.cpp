@@ -27,7 +27,7 @@ SimLocation::SimLocation( const input::Location * location, sim::output::MosData
   InitialAgeDistribution(std::vector<int>( 18+1, 0 )),
   PopProp(std::vector<input::DemographicClass>( 18+1 )),
   SerProp(std::vector<std::vector<double>>( 18+1, std::vector<double>(4+1) )),
-  SerDistr(std::vector<std::vector<int>>( 18+1, std::vector<int>(4+1, 0) )),
+  SeroDistribution(std::vector<std::vector<int>>( 18+1, std::vector<int>(4+1, 0) )),
   InitSerDistr(std::vector<std::vector<int>>( 18+1, std::vector<int>(4+1, 0) )),
   Incub(std::vector<std::vector<int>>( 18+1, std::vector<int>( 4+1, 0 ) )),
   Infective(std::vector<std::vector<int>>( 18+1, std::vector<int>( 4+1, 0 ) )),
@@ -196,7 +196,6 @@ SimLocation::SimLocation( const input::Location * location, sim::output::MosData
   this->PropOnHum = Location_->Biology_->Adult->ProportionOfFeedsOnHumans;
   this->FdAttempts = Location_->Biology_->Adult->InterruptedFeedsPerMeal;
   this->PropDifHost = Location_->Biology_->Adult->ProportionOfInterruptedFeedsOnDifferentHost;
-  this->PropOutdoor = Location_->Biology_->Adult->ProportionOfAdultsRestingOutdoors;
   this->DBloodLWt = Location_->Biology_->Adult->DoubleBloodMeal->LowWeightLimit;
   this->DBloodUWt = Location_->Biology_->Adult->DoubleBloodMeal->HighWeightLimit;
   this->DBloodUProp = Location_->Biology_->Adult->DoubleBloodMeal->HighWeightRatio;
@@ -265,7 +264,6 @@ SimLocation::denmain(void)
   Day = 1;
   SimYear = 1;
   PopulationSize = 0;
-  EIPTempAdjust = 0;
   // TODO fix this initialization?
   EndYear = EndDate_.year();
 
@@ -275,13 +273,19 @@ SimLocation::denmain(void)
 
   for( Year = BeginDate_.year(); Year <= EndDate_.year(); ++Year ) {
     int numDays = gregorian_calendar::is_leap_year( Year ) ? 366 : 365;
+    day_iterator itDate = day_iterator( date(Year,1,1) );
 
     BitesPerPerson = std::vector<double>( numDays+1, 0 );
 
-    ReadWeather( Year );
-    ReadMos( Year );
+    for( Day = 1; Day <= numDays; ++Day, ++itDate) {
+      date currentDate = *itDate;
 
-    for( Day = 1; Day <= numDays; ++Day ) {
+      // read today's weather and mos data
+      input::WeatherYear * wy = Location_->Weather_->GetWeatherForYear( currentDate.year() );
+      input::WeatherDay * wd = wy->GetDay( currentDate.day_of_year() );
+      AverageAirTemperature = wd->AvgTemp_;
+      DailyMosData = MosData_->GetMosData( currentDate );
+
       CalculateDeaths();
       CalculateBirths();
       AgePopulation();
@@ -761,7 +765,7 @@ SimLocation::CalculateEip(void)
     if( EIPFactor[k] == 0 ) {
       // STOP
     }
-    EIPDevRate[k] = EIPEnzKin(TemperatureAvg[Day] + EIPTempAdjust + 273.15f) / EIPFactor[k];
+    EIPDevRate[k] = EIPEnzKin( AverageAirTemperature + 273.15 ) / EIPFactor[k];
   }
 }
 
@@ -796,7 +800,7 @@ SimLocation::AdvanceMosquitoes(void)
   }
 
   date curDate = BoostDateFromYearAndDayOfYear( Year, Day );
-  output::DailyMosData dailyMosData = YearlyMosData_.GetDailyMosData(curDate);
+  output::DailyMosData & dailyMosData = DailyMosData;
 
   // calculate proportion taking a double blood meal
   double DMealProp = 0;
@@ -886,12 +890,12 @@ SimLocation::AdvanceMosquitoes(void)
           // find last day of current year
           //OldAdultDev = CimsimOutput[365].AdultDev;
           date lastDayOfCurYear = date( Year, 12, 31 );
-          OldAdultDev = YearlyMosData_.GetDailyMosData(lastDayOfCurYear).AdultDevelopment;
+          OldAdultDev = MosData_->GetMosData( lastDayOfCurYear ).AdultDevelopment;
         }
         else {
           date today = BoostDateFromYearAndDayOfYear(Year,Day);
           date yesterday = today - date_duration(1);
-          OldAdultDev = YearlyMosData_.GetDailyMosData(yesterday).AdultDevelopment;
+          OldAdultDev = MosData_->GetMosData( yesterday ).AdultDevelopment;
         }
 
         double CDYest = NewMosqInfdCD[i][j] - OldAdultDev;
@@ -1116,14 +1120,11 @@ SimLocation::InnoculateMosquitoes( int iType )
       NewMosqSuscCD[2] = 0;
     }
     
-    date curDate = BoostDateFromYearAndDayOfYear( Year, Day );
-    output::DailyMosData dailyMosData = YearlyMosData_.GetDailyMosData(curDate);
-
     // adjust infected mosquito arrays
     OldMosqInfd[1][iType] = OldInfd;
     NewMosqInfd[1][iType] = NewInfd;
-    OldMosqInfdCD[1][iType] = dailyMosData.AdultDevelopment;
-    NewMosqInfdCD[1][iType] = dailyMosData.AdultDevelopment;
+    OldMosqInfdCD[1][iType] = DailyMosData.AdultDevelopment;
+    NewMosqInfdCD[1][iType] = DailyMosData.AdultDevelopment;
     OldMosqInfdEIP[1][iType] = EIPDevRate[iType];
     NewMosqInfdEIP[1][iType] = EIPDevRate[iType];
   }
@@ -1394,7 +1395,7 @@ void
 SimLocation::RankPop(void)
 {
   AgeDistribution = std::vector<int>( 18+1, 0 );                                      // clear last tally
-  SerDistr = std::vector<std::vector<int>>( 18+1, std::vector<int>(4+1, 0) );         // clear last tally
+  SeroDistribution = std::vector<std::vector<int>>( 18+1, std::vector<int>(4+1, 0) ); // clear last tally
   Incub = std::vector<std::vector<int>>( 18+1, std::vector<int>(4+1, 0) );            // clear last tally
   Infective = std::vector<std::vector<int>>( 18+1, std::vector<int>(4+1, 0) );        // clear last tally
   HomImm = std::vector<std::vector<int>>( 18+1, std::vector<int>(4+1, 0) );           // clear last tally
@@ -1464,7 +1465,7 @@ SimLocation::SeroRank( int iElement, int iRank )
 
   if( Deng1[i] != 0 ) { 
     // show seropositive status
-    SerDistr[iRank][1] = SerDistr[iRank][1] + 1;
+    SeroDistribution[iRank][1] = SeroDistribution[iRank][1] + 1;
     
     if( Deng1[i] == -2 ) {
       HomImm[iRank][1] = HomImm[iRank][1] + 1;
@@ -1519,7 +1520,7 @@ SimLocation::SeroRank( int iElement, int iRank )
 
   if( Deng2[i] != 0 ) {
     // show seropositive status
-    SerDistr[iRank][2] = SerDistr[iRank][2] + 1;
+    SeroDistribution[iRank][2] = SeroDistribution[iRank][2] + 1;
 
     if( Deng2[i] == -2 ) {
       HomImm[iRank][2] = HomImm[iRank][2] + 1;
@@ -1574,7 +1575,7 @@ SimLocation::SeroRank( int iElement, int iRank )
 
   if( Deng3[i] != 0 ) {
     // show seropositive status
-    SerDistr[iRank][3] = SerDistr[iRank][3] + 1;
+    SeroDistribution[iRank][3] = SeroDistribution[iRank][3] + 1;
 
     if( Deng3[i] == -2 ) {
       HomImm[iRank][3] = HomImm[iRank][3] + 1;
@@ -1630,7 +1631,7 @@ SimLocation::SeroRank( int iElement, int iRank )
 
   if( Deng4[i] != 0 ) {
     // show seropositive status
-    SerDistr[iRank][4] = SerDistr[iRank][4] + 1;
+    SeroDistribution[iRank][4] = SeroDistribution[iRank][4] + 1;
 
     if( Deng4[i] == -2 ) {
       HomImm[iRank][4] = HomImm[iRank][4] + 1;
@@ -2070,7 +2071,7 @@ SimLocation::PurgeHFDeaths(void)
         // erase individual at position i
         std::vector<int>::iterator itIndiv = Indiv.begin() + i;
         Indiv.erase( itIndiv );
-        // And fix the resultant decrease in size of vector
+        // and fix the resultant decrease in size of vector
         Indiv.push_back(0);
 
         std::vector<int>::iterator itDeng1 = Deng1.begin() + i;
@@ -2146,7 +2147,7 @@ SimLocation::SpoolToDisk(void)
         dlo.SerPos[i + 2][j] = 0;
       }
       else {
-        dlo.SerPos[i + 2][j] = (double) SerDistr[i][j] / AgeDistribution[i] * 100;
+        dlo.SerPos[i + 2][j] = (double) SeroDistribution[i][j] / AgeDistribution[i] * 100;
       }
       Temp[j] = Temp[j] + dlo.SerPos[i + 2][j];
     }
@@ -2162,7 +2163,7 @@ SimLocation::SpoolToDisk(void)
         dlo.SerPos[21][j] = 0;
       }
       else {
-        dlo.SerPos[21][j] = dlo.SerPos[21][j] + (SerDistr[i][j] / AgeDistribution[i] * 100);
+        dlo.SerPos[21][j] = dlo.SerPos[21][j] + (SeroDistribution[i][j] / AgeDistribution[i] * 100);
       }
     }
   }
@@ -2181,7 +2182,7 @@ SimLocation::SpoolToDisk(void)
         dlo.SerPos[22][j] = 0;
       }
       else {
-        dlo.SerPos[22][j] = dlo.SerPos[22][j] + (SerDistr[i][j] / AgeDistribution[i] * 100);
+        dlo.SerPos[22][j] = dlo.SerPos[22][j] + (SeroDistribution[i][j] / AgeDistribution[i] * 100);
       }
     }
   }
@@ -2197,8 +2198,6 @@ SimLocation::SpoolToDisk(void)
 }
 
 
-
-#define COMPARE_DAY 365
 
 void
 SimLocation::ComparePopulation(void)
@@ -2390,28 +2389,32 @@ SimLocation::EIPEnzKin( double temp )
   return (Numerator / Denominator) * 24;
 }
 
-void
-SimLocation::ReadWeather( int year )
+
+
+int 
+SimLocation::DayAgeToYearAge( int ageInDays )
 {
-  // read specified year's worth of weather
-  input::WeatherYear * wy = Location_->Weather_->GetWeatherForYear(year);
+  int ageInYears = ageInDays / 365;
 
-  // adjust vector length for leap years
-  int numDays = gregorian_calendar::is_leap_year( year ) ? 366 : 365;
-  TemperatureAvg = std::vector<double>( numDays+1, 0.0f );
+  return ageInYears;
+}
 
-  for( int i = 1; i <= numDays; i++ ) {
-    input::WeatherDay * wd = wy->GetDay(i);
-    TemperatureAvg[i] = wd->AvgTemp_;
+
+
+int
+SimLocation::DayAgeToAgeClass( int ageInDays )
+{
+  int ageClass = 1;
+  
+  for( ; ageClass <= 18; ++ageClass ) {
+    if( ageInDays < AgeClasses[ageClass].LDay ) {
+      break;
+    }
   }
+
+  if( ageClass > 18 ) {
+    throw;
+  }
+
+  return ageClass;
 }
-
-
-
-void
-SimLocation::ReadMos( int year )
-{
-  this->YearlyMosData_ = MosData_->GetYearlyMosData(year);
-}
-
-

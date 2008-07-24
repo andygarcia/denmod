@@ -71,8 +71,6 @@ private:
   double RND(void);
   double Factorial( int n );
   double EIPEnzKin( double temp );
-  void ReadWeather( int year );
-  void ReadMos( int year );
 
 // Fields
 public:
@@ -114,7 +112,7 @@ public:
 
   std::vector<std::vector<double>> SerProp;       // proportion of population sero positive, by serotype and class
   std::vector<std::vector<int>> InitSerDistr;     // initial number of sero positive individuals, by serotype and class
-  std::vector<std::vector<int>> SerDistr;         // number of sero positive individuals, by serotype and class
+  std::vector<std::vector<int>> SeroDistribution;         // number of sero positive individuals, by serotype and class
   std::vector<double> CumHFDeaths;                // number of deaths for ages 0-15
 
   std::vector<input::VirusSerotype> Virus;        // virus parameters
@@ -138,10 +136,6 @@ public:
 
   std::vector<MaternalTransmission> MatAnti;      // number of MANA and MAEA
 
-  std::vector<double> TemperatureAvg;
-
-  double EIPTempAdjust;
-
   std::vector<int> TotalBirths;                         // total number of births during simulation
   std::vector<int> TotalDeaths;                         // total number of deaths during simulation
 
@@ -151,18 +145,18 @@ public:
   std::vector<double> OldMosqSusc;                      // susceptible old mosquitoes and ...
   std::vector<double> OldMosqSuscCD;                    // ... their gonotrophic development
 
-  std::vector<std::vector<double>> NewMosqInfd;         // infected new mosquitoes (New Infd Mosq - 1 and gono. cycle)
+  std::vector<std::vector<double>> NewMosqInfd;         // infected new mosquitoes (new Infd Mosq - 1 and gono. cycle)
   std::vector<std::vector<double>> NewMosqInfdCD;       // ... their gonotrophic development and ...
   std::vector<std::vector<double>> NewMosqInfdEIP;      // ... their extrinsic incubation period
 
-  std::vector<std::vector<double>> OldMosqInfd;         // infected old mosquitoes (Old infd mosq - 2 gono. cycle)
+  std::vector<std::vector<double>> OldMosqInfd;         // infected old mosquitoes (old infd mosq - 2 gono. cycle)
   std::vector<std::vector<double>> OldMosqInfdCD;       // ... their gonotrophic development and ...
   std::vector<std::vector<double>> OldMosqInfdEIP;      // ... their extrinsic incubation period
 
   std::vector<std::vector<double>> MosqInfv;            // infective mosquitoes and ...
-  std::vector<std::vector<double>> MosqInfvCD;          // ... their gonotrophic Development
+  std::vector<std::vector<double>> MosqInfvCD;          // ... their gonotrophic development
 
-  output::YearlyMosData YearlyMosData_;
+  output::DailyMosData DailyMosData;                    // today's mos data from cimsim
 
   double HumToMosLTiter;                                // low titer point
   double HumToMosLInf;                                  // probability of human to mosquito transmission at or below low titer
@@ -176,6 +170,7 @@ public:
   double EipHTiter;                                     // high titer
   double EipHFactor;                                    // EIP adjustment factor at or above high titer
   std::vector<double> EIPFactor;                        // EIP adjustment factors by serotype
+  double AverageAirTemperature;                         // daily average air temperature
   std::vector<double> EIPDevRate;                       // EIP daily development rate
 
   double StochTransNum;            // mosquito count threshold, below which simulation uses stochasticity
@@ -183,7 +178,6 @@ public:
   double PropOnHum;                // proportion of biters feeding on humans
   double FdAttempts;               // proportion of biters being interrupted
   double PropDifHost;              // proportion of interrupted biters feeding on different host
-  double PropOutdoor;              // proportion of mosquitoes resting outdoors (space/residual sprays)
 
   double EnzKinDR;                 // 
   double EnzKinEA;                 // Enzyme kinetics coefficients
