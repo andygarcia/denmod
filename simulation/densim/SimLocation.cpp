@@ -260,12 +260,7 @@ void
 SimLocation::denmain(void)
 {
   // initialize variables
-  Year = 1;
-  Day = 1;
   SimYear = 1;
-  PopulationSize = 0;
-  // TODO fix this initialization?
-  EndYear = EndDate_.year();
 
   InitializePopulation();
   InitializeSeroprevalence();
@@ -338,15 +333,11 @@ SimLocation::InitializePopulation(void)
     for( int iIndiv = 1; iIndiv <= classSize; ++iIndiv ) {
       int age = INT( (AgeClasses[iClass].LDay - AgeClasses[iClass].FDay + 1) * RND() + AgeClasses[iClass].FDay);
       PopulationSize = PopulationSize + 1;
+
       Indiv[PopulationSize] = age;
+
       AgeDistribution[iClass] = AgeDistribution[iClass] + 1;
       InitialAgeDistribution[iClass] = InitialAgeDistribution[iClass] + 1;
-
-      // this is superflous - the random sampling calculation for age ensures this is always true
-      if( age < AgeClasses[iClass].FDay || age > AgeClasses[iClass].LDay ) {
-        // STOP  'debugging code
-        throw;
-      }
 
       Individuals.push_back( Individual(age) );
     }
@@ -373,7 +364,7 @@ SimLocation::InitializeSeroprevalence(void)
   // Initialize the seroprevalence data
   // This data confers previous homologous immunity (designated by -2)
   // Oldest individuals have the smallest subscripts.
-  
+
   Deng1 = std::vector<int>( MaxPopSize+1, 0 );
   Deng2 = std::vector<int>( MaxPopSize+1, 0 );
   Deng3 = std::vector<int>( MaxPopSize+1, 0 );
@@ -2243,6 +2234,10 @@ SimLocation::ComparePopulationAndSerotypes(void)
       throw;
     }
     ++itIndiv;
+  }
+
+  if( Day == 365 ) {
+    std::cout << "ComparePopulationAndSerotypes finished year " << Year << std::endl;
   }
 }
 

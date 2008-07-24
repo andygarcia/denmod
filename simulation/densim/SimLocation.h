@@ -90,7 +90,6 @@ public:
 
   int Day;                                        // Simulation day
   int Year;                                       // Simulation year
-  int EndYear;                                    // end of simulation
   int SimYear;                                    // number of simulation years run
 
   std::vector<int> Indiv;                         // Age of each individual and age of infection
