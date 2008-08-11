@@ -106,3 +106,19 @@ SequentialInfections::GetSequentialInfection( std::string firstInfection, std::s
   return GetSequentialInfection( SequentialInfection::InfectionTypeFromString(firstInfection),
                                   SequentialInfection::InfectionTypeFromString(secondInfection) );
 }
+
+
+
+SequentialInfection *
+SequentialInfections::GetSequentialInfection( int firstSerotype, int secondSerotype )
+{
+  return GetSequentialInfection( (SequentialInfection::InfectionType) firstSerotype, (SequentialInfection::InfectionType) secondSerotype );
+}
+
+
+
+SequentialInfection *
+SequentialInfections::GetMaeaSequentialInfection( int serotype )
+{
+  return GetSequentialInfection( SequentialInfection::MAEA, (SequentialInfection::InfectionType) serotype );
+}

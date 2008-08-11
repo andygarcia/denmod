@@ -58,10 +58,12 @@ public:
 
   virtual ~SequentialInfections(void);
 
+public:
   SequentialInfection * GetSequentialInfection( SequentialInfection::InfectionType firstInfectionType,
                                                 SequentialInfection::InfectionType secondInfectionType );
-
   SequentialInfection * GetSequentialInfection( std::string firstInfection, std::string secondInfection );
+  SequentialInfection * GetSequentialInfection( int firstSerotype, int secondSerotype );
+  SequentialInfection * GetMaeaSequentialInfection( int serotype );
 
 private:
   SequentialInfectionCollection SequentialInfectionCollection_;
