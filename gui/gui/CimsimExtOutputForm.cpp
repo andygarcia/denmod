@@ -77,10 +77,17 @@ CimsimExtOutputForm::OnViewLocationGraph(System::Object^  sender, System::EventA
 
   using namespace output;
 
+  // show selected chart with optional time period and fucntion
   ChartInfo ^ chartInfo = (ChartInfo^) lboxLocationGraphs->SelectedValue;
   TimePeriod timePeriod = TimePeriod( cboxTimePeriod->SelectedValue );
+  //TimePeriodFunction timePeriodFunction = TimePeriodFunction( cboxTimePeriodFunction->SelectedValue );
+  TimePeriodFunction timePeriodFunction = TimePeriodFunction::Average;
 
-  GraphForm ^ gf = gcnew GraphForm( Location_, chartInfo, timePeriod, output::TimePeriodFunction::Average );
+  // create chart from simulation output
+  Chart ^ chart = Chart::Create( chartInfo, Location_->CimsimOutput, Location_->DensimOutput, nullptr );
+
+  // display chart
+  GraphForm ^ gf = gcnew GraphForm( Location_, chart, timePeriod, timePeriodFunction );
   gf->ShowDialog(this);
   gf->Close();
 }
@@ -97,13 +104,25 @@ CimsimExtOutputForm::OnViewContainerGraph(System::Object^  sender, System::Event
   using namespace output;
 
   ChartInfo ^ chartInfo= (ChartInfo^) lboxContainerGraphs->SelectedValue;
-  for each( GraphInfo ^ graphInfo in chartInfo->GraphInfos ) {
-    graphInfo->ContainerId = Convert::ToInt32( cboxContainers->SelectedValue );
-  }
-
   TimePeriod timePeriod = TimePeriod( cboxTimePeriod->SelectedValue );
+  //TimePeriodFunction timePeriodFunction = TimePeriodFunction( cboxTimePeriodFunction->SelectedValue );
+  TimePeriodFunction timePeriodFunction = TimePeriodFunction::Average;
 
-  GraphForm ^ gf = gcnew GraphForm( Location_, chartInfo, timePeriod, output::TimePeriodFunction::Average );
+  // container graphs are specific to containers
+  Collections::Generic::List<int> ^ indices = gcnew Collections::Generic::List<int>();
+  indices->Add( Convert::ToInt32(cboxContainers->SelectedValue) );
+
+  Chart ^ chart = Chart::Create( chartInfo, Location_->CimsimOutput, Location_->DensimOutput, indices );
+
+  GraphForm ^ gf = gcnew GraphForm( Location_, chart, timePeriod, timePeriodFunction );
   gf->ShowDialog(this);
   gf->Close();
+}
+
+
+
+System::Void
+CimsimExtOutputForm::OnSelectedIndexChanged( System::Object ^ sender, System::EventArgs ^ e )
+{
+
 }

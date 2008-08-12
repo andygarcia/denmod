@@ -8,19 +8,16 @@ using namespace Dundas::Charting::WinControl;
 
 
 
-GraphForm::GraphForm( gui::Location ^ location, output::ChartInfo ^ chartInfo, output::TimePeriod timePeriod, output::TimePeriodFunction timePeriodFunction )
+GraphForm::GraphForm( gui::Location ^ location, output::Chart ^ chartData, output::TimePeriod timePeriod, output::TimePeriodFunction timePeriodFunction )
 : Location_(location)
 {
   InitializeComponent();
 
-  for each( output::GraphInfo ^ graphInfo in chartInfo->GraphInfos ) {
-    // create graph object
-    output::Graph ^ graph = graphInfo->CreateGraph( location->CimsimOutput, location->DensimOutput );
-
+  for each( output::Graph ^ graph in chartData->Graphs ) {
     // creat, add, and customize chart area
     ChartArea ^ chartArea = gcnew ChartArea();
     chart->ChartAreas->Add( chartArea );
-    chartArea->Name = graph->GraphInfo->Title;
+    chartArea->Name = graph->Title;
 
     // position and size
     chartArea->Position->Auto = true;
@@ -42,7 +39,7 @@ GraphForm::GraphForm( gui::Location ^ location, output::ChartInfo ^ chartInfo, o
     chartArea->AxisX->MajorTickMark->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
     chartArea->AxisX->Margin = false;
     chartArea->AxisX->MinorGrid->LineColor = System::Drawing::Color::Silver;
-    chartArea->AxisX->Title = graphInfo->AxisX;
+    chartArea->AxisX->Title = graph->AxisX;
 
     // y axis
     chartArea->AxisY->LabelStyle->Interval = 0;
@@ -60,7 +57,7 @@ GraphForm::GraphForm( gui::Location ^ location, output::ChartInfo ^ chartInfo, o
     chartArea->AxisY->MajorTickMark->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
     chartArea->AxisY->Margin = true;
     chartArea->AxisY->MinorGrid->LineColor = System::Drawing::Color::Silver;
-    chartArea->AxisY->Title = graphInfo->AxisY;
+    chartArea->AxisY->Title = graph->AxisY;
 
     // colors
     chartArea->BackColor = System::Drawing::Color::White;
@@ -78,7 +75,7 @@ GraphForm::GraphForm( gui::Location ^ location, output::ChartInfo ^ chartInfo, o
     chartArea->CursorY->UserEnabled = true;
     chartArea->CursorY->UserSelection = true;
 
-    Legend ^ legend = gcnew Legend( graphInfo->Title );
+    Legend ^ legend = gcnew Legend( graph->Title );
     legend->Enabled = true;
     legend->DockToChartArea = chartArea->Name;
     legend->BorderStyle = ChartDashStyle::Solid;
@@ -91,7 +88,7 @@ GraphForm::GraphForm( gui::Location ^ location, output::ChartInfo ^ chartInfo, o
     for each( output::Output ^ output in graph->PrimaryOutputs ) {
       Series ^ series = gcnew Series();
       series->Name = output->Name;
-      series->ChartType = graphInfo->GraphType;
+      series->ChartType = graph->GraphType;
       series->ChartArea = chartArea->Name;
       series->Legend = legend->Name;
 

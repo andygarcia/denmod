@@ -14,8 +14,10 @@ namespace output {
 public ref class ChartInfo
 {
 public:
-  ChartInfo()
-  : _graphInfos(gcnew GraphInfoCollection())
+  ChartInfo( String ^ name, bool periodic)
+  : _graphs(gcnew GraphCollection()),
+    _name(name),
+    _periodic(periodic)
   {}
   virtual ~ChartInfo(void)
   {}
@@ -25,20 +27,18 @@ public:
     String ^ get(void) {
       return _name;
     }
-    void set(String ^ s) {
-      _name = s;
-    }
   }
 
-  property GraphInfoCollection ^ GraphInfos {
-    GraphInfoCollection ^ get(void) {
-      return _graphInfos;
+  property bool Periodic {
+    bool get(void) {
+      return _periodic;
     }
   }
 
 private:
   String ^ _name;
-  GraphInfoCollection ^ _graphInfos;
+  bool _periodic;
+  GraphCollection ^ _graphs;
 };
 typedef ComponentModel::BindingList<ChartInfo^> ChartInfoCollection;
 
@@ -120,8 +120,48 @@ public:
     static ChartInfo ^ PersonsViremic;
     static ChartInfo ^ PersonsWithVirus;
   };
-
 };
+
+
+
+public ref class Chart
+{
+public:
+  static Chart ^ Create( ChartInfo ^ chartInfo, CimsimOutput ^ cimsimOutput, DensimOutput ^ densimOutput, Collections::Generic::List<int> ^ indices );
+
+public:
+  Chart(void)
+  : _graphs(gcnew GraphCollection())
+  {}
+
+  virtual ~Chart(void)
+  {}
+
+public:
+  property String ^ Name {
+    String ^ get(void) {
+      return _chartInfo->Name;
+    }
+  }
+
+  property bool Periodic {
+    bool get(void) {
+      return _chartInfo->Periodic;
+    }
+  }
+
+  property GraphCollection ^ Graphs {
+    GraphCollection ^ get(void) {
+      return _graphs;
+    }
+  }
+
+private:
+  ChartInfo ^ _chartInfo;
+  GraphCollection ^ _graphs;
+};
+
+
 
 };
 };

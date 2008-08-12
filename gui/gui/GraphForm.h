@@ -14,7 +14,7 @@ namespace gui {
   public ref class GraphForm : public System::Windows::Forms::Form
 	{
 	public:
-    GraphForm( gui::Location ^ location, output::ChartInfo ^ chartInfo, output::TimePeriod timePeriod, output::TimePeriodFunction timePeriodFunction );
+    GraphForm( gui::Location ^ location, output::Chart ^ chartData, output::TimePeriod timePeriod, output::TimePeriodFunction timePeriodFunction );
 	protected:
 		~GraphForm();
 
@@ -24,12 +24,10 @@ namespace gui {
   private:
     gui::Location ^ Location_;
     gui::Container ^ Container_;
+
   private: Dundas::Charting::WinControl::Chart^  chart;
-
-
   private: System::Windows::Forms::Button^  btnExit;
   private: System::Windows::Forms::Button^  btnSave;
-  protected: 
 
 	private:
 		/// <summary>

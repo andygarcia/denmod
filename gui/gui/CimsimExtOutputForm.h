@@ -32,6 +32,7 @@ namespace gui {
     System::Void OnView(System::Object^  sender, System::EventArgs^  e);
     System::Void OnViewLocationGraph(System::Object^  sender, System::EventArgs^  e);
     System::Void OnViewContainerGraph(System::Object^  sender, System::EventArgs^  e);
+    System::Void OnSelectedIndexChanged(System::Object^  sender, System::EventArgs^  e);
 
   private: System::Windows::Forms::TabControl^  tabGraphType;
   private: System::Windows::Forms::TabPage^  tabPageLocation;
@@ -106,6 +107,7 @@ namespace gui {
       this->lboxLocationGraphs->Name = L"lboxLocationGraphs";
       this->lboxLocationGraphs->Size = System::Drawing::Size(253, 186);
       this->lboxLocationGraphs->TabIndex = 0;
+      this->lboxLocationGraphs->SelectedIndexChanged += gcnew System::EventHandler(this, &CimsimExtOutputForm::OnSelectedIndexChanged);
       this->lboxLocationGraphs->DoubleClick += gcnew System::EventHandler(this, &CimsimExtOutputForm::OnViewLocationGraph);
       // 
       // tabPageContainer

@@ -32,19 +32,15 @@ DensimExtOutputForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
 
   // place all graphs in one list box
   lboxLocationGraphs->DisplayMember = "Name";
-  for each( output::ChartInfo ^ chartInfo in output::ChartInfos::GetChartInfoCollection(output::Group::DensimLocation) ) {
-    lboxLocationGraphs->Items->Add( chartInfo );
-    tags->Add(nullptr);
-  }
-  for each( output::ChartInfo ^ chartInfo in output::ChartInfos::GetChartInfoCollection(output::Group::DensimSerotype) ) {
-    lboxLocationGraphs->Items->Add( chartInfo );
-    tags->Add(nullptr);
-  }
+  lboxLocationGraphs->DataSource = output::ChartInfos::GetChartInfoCollection(output::Group::DensimLocation);
 
-  output::ChartInfo ^ detailedSero = gcnew output::ChartInfo();
-  detailedSero->Name = "Detailed Seroprevalence";
-  tags->Add( gcnew output::CreateChartInfoDelegate( this, &gui::DensimExtOutputForm::DetailedSeroprevalence ) );
-  lboxLocationGraphs->Items->Add( detailedSero );
+  // todo
+  //output::ChartInfo ^ detailedSero = gcnew output::ChartInfo( "Detailed Seroprevalence", false);
+  //tags->Add( gcnew output::CreateChartInfoDelegate( this, &gui::DensimExtOutputForm::DetailedSeroprevalence ) );
+  //lboxLocationGraphs->Items->Add( detailedSero );
+
+  lboxVirusGraphs->DisplayMember = "Name";
+  lboxVirusGraphs->DataSource = output::ChartInfos::GetChartInfoCollection(output::Group::DensimSerotype);
 }
 
 
@@ -82,8 +78,8 @@ DensimExtOutputForm::OnViewLocationGraph(System::Object^  sender, System::EventA
     chartInfo = ccid->Invoke();
   }
   else {
-    // use bound object for chart
-    ChartInfo ^ chartInfo = (ChartInfo^) lboxLocationGraphs->SelectedValue;
+    // non data bound list, SelectedValue always null, use SelectedItem
+    chartInfo = (ChartInfo^) lboxLocationGraphs->SelectedItem;
   }
 
   //TimePeriod timePeriod = TimePeriod( cboxTimePeriod->SelectedValue );
@@ -106,7 +102,6 @@ DensimExtOutputForm::OnViewVirusGraph( System::Object ^ sender, System::EventArg
   using namespace output;
 
   ChartInfo ^ chartInfo = (ChartInfo^) lboxVirusGraphs->SelectedValue;
-  //TimePeriod timePeriod = TimePeriod( cboxTimePeriod->SelectedValue );
 
   GraphForm ^ gf = gcnew GraphForm( Location_, chartInfo, output::TimePeriod::Daily, output::TimePeriodFunction::Average );
   gf->ShowDialog(this);
@@ -119,7 +114,7 @@ output::ChartInfo ^
 DensimExtOutputForm::DetailedSeroprevalence(void)
 {
   // pop up dialog that allows selection of age class for seroprevalence summary
-  output::ChartInfo ^ chartInfo = gcnew output::ChartInfo();
+  output::ChartInfo ^ chartInfo = gcnew output::ChartInfo( "Detailed Seroprevalence", false );
 
   // prompt user for age classes
 

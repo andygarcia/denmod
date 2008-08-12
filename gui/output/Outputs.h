@@ -95,6 +95,9 @@ public:
     String ^ get(void) {
       return _outputInfo->Name;
     }
+    void set(String ^ s) {
+      _outputInfo->Name = s;
+    }
   }
   property String ^ Units {
     String ^ get(void) {
