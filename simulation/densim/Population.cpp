@@ -8,7 +8,7 @@ using namespace sim::ds;
 Individual::Individual( int age )
 : Age(age)
 {
-  for( int i = 1; i <=4; ++i ) {
+  for( int i = 0; i <=4; ++i ) {
     Dengue[i] = 0;
   }
 }
@@ -18,7 +18,7 @@ Individual::Individual( int age )
 Individual::Individual( const Individual & individual )
 {
   this->Age = individual.Age;
-  for( int i = 1; i <=4; ++i ) {
+  for( int i = 0; i <=4; ++i ) {
     this->Dengue[i] = individual.Dengue[i];
   }
 }
@@ -138,4 +138,22 @@ bool
 Individual::HasHomologousImmunity( int serotype )
 {
   return Dengue[serotype] > 0;
+}
+
+
+
+void
+Individual::DoDeath(void)
+{
+  // record age at death
+  Dengue[0] = Age;
+  // flag as dead
+  Age = -999;
+}
+
+
+int
+Individual::GetAgeAtDeath(void)
+{
+  return Dengue[0];
 }

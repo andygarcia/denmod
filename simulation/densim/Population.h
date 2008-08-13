@@ -34,6 +34,9 @@ public:
   int GetAgeOfInfection( int serotype );
   bool HasHeterologousImmunity( int serotype, int duration );
 
+  void DoDeath(void);
+  int GetAgeAtDeath(void);
+
 // Fields
 public:
   int Age;

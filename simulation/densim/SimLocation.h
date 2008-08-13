@@ -55,7 +55,12 @@ public:
 
   void RankPop(void);
   void SeroRank( int iElement, int iRank );
-  void CalcSeqInfs( int iVirType, int iPerAge, int iD1Inoc, int iD2Inoc, int iD3Inoc, int iD4Inoc );
+  void CalcSeqInfs( int iVirType, int & iPerAge, int iD1Inoc, int iD2Inoc, int iD3Inoc, int iD4Inoc );
+
+  void NewRankPop(void);
+  void NewSeroRank( Individual & individual, int ageClass );
+  void NewCalcSeqInfs( Individual & individual, int serotype );
+
   void AgeAtDeath( int iPerAge );
   void PurgeHFDeaths(void);
   void SpoolToDisk(void);

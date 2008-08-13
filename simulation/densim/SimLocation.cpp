@@ -256,6 +256,7 @@ SimLocation::GetSimOutput(void)
 }
 
 
+
 void
 SimLocation::denmain(void)
 {
@@ -294,6 +295,7 @@ SimLocation::denmain(void)
       MosquitoToHumanTransmission();
 
       RankPop();
+      NewRankPop();
       PurgeHFDeaths();
 
       SpoolToDisk();
@@ -350,7 +352,6 @@ SimLocation::InitializePopulation(void)
 
   // new vectors
   std::sort( Individuals.begin(), Individuals.end(), DescendingAgeSort() );
-  ComparePopulation();
 
   // save initial age distribution to output
   Output_->SetInitialData( InitialAgeDistribution );
@@ -422,7 +423,6 @@ SimLocation::InitializeSeroprevalence(void)
     }
     iPos = iPos + AgeDistribution[i];
   }
-  ComparePopulationAndSerotypes();
 }
 
 
@@ -504,7 +504,6 @@ SimLocation::CalculateDeaths(void)
     iPos = iPos + AgeDistribution[i];
     CumulativeDeaths[i] = CumulativeDeaths[i] - INT(CumulativeDeaths[i]);
   }
-  ComparePopulationAndSerotypes();
 }
 
 
@@ -565,7 +564,6 @@ SimLocation::CalculateBirths(void)
     }
     iPos = iPos + AgeDistribution[i];
   }
-  ComparePopulationAndSerotypes();
 }
 
 
@@ -587,8 +585,6 @@ SimLocation::AgePopulation(void)
       itIndiv->Age = AgeClasses[18].LDay;           // don't age individuals older than limits of oldest class
     }
   }
-
-  ComparePopulationAndSerotypes();
 }
 
 
@@ -633,13 +629,11 @@ SimLocation::IntroduceInfection(void)
 
   // initialize infective humans
   for( int seroType = 1; seroType <= 4; ++seroType ) {
-    // get serotype introduction object for this serotype
     input::SerotypeIntroduction * serotypeIntro = Location_->InfectionIntroduction_->GetSerotype(seroType);
 
-    //if( AddedInfections[seroType][Day] && VirusIntro[seroType].Hums > 0 ) {
     if( serotypeIntro->Schedule_->IsDateScheduled( curDay ) && serotypeIntro->Humans_ > 0 ) {
       for( int i = 1; i <= serotypeIntro->Humans_; ++i ) {
-        // Increase current population size
+        // increase current population size
         PopulationSize = PopulationSize + 1;
         int IAge = 0;
         int iPos = 0;
@@ -685,26 +679,21 @@ SimLocation::IntroduceInfection(void)
             }
             break;
         }
-        //// by incrementing PopulationSize, DS 1.0 effectively added a new individual with age 0
-        //Individuals.push_back( Individual(0) );
-        //Population::iterator itIndiv = Individuals.begin() + iPos - 1;
-        //itIndiv->Age = IAge;
-        //// DS effectively overwrites any existing status to specified serotype
-        //itIndiv->SetNewInfection( seroType, IAge - Virus[seroType].IncubationDuration_ );
-
-        // insert before existing individual
-        Population::iterator itIndiv = Individuals.begin() + iPos - 1;
-
         // artifact of DS arrays is new individual has previous individuals immunities
+        Population::iterator itIndiv = Individuals.begin() + iPos - 1;
         Individual introducedIndividual = Individual( *itIndiv );
         introducedIndividual.Age = IAge;
         introducedIndividual.Infect( seroType, IAge - Virus[seroType].IncubationDuration_ );
 
+        // insert before existing individual
         Individuals.insert( Individuals.begin() + iPos - 1, introducedIndividual );
+        
+        // TODO DS 1.0 fix
+        int ageClass = DayAgeToAgeClass( IAge );
+        AgeDistribution[ageClass]++;
       }
     }
   }
-  ComparePopulationAndSerotypes();
 }
 
 
@@ -743,8 +732,6 @@ SimLocation::PurgeMaternal(void)
       itIndiv->PurgeMaternalImmunity();
     }
   }
-
-  ComparePopulationAndSerotypes();
 }
 
 
@@ -753,9 +740,6 @@ void
 SimLocation::CalculateEip(void)
 {
   for( int k = 1; k <=4; ++k ) {
-    if( EIPFactor[k] == 0 ) {
-      // STOP
-    }
     EIPDevRate[k] = EIPEnzKin( AverageAirTemperature + 273.15 ) / EIPFactor[k];
   }
 }
@@ -1023,7 +1007,6 @@ SimLocation::HumanToMosquitoTransmission(void)
       break;
     }
   }
-  ComparePopulationAndSerotypes();
 }
 
 
@@ -1143,7 +1126,6 @@ SimLocation::MosquitoToHumanTransmission()
       break;
     }
   }
-  ComparePopulationAndSerotypes();
 }
 
 
@@ -1438,7 +1420,50 @@ SimLocation::RankPop(void)
       SeroRank(i, iRank);
     }
   }
-  ComparePopulationAndSerotypes();
+}
+
+
+
+void
+SimLocation::NewRankPop(void)
+{
+  //AgeDistribution = std::vector<int>( 18+1, 0 );                                      // clear last tally
+  //SeroDistribution = std::vector<std::vector<int>>( 18+1, std::vector<int>(4+1, 0) ); // clear last tally
+  //Incub = std::vector<std::vector<int>>( 18+1, std::vector<int>(4+1, 0) );            // clear last tally
+  //Infective = std::vector<std::vector<int>>( 18+1, std::vector<int>(4+1, 0) );        // clear last tally
+  //HomImm = std::vector<std::vector<int>>( 18+1, std::vector<int>(4+1, 0) );           // clear last tally
+  //HetImm = std::vector<std::vector<int>>( 18+1, std::vector<int>(4+1, 0) );           // clear last tally
+  //MatAnti = std::vector<MaternalTransmission>( 4+1 );                                 // clear last tally
+  //TotDlyIncub = std::vector<int>( 4+1, 0 );
+  //TotDlyInfective = std::vector<int>( 4+1, 0 );
+  //TotDlyHomImm = std::vector<int>( 4+1, 0 );
+  //TotDlyHetImm = std::vector<int>( 4+1, 0 );
+  //NewDlyInfective = std::vector<int>( 4+1, 0 );
+
+  //// initialize sequential infection statistics record
+  //DlySeqInfVals.F1T2 = 0;
+  //DlySeqInfVals.F1T3 = 0;
+  //DlySeqInfVals.F1T4 = 0;
+  //DlySeqInfVals.F2T1 = 0;
+  //DlySeqInfVals.F2T3 = 0;
+  //DlySeqInfVals.F2T4 = 0;
+  //DlySeqInfVals.F3T1 = 0;
+  //DlySeqInfVals.F3T2 = 0;
+  //DlySeqInfVals.F3T4 = 0;
+  //DlySeqInfVals.F4T1 = 0;
+  //DlySeqInfVals.F4T2 = 0;
+  //DlySeqInfVals.F4T3 = 0;
+  //DlySeqInfVals.FMT1 = 0;
+  //DlySeqInfVals.FMT2 = 0;
+  //DlySeqInfVals.FMT3 = 0;
+  //DlySeqInfVals.FMT4 = 0;
+  
+  
+  for( Population::iterator itIndiv = Individuals.begin(); itIndiv != Individuals.end(); ++itIndiv ) {
+    int ageClass = DayAgeToAgeClass( itIndiv->Age );
+    //AgeDistribution[iRank] = AgeDistribution[iRank] + 1;
+    NewSeroRank( *itIndiv, ageClass );
+  }
 }
 
 
@@ -1452,7 +1477,6 @@ SimLocation::SeroRank( int iElement, int iRank )
   //             >0 inoculation day
 
   int i = iElement;   // individual's index in population array
-
 
   if( Deng1[i] != 0 ) { 
     // show seropositive status
@@ -1678,7 +1702,75 @@ SimLocation::SeroRank( int iElement, int iRank )
 
 
 void
-SimLocation::CalcSeqInfs( int iVirType, int iPerAge, int iD1Inoc, int iD2Inoc, int iD3Inoc, int iD4Inoc )
+SimLocation::NewSeroRank( Individual & individual, int ageClass )
+{
+  // Rank can be -2 for initialized homologous immmunity
+  //             -1 for maternally acquired immunity
+  //              0 for no previous exposure
+  //             >0 inoculation day
+
+
+  for( int serotype = 1; serotype <= 4; ++serotype ) {
+    if( individual.IsSeropositive( serotype ) ) {
+      //SeroDistribution[ageClass][serotype]++;
+
+      if( individual.HasInitializedImmunity(serotype) ) {
+        //HomImm[ageClass][serotype] = HomImm[ageClass][serotype] + 1;
+        //TotDlyHomImm[serotype] = TotDlyHomImm[serotype] + 1;
+      }
+      else if( individual.HasMaternallyAcquiredImmunity(serotype) ) {
+        // check for neutralizing or enhancing antibody
+        if( individual.Age < MANADurat ) {
+          // MANA
+          //MatAnti[serotype].MANA++
+          //HomImm[ageClass][serotype]++;
+          //TotDlyHomImm[serotype]++;
+        }
+        else if( individual.Age < (MAEADurat + MANADurat) ) {
+          // MAEA
+          //MatAnti[serotype].MAEA++;
+        }
+      }
+      else {
+        int elapsedTime = individual.Age - individual.GetAgeOfInfection(serotype);
+
+        // check for incubating virus
+        if( elapsedTime < Virus[serotype].IncubationDuration_ ) {
+          //Incub[ageClass][serotype]++;
+          //TotDlyIncub[serotype]++;
+        }
+        else if( elapsedTime < Virus[serotype].ViremicDuration_ + Virus[serotype].IncubationDuration_ ) {
+          // check for infectious virus
+          //Infective[ageClass][serotype]++;
+          //TotDlyInfective[serotype]++;
+          if( elapsedTime == Virus[serotype].IncubationDuration_ ) {
+            // newly infective for the current day
+            //NewDlyInfective[serotype]++;
+          }
+          if( elapsedTime > Virus[serotype].IncubationDuration_ + (Virus[serotype].ViremicDuration_ / 2) ) {
+            // latter half of viremic phase, check for HF/SS
+            NewCalcSeqInfs( individual, serotype );
+          }
+        }
+        else {
+          // check for heterologous immunity
+          if( elapsedTime < HetImmunDurat + Virus[serotype].ViremicDuration_ + Virus[serotype].IncubationDuration_ ) {
+            //HetImm[ageClass][serotype]++;
+            //TotDlyHetImm[serotype]++;
+          }
+          // all have homologous immunity
+          //HomImm[ageClass][serotype]++;
+          //TotDlyHomImm[serotype]++;
+        }
+      }
+    }
+  }
+}
+
+
+
+void
+SimLocation::CalcSeqInfs( int iVirType, int & iPerAge, int iD1Inoc, int iD2Inoc, int iD3Inoc, int iD4Inoc )
 {
   // calculates daily sequential infection and MAEA statistics
   // applies death to those with hf/ss - assigns Indiv(i) age of -999 for later analysis.
@@ -1983,6 +2075,64 @@ SimLocation::CalcSeqInfs( int iVirType, int iPerAge, int iD1Inoc, int iD2Inoc, i
 
 
 void
+SimLocation::NewCalcSeqInfs( Individual & individual, int serotype )
+{
+  // individual is currently infectious for specified serotype
+  // try and find previous infection to other serotype that puts
+  // individual at risk for DHF
+
+  int ageOfInfection = individual.GetAgeOfInfection( serotype );
+
+  bool foundHomologousImmunity = false;
+  for( int firstSerotype = 1; firstSerotype <= 4; ++firstSerotype ) {
+    if( firstSerotype == serotype ) {
+      continue;
+    }
+
+    if( individual.HasHomologousImmunity(firstSerotype) ) {
+      foundHomologousImmunity = true;
+
+      input::SequentialInfection * si = Location_->SequentialInfections_->GetSequentialInfection( firstSerotype, serotype );
+      if( individual.Age < ((si->AtRiskCutoffAge_ * 365) + 365) ) {
+
+        int ageOfPrimaryInfection = individual.GetAgeOfInfection( firstSerotype );
+        int elapsedTime = ageOfInfection - ageOfPrimaryInfection;
+
+        if( ((si->MinMonths_ * 30) < elapsedTime) && (elapsedTime < (si->MaxMonths_ * 30)) )  {
+          // individual has had previous infection, is below risk cutoff age,
+          // and secondary infection occurs within risk preiod
+          //DlySeqInfVals.F2T1 = DlySeqInfVals.F2T1 + (1 * seqInf->Probability_);
+          if( si->Probability_ * si->Mortality_ > RND() ) {
+            // individual dies
+            //AgeAtDeath( individual.Age );
+            individual.DoDeath();
+            return;
+          }
+        }
+      }
+    }
+  }
+  if( !foundHomologousImmunity ) {
+    // TODO - DS 1.0 never actually checked if individual has MAEA For some other serotype
+    //else if( individual.HasMaternallyAcquiredImmunity(serotype) ) {
+    input::SequentialInfection * si = Location_->SequentialInfections_->GetMaeaSequentialInfection(serotype);
+
+    if( individual.Age < (MANADurat + MAEADurat) ) {
+      // indiv is viremic and enhancing
+      //DlySeqInfVals.FMT1 = DlySeqInfVals.FMT1 + (1 * MAEASeqInf->Probability_);
+      if( si->Probability_ * si->Mortality_ > RND() ) {
+        // individual dies
+        //AgeAtDeath( individual.Age);
+        individual.DoDeath();
+        return;
+      }
+    }
+  }
+}
+
+
+
+void
 SimLocation::AgeAtDeath( int iPerAge )
 {
   if( 0 <= iPerAge && iPerAge <= 365 ) {
@@ -2084,8 +2234,12 @@ SimLocation::PurgeHFDeaths(void)
         // population decreased by one
         PopulationSize = PopulationSize - 1;
       }
+      // TODO - fix for DS 1.0 not updating age distribution
+      Individual & individual = *(Individuals.begin() + i - 1);
+      int ageClass = DayAgeToAgeClass( individual.GetAgeAtDeath() );
+      AgeDistribution[ageClass]--;
 
-      Individuals.erase( Individuals.begin() + i -1 );
+      Individuals.erase( Individuals.begin() + i - 1);
     }
   }
 }
@@ -2196,6 +2350,11 @@ SimLocation::ComparePopulation(void)
   // helper method in transitioning to better population data structures
   // ensures that the population are equivalent
 
+  if( PopulationSize != Individuals.size() ) {
+    std::cout << "Population size differs" << std::endl;
+    throw;
+  }
+
   Population::iterator itIndiv = Individuals.begin();
   for( int i = 1; i <= PopulationSize; ++i ) {
     if( Indiv[i] != itIndiv->Age ) {
@@ -2211,6 +2370,11 @@ SimLocation::ComparePopulation(void)
 void
 SimLocation::ComparePopulationAndSerotypes(void)
 {
+  if( PopulationSize != Individuals.size() ) {
+    std::cout << "Population size differs" << std::endl;
+    throw;
+  }
+
   Population::iterator itIndiv = Individuals.begin();
   for( int i = 1; i <= PopulationSize; ++i ) {
     if( Indiv[i] != itIndiv->Age ) {
@@ -2236,9 +2400,16 @@ SimLocation::ComparePopulationAndSerotypes(void)
     ++itIndiv;
   }
 
-  if( Day == 365 ) {
-    std::cout << "ComparePopulationAndSerotypes finished year " << Year << std::endl;
+  // age distribution should sum to population size...
+  int sum = 0;
+  for( int i = 1; i <= 18; ++i ) {
+    sum += AgeDistribution[i];
   }
+  if( sum != PopulationSize ) {
+    std::cout << "Age distribution sum does not equal population size." << std::endl;
+    throw;
+  }
+
 }
 
 
@@ -2402,7 +2573,7 @@ SimLocation::DayAgeToAgeClass( int ageInDays )
   int ageClass = 1;
   
   for( ; ageClass <= 18; ++ageClass ) {
-    if( ageInDays < AgeClasses[ageClass].LDay ) {
+    if( ageInDays <= AgeClasses[ageClass].LDay ) {
       break;
     }
   }
