@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "DensimExtOutputForm.h"
-#include "GraphForm.h"
+#include "ChartForm.h"
 #include "DensimPanel.h"
 
 using namespace gui;
@@ -27,8 +27,8 @@ DensimExtOutputForm::~DensimExtOutputForm()
 System::Void
 DensimExtOutputForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
 {
-  ArrayList ^ tags = gcnew ArrayList();
-  lboxLocationGraphs->Tag = tags;
+  //ArrayList ^ tags = gcnew ArrayList();
+  //lboxLocationGraphs->Tag = tags;
 
   // place all graphs in one list box
   lboxLocationGraphs->DisplayMember = "Name";
@@ -70,21 +70,28 @@ DensimExtOutputForm::OnViewLocationGraph(System::Object^  sender, System::EventA
 
   using namespace output;
 
-  ChartInfo ^ chartInfo;
-  ArrayList ^ tags = (ArrayList^) lboxLocationGraphs->Tag;
-  if( tags[lboxLocationGraphs->SelectedIndex] != nullptr ) {
-    // use delegate to create chart
-    output::CreateChartInfoDelegate ^ ccid = (output::CreateChartInfoDelegate^) tags[lboxLocationGraphs->SelectedIndex];
-    chartInfo = ccid->Invoke();
-  }
-  else {
-    // non data bound list, SelectedValue always null, use SelectedItem
-    chartInfo = (ChartInfo^) lboxLocationGraphs->SelectedItem;
-  }
+  //ChartInfo ^ chartInfo;
+  //ArrayList ^ tags = (ArrayList^) lboxLocationGraphs->Tag;
+  //if( tags[lboxLocationGraphs->SelectedIndex] != nullptr ) {
+  //  // use delegate to create chart
+  //  output::CreateChartInfoDelegate ^ ccid = (output::CreateChartInfoDelegate^) tags[lboxLocationGraphs->SelectedIndex];
+  //  chartInfo = ccid->Invoke();
+  //}
+  //else {
+  //  // non data bound list, SelectedValue always null, use SelectedItem
+  //  chartInfo = (ChartInfo^) lboxLocationGraphs->SelectedItem;
+  //}
 
+
+  ChartInfo ^ chartInfo = (ChartInfo^) lboxLocationGraphs->SelectedValue;
   //TimePeriod timePeriod = TimePeriod( cboxTimePeriod->SelectedValue );
+  TimePeriod timePeriod = TimePeriod::Daily;
+  //TimePeriodFunction timePeriodFunction = TimePeriodFunction( cboxTimePeriodFunction->SelectedValue );
+  TimePeriodFunction timePeriodFunction = TimePeriodFunction::Average;
 
-  GraphForm ^ gf = gcnew GraphForm( Location_, chartInfo, output::TimePeriod::Daily, output::TimePeriodFunction::Average );
+  Chart ^ chart = Chart::Create( chartInfo, Location_->CimsimOutput, Location_->DensimOutput, nullptr );
+
+  ChartForm ^ gf = gcnew ChartForm( Location_, chart, timePeriod, timePeriodFunction );
   gf->ShowDialog(this);
   gf->Close();
 }
@@ -102,8 +109,20 @@ DensimExtOutputForm::OnViewVirusGraph( System::Object ^ sender, System::EventArg
   using namespace output;
 
   ChartInfo ^ chartInfo = (ChartInfo^) lboxVirusGraphs->SelectedValue;
+  //TimePeriod timePeriod = TimePeriod( cboxTimePeriod->SelectedValue );
+  TimePeriod timePeriod = TimePeriod::Daily;
+  //TimePeriodFunction timePeriodFunction = TimePeriodFunction( cboxTimePeriodFunction->SelectedValue );
+  TimePeriodFunction timePeriodFunction = TimePeriodFunction::Average;
 
-  GraphForm ^ gf = gcnew GraphForm( Location_, chartInfo, output::TimePeriod::Daily, output::TimePeriodFunction::Average );
+  Collections::Generic::List<int> ^ serotypes = gcnew Collections::Generic::List<int>();
+  serotypes->Add(1);
+  serotypes->Add(2);
+  serotypes->Add(3);
+  serotypes->Add(4);
+
+  Chart ^ chart = Chart::Create( chartInfo, Location_->CimsimOutput, Location_->DensimOutput, serotypes );
+
+  ChartForm ^ gf = gcnew ChartForm( Location_, chart, timePeriod, timePeriodFunction );
   gf->ShowDialog(this);
   gf->Close();
 }

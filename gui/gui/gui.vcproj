@@ -248,6 +248,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ChartForm.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CimsimExtOutputForm.cpp"
 				>
 			</File>
@@ -285,10 +289,6 @@
 			</File>
 			<File
 				RelativePath=".\FoodFitterForm.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\GraphForm.cpp"
 				>
 			</File>
 			<File
@@ -452,6 +452,16 @@
 				</File>
 			</File>
 			<File
+				RelativePath=".\ChartForm.h"
+				FileType="3"
+				>
+				<File
+					RelativePath=".\ChartForm.resx"
+					SubType="Designer"
+					>
+				</File>
+			</File>
+			<File
 				RelativePath=".\CimsimExtOutputForm.h"
 				FileType="3"
 				>
@@ -541,16 +551,6 @@
 				>
 				<File
 					RelativePath=".\FoodFitterForm.resx"
-					SubType="Designer"
-					>
-				</File>
-			</File>
-			<File
-				RelativePath=".\GraphForm.h"
-				FileType="3"
-				>
-				<File
-					RelativePath=".\GraphForm.resx"
 					SubType="Designer"
 					>
 				</File>

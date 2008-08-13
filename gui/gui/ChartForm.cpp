@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "GraphForm.h"
+#include "ChartForm.h"
 #include "ExcelOutput.h"
 
 using namespace gui;
@@ -8,7 +8,7 @@ using namespace Dundas::Charting::WinControl;
 
 
 
-GraphForm::GraphForm( gui::Location ^ location, output::Chart ^ chartData, output::TimePeriod timePeriod, output::TimePeriodFunction timePeriodFunction )
+ChartForm::ChartForm( gui::Location ^ location, output::Chart ^ chartData, output::TimePeriod timePeriod, output::TimePeriodFunction timePeriodFunction )
 : Location_(location)
 {
   InitializeComponent();
@@ -92,8 +92,6 @@ GraphForm::GraphForm( gui::Location ^ location, output::Chart ^ chartData, outpu
       series->ChartArea = chartArea->Name;
       series->Legend = legend->Name;
 
-      output->OutputInfo->OutputGroup;
-
       if( output->GetType() == output::DatedOutput::typeid ) {
         output::DatedOutput ^ datedOutput = (output::DatedOutput^) output;
 
@@ -137,7 +135,7 @@ GraphForm::GraphForm( gui::Location ^ location, output::Chart ^ chartData, outpu
 
 
 
-GraphForm::~GraphForm()
+ChartForm::~ChartForm()
 {
   if( components ) {
 		delete components;
@@ -146,7 +144,7 @@ GraphForm::~GraphForm()
 
 
 
-System::Void GraphForm::OnSave(System::Object^  sender, System::EventArgs^  e)
+System::Void ChartForm::OnSave(System::Object^  sender, System::EventArgs^  e)
 {
   // save current chart to disk
   SaveFileDialog ^ sfd = gcnew SaveFileDialog();

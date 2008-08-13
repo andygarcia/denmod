@@ -11,12 +11,12 @@ using namespace System::Drawing;
 namespace gui {
 
 
-  public ref class GraphForm : public System::Windows::Forms::Form
+  public ref class ChartForm : public System::Windows::Forms::Form
 	{
 	public:
-    GraphForm( gui::Location ^ location, output::Chart ^ chartData, output::TimePeriod timePeriod, output::TimePeriodFunction timePeriodFunction );
+    ChartForm( gui::Location ^ location, output::Chart ^ chartData, output::TimePeriod timePeriod, output::TimePeriodFunction timePeriodFunction );
 	protected:
-		~GraphForm();
+		~ChartForm();
 
   private:
     System::Void OnSave(System::Object^  sender, System::EventArgs^  e);
@@ -100,9 +100,9 @@ namespace gui {
       this->btnSave->TabIndex = 4;
       this->btnSave->Text = L"Save to Spreadsheet";
       this->btnSave->UseVisualStyleBackColor = true;
-      this->btnSave->Click += gcnew System::EventHandler(this, &GraphForm::OnSave);
+      this->btnSave->Click += gcnew System::EventHandler(this, &ChartForm::OnSave);
       // 
-      // GraphForm
+      // ChartForm
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
@@ -112,9 +112,9 @@ namespace gui {
       this->Controls->Add(this->btnExit);
       this->Controls->Add(this->chart);
       this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::SizableToolWindow;
-      this->Name = L"GraphForm";
+      this->Name = L"ChartForm";
       this->ShowInTaskbar = false;
-      this->Text = L"GraphForm";
+      this->Text = L"ChartForm";
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->chart))->EndInit();
       this->ResumeLayout(false);
 

@@ -65,60 +65,50 @@ public:
   ref class CimsimLocation
   {
   public:
-    static CimsimLocation(void);
-
-  public:
-    static ChartInfo ^ Females;
-    static ChartInfo ^ AverageFemaleWetWeight;
-    static ChartInfo ^ Oviposition;
-    static ChartInfo ^ Weather;
+    static ChartInfo ^ Females = gcnew ChartInfo( "Females", true );
+    static ChartInfo ^ AverageFemaleWetWeight = gcnew ChartInfo( "Average Female Wet Weight", true );
+    static ChartInfo ^ Oviposition = gcnew ChartInfo( "Oviposition", true );
+    static ChartInfo ^ Weather = gcnew ChartInfo( "Weather", true );
   };
 
   ref class CimsimContainer
   {
   public:
-    static CimsimContainer(void);
-
-  public:
-    static ChartInfo ^ ContainerDensity;
-    static ChartInfo ^ Depth;
-    static ChartInfo ^ Food;
-    static ChartInfo ^ WaterTemperature;
-    static ChartInfo ^ Immatures;
-    static ChartInfo ^ Eggs;
-    static ChartInfo ^ Larvae;
-    static ChartInfo ^ Pupae;
-    static ChartInfo ^ AveragePupalWeight;
-    static ChartInfo ^ NewFemales;
-    static ChartInfo ^ CumulativeFemales;
-    static ChartInfo ^ Oviposition;
+    static ChartInfo ^ ContainerDensity = gcnew ChartInfo( "Container Density", true );
+    static ChartInfo ^ Depth = gcnew ChartInfo( "Water Depth", true );
+    static ChartInfo ^ Food = gcnew ChartInfo( "Food", true );
+    static ChartInfo ^ WaterTemperature = gcnew ChartInfo( "Water Temperature", true );
+    static ChartInfo ^ Immatures = gcnew ChartInfo( "All immature stages", true );
+    static ChartInfo ^ Eggs = gcnew ChartInfo( "Eggs", true );
+    static ChartInfo ^ Larvae = gcnew ChartInfo( "Larvae", true );
+    static ChartInfo ^ Pupae = gcnew ChartInfo( "Pupae", true );
+    static ChartInfo ^ AveragePupalWeight = gcnew ChartInfo( "Average Pupal Weight", true );
+    static ChartInfo ^ NewFemales = gcnew ChartInfo( "New Females", true );
+    static ChartInfo ^ CumulativeFemales = gcnew ChartInfo( "Cumulative Females", true );
+    static ChartInfo ^ Oviposition = gcnew ChartInfo( "Oviposition", true );
   };
 
   ref class DensimLocation
   {
   public:
-    static DensimLocation(void);
-  public:
-    static ChartInfo ^ AgeDistribution;
-    static ChartInfo ^ SimulationArea;
-    static ChartInfo ^ PopulationSize;
-    static ChartInfo ^ BirthsAndDeaths;
-    static ChartInfo ^ FemaleMosquitoesInArea;
-    static ChartInfo ^ FemaleMosquitoesPerPerson;
-    static ChartInfo ^ FemaleMosquitoSurvival;
-    static ChartInfo ^ FemaleMosquitoWetWeight;
+    static ChartInfo ^ AgeDistribution = gcnew ChartInfo( "Age Distributions", false );
+    static ChartInfo ^ SimulationArea = gcnew ChartInfo( "Simulation Area", true );
+    static ChartInfo ^ PopulationSize = gcnew ChartInfo( "Population Size", true );
+    static ChartInfo ^ BirthsAndDeaths = gcnew ChartInfo( "Births and Deaths", false );
+    static ChartInfo ^ FemaleMosquitoesInArea = gcnew ChartInfo( "Female Mosquitoes In Area", true );
+    static ChartInfo ^ FemaleMosquitoesPerPerson = gcnew ChartInfo( "Female Mosquitoes Per Person", true );
+    static ChartInfo ^ FemaleMosquitoSurvival = gcnew ChartInfo( "Female Mosquito Survival", true);
+    static ChartInfo ^ FemaleMosquitoWetWeight = gcnew ChartInfo( "Female Mosquito Wet Weight", true );
   };
 
   ref class DensimSerotype
   {
   public:
-    static DensimSerotype(void);
-  public:
-    static ChartInfo ^ EipDevelopmentRate;
-    static ChartInfo ^ InfectiveMosquitoes;
-    static ChartInfo ^ PersonsIncubating;
-    static ChartInfo ^ PersonsViremic;
-    static ChartInfo ^ PersonsWithVirus;
+    static ChartInfo ^ EipDevelopmentRate = gcnew ChartInfo( "EIP Development Rate", true );
+    static ChartInfo ^ InfectiveMosquitoes = gcnew ChartInfo( "Infective Mosquitoes", true );
+    static ChartInfo ^ PersonsIncubating = gcnew ChartInfo( "Persons Incubating", true );
+    static ChartInfo ^ PersonsViremic = gcnew ChartInfo( "Persons Viremic", true );
+    static ChartInfo ^ PersonsWithVirus = gcnew ChartInfo( "Persons with Virus", true );
   };
 };
 

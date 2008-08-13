@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "CimsimExtOutputForm.h"
-#include "GraphForm.h"
+#include "ChartForm.h"
 #include "CimsimPanel.h"
 #include "ExcelOutput.h"
 
@@ -87,7 +87,7 @@ CimsimExtOutputForm::OnViewLocationGraph(System::Object^  sender, System::EventA
   Chart ^ chart = Chart::Create( chartInfo, Location_->CimsimOutput, Location_->DensimOutput, nullptr );
 
   // display chart
-  GraphForm ^ gf = gcnew GraphForm( Location_, chart, timePeriod, timePeriodFunction );
+  ChartForm ^ gf = gcnew ChartForm( Location_, chart, timePeriod, timePeriodFunction );
   gf->ShowDialog(this);
   gf->Close();
 }
@@ -114,7 +114,7 @@ CimsimExtOutputForm::OnViewContainerGraph(System::Object^  sender, System::Event
 
   Chart ^ chart = Chart::Create( chartInfo, Location_->CimsimOutput, Location_->DensimOutput, indices );
 
-  GraphForm ^ gf = gcnew GraphForm( Location_, chart, timePeriod, timePeriodFunction );
+  ChartForm ^ gf = gcnew ChartForm( Location_, chart, timePeriod, timePeriodFunction );
   gf->ShowDialog(this);
   gf->Close();
 }

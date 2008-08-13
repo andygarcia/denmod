@@ -196,10 +196,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Graphs.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Outputs.cpp"
 				>
 			</File>

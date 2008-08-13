@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Enums.h"
 
@@ -86,28 +86,24 @@ public ref class Output
 {
 public:
   Output( OutputInfo ^ oi )
-  : _outputInfo(oi),
+  : _name(oi->Name),
+    _units(oi->Units),
     _data(gcnew Collections::Generic::List<double>())
   {}
 
 public:
   property String ^ Name {
     String ^ get(void) {
-      return _outputInfo->Name;
+      return _name;
     }
     void set(String ^ s) {
-      _outputInfo->Name = s;
-    }
-  }
-  property String ^ Units {
-    String ^ get(void) {
-      return _outputInfo->Units;
+      _name = s;
     }
   }
 
-  property gui::output::OutputInfo ^ OutputInfo {
-    gui::output::OutputInfo ^ get(void) {
-      return _outputInfo;
+  property String ^ Units {
+    String ^ get(void) {
+      return _units;
     }
   }
 
@@ -118,7 +114,8 @@ public:
   }
 
 private:
-  gui::output::OutputInfo ^ _outputInfo;
+  String ^ _name;
+  String ^ _units;
   Collections::Generic::List<double> ^ _data;
 };
 typedef Collections::Generic::List<Output^> OutputCollection;
@@ -169,66 +166,57 @@ public:
   ref class CimsimLocation
   {
   public:
-    static CimsimLocation(void);
-
-  public:
-    static DatedOutputInfo ^ TotalEggs;
-    static DatedOutputInfo ^ TotalLarvae;
-    static DatedOutputInfo ^ TotalPupae;
-    static DatedOutputInfo ^ TotalFemales;
-    static DatedOutputInfo ^ NewFemales;
-    static DatedOutputInfo ^ AverageFemaleWeight;
-    static DatedOutputInfo ^ Oviposition;
-    static DatedOutputInfo ^ MaximumTemperature;
-    static DatedOutputInfo ^ AverageTemperature;
-    static DatedOutputInfo ^ MinimumTemperature;
-    static DatedOutputInfo ^ Rainfall;
-    static DatedOutputInfo ^ RelativeHumidity;
-    static DatedOutputInfo ^ SaturationDeficit;
+    static DatedOutputInfo ^ TotalEggs = gcnew DatedOutputInfo( Group::CimsimLocation, "Total Eggs", "#/ha" );
+    static DatedOutputInfo ^ TotalLarvae = gcnew DatedOutputInfo( Group::CimsimLocation, "Total Larvae", "#/ha" );
+    static DatedOutputInfo ^ TotalPupae = gcnew DatedOutputInfo( Group::CimsimLocation, "Total Pupae", "#/ha" );
+    static DatedOutputInfo ^ TotalFemales = gcnew DatedOutputInfo( Group::CimsimLocation, "Total Females", "#/ha" );
+    static DatedOutputInfo ^ NewFemales = gcnew DatedOutputInfo( Group::CimsimLocation, "New Females", "#/ha" );
+    static DatedOutputInfo ^ AverageFemaleWeight = gcnew DatedOutputInfo( Group::CimsimLocation, "Average Female Weight", "mg" );
+    static DatedOutputInfo ^ Oviposition = gcnew DatedOutputInfo( Group::CimsimLocation, "Oviposition", "#" );
+    static DatedOutputInfo ^ MaximumTemperature = gcnew DatedOutputInfo( Group::CimsimLocation, "Maximum Temperature", "C" );
+    static DatedOutputInfo ^ AverageTemperature = gcnew DatedOutputInfo( Group::CimsimLocation, "Average Temperature", "C" );
+    static DatedOutputInfo ^ MinimumTemperature = gcnew DatedOutputInfo( Group::CimsimLocation, "Minimum Temperature", "C" );
+    static DatedOutputInfo ^ Rainfall = gcnew DatedOutputInfo( Group::CimsimLocation, "Rainfall", "mm" );
+    static DatedOutputInfo ^ RelativeHumidity = gcnew DatedOutputInfo( Group::CimsimLocation, "Relative Humidity", "%" );
+    static DatedOutputInfo ^ SaturationDeficit = gcnew DatedOutputInfo( Group::CimsimLocation, "Saturation Deficit", "mbars" );
   };
 
   ref class CimsimContainer
   {
   public:
-    static CimsimContainer(void);
-
-  public:
-    static DatedOutputInfo ^ Depth;
-    static DatedOutputInfo ^ Food;
-    static DatedOutputInfo ^ MaximumTemperature;
-    static DatedOutputInfo ^ MinimumTemperature;
-    static DatedOutputInfo ^ Eggs;
-    static DatedOutputInfo ^ Larvae;
-    static DatedOutputInfo ^ Pupae;
-    static DatedOutputInfo ^ AveragePupalWeight;
-    static DatedOutputInfo ^ NewFemales;
-    static DatedOutputInfo ^ CumulativeFemales;
-    static DatedOutputInfo ^ Oviposition;
-    static DatedOutputInfo ^ UntreatedDensity;
-    static DatedOutputInfo ^ TreatedDensity;
-    static DatedOutputInfo ^ ExcludedDensity;
+    static DatedOutputInfo ^ Depth = gcnew DatedOutputInfo( Group::CimsimContainer, "Depth", "cm" );
+    static DatedOutputInfo ^ Food = gcnew DatedOutputInfo( Group::CimsimContainer, "Food", "mg" );
+    static DatedOutputInfo ^ MaximumTemperature = gcnew DatedOutputInfo( Group::CimsimContainer, "Maximum Temperature", "C" );
+    static DatedOutputInfo ^ MinimumTemperature = gcnew DatedOutputInfo( Group::CimsimContainer, "Minimum Temperature", "C" );
+    static DatedOutputInfo ^ Eggs = gcnew DatedOutputInfo( Group::CimsimContainer, "Eggs", "#" );
+    static DatedOutputInfo ^ Larvae = gcnew DatedOutputInfo( Group::CimsimContainer, "Larvae", "#" );
+    static DatedOutputInfo ^ Pupae = gcnew DatedOutputInfo( Group::CimsimContainer, "Pupae", "#" );
+    static DatedOutputInfo ^ AveragePupalWeight = gcnew DatedOutputInfo( Group::CimsimContainer, "Average Pupal Weight", "mg" );
+    static DatedOutputInfo ^ NewFemales = gcnew DatedOutputInfo( Group::CimsimContainer, "New Females", "#" );
+    static DatedOutputInfo ^ CumulativeFemales = gcnew DatedOutputInfo( Group::CimsimContainer, "Cumulative Females", "#" );
+    static DatedOutputInfo ^ Oviposition = gcnew DatedOutputInfo( Group::CimsimContainer, "Oviposition", "#" );
+    static DatedOutputInfo ^ UntreatedDensity = gcnew DatedOutputInfo( Group::CimsimContainer, "Untreated Density", "#/ha" );
+    static DatedOutputInfo ^ TreatedDensity = gcnew DatedOutputInfo( Group::CimsimContainer, "Treated Density", "#/ha" );
+    static DatedOutputInfo ^ ExcludedDensity = gcnew DatedOutputInfo( Group::CimsimContainer, "Excluded Density", "#/ha" );
   };
 
   ref class DensimLocation
   {
   public:
-    static DensimLocation(void);
+    static ClassOutputInfo ^ InitialAgeDistribution = gcnew ClassOutputInfo( Group::DensimLocation, "Initial Age Distribution", "# of individuals" );
+    static ClassOutputInfo ^ FinalAgeDistribution = gcnew ClassOutputInfo( Group::DensimLocation, "Final Age Distribution", "# of individuals" );
+    static ClassOutputInfo ^ BirthsByClass = gcnew ClassOutputInfo( Group::DensimLocation, "Births by Class", "# births" );
+    static ClassOutputInfo ^ DeathsByClass = gcnew ClassOutputInfo( Group::DensimLocation, "Deaths by Class", "# of individuals" );
+    static ClassOutputInfo ^ BirthPercentagesByClass = gcnew ClassOutputInfo( Group::DensimLocation, "Birth Percentages by Class", "# of individuals" );
+    static ClassOutputInfo ^ DeathPercentagesByClass = gcnew ClassOutputInfo( Group::DensimLocation, "Death Percentages by Class", "# of individuals" );
 
-  public:
-    static ClassOutputInfo ^ InitialAgeDistribution;
-    static ClassOutputInfo ^ FinalAgeDistribution;
-    static DatedOutputInfo ^ SimulationArea;
-    static DatedOutputInfo ^ PopulationSize;
-    static ClassOutputInfo ^ BirthsByClass;
-    static ClassOutputInfo ^ DeathsByClass;
-    static ClassOutputInfo ^ BirthPercentagesByClass;
-    static ClassOutputInfo ^ DeathPercentagesByClass;
-    static DatedOutputInfo ^ FemaleMosquitoesInSimulationArea;
-    static DatedOutputInfo ^ FemaleMosquitoesPerHectare;
-    static DatedOutputInfo ^ FemaleMosquitoesPerPerson;
-    static DatedOutputInfo ^ PotentiallyInfectiveBites;
-    static DatedOutputInfo ^ FemaleMosquitoSurvival;
-    static DatedOutputInfo ^ FemaleMosquitoWetWeight;
+    static DatedOutputInfo ^ SimulationArea = gcnew DatedOutputInfo( Group::DensimLocation, "Simulation Area", "ha" );
+    static DatedOutputInfo ^ PopulationSize = gcnew DatedOutputInfo( Group::DensimLocation, "Population Size", "# of individuals" );
+    static DatedOutputInfo ^ FemaleMosquitoesInSimulationArea = gcnew DatedOutputInfo( Group::DensimLocation, "Female Mosquitoes in Area", "# in area" );
+    static DatedOutputInfo ^ FemaleMosquitoesPerPerson = gcnew DatedOutputInfo( Group::DensimLocation, "Female Mosquitoes per Person", "# / person" );
+    static DatedOutputInfo ^ PotentiallyInfectiveBites = gcnew DatedOutputInfo( Group::DensimLocation, "Potentially Infective Bites", "# of bites" );
+    static DatedOutputInfo ^ FemaleMosquitoSurvival = gcnew DatedOutputInfo( Group::DensimLocation, "Female Mosquito Survival", "" );
+    static DatedOutputInfo ^ FemaleMosquitoWetWeight = gcnew DatedOutputInfo( Group::DensimLocation, "Female Mosquito Wet Weight", "mg" );
 
     //GeneralSeroprevalence,
     //DetailedSeroprevalence,
@@ -241,14 +229,11 @@ public:
   ref class DensimSerotype
   {
   public:
-    static DensimSerotype(void);
-
-  public:
-    static DatedOutputInfo ^ EipDevelopmentRate;
-    static DatedOutputInfo ^ InfectiveMosquitoes;
-    static DatedOutputInfo ^ PersonsIncubating;
-    static DatedOutputInfo ^ PersonsViremic;
-    static DatedOutputInfo ^ PersonsWithVirus;
+    static DatedOutputInfo ^ EipDevelopmentRate = gcnew DatedOutputInfo( Group::DensimSerotype, "Eip Development Rate", L"day ⁻¹" ); 
+    static DatedOutputInfo ^ InfectiveMosquitoes = gcnew DatedOutputInfo( Group::DensimSerotype, "Infective Mosquitoes", "# of infective mosquitoes" );
+    static DatedOutputInfo ^ PersonsIncubating = gcnew DatedOutputInfo( Group::DensimSerotype, "Persons Incubating", "# of persons incubating" );
+    static DatedOutputInfo ^ PersonsViremic = gcnew DatedOutputInfo( Group::DensimSerotype, "Persons Viremic", "# of persons viremic" );
+    static DatedOutputInfo ^ PersonsWithVirus = gcnew DatedOutputInfo( Group::DensimSerotype, "Persons With Virus", "# of persons incubating or viremic" );
   };
 };
 
