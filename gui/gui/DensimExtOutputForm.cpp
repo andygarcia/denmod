@@ -27,20 +27,21 @@ DensimExtOutputForm::~DensimExtOutputForm()
 System::Void
 DensimExtOutputForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
 {
-  //ArrayList ^ tags = gcnew ArrayList();
-  //lboxLocationGraphs->Tag = tags;
-
-  // place all graphs in one list box
   lboxLocationGraphs->DisplayMember = "Name";
   lboxLocationGraphs->DataSource = output::ChartInfos::GetChartInfoCollection(output::Group::DensimLocation);
 
-  // todo
-  //output::ChartInfo ^ detailedSero = gcnew output::ChartInfo( "Detailed Seroprevalence", false);
-  //tags->Add( gcnew output::CreateChartInfoDelegate( this, &gui::DensimExtOutputForm::DetailedSeroprevalence ) );
-  //lboxLocationGraphs->Items->Add( detailedSero );
-
   lboxVirusGraphs->DisplayMember = "Name";
   lboxVirusGraphs->DataSource = output::ChartInfos::GetChartInfoCollection(output::Group::DensimSerotype);
+
+  // time periods
+  cboxTimePeriod->DisplayMember = "DisplayName";
+  cboxTimePeriod->ValueMember = "Value";
+  cboxTimePeriod->DataSource = output::EnumText::ConvertEnumForBinding( gcnew output::TimePeriod() );
+
+  // time periods
+  cboxTimePeriodFunction->DisplayMember = "DisplayName";
+  cboxTimePeriodFunction->ValueMember = "Value";
+  cboxTimePeriodFunction->DataSource = output::EnumText::ConvertEnumForBinding( gcnew output::TimePeriodFunction() );
 }
 
 
@@ -61,6 +62,32 @@ DensimExtOutputForm::OnView(System::Object^  sender, System::EventArgs^  e)
 
 
 System::Void
+DensimExtOutputForm::OnGraphSelectionChanged(System::Object^  sender, System::EventArgs^  e)
+{
+  // selection has changed, disable/enable summary combo boxes based on selected chart
+  output::ChartInfo ^ chartInfo;
+  if( tabGraphType->SelectedTab == tabPageLocation ) {
+    chartInfo = (output::ChartInfo^) lboxLocationGraphs->SelectedValue;
+  }
+  else if( tabGraphType->SelectedTab == tabPageVirus ) {
+    chartInfo = (output::ChartInfo^) lboxVirusGraphs->SelectedValue;
+  }
+
+  if( chartInfo->Periodic ) {
+    // enable
+    cboxTimePeriod->Enabled = true;
+    cboxTimePeriodFunction->Enabled = true;
+  }
+  else{
+    // disable
+    cboxTimePeriod->Enabled = false;
+    cboxTimePeriodFunction->Enabled = false;
+  }
+}
+
+
+
+System::Void
 DensimExtOutputForm::OnViewLocationGraph(System::Object^  sender, System::EventArgs^  e)
 {
   if( lboxLocationGraphs->SelectedItem == nullptr ) {
@@ -70,24 +97,9 @@ DensimExtOutputForm::OnViewLocationGraph(System::Object^  sender, System::EventA
 
   using namespace output;
 
-  //ChartInfo ^ chartInfo;
-  //ArrayList ^ tags = (ArrayList^) lboxLocationGraphs->Tag;
-  //if( tags[lboxLocationGraphs->SelectedIndex] != nullptr ) {
-  //  // use delegate to create chart
-  //  output::CreateChartInfoDelegate ^ ccid = (output::CreateChartInfoDelegate^) tags[lboxLocationGraphs->SelectedIndex];
-  //  chartInfo = ccid->Invoke();
-  //}
-  //else {
-  //  // non data bound list, SelectedValue always null, use SelectedItem
-  //  chartInfo = (ChartInfo^) lboxLocationGraphs->SelectedItem;
-  //}
-
-
   ChartInfo ^ chartInfo = (ChartInfo^) lboxLocationGraphs->SelectedValue;
-  //TimePeriod timePeriod = TimePeriod( cboxTimePeriod->SelectedValue );
-  TimePeriod timePeriod = TimePeriod::Daily;
-  //TimePeriodFunction timePeriodFunction = TimePeriodFunction( cboxTimePeriodFunction->SelectedValue );
-  TimePeriodFunction timePeriodFunction = TimePeriodFunction::Average;
+  TimePeriod timePeriod = TimePeriod( cboxTimePeriod->SelectedValue );
+  TimePeriodFunction timePeriodFunction = TimePeriodFunction( cboxTimePeriodFunction->SelectedValue );
 
   Chart ^ chart = Chart::Create( chartInfo, Location_->CimsimOutput, Location_->DensimOutput, nullptr );
 
@@ -109,10 +121,8 @@ DensimExtOutputForm::OnViewVirusGraph( System::Object ^ sender, System::EventArg
   using namespace output;
 
   ChartInfo ^ chartInfo = (ChartInfo^) lboxVirusGraphs->SelectedValue;
-  //TimePeriod timePeriod = TimePeriod( cboxTimePeriod->SelectedValue );
-  TimePeriod timePeriod = TimePeriod::Daily;
-  //TimePeriodFunction timePeriodFunction = TimePeriodFunction( cboxTimePeriodFunction->SelectedValue );
-  TimePeriodFunction timePeriodFunction = TimePeriodFunction::Average;
+  TimePeriod timePeriod = TimePeriod( cboxTimePeriod->SelectedValue );
+  TimePeriodFunction timePeriodFunction = TimePeriodFunction( cboxTimePeriodFunction->SelectedValue );
 
   Collections::Generic::List<int> ^ serotypes = gcnew Collections::Generic::List<int>();
   serotypes->Add(1);
@@ -125,22 +135,4 @@ DensimExtOutputForm::OnViewVirusGraph( System::Object ^ sender, System::EventArg
   ChartForm ^ gf = gcnew ChartForm( Location_, chart, timePeriod, timePeriodFunction );
   gf->ShowDialog(this);
   gf->Close();
-}
-
-
-
-output::ChartInfo ^
-DensimExtOutputForm::DetailedSeroprevalence(void)
-{
-  // pop up dialog that allows selection of age class for seroprevalence summary
-  output::ChartInfo ^ chartInfo = gcnew output::ChartInfo( "Detailed Seroprevalence", false );
-
-  // prompt user for age classes
-
-
-  // use densim output to create output
-
-
-  // create relevant outputs
-  return chartInfo;
 }
