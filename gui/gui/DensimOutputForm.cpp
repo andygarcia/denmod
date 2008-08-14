@@ -34,7 +34,7 @@ DensimOutputForm::DensimOutputForm( gui::Location ^ location )
     ++i;
   }
 
-  chartOutput->Title = "Proportion of population incubating or viremic";
+  chartOutput->Title = "Number of individuals incubating or viremic";
 }
 
 

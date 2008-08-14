@@ -114,6 +114,7 @@ namespace gui {
       this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::SizableToolWindow;
       this->Name = L"ChartForm";
       this->ShowInTaskbar = false;
+      this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
       this->Text = L"ChartForm";
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->chart))->EndInit();
       this->ResumeLayout(false);

@@ -82,7 +82,7 @@ namespace gui {
       this->tabGraphType->Location = System::Drawing::Point(12, 12);
       this->tabGraphType->Name = L"tabGraphType";
       this->tabGraphType->SelectedIndex = 0;
-      this->tabGraphType->Size = System::Drawing::Size(307, 253);
+      this->tabGraphType->Size = System::Drawing::Size(307, 252);
       this->tabGraphType->TabIndex = 0;
       // 
       // tabPageLocation
@@ -91,13 +91,16 @@ namespace gui {
       this->tabPageLocation->Location = System::Drawing::Point(4, 24);
       this->tabPageLocation->Name = L"tabPageLocation";
       this->tabPageLocation->Padding = System::Windows::Forms::Padding(3);
-      this->tabPageLocation->Size = System::Drawing::Size(299, 225);
+      this->tabPageLocation->Size = System::Drawing::Size(299, 224);
       this->tabPageLocation->TabIndex = 0;
       this->tabPageLocation->Text = L"Humans & Mosquitoes";
       this->tabPageLocation->UseVisualStyleBackColor = true;
       // 
       // lboxLocationGraphs
       // 
+      this->lboxLocationGraphs->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom) 
+        | System::Windows::Forms::AnchorStyles::Left) 
+        | System::Windows::Forms::AnchorStyles::Right));
       this->lboxLocationGraphs->FormattingEnabled = true;
       this->lboxLocationGraphs->Location = System::Drawing::Point(6, 6);
       this->lboxLocationGraphs->Name = L"lboxLocationGraphs";
@@ -111,7 +114,7 @@ namespace gui {
       this->tabPageVirus->Controls->Add(this->lboxVirusGraphs);
       this->tabPageVirus->Location = System::Drawing::Point(4, 24);
       this->tabPageVirus->Name = L"tabPageVirus";
-      this->tabPageVirus->Size = System::Drawing::Size(299, 225);
+      this->tabPageVirus->Size = System::Drawing::Size(299, 224);
       this->tabPageVirus->TabIndex = 1;
       this->tabPageVirus->Text = L"Virus";
       this->tabPageVirus->UseVisualStyleBackColor = true;
@@ -119,9 +122,9 @@ namespace gui {
       // lboxVirusGraphs
       // 
       this->lboxVirusGraphs->FormattingEnabled = true;
-      this->lboxVirusGraphs->Location = System::Drawing::Point(3, 3);
+      this->lboxVirusGraphs->Location = System::Drawing::Point(3, 6);
       this->lboxVirusGraphs->Name = L"lboxVirusGraphs";
-      this->lboxVirusGraphs->Size = System::Drawing::Size(206, 264);
+      this->lboxVirusGraphs->Size = System::Drawing::Size(293, 212);
       this->lboxVirusGraphs->TabIndex = 2;
       this->lboxVirusGraphs->DoubleClick += gcnew System::EventHandler(this, &DensimExtOutputForm::OnViewVirusGraph);
       // 
