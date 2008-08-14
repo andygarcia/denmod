@@ -507,6 +507,9 @@ Location::ProcessDensimOutput( sim::output::DensimOutput * udo, DateTime startDa
     mdo->Location[output::OutputInfos::DensimLocation::DeathPercentagesByClass]->Data->Add( d / totalDeaths );
   }
 
+  //CopyVectorToOutput( udo->GetInitialSeroprevalence(), mdo->Location[output::OutputInfos::DensimLocation::InitialSeroprevalence] );
+  //CopyVectorToOutput( udo->GetFinalSeroprevalence(), mdo->Location[output::OutputInfos::DensimLocation::FinalSeroprevalence] );
+
   CopyVectorToOutput( udo->GetNumberOfHumans(bStartDate, bStopDate), mdo->Location[output::OutputInfos::DensimLocation::PopulationSize] );
   CopyVectorToOutput( udo->GetMosqTotal(bStartDate, bStopDate), mdo->Location[output::OutputInfos::DensimLocation::FemaleMosquitoesInSimulationArea] );
 

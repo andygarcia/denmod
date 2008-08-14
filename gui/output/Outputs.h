@@ -218,9 +218,6 @@ public:
     static DatedOutputInfo ^ FemaleMosquitoSurvival = gcnew DatedOutputInfo( Group::DensimLocation, "Female Mosquito Survival", "" );
     static DatedOutputInfo ^ FemaleMosquitoWetWeight = gcnew DatedOutputInfo( Group::DensimLocation, "Female Mosquito Wet Weight", "mg" );
 
-    //GeneralSeroprevalence,
-    //DetailedSeroprevalence,
-
     //NewCases,
     //PredictedHFSS,
     //DeathsHFSS
@@ -234,6 +231,16 @@ public:
     static DatedOutputInfo ^ PersonsIncubating = gcnew DatedOutputInfo( Group::DensimSerotype, "Persons Incubating", "# of persons incubating" );
     static DatedOutputInfo ^ PersonsViremic = gcnew DatedOutputInfo( Group::DensimSerotype, "Persons Viremic", "# of persons viremic" );
     static DatedOutputInfo ^ PersonsWithVirus = gcnew DatedOutputInfo( Group::DensimSerotype, "Persons With Virus", "# of persons incubating or viremic" );
+    static ClassOutputInfo ^ InitialSeroprevalence = gcnew ClassOutputInfo( Group::DensimSerotype, "Initial Seroprevalence", "# of individuals seropositive" );
+    static ClassOutputInfo ^ FinalSeroprevalence = gcnew ClassOutputInfo( Group::DensimSerotype, "Final Seroprevalence", "# of individuals seropositive" );
+  };
+
+  ref class DensimDetailedSeroprevalence
+  {
+  public:
+
+
+
   };
 };
 
