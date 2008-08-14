@@ -67,19 +67,22 @@ DensimOutput::AddDailyLocationOutput( DailyLocationOutput dlo, date d )
 
 
 void
-DensimOutput::SetInitialData( std::vector<int>& initialAgeDistribution )
+DensimOutput::SetInitialData( std::vector<int> & initialAgeDistribution, std::vector<std::vector<int>> & initialSeroprevalence )
 {
-  InitialAgeDistribution_ = initialAgeDistribution;
+  _initialAgeDistribution = initialAgeDistribution;
+  _initialSeroprevalence = initialSeroprevalence;
 }
 
 
 
 void
-DensimOutput::SetFinalData( std::vector<int>& finalAgeDistribution, std::vector<int>& births, std::vector<int>& deaths )
+DensimOutput::SetFinalData( std::vector<int> & finalAgeDistribution, std::vector<int> & births, std::vector<int> & deaths,
+                           std::vector<std::vector<int>> & finalSeroprevalence )
 {
-  FinalAgeDistribution_= finalAgeDistribution;
-  Births_ = births;
-  Deaths_ = deaths;
+  _finalAgeDistribution= finalAgeDistribution;
+  _births = births;
+  _deaths = deaths;
+  _finalSeroprevalence = finalSeroprevalence;
 }
 
 
@@ -87,7 +90,7 @@ DensimOutput::SetFinalData( std::vector<int>& finalAgeDistribution, std::vector<
 std::vector<int>
 DensimOutput::GetInitialAgeDsitribution(void)
 {
-  return InitialAgeDistribution_;
+  return _initialAgeDistribution;
 }
 
 
@@ -95,7 +98,7 @@ DensimOutput::GetInitialAgeDsitribution(void)
 std::vector<int>
 DensimOutput::GetFinalAgeDistribution(void)
 {
-  return FinalAgeDistribution_;
+  return _finalAgeDistribution;
 }
 
 
@@ -103,7 +106,7 @@ DensimOutput::GetFinalAgeDistribution(void)
 std::vector<int>
 DensimOutput::GetBirths(void)
 {
-  return Births_;
+  return _births;
 }
 
 
@@ -111,7 +114,7 @@ DensimOutput::GetBirths(void)
 std::vector<int>
 DensimOutput::GetDeaths(void)
 {
-  return Deaths_;
+  return _deaths;
 }
 
 

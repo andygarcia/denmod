@@ -16,22 +16,22 @@ public:
   class DailyLocationOutput
   {
   public:
-    double Incubate1;                        // number of humans incubating
-    double Incubate2;                        // number of humans incubating
-    double Incubate3;                        // number of humans incubating
-    double Incubate4;                        // number of humans incubating
-    double Viremic1;                         // number of humans infective
-    double Viremic2;                         // number of humans infective
-    double Viremic3;                         // number of humans infective
-    double Viremic4;                         // number of humans infective
-    double MosqTotal;                        // total daily mosquitoes
-    double MosqInfvTotal[4+1];               // total infective mosquitoes
-    int InfvBites;                           // new potential inoculations
-    double EIPDevRate[4+1];                  // extrinsic incubation period rate - daily
-    int NumHumans;                           // number of humans
-    double SerPos[23+1][4+1];                // percent of indiv. in age class that are seropositive
-    double NewHumCases[4+1];                 // number of new human cases/day/serotype
-    sim::ds::SequentialInfectionValues SeqInfVals;    // Daily sequential value statistics
+    double Incubate1;                                   // number of humans incubating
+    double Incubate2;                                   // number of humans incubating
+    double Incubate3;                                   // number of humans incubating
+    double Incubate4;                                   // number of humans incubating
+    double Viremic1;                                    // number of humans infective
+    double Viremic2;                                    // number of humans infective
+    double Viremic3;                                    // number of humans infective
+    double Viremic4;                                    // number of humans infective
+    double MosqTotal;                                   // total daily mosquitoes
+    double MosqInfvTotal[4+1];                          // total infective mosquitoes
+    int InfvBites;                                      // new potential inoculations
+    double EIPDevRate[4+1];                             // extrinsic incubation period rate - daily
+    int NumHumans;                                      // number of humans
+    double SerPos[23+1][4+1];                           // percent of indiv. in age class that are seropositive
+    double NewHumCases[4+1];                            // number of new human cases/day/serotype
+    sim::ds::SequentialInfectionValues SeqInfVals;      // daily sequential value statistics
   };
 
 
@@ -57,19 +57,27 @@ public:
   boost::gregorian::date_period GetDateRange(void);
   
   void AddDailyLocationOutput( DailyLocationOutput dlo, boost::gregorian::date d );
-  void SetInitialData( std::vector<int>& initialAgeDistribution );
-  void SetFinalData( std::vector<int>& finalAgeDistribution, std::vector<int>& births, std::vector<int>& deaths );
+  void SetInitialData( std::vector<int> & initialAgeDistribution,
+                       std::vector<std::vector<int>> & initialSeroprevalence );
+  void SetFinalData( std::vector<int> & finalAgeDistribution,
+                     std::vector<int> & births,
+                     std::vector<int> & deaths,
+                     std::vector<std::vector<int>> & finalSeroprevalence );
+
 
   std::vector<int> GetInitialAgeDsitribution(void);
   std::vector<int> GetFinalAgeDistribution(void);
   std::vector<int> GetBirths(void);
   std::vector<int> GetDeaths(void);
 
+  std::vector<std::vector<int>> GetInitialSeroprevalence(void);
+  std::vector<std::vector<int>> GetFinalSeroprevalence(void);
+
   std::vector<int> GetNumberOfHumans( boost::gregorian::date startDate, boost::gregorian::date stopDate );
   std::vector<double> GetMosqTotal( boost::gregorian::date startDate, boost::gregorian::date stopDate );
   std::vector<int> GetPotentiallyInfectiveBites( boost::gregorian::date startDate, boost::gregorian::date stopDate );
 
-  // serotype specific output
+  // serotype specific
   std::vector<double> GetPersonsWithVirus( boost::gregorian::date startDate, boost::gregorian::date stopDate, int serotype );
   std::vector<double> GetPersonsIncubating( boost::gregorian::date startDate, boost::gregorian::date stopDate, int serotype );
   std::vector<double> GetPersonsViremic( boost::gregorian::date startDate, boost::gregorian::date stopDate, int serotype );
@@ -80,10 +88,13 @@ private:
   LocationOutput _locationOutput;
   SerotypeOutputs _serotypeOutputs;
 
-  std::vector<int> InitialAgeDistribution_;
-  std::vector<int> FinalAgeDistribution_;
-  std::vector<int> Births_;
-  std::vector<int> Deaths_;
+  std::vector<int> _initialAgeDistribution;
+  std::vector<int> _finalAgeDistribution;
+  std::vector<int> _births;
+  std::vector<int> _deaths;
+
+  std::vector<std::vector<int>> _initialSeroprevalence; 
+  std::vector<std::vector<int>> _finalSeroprevalence;
 };
 
 };

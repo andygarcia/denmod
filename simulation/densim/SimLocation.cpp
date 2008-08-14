@@ -304,7 +304,7 @@ SimLocation::denmain(void)
   }
 
   // Update end of simulation data output
-  Output_->SetFinalData( AgeDistribution, TotalBirths, TotalDeaths );
+  Output_->SetFinalData( AgeDistribution, TotalBirths, TotalDeaths, SeroDistribution );
 
   return;
 }
@@ -354,7 +354,7 @@ SimLocation::InitializePopulation(void)
   std::sort( Individuals.begin(), Individuals.end(), DescendingAgeSort() );
 
   // save initial age distribution to output
-  Output_->SetInitialData( InitialAgeDistribution );
+  Output_->SetInitialData( InitialAgeDistribution, InitSerDistr );
 }
 
 

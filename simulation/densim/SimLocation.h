@@ -116,7 +116,7 @@ public:
 
   std::vector<std::vector<double>> SerProp;       // proportion of population sero positive, by serotype and class
   std::vector<std::vector<int>> InitSerDistr;     // initial number of sero positive individuals, by serotype and class
-  std::vector<std::vector<int>> SeroDistribution;         // number of sero positive individuals, by serotype and class
+  std::vector<std::vector<int>> SeroDistribution; // number of sero positive individuals, by serotype and class
   std::vector<double> CumHFDeaths;                // number of deaths for ages 0-15
 
   std::vector<input::VirusSerotype> Virus;        // virus parameters
