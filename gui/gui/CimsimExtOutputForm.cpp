@@ -41,13 +41,18 @@ CimsimExtOutputForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
   cboxContainers->ValueMember = "Id";
   cboxContainers->DataSource = Location_->Containers;
 
+  // initially select first container
+  cboxContainers->SelectedIndex = 0;
+
   // time periods
   cboxTimePeriod->DisplayMember = "DisplayName";
   cboxTimePeriod->ValueMember = "Value";
   cboxTimePeriod->DataSource = output::EnumText::ConvertEnumForBinding( gcnew output::TimePeriod() );
 
-  // show a container initially
-  cboxContainers->SelectedIndex = 0;
+  // time periods
+  cboxTimePeriodFunction->DisplayMember = "DisplayName";
+  cboxTimePeriodFunction->ValueMember = "Value";
+  cboxTimePeriodFunction->DataSource = output::EnumText::ConvertEnumForBinding( gcnew output::TimePeriodFunction() );
 }
 
 

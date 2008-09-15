@@ -27,6 +27,7 @@ namespace gui {
     System::Void OnViewVirusGraph( System::Object ^ sender, System::EventArgs ^ e );
     System::Void OnView(System::Object^  sender, System::EventArgs^  e);
     System::Void OnGraphSelectionChanged(System::Object^  sender, System::EventArgs^  e);
+    System::Void OnGraphTabChanged(System::Object^  sender, System::EventArgs^  e);
 
   private: System::Windows::Forms::TabControl^  tabGraphType;
   private: System::Windows::Forms::TabPage^  tabPageLocation;
@@ -84,6 +85,7 @@ namespace gui {
       this->tabGraphType->SelectedIndex = 0;
       this->tabGraphType->Size = System::Drawing::Size(307, 252);
       this->tabGraphType->TabIndex = 0;
+      this->tabGraphType->SelectedIndexChanged += gcnew System::EventHandler(this, &DensimExtOutputForm::OnGraphTabChanged);
       // 
       // tabPageLocation
       // 
@@ -126,6 +128,7 @@ namespace gui {
       this->lboxVirusGraphs->Name = L"lboxVirusGraphs";
       this->lboxVirusGraphs->Size = System::Drawing::Size(293, 212);
       this->lboxVirusGraphs->TabIndex = 2;
+      this->lboxVirusGraphs->SelectedIndexChanged += gcnew System::EventHandler(this, &DensimExtOutputForm::OnGraphSelectionChanged);
       this->lboxVirusGraphs->DoubleClick += gcnew System::EventHandler(this, &DensimExtOutputForm::OnViewVirusGraph);
       // 
       // btnExitLocation

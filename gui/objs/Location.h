@@ -22,11 +22,6 @@
 #include "../../simulation/output/MosData.h"
 #pragma managed(pop)
 
-#pragma make_public(sim::output::CimsimOutput)
-#pragma make_public(sim::output::DensimOutput)
-#pragma make_public(sim::output::MosData)
-#pragma make_public(sim::output::DailyMosData)
-
 using namespace System::Xml::Serialization;
 using System::Collections::ArrayList;
 using System::ComponentModel::BindingList;

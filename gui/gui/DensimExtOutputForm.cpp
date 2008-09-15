@@ -47,6 +47,14 @@ DensimExtOutputForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
 
 
 System::Void
+DensimExtOutputForm::OnGraphTabChanged(System::Object^  sender, System::EventArgs^  e)
+{
+  OnGraphSelectionChanged( sender, e );
+}
+
+
+
+System::Void
 DensimExtOutputForm::OnView(System::Object^  sender, System::EventArgs^  e)
 {
   if( tabGraphType->SelectedTab == tabPageLocation ) {
@@ -74,12 +82,11 @@ DensimExtOutputForm::OnGraphSelectionChanged(System::Object^  sender, System::Ev
   }
 
   if( chartInfo->Periodic ) {
-    // enable
     cboxTimePeriod->Enabled = true;
     cboxTimePeriodFunction->Enabled = true;
   }
   else{
-    // disable
+    // chart is non periodic data, disable period summary ui elements
     cboxTimePeriod->Enabled = false;
     cboxTimePeriodFunction->Enabled = false;
   }

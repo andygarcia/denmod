@@ -14,7 +14,7 @@ namespace gui {
   public ref class ChartForm : public System::Windows::Forms::Form
 	{
 	public:
-    ChartForm( gui::Location ^ location, output::Chart ^ chartData, output::TimePeriod timePeriod, output::TimePeriodFunction timePeriodFunction );
+    ChartForm( gui::Location ^ location, gui::output::Chart ^ chartData, output::TimePeriod timePeriod, output::TimePeriodFunction timePeriodFunction );
 	protected:
 		~ChartForm();
 

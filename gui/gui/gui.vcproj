@@ -209,16 +209,12 @@
 			AssemblyName="System.Design, Version=2.0.0.0, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"
 		/>
 		<ProjectReference
-			ReferencedProjectIdentifier="{D83788CB-CAE8-4537-B69B-65C06CC594E8}"
-			RelativePathToProject=".\simulation\output\output.vcproj"
+			ReferencedProjectIdentifier="{C2329981-C757-474F-A90A-E11DBDA868BE}"
+			RelativePathToProject=".\gui\objs\objs.vcproj"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{92B00CE3-2DD3-4FF3-90B8-406836D45EC6}"
 			RelativePathToProject=".\gui\ctrl\ctrl.vcproj"
-		/>
-		<ProjectReference
-			ReferencedProjectIdentifier="{C2329981-C757-474F-A90A-E11DBDA868BE}"
-			RelativePathToProject=".\gui\objs\objs.vcproj"
 		/>
 	</References>
 	<Files>
