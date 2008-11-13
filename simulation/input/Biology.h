@@ -66,7 +66,6 @@ public:
       double HighSurvival;
     };
 
-    double DevelopmentThreshold;
     double MinimumHatchTemperature;
     double FloodHatchRatio;
     double SpontaneousHatchRatio;
@@ -101,7 +100,7 @@ public:
       double Slope;
       double Intercept;
       double MinimumWeightForPupation;
-      double MinimumAgeForPupation;
+      double MaximumDevelopment;
     };
 
     class TemperatureParameters {
@@ -144,8 +143,6 @@ public:
     };
 
     double WeightAtHatch;
-    double DevelopmentThreshold;
-    double MaximumDevelopment;
     double ChronologicalBasisAt26C;
     double NominalSurvival;
     double PupationSurvival;
@@ -190,7 +187,6 @@ public:
       double HighLethalSurvival;
     };
 
-    double DevelopmentThreshold;
     double NominalSurvival;
     double EmergenceSurvival;
     double FemaleEmergence;
@@ -202,6 +198,20 @@ public:
   public:
     AdultParameters(void);
     ~AdultParameters(void);
+
+    class AgeDependentSurvivalParameters {
+    public:
+      AgeDependentSurvivalParameters(void);
+      ~AgeDependentSurvivalParameters(void);
+
+    public:
+      int CutoffAge;
+      double YoungSurvival;
+      double OldSurvival;
+
+    public:
+      double GetSurvival( int age );
+    };
 
     class DevelopmentParameters {
     public:
@@ -249,7 +259,6 @@ public:
       double HighWeightRatio;
     };
 
-    double FirstDevelopmentThreshold;
     double SecondDevelopmentThreshold;
     double NominalSurvival;
     double DryToWetWeightFactor;
@@ -259,6 +268,7 @@ public:
     double InterruptedFeedsPerMeal;
     double ProportionOfInterruptedFeedsOnDifferentHost;
     double ProportionOfAdultsRestingOutdoors;
+    AgeDependentSurvivalParameters * AgeDependentSurvival;
     DevelopmentParameters * Development;
     TemperatureParameters * Temperature;
     SaturationDeficitParameters * SaturationDeficit;

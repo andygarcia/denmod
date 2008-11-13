@@ -183,7 +183,6 @@ EggBiology::EggBiology(void)
   Predation_(gcnew EggPredation())
 {
   input::Biology::EggParameters defVals;
-  this->DevelopmentThreshold_ = defVals.DevelopmentThreshold;
   this->MinimumHatchTemperature_ = defVals.MinimumHatchTemperature;
   this->FloodHatchRatio_ = defVals.FloodHatchRatio;
   this->SpontaneousHatchRatio_ = defVals.SpontaneousHatchRatio;
@@ -194,7 +193,6 @@ EggBiology::EggBiology(void)
 
 EggBiology::EggBiology( const EggBiology ^ eb )
 {
-  this->DevelopmentThreshold = eb->DevelopmentThreshold_;
   this->MinimumHatchTemperature = eb->MinimumHatchTemperature_;
   this->FloodHatchRatio = eb->FloodHatchRatio_;
   this->SpontaneousHatchRatio = eb->SpontaneousHatchRatio_;
@@ -212,7 +210,6 @@ EggBiology::GetSimObject(void)
 {
   input::Biology::EggParameters * ep = new input::Biology::EggParameters();
 
-  ep->DevelopmentThreshold = this->DevelopmentThreshold_;
   ep->MinimumHatchTemperature = this->MinimumHatchTemperature_;
   ep->FloodHatchRatio = this->FloodHatchRatio_;
   ep->SpontaneousHatchRatio = this->SpontaneousHatchRatio_;
@@ -265,7 +262,7 @@ LarvaePupationWeight::LarvaePupationWeight(void)
   this->Slope_ = defVals.Slope;
   this->Intercept_ = defVals.Intercept;
   this->MinimumWeightForPupation_ = defVals.MinimumWeightForPupation;
-  this->MinimumAgeForPupation_ = defVals.MinimumAgeForPupation;
+  this->MaximumDevelopment_ = defVals.MaximumDevelopment;
 }
 
 
@@ -275,7 +272,7 @@ LarvaePupationWeight::LarvaePupationWeight( const LarvaePupationWeight ^ lpw )
   this->Slope = lpw->Slope_;
   this->Intercept = lpw->Intercept_;
   this->MinimumWeightForPupation = lpw->MinimumWeightForPupation_;
-  this->MinimumAgeForPupation = lpw->MinimumAgeForPupation_;
+  this->MaximumDevelopment = lpw->MaximumDevelopment_;
 }
 
 
@@ -288,7 +285,7 @@ LarvaePupationWeight::GetSimObject(void)
   pwp->Slope = this->Slope_;
   pwp->Intercept = this->Intercept_;
   pwp->MinimumWeightForPupation = this->MinimumWeightForPupation_;
-  pwp->MinimumAgeForPupation = this->MinimumAgeForPupation_;
+  pwp->MaximumDevelopment = this->MaximumDevelopment_;
 
   return pwp;
 }
@@ -424,8 +421,6 @@ LarvaeBiology::LarvaeBiology(void)
 {
   input::Biology::LarvaeParameters defVals;
   this->WeightAtHatch_ = defVals.WeightAtHatch;
-  this->DevelopmentThreshold_ = defVals.DevelopmentThreshold;
-  this->MaximumDevelopment_ = defVals.MaximumDevelopment;
   this->ChronologicalBasisAt26C_ = defVals.ChronologicalBasisAt26C;
   this->NominalSurvival_ = defVals.NominalSurvival;
   this->PupationSurvival_ = defVals.PupationSurvival;
@@ -440,8 +435,6 @@ LarvaeBiology::LarvaeBiology(void)
 LarvaeBiology::LarvaeBiology( const LarvaeBiology ^ lb )
 {
   this->WeightAtHatch = lb->WeightAtHatch_;
-  this->DevelopmentThreshold = lb->DevelopmentThreshold_;
-  this->MaximumDevelopment = lb->MaximumDevelopment_;
   this->ChronologicalBasisAt26C = lb->ChronologicalBasisAt26C_;
   this->NominalSurvival = lb->NominalSurvival_;
   this->PupationSurvival = lb->PupationSurvival_;
@@ -465,8 +458,6 @@ LarvaeBiology::GetSimObject(void)
   input::Biology::LarvaeParameters * lp = new input::Biology::LarvaeParameters();
 
   lp->WeightAtHatch = this->WeightAtHatch_;
-  lp->DevelopmentThreshold = this->DevelopmentThreshold_;
-  lp->MaximumDevelopment = this->MaximumDevelopment_;
   lp->ChronologicalBasisAt26C = this->ChronologicalBasisAt26C_;
   lp->NominalSurvival = this->NominalSurvival_;
   lp->PupationSurvival = this->PupationSurvival_;
@@ -558,7 +549,6 @@ PupaeBiology::PupaeBiology(void)
   Temperature_(gcnew PupaeTemperature())
 {
   input::Biology::PupaeParameters defVals;
-  this->DevelopmentThreshold_ = defVals.DevelopmentThreshold;
   this->NominalSurvival_ = defVals.NominalSurvival;
   this->EmergenceSurvival_ = defVals.EmergenceSurvival;
   this->FemaleEmergence_ = defVals.FemaleEmergence;
@@ -568,7 +558,6 @@ PupaeBiology::PupaeBiology(void)
 
 PupaeBiology::PupaeBiology( const PupaeBiology ^ pb )
 {
-  this->DevelopmentThreshold = pb->DevelopmentThreshold_;
   this->NominalSurvival = pb->NominalSurvival_;
   this->EmergenceSurvival = pb->EmergenceSurvival_;
   this->FemaleEmergence = pb->FemaleEmergence_;
@@ -583,7 +572,6 @@ PupaeBiology::GetSimObject(void)
 {
   input::Biology::PupaeParameters * pp = new input::Biology::PupaeParameters();
 
-  pp->DevelopmentThreshold = this->DevelopmentThreshold_;
   pp->NominalSurvival = this->NominalSurvival_;
   pp->EmergenceSurvival = this->EmergenceSurvival_;
   pp->FemaleEmergence = this->FemaleEmergence_;
@@ -591,6 +579,39 @@ PupaeBiology::GetSimObject(void)
   pp->Temperature = this->Temperature_->GetSimObject();
 
   return pp;
+}
+
+
+
+AdultAgeDependentSurvival::AdultAgeDependentSurvival(void)
+{
+  input::Biology::AdultParameters::AgeDependentSurvivalParameters defVals;
+  this->CutoffAge_ = defVals.CutoffAge;
+  this->YoungSurvival_ = defVals.YoungSurvival;
+  this->OldSurvival_ = defVals.OldSurvival;
+}
+
+
+
+AdultAgeDependentSurvival::AdultAgeDependentSurvival( const AdultAgeDependentSurvival ^ aads )
+{
+  this->CutoffAge_ = aads->CutoffAge_;
+  this->YoungSurvival_ = aads->YoungSurvival_;
+  this->OldSurvival_ = aads->OldSurvival_;
+}
+
+
+
+input::Biology::AdultParameters::AgeDependentSurvivalParameters *
+AdultAgeDependentSurvival::GetSimObject(void)
+{
+  input::Biology::AdultParameters::AgeDependentSurvivalParameters * adsp = new input::Biology::AdultParameters::AgeDependentSurvivalParameters();
+
+  adsp->CutoffAge = this->CutoffAge_;
+  adsp->YoungSurvival = this->YoungSurvival_;
+  adsp->OldSurvival = this->OldSurvival_;
+
+  return adsp;
 }
 
 
@@ -735,13 +756,13 @@ AdultDoubleBloodMeal::GetSimObject(void)
 
 
 AdultBiology::AdultBiology(void)
-: Development_(gcnew AdultDevelopment()),
+: AgeDependentSurvival_(gcnew AdultAgeDependentSurvival()),
+  Development_(gcnew AdultDevelopment()),
   Temperature_(gcnew AdultTemperature()),
   SaturationDeficit_(gcnew AdultSaturationDeficit()),
   DoubleBloodMeal_(gcnew AdultDoubleBloodMeal())
 {
   input::Biology::AdultParameters defVals;
-  this->FirstDevelopmentThreshold_ = defVals.FirstDevelopmentThreshold;
   this->SecondDevelopmentThreshold_ = defVals.SecondDevelopmentThreshold;
   this->NominalSurvival_ = defVals.NominalSurvival;
   this->DryToWetWeightFactor_ = defVals.DryToWetWeightFactor;
@@ -757,7 +778,6 @@ AdultBiology::AdultBiology(void)
 
 AdultBiology::AdultBiology( const AdultBiology ^ ab )
 {
-  this->FirstDevelopmentThreshold = ab->FirstDevelopmentThreshold_;
   this->SecondDevelopmentThreshold = ab->SecondDevelopmentThreshold_;
   this->NominalSurvival = ab->NominalSurvival_;
   this->DryToWetWeightFactor = ab->DryToWetWeightFactor_;
@@ -767,10 +787,36 @@ AdultBiology::AdultBiology( const AdultBiology ^ ab )
   this->InterruptedFeedsPerMeal = ab->InterruptedFeedsPerMeal_;
   this->ProportionOfInterruptedFeedsOnDifferentHost = ab->ProportionOfInterruptedFeedsOnDifferentHost_;
   this->ProportionOfAdultsRestingOutdoors = ab->ProportionOfAdultsRestingOutdoors_;
+  this->AgeDependentSurvival = gcnew AdultAgeDependentSurvival( ab->AgeDependentSurvival_ );
   this->Development = gcnew AdultDevelopment( ab->Development_ );
   this->Temperature = gcnew AdultTemperature( ab->Temperature_ );
   this->SaturationDeficit = gcnew AdultSaturationDeficit( ab->SaturationDeficit_ );
   this->DoubleBloodMeal = gcnew AdultDoubleBloodMeal( ab->DoubleBloodMeal_ );
+}
+
+
+
+input::Biology::AdultParameters *
+AdultBiology::GetSimObject(void)
+{
+  input::Biology::AdultParameters * ap = new input::Biology::AdultParameters();
+
+  ap->SecondDevelopmentThreshold = this->SecondDevelopmentThreshold_;
+  ap->NominalSurvival = this->NominalSurvival_;
+  ap->DryToWetWeightFactor = this->DryToWetWeightFactor_;
+  ap->FecundityFactor = this->FecundityFactor_;
+  ap->MinimumOvipositionTemperature = this->MinimumOvipositionTemperature_;
+  ap->ProportionOfFeedsOnHumans = this->ProportionOfFeedsOnHumans_;
+  ap->InterruptedFeedsPerMeal = this->InterruptedFeedsPerMeal_;
+  ap->ProportionOfInterruptedFeedsOnDifferentHost = this->ProportionOfInterruptedFeedsOnDifferentHost_;
+  ap->ProportionOfAdultsRestingOutdoors = this->ProportionOfAdultsRestingOutdoors_;
+  ap->AgeDependentSurvival = this->AgeDependentSurvival->GetSimObject();
+  ap->Development = this->Development_->GetSimObject();
+  ap->Temperature = this->Temperature_->GetSimObject();
+  ap->SaturationDeficit = this->SaturationDeficit_->GetSimObject();
+  ap->DoubleBloodMeal = this->DoubleBloodMeal_->GetSimObject();
+
+  return ap;
 }
 
 
@@ -790,31 +836,6 @@ BiologyParameters::BiologyParameters( const BiologyParameters ^ bp )
   this->Larvae = gcnew LarvaeBiology( bp->Larvae_ );
   this->Pupae = gcnew PupaeBiology( bp->Pupae_ );
   this->Adult = gcnew AdultBiology( bp->Adult_ );
-}
-
-
-
-input::Biology::AdultParameters *
-AdultBiology::GetSimObject(void)
-{
-  input::Biology::AdultParameters * ap = new input::Biology::AdultParameters();
-
-  ap->FirstDevelopmentThreshold = this->FirstDevelopmentThreshold_;
-  ap->SecondDevelopmentThreshold = this->SecondDevelopmentThreshold_;
-  ap->NominalSurvival = this->NominalSurvival_;
-  ap->DryToWetWeightFactor = this->DryToWetWeightFactor_;
-  ap->FecundityFactor = this->FecundityFactor_;
-  ap->MinimumOvipositionTemperature = this->MinimumOvipositionTemperature_;
-  ap->ProportionOfFeedsOnHumans = this->ProportionOfFeedsOnHumans_;
-  ap->InterruptedFeedsPerMeal = this->InterruptedFeedsPerMeal_;
-  ap->ProportionOfInterruptedFeedsOnDifferentHost = this->ProportionOfInterruptedFeedsOnDifferentHost_;
-  ap->ProportionOfAdultsRestingOutdoors = this->ProportionOfAdultsRestingOutdoors_;
-  ap->Development = this->Development_->GetSimObject();
-  ap->Temperature = this->Temperature_->GetSimObject();
-  ap->SaturationDeficit = this->SaturationDeficit_->GetSimObject();
-  ap->DoubleBloodMeal = this->DoubleBloodMeal_->GetSimObject();
-
-  return ap;
 }
 
 

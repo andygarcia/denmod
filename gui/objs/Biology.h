@@ -449,20 +449,6 @@ public:
 
 public:
   [XmlElement(Order=0)]
-  [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
-  property double DevelopmentThreshold {
-    double get(void) {
-      return DevelopmentThreshold_;
-    }
-    void set(double d) {
-      if( DevelopmentThreshold_ != d ) {
-        DevelopmentThreshold_ = d;
-        NotifyPropertyChanged("DevelopmentThreshold");
-      }
-    }
-  }
-
-  [XmlElement(Order=1)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
   property double MinimumHatchTemperature {
     double get(void) {
@@ -476,7 +462,7 @@ public:
     }
   }
 
-  [XmlElement(Order=2)]
+  [XmlElement(Order=1)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double FloodHatchRatio {
     double get(void) {
@@ -490,7 +476,7 @@ public:
     }
   }
 
-  [XmlElement(Order=3)]
+  [XmlElement(Order=2)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double SpontaneousHatchRatio {
     double get(void) {
@@ -504,7 +490,7 @@ public:
     }
   }
 
-  [XmlElement(Order=4)]
+  [XmlElement(Order=3)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double NominalSurvival {
     double get(void) {
@@ -519,7 +505,7 @@ public:
   }
 
 
-  [XmlElement(Order=5)]
+  [XmlElement(Order=4)]
   property EggDevelopment ^ Development {
     EggDevelopment ^ get(void) {
       return Development_;
@@ -532,7 +518,7 @@ public:
     }
   }
 
-  [XmlElement(Order=6)]
+  [XmlElement(Order=5)]
   property EggTemperature ^ Temperature {
     EggTemperature ^ get(void) {
       return Temperature_;
@@ -545,7 +531,7 @@ public:
     }
   }
 
-  [XmlElement(Order=7)]
+  [XmlElement(Order=6)]
   property EggSaturationDeficit ^ SaturationDeficit {
     EggSaturationDeficit ^ get(void) {
       return SaturationDeficit_;
@@ -558,7 +544,7 @@ public:
     }
   }
 
-  [XmlElement(Order=8)]
+  [XmlElement(Order=7)]
   property EggPredation ^ Predation {
     EggPredation ^ get(void) {
       return Predation_;
@@ -688,15 +674,15 @@ public:
   }
 
   [XmlElement(Order=3)]
-  [ParameterDisplayAttribute(0,true,ScientificNotationOptions::Never)]
-  property double MinimumAgeForPupation {
+  [ParameterDisplayAttribute(1,true,ScientificNotationOptions::Never)]
+  property double MaximumDevelopment {
     double get(void) {
-      return MinimumAgeForPupation_;
+      return MaximumDevelopment_;
     }
     void set(double d) {
-      if( MinimumAgeForPupation_ != d ) {
-        MinimumAgeForPupation_ = d;
-        NotifyPropertyChanged("MinimumAgeForPupation");
+      if( MaximumDevelopment_ != d ) {
+        MaximumDevelopment_ = d;
+        NotifyPropertyChanged("MaximumDevelopment");
       }
     }
   }
@@ -705,7 +691,7 @@ private:
   double Slope_;
   double Intercept_;
   double MinimumWeightForPupation_;
-  double MinimumAgeForPupation_;
+  double MaximumDevelopment_;
 };
 
 
@@ -942,34 +928,6 @@ public:
 
   [XmlElement(Order=1)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
-  property double DevelopmentThreshold {
-    double get(void) {
-      return DevelopmentThreshold_;
-    }
-    void set(double d) {
-      if( DevelopmentThreshold_ != d ) {
-        DevelopmentThreshold_ = d;
-        NotifyPropertyChanged("DevelopmentThreshold");
-      }
-    }
-  }
-
-  [XmlElement(Order=2)]
-  [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
-  property double MaximumDevelopment {
-    double get(void) {
-      return MaximumDevelopment_;
-    }
-    void set(double d) {
-      if( MaximumDevelopment_ != d ) {
-        MaximumDevelopment_ = d;
-        NotifyPropertyChanged("MaximumDevelopment");
-      }
-    }
-  }
-
-  [XmlElement(Order=3)]
-  [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double ChronologicalBasisAt26C {
     double get(void) {
       return ChronologicalBasisAt26C_;
@@ -982,7 +940,7 @@ public:
     }
   }
 
-  [XmlElement(Order=4)]
+  [XmlElement(Order=2)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double NominalSurvival {
     double get(void) {
@@ -996,7 +954,7 @@ public:
     }
   }
 
-  [XmlElement(Order=5)]
+  [XmlElement(Order=3)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double PupationSurvival {
     double get(void) {
@@ -1010,7 +968,7 @@ public:
     }
   }
 
-  [XmlElement(Order=6)]
+  [XmlElement(Order=4)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double DryContainerSurvival {
     double get(void) {
@@ -1024,7 +982,7 @@ public:
     }
   }
 
-  [XmlElement(Order=7)]
+  [XmlElement(Order=5)]
   [ParameterDisplayAttribute(4,true,ScientificNotationOptions::Never)]
   property double MinimumWeightForSurvival {
     double get(void) {
@@ -1038,7 +996,7 @@ public:
     }
   }
 
-  [XmlElement(Order=8)]
+  [XmlElement(Order=6)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property int NumberEulerSteps {
     int get(void) {
@@ -1052,7 +1010,7 @@ public:
     }
   }
 
-  [XmlElement(Order=9)]
+  [XmlElement(Order=7)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double CadaverFoodRatio {
     double get(void) {
@@ -1066,7 +1024,7 @@ public:
     }
   }
 
-  [XmlElement(Order=10)]
+  [XmlElement(Order=8)]
   property LarvaeDevelopment ^ Development {
     LarvaeDevelopment ^ get(void) {
       return Development_;
@@ -1079,7 +1037,7 @@ public:
     }
   }
 
-  [XmlElement(Order=11)]
+  [XmlElement(Order=9)]
   property LarvaePupationWeight ^ PupationWeight {
     LarvaePupationWeight ^ get(void) {
       return PupationWeight_;
@@ -1092,7 +1050,7 @@ public:
     }
   }
 
-  [XmlElement(Order=12)]
+  [XmlElement(Order=10)]
   property LarvaeTemperature ^ Temperature {
     LarvaeTemperature ^ get(void) {
       return Temperature_;
@@ -1105,7 +1063,7 @@ public:
     }
   }
 
-  [XmlElement(Order=13)]
+  [XmlElement(Order=11)]
   property LarvaeFood ^ Food {
     LarvaeFood ^ get(void) {
       return Food_;
@@ -1118,7 +1076,7 @@ public:
     }
   }
 
-  [XmlElement(Order=14)]
+  [XmlElement(Order=12)]
   property LarvaeFasting ^ Fasting {
     LarvaeFasting ^ get(void) {
       return Fasting_;
@@ -1133,8 +1091,6 @@ public:
 
 private:
   double WeightAtHatch_;
-  double DevelopmentThreshold_;
-  double MaximumDevelopment_;
   double ChronologicalBasisAt26C_;
   double NominalSurvival_;
   double PupationSurvival_;
@@ -1225,20 +1181,6 @@ public:
 public:
   [XmlElement(Order=0)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
-  property double DevelopmentThreshold {
-    double get(void) {
-      return DevelopmentThreshold_;
-    }
-    void set(double d) {
-      if( DevelopmentThreshold_ != d ) {
-        DevelopmentThreshold_ = d;
-        NotifyPropertyChanged("DevelopmentThreshold");
-      }
-    }
-  }
-
-  [XmlElement(Order=1)]
-  [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double NominalSurvival {
     double get(void) {
       return NominalSurvival_;
@@ -1251,7 +1193,7 @@ public:
     }
   }
 
-  [XmlElement(Order=2)]
+  [XmlElement(Order=1)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double EmergenceSurvival {
     double get(void) {
@@ -1265,7 +1207,7 @@ public:
     }
   }
 
-  [XmlElement(Order=3)]
+  [XmlElement(Order=2)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double FemaleEmergence {
     double get(void) {
@@ -1279,7 +1221,7 @@ public:
     }
   }
 
-  [XmlElement(Order=4)]
+  [XmlElement(Order=3)]
   property PupaeDevelopment ^ Development {
    PupaeDevelopment ^ get(void) {
       return Development_;
@@ -1292,7 +1234,7 @@ public:
     }
   }
 
-  [XmlElement(Order=5)]
+  [XmlElement(Order=4)]
   property PupaeTemperature ^ Temperature {
    PupaeTemperature ^ get(void) {
       return Temperature_;
@@ -1306,12 +1248,70 @@ public:
   }
 
 private:
-  double DevelopmentThreshold_;
   double NominalSurvival_;
   double EmergenceSurvival_;
   double FemaleEmergence_;
   PupaeDevelopment ^ Development_;
   PupaeTemperature ^ Temperature_;
+};
+
+
+
+public ref class AdultAgeDependentSurvival: public NotifyValidateEditBase
+{
+public:
+  AdultAgeDependentSurvival(void);
+  AdultAgeDependentSurvival( const AdultAgeDependentSurvival ^ aads );
+  ~AdultAgeDependentSurvival(void) {}
+  input::Biology::AdultParameters::AgeDependentSurvivalParameters * GetSimObject(void);
+
+public:
+  [XmlElement(Order=0)]
+  [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  property double YoungSurvival{
+    double get(void) {
+      return YoungSurvival_;
+    }
+    void set(double d) {
+      if( YoungSurvival_ != d ) {
+        YoungSurvival_ = d;
+        NotifyPropertyChanged("YoungSurvival");
+      }
+    }
+  }
+
+  [XmlElement(Order=1)]
+  [ParameterDisplayAttribute(0,true,ScientificNotationOptions::Never)]
+  property int CutoffAge {
+    int get(void) {
+      return CutoffAge_;
+    }
+    void set(int i) {
+      if( CutoffAge_ != i ) {
+        CutoffAge_ = i;
+        NotifyPropertyChanged("CutoffAge");
+      }
+    }
+  }
+
+  [XmlElement(Order=2)]
+  [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  property double OldSurvival {
+    double get(void) {
+      return OldSurvival_;
+    }
+    void set(double d) {
+      if( OldSurvival != d ) {
+        OldSurvival_ = d;
+        NotifyPropertyChanged("OldSurvival");
+      }
+    }
+  }
+
+private:
+  double YoungSurvival_;
+  int CutoffAge_;
+  double OldSurvival_;
 };
 
 
@@ -1538,20 +1538,6 @@ public:
 public:
   [XmlElement(Order=0)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
-  property double FirstDevelopmentThreshold {
-    double get(void) {
-      return FirstDevelopmentThreshold_;
-    }
-    void set(double d) {
-      if( FirstDevelopmentThreshold_ != d ) {
-        FirstDevelopmentThreshold_ = d;
-        NotifyPropertyChanged("FirstDevelopmentThreshold");
-      }
-    }
-  }
-
-  [XmlElement(Order=1)]
-  [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double SecondDevelopmentThreshold {
     double get(void) {
       return SecondDevelopmentThreshold_;
@@ -1564,7 +1550,7 @@ public:
     }
   }
 
-  [XmlElement(Order=2)]
+  [XmlElement(Order=1)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double NominalSurvival {
     double get(void) {
@@ -1578,7 +1564,7 @@ public:
     }
   }
 
-  [XmlElement(Order=3)]
+  [XmlElement(Order=2)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double DryToWetWeightFactor {
     double get(void) {
@@ -1592,7 +1578,7 @@ public:
     }
   }
 
-  [XmlElement(Order=4)]
+  [XmlElement(Order=3)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double FecundityFactor {
     double get(void) {
@@ -1606,7 +1592,7 @@ public:
     }
   }
 
-  [XmlElement(Order=5)]
+  [XmlElement(Order=4)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
   property double MinimumOvipositionTemperature {
     double get(void) {
@@ -1620,7 +1606,7 @@ public:
     }
   }
 
-  [XmlElement(Order=6)]
+  [XmlElement(Order=5)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double ProportionOfFeedsOnHumans {
     double get(void) {
@@ -1634,7 +1620,7 @@ public:
     }
   }
 
-  [XmlElement(Order=7)]
+  [XmlElement(Order=6)]
   [ParameterDisplayAttribute(0,true,ScientificNotationOptions::Never)]
   property double InterruptedFeedsPerMeal {
     double get(void) {
@@ -1648,7 +1634,7 @@ public:
     }
   }
 
-  [XmlElement(Order=8)]
+  [XmlElement(Order=7)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double ProportionOfInterruptedFeedsOnDifferentHost {
     double get(void) {
@@ -1662,7 +1648,7 @@ public:
     }
   }
 
-  [XmlElement(Order=9)]
+  [XmlElement(Order=8)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double ProportionOfAdultsRestingOutdoors {
     double get(void) {
@@ -1676,6 +1662,18 @@ public:
     }
   }
 
+  [XmlElement(Order=9)]
+  property AdultAgeDependentSurvival ^ AgeDependentSurvival {
+    AdultAgeDependentSurvival ^ get(void) {
+      return AgeDependentSurvival_;
+    }
+    void set(AdultAgeDependentSurvival ^ aads) {
+      if( AgeDependentSurvival_ != aads ) {
+        AgeDependentSurvival_ = aads;
+        NotifyPropertyChanged("AgeDependentSurvival");
+      }
+    }
+  }
   [XmlElement(Order=10)]
   property AdultDevelopment ^ Development {
     AdultDevelopment ^ get(void) {
@@ -1739,6 +1737,7 @@ private:
   double InterruptedFeedsPerMeal_;
   double ProportionOfInterruptedFeedsOnDifferentHost_;
   double ProportionOfAdultsRestingOutdoors_;
+  AdultAgeDependentSurvival ^ AgeDependentSurvival_;
   AdultDevelopment ^ Development_;
   AdultTemperature ^ Temperature_;
   AdultSaturationDeficit ^ SaturationDeficit_;

@@ -281,7 +281,7 @@ void csport::BioReadFile(void)
   PupWtSlope = (float) Location_.Biology_->Larvae->PupationWeight->Slope;
   PupWtConst = (float) Location_.Biology_->Larvae->PupationWeight->Intercept;
   PupMinWt = (float) Location_.Biology_->Larvae->PupationWeight->MinimumWeightForPupation;
-  PupMinAge = (float) Location_.Biology_->Larvae->PupationWeight->MinimumAgeForPupation;
+  PupMinAge = (float) Location_.Biology_->Larvae->PupationWeight->MaximumDevelopment;
 
   larvpwtsu = (float) Location_.Biology_->Larvae->Fasting->NoFastingSurvival;
   larvnwtnfbsu = (float) Location_.Biology_->Larvae->Fasting->NoLipidReserveSurvival;
@@ -295,7 +295,7 @@ void csport::BioReadFile(void)
   LarvTemp3 = (float) Location_.Biology_->Larvae->Temperature->HighLethalThreshold;
   LarvTemp4 = (float) Location_.Biology_->Larvae->Temperature->HighThreshold;
 
-  LarvaeMaxCD = (float) Location_.Biology_->Larvae->MaximumDevelopment;
+  LarvaeMaxCD = (float) Location_.Biology_->Larvae->PupationWeight->MaximumDevelopment;
 
   eggdiapausetemp = (float) Location_.Biology_->Egg->MinimumHatchTemperature;
   PropHatchflood = (float) Location_.Biology_->Egg->FloodHatchRatio;

@@ -26,7 +26,6 @@ EggBiologyPanel::~EggBiologyPanel()
 System::Void
 EggBiologyPanel::OnLoad( System::Object ^ sender, System::EventArgs ^ e )
 {
-  snboxDevelopmentThreshold->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Egg.DevelopmentThreshold") );
   snboxNominalSurvival->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Egg.NominalSurvival") );
 
   snboxRO25->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Egg.Development.RO25") );

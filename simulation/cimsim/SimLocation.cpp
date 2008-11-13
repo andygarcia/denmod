@@ -45,6 +45,9 @@ SimLocation::SimLocation( const input::Location * location, boost::gregorian::da
     this->OviAdultCohorts = popData->OviAdultCohorts;
     this->MosqAgeDistr = popData->MosqAgeDistr;
 
+    this->NulliparousCohorts = this->PreOviAdultCohorts;
+    this->ParousCohorts = this->OviAdultCohorts;
+
     // save initial state for DENSiM
     InitialPreOviAdultCohorts = PreOviAdultCohorts;
     InitialOviAdultCohorts = OviAdultCohorts;
@@ -63,8 +66,6 @@ SimLocation::SimLocation( const input::Location * location, boost::gregorian::da
         Containers_.push_back( newContainer );
       }
     }
-
-
   }
 
   // read controls and initialize schedules
@@ -123,7 +124,6 @@ SimLocation::SimLocation( const input::Location * location, boost::gregorian::da
   _adultDHA = _location->Biology_->Adult->Development->DHA;
   _adultDHH = _location->Biology_->Adult->Development->DHH;
   _adultTH2 = _location->Biology_->Adult->Development->THALF;
-  _adultFirstDevelopmentThreshold = _location->Biology_->Adult->FirstDevelopmentThreshold;
   _adultSecondDevelopmentThreshold = _location->Biology_->Adult->SecondDevelopmentThreshold;
 
   _adultNominalSurvival = _location->Biology_->Adult->NominalSurvival;
@@ -135,6 +135,8 @@ SimLocation::SimLocation( const input::Location * location, boost::gregorian::da
   _proportionAdultsOutdoor = _location->Biology_->Adult->ProportionOfAdultsRestingOutdoors;
   _interruptedFeedsPerMeal = _location->Biology_->Adult->InterruptedFeedsPerMeal;
   _adultDoubleBloodMeals = _location->Biology_->Adult->DoubleBloodMeal;
+
+  _adultAgeDependentSurvival = _location->Biology_->Adult->AgeDependentSurvival;
 }
 
 
@@ -342,7 +344,7 @@ SimLocation::DoYear(void)
       NewFemaleWeight = NewFemaleWeight * _location->Biology_->Adult->DryToWetWeightFactor;
     }
     // at this point the number and weight for the newly emerged female cohort has been calculated
-    
+
 
     // calculate adult survival
     CalculateAdultTemperatureSurvival();
@@ -350,11 +352,14 @@ SimLocation::DoYear(void)
     AdultSurvival = _adultNominalSurvival * AdultSurvivalTemperature * AdultSurvivalSatDef;
 
 
+    // clear today's ovipositing cohort collection
+    OvipositingCohorts.clear();
+
     // advance pre-oviposition adults
     double newEggLayersCohorts = 0.0;
-    OvipositingCohorts.clear();
+    double firstTargetThreshold = 1.0 - (DevRateAdult / 2.0);
     for( PreOviAdultIterator itAdult = PreOviAdultCohorts.begin(); itAdult != PreOviAdultCohorts.end(); ) {
-      if( itAdult->Development < _adultFirstDevelopmentThreshold || TemperatureAvg[Day] <= _minimumOvipositionTemperature ) {
+      if( itAdult->Development < firstTargetThreshold || TemperatureAvg[Day] <= _minimumOvipositionTemperature ) {
         itAdult->Age++;
         itAdult->Number = itAdult->Number * AdultSurvival;
         itAdult->Development += DevRateAdult;
@@ -368,10 +373,13 @@ SimLocation::DoYear(void)
       }
     }
 
-    // establish newly emerged female cohort
+    // establish newly emerged female cohort, since this occurs after above block, newly emerged females
+    // are not subjected to adult survival - this makes sense since they were subjected to pupae survival
     if( NewFemales > 0 ) {
       PreOviAdultCohorts.push_back( PreOviAdultCohort(1, NewFemales, DevRateAdult, NewFemaleWeight) );
     }
+    // they are however subjected to residual and space sprays as the following two code blocks prove
+
 
     // apply space spray to pre ovi adults
     for( std::vector<SpaceSpray*>::iterator itSs = SpaceSprays_.begin(); itSs != SpaceSprays_.end(); ++itSs ) {
@@ -417,8 +425,9 @@ SimLocation::DoYear(void)
 
     // advanced post oviposition adults
     double eggLayersCohorts = 0.0;
+    double secondTargetThreshold = _adultSecondDevelopmentThreshold - (DevRateAdult / 2.0);
     for( OviAdultIterator itAdult = OviAdultCohorts.begin(); itAdult != OviAdultCohorts.end(); ) {
-      if( itAdult->Development < _adultSecondDevelopmentThreshold || TemperatureAvg[Day] <= _minimumOvipositionTemperature ) {
+      if( itAdult->Development < secondTargetThreshold || TemperatureAvg[Day] <= _minimumOvipositionTemperature ) {
         itAdult->Age++;
         itAdult->Number = itAdult->Number * AdultSurvival;
         itAdult->Development += DevRateAdult;
@@ -432,7 +441,7 @@ SimLocation::DoYear(void)
       }
     }
 
-    // create new ovi adult cohort based on all females who will ovipositiong today, reseting dev cycle
+    // create new ovi adult cohort based on all females who will ovipositiong today, reseting dev cycle and "age"
     if( newEggLayersCohorts + eggLayersCohorts > 0 ) {
       OviAdultCohorts.push_back( OviAdultCohort(1, newEggLayersCohorts + eggLayersCohorts, DevRateAdult, GetOvipositingFemaleAverageWeight()) );
     }
@@ -511,6 +520,128 @@ SimLocation::DoYear(void)
     }
 
 
+    // NEW ADULT CODE
+  {
+
+    // calculate survival before applying age dependence
+    double nonAgeDependentSurvival = AdultSurvivalTemperature * AdultSurvivalSatDef;
+
+    // track today's ovipositing cohorts
+    NewOvipositingCohorts.clear();
+
+    // advance nulliparous cohorts
+    double firstTargetThreshold = 1.0 - (DevRateAdult / 2.0);
+    for( PreOviAdultIterator itAdult = NulliparousCohorts.begin(); itAdult != NulliparousCohorts.end(); ++itAdult ) {
+      // TODO: should we use the age at beginning of the day or the age at the end of the day?
+      itAdult->Age++;
+      double survival = nonAgeDependentSurvival * CalculateAdultAgeDependentSurvival( itAdult->Age );
+      itAdult->Number = itAdult->Number * survival;
+
+      // check if development and temperature allow for oviposition
+      if( itAdult->Development < firstTargetThreshold || TemperatureAvg[Day] <= _minimumOvipositionTemperature ) {
+        itAdult->Development += DevRateAdult;
+        itAdult->Ovipositing = false;
+      }
+      else {
+        // development will be set later
+        itAdult->Ovipositing = true;
+        NewOvipositingCohorts.push_back( *itAdult );
+      }
+    }
+
+    // apply space spray to parous adults
+    for( std::vector<SpaceSpray*>::iterator itSs = SpaceSprays_.begin(); itSs != SpaceSprays_.end(); ++itSs ) {
+      if( (*itSs)->IsDateScheduled(CurrentDate_) ) {
+        SpaceSpray * ss = *itSs;
+
+        for( PreOviAdultIterator itAdult = NulliparousCohorts.begin(); itAdult != NulliparousCohorts.end(); ) {
+          double indoorSurvival = itAdult->Number * (1 - ss->GetIndoorMortality()) * (1 - _proportionAdultsOutdoor);
+          double outdoorSurvival = itAdult->Number * (1 - ss->GetOutdoorMortality()) * _proportionAdultsOutdoor;
+          itAdult->Number = indoorSurvival + outdoorSurvival;
+          if( itAdult->Number == 0 ) {
+            itAdult = NulliparousCohorts.erase(itAdult);
+          }
+          else {
+            ++itAdult;
+          }
+        }
+      }
+    }
+
+    // apply residual spray to parous adults
+    if( ResidualSprays_.size() > 0 ) {
+      ResidualSpray * rs = ResidualSprays_.at(0);
+      if( rs->GetSurvival(CurrentDate_) < 1 ) {
+        double surfaceRatio = rs->GetTreatedInteriorProportion();
+        double houseRatio = rs->GetTreatedHousesProportion();
+        double survival = rs->GetSurvival(CurrentDate_);
+
+        for( PreOviAdultIterator itAdult = NulliparousCohorts.begin(); itAdult != NulliparousCohorts.end(); ) {
+          double IndoorSurviving = itAdult->Number * (1 - _proportionAdultsOutdoor) * surfaceRatio * houseRatio * survival;
+          double OutdoorSurviving = itAdult->Number * _proportionAdultsOutdoor;
+          itAdult->Number = IndoorSurviving + OutdoorSurviving;
+          if( itAdult->Number == 0 ) {
+            itAdult = NulliparousCohorts.erase(itAdult);
+          }
+          else {
+            ++itAdult;
+          }
+        }
+      }
+    }
+
+    // establish newly emerged female cohort, which is only subject to space and residual sprays
+    if( NewFemales > 0 ) {
+      NulliparousCohorts.push_back( PreOviAdultCohort(1, NewFemales, DevRateAdult, NewFemaleWeight) );
+    }
+
+
+
+    // advance parous cohorts
+    double secondTargetThreshold = _adultSecondDevelopmentThreshold - (DevRateAdult / 2.0);
+    for( OviAdultIterator itAdult = ParousCohorts.begin(); itAdult != ParousCohorts.end(); ++itAdult ) {
+      itAdult->Age++;
+      itAdult->OvipositionAge++;
+      double survival = nonAgeDependentSurvival * CalculateAdultAgeDependentSurvival( itAdult->Age );
+      itAdult->Number = itAdult->Number * survival;
+
+      // check if devleopment and temperature allow for subsequent oviposition
+      if( itAdult->Development < secondTargetThreshold || TemperatureAvg[Day] <= _minimumOvipositionTemperature ) {
+        itAdult->Development += DevRateAdult;
+        itAdult->Ovipositing = false;
+      }
+      else {
+        // TODO: emulate the age and development reset on oviposition for now
+        itAdult->Ovipositing = true;
+        itAdult->Development = DevRateAdult;
+        itAdult->OvipositionAge = 1;
+        NewOvipositingCohorts.push_back( *itAdult );
+      }
+    }
+
+    // advance ovipositing nulliparous cohorts to parous stage
+    for( PreOviAdultIterator itAdult = NulliparousCohorts.begin(); itAdult != NulliparousCohorts.end(); ) {
+      if( itAdult->Ovipositing ) {
+        // TODO: emulate development reset
+        OviAdultCohort newOviCohort;
+        newOviCohort.Age = itAdult->Age;
+        newOviCohort.Number = itAdult->Number;
+        newOviCohort.Development = DevRateAdult;
+        newOviCohort.Weight = itAdult->Weight;
+        newOviCohort.Ovipositing = true;
+        newOviCohort.OvipositionAge = 1;
+
+        ParousCohorts.push_back( newOviCohort );
+        itAdult = NulliparousCohorts.erase( itAdult );
+      }
+      else {
+        ++itAdult;
+      }
+    }
+
+  }
+
+  
     // calculate proportion of double blood meals as a function of female wet weight
     // TODO: this should be per cohort
     double doubleBloodMealProp = CalculateDoubleBloodMealProportion();
@@ -532,11 +663,10 @@ SimLocation::DoYear(void)
     _oviBiters = GetOviBiters( doubleBloodMealProp );
 
 
-
     // track wild male population - needed for sterile male releases.
     // survivals and treatments have already been applied to the female arrays.
     double percentFemale = this->_location->Biology_->Pupae->FemaleEmergence;
-    double totalFemales = GetPreOviFemaleCount() + GetOviFemaleCount();
+    double totalFemales = GetNulliparousCount() + GetParousCount();
     TotalMales = (totalFemales / percentFemale) - totalFemales;
 
 
@@ -582,7 +712,6 @@ SimLocation::DoYear(void)
       }
       else {
         (*itCont)->NormalizeContPref( normTotal );
-
       }
     }
 
@@ -606,11 +735,16 @@ SimLocation::DoYear(void)
     }
 
 
-    // calculate new egg amounts
+    // calculate count/weight of ovipositing females
+    std::pair<double,double> oviTotals = GetOvipositingTotals();
+    double totalOvipositingFemales = oviTotals.first;
+    double ovipositingAverageWeight = oviTotals.second;
+
+
+    // calculate new egg totals
     double newEggs = 0.0;
-    double totalOvipositingFemales = newEggLayersCohorts + eggLayersCohorts;
     if( totalOvipositingFemales > 0 ) {
-      newEggs = totalOvipositingFemales * _fecundityCoefficient * GetOvipositingFemaleAverageWeight() * sterileFactor;
+      newEggs = totalOvipositingFemales * _fecundityCoefficient * ovipositingAverageWeight * sterileFactor;
     }
 
 
@@ -713,6 +847,23 @@ SimLocation::CalculateAdultSatDefSurvival(void)
 
 
 double
+SimLocation::CalculateAdultAgeDependentSurvival( int age )
+{
+  const double & youngSurvival = _adultAgeDependentSurvival->YoungSurvival;
+  const double & oldSurvival = _adultAgeDependentSurvival->OldSurvival;
+  const double & cutOffAge = _adultAgeDependentSurvival->CutoffAge;
+
+  if( age <= cutOffAge ) {
+    return youngSurvival;
+  }
+  else {
+    return oldSurvival;
+  }
+}
+
+
+
+double
 SimLocation::CalculateDoubleBloodMealProportion(void)
 {
   const double & lowWeight = _adultDoubleBloodMeals->LowWeightLimit;
@@ -784,7 +935,7 @@ SimLocation::UpdateOutput( date d, double adultWeight, double adultDev, double n
 
   // record location outputs for current date
   output::DailyLocationOutput dlo;
-  dlo.Females = GetPreOviFemaleCount() + GetOviFemaleCount();
+  dlo.Females = GetNulliparousCount() + GetParousCount();
   dlo.Oviposition = newEggs;
   dlo.NewFemales = NewFemales;
   dlo.AverageWeight = GetFemaleAverageWeight();
@@ -828,7 +979,6 @@ SimLocation::GeneratePopData(void)
 
   pd->PreOviAdultCohorts = PreOviAdultCohorts;
   pd->OviAdultCohorts = OviAdultCohorts;
-
   pd->MosqAgeDistr = MosqAgeDistr;
 
   ContainerCollection::iterator itCont;
@@ -851,46 +1001,18 @@ SimLocation::IsEndOfMonth( boost::gregorian::date d )
 
 
 double
-SimLocation::GetPreOviFemaleCount(void)
-{
-  double totalNumber = 0.0;
-
-  for( PreOviAdultIterator itAdult = PreOviAdultCohorts.begin(); itAdult != PreOviAdultCohorts.end(); ++itAdult) {
-    totalNumber += itAdult->Number;
-  }
-
-  return totalNumber;
-}
-
-
-
-double
-SimLocation::GetOviFemaleCount(void)
-{
-  double totalNumber = 0.0;
-
-  for( OviAdultIterator itAdult = OviAdultCohorts.begin(); itAdult != OviAdultCohorts.end(); ++itAdult) {
-    totalNumber += itAdult->Number;
-  }
-
-  return totalNumber;
-}
-
-
-  
-double
 SimLocation::GetFemaleAverageWeight(void)
 {
   // using new cohort classes, calculate true female mean weight for this location
   double totalWeight = 0.0;
   double totalNumber = 0.0;
 
-  for( PreOviAdultIterator itAdult = PreOviAdultCohorts.begin(); itAdult != PreOviAdultCohorts.end(); ++itAdult) {
+  for( PreOviAdultIterator itAdult = NulliparousCohorts.begin(); itAdult != NulliparousCohorts.end(); ++itAdult) {
     totalNumber += itAdult->Number;
     totalWeight += itAdult->Weight * itAdult->Number;
   }
 
-  for( OviAdultIterator itAdult = OviAdultCohorts.begin(); itAdult != OviAdultCohorts.end(); ++itAdult) {
+  for( OviAdultIterator itAdult = ParousCohorts.begin(); itAdult != ParousCohorts.end(); ++itAdult) {
     totalNumber += itAdult->Number;
     totalWeight += itAdult->Weight * itAdult->Number;
   }
@@ -968,6 +1090,108 @@ SimLocation::GetOviBiters( double doubleProp )
     }
     if( itAdult->Age == 1 ) {
       ageOneCount = itAdult->Number;
+    }
+  }
+
+  return ageOneCount + (ageTwoCount * doubleProp);
+}
+
+
+
+double
+SimLocation::GetNulliparousCount(void)
+{
+  double totalNumber = 0.0;
+
+  for( PreOviAdultIterator itAdult = NulliparousCohorts.begin(); itAdult != NulliparousCohorts.end(); ++itAdult) {
+    totalNumber += itAdult->Number;
+  }
+
+  return totalNumber;
+}
+
+
+
+double
+SimLocation::GetParousCount(void)
+{
+  double totalNumber = 0.0;
+
+  for( OviAdultIterator itAdult = ParousCohorts.begin(); itAdult != ParousCohorts.end(); ++itAdult) {
+    totalNumber += itAdult->Number;
+  }
+
+  return totalNumber;
+}
+
+
+
+std::pair<double,double>
+SimLocation::GetOvipositingTotals(void)
+{
+  double totalCount = 0.0;
+  double totalWeight = 0.0;
+
+  for( AdultCohortCollection::iterator itAdult = NewOvipositingCohorts.begin(); itAdult != NewOvipositingCohorts.end(); ++itAdult) {
+    totalCount += itAdult->Number;
+    totalWeight += itAdult->Number * itAdult->Weight;
+  }
+
+  std::pair<double,double> countAndWeight;
+  if( totalCount == 0 ) {
+    countAndWeight.first = 0.0;
+    countAndWeight.second = 0.0;
+  }
+  else {
+    countAndWeight.first = totalCount;
+    countAndWeight.second = totalWeight / totalCount;
+  }
+
+  return countAndWeight;
+}
+
+
+double
+SimLocation::GetNulliparousBiters( double doubleProp )
+{
+  // pre ovi biters are defined as females that are 2 days old, as well as some
+  // proportion of 3 day old females, based on double blood meal proportion
+  double ageTwoCount = 0.0;
+  double ageThreeCount = 0.0;
+
+  for( PreOviAdultIterator itAdult = NulliparousCohorts.begin(); itAdult != NulliparousCohorts.end(); ++itAdult ) {
+    if( itAdult->Age == 3 ) {
+      ageThreeCount = itAdult->Number;
+    }
+    if( itAdult->Age == 2 ) {
+      ageTwoCount = itAdult->Number;
+    }
+  }
+
+  return ageTwoCount + (ageThreeCount * doubleProp);
+}
+
+
+
+double
+SimLocation::GetParousBiters( double doubleProp )
+{
+  // ovi biters are defined as ovi females on the same day they complete a cycle
+  // as well as some proportion on the day after, based on double blood meal proportion
+  // this translates to "age" one and two in the OviAdultCohorts
+  //
+  // notice the accumulation compared to above, this is because with new age dependent changes
+  // each cohort is kept separate, and hence oviposition ages 1 and 2 occur more than once
+  // in the parous collection
+  double ageOneCount = 0.0;
+  double ageTwoCount = 0.0;
+
+  for( OviAdultIterator itAdult = ParousCohorts.begin(); itAdult != ParousCohorts.end(); ++itAdult ) {
+    if( itAdult->OvipositionAge == 2 ) {
+      ageTwoCount += itAdult->Number;
+    }
+    if( itAdult->OvipositionAge == 1 ) {
+      ageOneCount += itAdult->Number;
     }
   }
 

@@ -26,13 +26,16 @@ AdultBiologyPanel::~AdultBiologyPanel()
 System::Void
 AdultBiologyPanel::OnLoad( System::Object ^ sender, System::EventArgs ^ e )
 {
-  snboxFirstDevelopmentThreshold->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.FirstDevelopmentThreshold") );
   snboxSecondDevelopmentThreshold->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.SecondDevelopmentThreshold") );
   snboxNominalSurvival->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.NominalSurvival") );
   snboxDryToWetWeightFactor->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.DryToWetWeightFactor") );
   snboxFecundityFactor->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.FecundityFactor") );
   snboxMinimumOvipositionTemperature->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.MinimumOvipositionTemperature") );
   snboxInterruptedFeedsPerMeal->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.InterruptedFeedsPerMeal") );
+
+  snboxYoungSurvival->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.AgeDependentSurvival.YoungSurvival") );
+  snboxCutoffAge->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.AgeDependentSurvival.CutoffAge") );
+  snboxOldSurvival->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.AgeDependentSurvival.OldSurvival") );
 
   snboxRO25->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.Development.RO25") );
   snboxDHA->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.Development.DHA") );

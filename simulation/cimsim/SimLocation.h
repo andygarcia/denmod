@@ -34,16 +34,22 @@ private:
 
   void CalculateAdultTemperatureSurvival(void);
   void CalculateAdultSatDefSurvival(void);
+  double CalculateAdultAgeDependentSurvival( int age );
 
-  double GetPreOviFemaleCount(void);
-  double GetOviFemaleCount(void);
+  double GetNulliparousCount(void);
+  double GetParousCount(void);
+  double GetOvipositingCount(void);
 
   double GetFemaleAverageWeight(void);
   double GetOvipositingFemaleAverageWeight(void);
+  std::pair<double,double> GetOvipositingTotals(void);
 
   double CalculateDoubleBloodMealProportion(void);
   double GetPreOviBiters( double doubleProp );
   double GetOviBiters( double doubleProp );
+
+  double GetNulliparousBiters( double doubleProp );
+  double GetParousBiters( double doubleProp );
 
   void CalculateDailyTotals(void);
   void UpdateOutput( boost::gregorian::date d, double adultWeight, double adultDev, double newEggs );
@@ -86,6 +92,7 @@ private:
 
   // adult biology
   double _adultNominalSurvival;
+  const input::Biology::AdultParameters::AgeDependentSurvivalParameters * _adultAgeDependentSurvival;
   const input::Biology::AdultParameters::TemperatureParameters * _adultTemperatureSurvival;
   const input::Biology::AdultParameters::SaturationDeficitParameters * _adultSatDefSurvival;
   double _adultP25;
@@ -110,6 +117,11 @@ private:
 
   // all cohorts currently ovipositing
   AdultCohortCollection OvipositingCohorts;
+
+  // TODO new adult cohort system for age dependent survival
+  PreOviAdultCohortCollection NulliparousCohorts;
+  OviAdultCohortCollection ParousCohorts;
+  AdultCohortCollection NewOvipositingCohorts;
 
   // blood seeking females
   double _preOviBiters;

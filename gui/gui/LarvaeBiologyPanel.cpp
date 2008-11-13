@@ -26,8 +26,6 @@ LarvaeBiologyPanel::~LarvaeBiologyPanel()
 System::Void
 LarvaeBiologyPanel::OnLoad( System::Object ^ sender, System::EventArgs ^ e )
 {
-  snboxDevelopmentThreshold->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Larvae.DevelopmentThreshold" ) );
-  snboxMaximumDevelopment->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Larvae.MaximumDevelopment") );
   snboxNominalSurvival->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Larvae.NominalSurvival") );
   snboxPupationSurvival->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Larvae.PupationSurvival") );
   snboxDryContainerSurvival->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Larvae.DryContainerSurvival") );
@@ -42,7 +40,7 @@ LarvaeBiologyPanel::OnLoad( System::Object ^ sender, System::EventArgs ^ e )
   snboxPupWtSlope->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Larvae.PupationWeight.Slope") );
   snboxPupWtIntercept->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Larvae.PupationWeight.Intercept") );
   snboxPupWtMinimumWeight->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Larvae.PupationWeight.MinimumWeightForPupation") );
-  snboxPupWtMinimumAge->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Larvae.PupationWeight.MinimumAgeForPupation") );
+  snboxPupWtMaximumDevelopment->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Larvae.PupationWeight.MaximumDevelopment") );
 
   snboxTempLowLethalThreshold->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Larvae.Temperature.LowLethalThreshold") );
   snboxTempLowLethalSurvival->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Larvae.Temperature.LowLethalSurvival") );

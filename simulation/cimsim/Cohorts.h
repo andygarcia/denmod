@@ -134,26 +134,31 @@ public:
   : Age(0),
     Number(0.0),
     Development(0.0),
-    Weight(0.0)
+    Weight(0.0),
+    Ovipositing(false),
+    OvipositionAge(0)
   {}
 
   AdultCohort( int age, double number, double development, double weight )
   : Age(age),
     Number(number),
     Development(development),
-    Weight(weight)
+    Weight(weight),
+    Ovipositing(false),
+    OvipositionAge(0)
   {}
 
-  virtual ~AdultCohort(void)
-  {}
+  ~AdultCohort(void) {}
 
 public:
   int Age;
   double Number;
   double Development;
   double Weight;
-};
 
+  bool Ovipositing;
+  int OvipositionAge;
+};
 
 
 class PreOviAdultCohort : public AdultCohort

@@ -18,7 +18,7 @@ namespace gui {
 		~EggBiologyPanel();
   private: ctrl::ScientificNotationTextBox^  snboxNominalSurvival;
   protected: 
-  private: ctrl::ScientificNotationTextBox^  snboxDevelopmentThreshold;
+
   private: ctrl::ScientificNotationTextBox^  snboxTHALF;
   private: ctrl::ScientificNotationTextBox^  snboxDHA;
   private: ctrl::ScientificNotationTextBox^  snboxDHH;
@@ -72,7 +72,7 @@ namespace gui {
 
   private:
 
-  private: System::Windows::Forms::Label^  lblDevelopmentThreshold;
+
   private: System::Windows::Forms::Label^  lblNominalSurvival;
 
 
@@ -146,8 +146,10 @@ namespace gui {
 		/// </summary>
 		void InitializeComponent(void)
 		{
-      this->lblDevelopmentThreshold = (gcnew System::Windows::Forms::Label());
       this->gboxHatch = (gcnew System::Windows::Forms::GroupBox());
+      this->snboxSpontaneousHatchRatio = (gcnew ctrl::ScientificNotationTextBox());
+      this->snboxFloodHatchRatio = (gcnew ctrl::ScientificNotationTextBox());
+      this->snboxMinimumHatchTemperature = (gcnew ctrl::ScientificNotationTextBox());
       this->lblSpontaneousHatchRatio = (gcnew System::Windows::Forms::Label());
       this->lblFloodHatchRatio = (gcnew System::Windows::Forms::Label());
       this->lblMinimumHatchTemperature = (gcnew System::Windows::Forms::Label());
@@ -157,7 +159,17 @@ namespace gui {
       this->lblDHH = (gcnew System::Windows::Forms::Label());
       this->lblTHALF = (gcnew System::Windows::Forms::Label());
       this->gboxDev = (gcnew System::Windows::Forms::GroupBox());
+      this->snboxTHALF = (gcnew ctrl::ScientificNotationTextBox());
+      this->snboxDHA = (gcnew ctrl::ScientificNotationTextBox());
+      this->snboxDHH = (gcnew ctrl::ScientificNotationTextBox());
+      this->snboxRO25 = (gcnew ctrl::ScientificNotationTextBox());
       this->gboxTemp = (gcnew System::Windows::Forms::GroupBox());
+      this->snboxTempHighLethalSurvival = (gcnew ctrl::ScientificNotationTextBox());
+      this->snboxTempHighLethalThreshold = (gcnew ctrl::ScientificNotationTextBox());
+      this->snboxTempHighThreshold = (gcnew ctrl::ScientificNotationTextBox());
+      this->snboxTempLowThreshold = (gcnew ctrl::ScientificNotationTextBox());
+      this->snboxTempLowLethalSurvival = (gcnew ctrl::ScientificNotationTextBox());
+      this->snboxTempLowLethalThreshold = (gcnew ctrl::ScientificNotationTextBox());
       this->lblTempHighLethalSurvival = (gcnew System::Windows::Forms::Label());
       this->lblTempLowLethalSurvival = (gcnew System::Windows::Forms::Label());
       this->lblTempHighThreshold = (gcnew System::Windows::Forms::Label());
@@ -165,8 +177,14 @@ namespace gui {
       this->lblTempHighLethalThreshold = (gcnew System::Windows::Forms::Label());
       this->lblTempLowLethalThreshold = (gcnew System::Windows::Forms::Label());
       this->gboxSatDef = (gcnew System::Windows::Forms::GroupBox());
+      this->snboxSatDefHighSurvival = (gcnew ctrl::ScientificNotationTextBox());
+      this->snboxSatDefHighThreshold = (gcnew ctrl::ScientificNotationTextBox());
+      this->snboxSatDefLowSurvival = (gcnew ctrl::ScientificNotationTextBox());
       this->lblSatDefHighSurvival = (gcnew System::Windows::Forms::Label());
+      this->snboxSatDefLowThreshold = (gcnew ctrl::ScientificNotationTextBox());
       this->lblHighSunExposureSurvival = (gcnew System::Windows::Forms::Label());
+      this->snboxHighSunExposureSurvival = (gcnew ctrl::ScientificNotationTextBox());
+      this->snboxHighSunExposureThrehsold = (gcnew ctrl::ScientificNotationTextBox());
       this->lblSatDefLowSurvival = (gcnew System::Windows::Forms::Label());
       this->lblSatDefLowThreshold = (gcnew System::Windows::Forms::Label());
       this->lblSatDefHighThreshold = (gcnew System::Windows::Forms::Label());
@@ -174,48 +192,19 @@ namespace gui {
       this->gboxPredation = (gcnew System::Windows::Forms::GroupBox());
       this->lblPredHighSurvival = (gcnew System::Windows::Forms::Label());
       this->lblPredHighThreshold = (gcnew System::Windows::Forms::Label());
+      this->snboxPredHighSurvival = (gcnew ctrl::ScientificNotationTextBox());
       this->lblPredLowSurvival = (gcnew System::Windows::Forms::Label());
       this->lblPredLowThreshold = (gcnew System::Windows::Forms::Label());
-      this->snboxDevelopmentThreshold = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxNominalSurvival = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxSatDefHighSurvival = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxSatDefHighThreshold = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxSatDefLowSurvival = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxSatDefLowThreshold = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxHighSunExposureSurvival = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxHighSunExposureThrehsold = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxTempHighLethalSurvival = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxTempHighLethalThreshold = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxTempHighThreshold = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxTempLowThreshold = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxTempLowLethalSurvival = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxTempLowLethalThreshold = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxSpontaneousHatchRatio = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxFloodHatchRatio = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxMinimumHatchTemperature = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxPredHighSurvival = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxPredHighThreshold = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxPredLowSurvival = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxPredLowThreshold = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxTHALF = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxDHA = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxDHH = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxRO25 = (gcnew ctrl::ScientificNotationTextBox());
+      this->snboxNominalSurvival = (gcnew ctrl::ScientificNotationTextBox());
       this->gboxHatch->SuspendLayout();
       this->gboxDev->SuspendLayout();
       this->gboxTemp->SuspendLayout();
       this->gboxSatDef->SuspendLayout();
       this->gboxPredation->SuspendLayout();
       this->SuspendLayout();
-      // 
-      // lblDevelopmentThreshold
-      // 
-      this->lblDevelopmentThreshold->AutoSize = true;
-      this->lblDevelopmentThreshold->Location = System::Drawing::Point(9, 11);
-      this->lblDevelopmentThreshold->Name = L"lblDevelopmentThreshold";
-      this->lblDevelopmentThreshold->Size = System::Drawing::Size(119, 13);
-      this->lblDevelopmentThreshold->TabIndex = 0;
-      this->lblDevelopmentThreshold->Text = L"Development threshold:";
       // 
       // gboxHatch
       // 
@@ -225,12 +214,39 @@ namespace gui {
       this->gboxHatch->Controls->Add(this->lblSpontaneousHatchRatio);
       this->gboxHatch->Controls->Add(this->lblFloodHatchRatio);
       this->gboxHatch->Controls->Add(this->lblMinimumHatchTemperature);
-      this->gboxHatch->Location = System::Drawing::Point(3, 190);
+      this->gboxHatch->Location = System::Drawing::Point(3, 166);
       this->gboxHatch->Name = L"gboxHatch";
       this->gboxHatch->Size = System::Drawing::Size(374, 97);
       this->gboxHatch->TabIndex = 5;
       this->gboxHatch->TabStop = false;
       this->gboxHatch->Text = L"Hatch";
+      // 
+      // snboxSpontaneousHatchRatio
+      // 
+      this->snboxSpontaneousHatchRatio->Location = System::Drawing::Point(277, 71);
+      this->snboxSpontaneousHatchRatio->Name = L"snboxSpontaneousHatchRatio";
+      this->snboxSpontaneousHatchRatio->Size = System::Drawing::Size(80, 20);
+      this->snboxSpontaneousHatchRatio->TabIndex = 5;
+      this->snboxSpontaneousHatchRatio->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxSpontaneousHatchRatio->Value = L"";
+      // 
+      // snboxFloodHatchRatio
+      // 
+      this->snboxFloodHatchRatio->Location = System::Drawing::Point(277, 45);
+      this->snboxFloodHatchRatio->Name = L"snboxFloodHatchRatio";
+      this->snboxFloodHatchRatio->Size = System::Drawing::Size(80, 20);
+      this->snboxFloodHatchRatio->TabIndex = 3;
+      this->snboxFloodHatchRatio->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxFloodHatchRatio->Value = L"";
+      // 
+      // snboxMinimumHatchTemperature
+      // 
+      this->snboxMinimumHatchTemperature->Location = System::Drawing::Point(277, 19);
+      this->snboxMinimumHatchTemperature->Name = L"snboxMinimumHatchTemperature";
+      this->snboxMinimumHatchTemperature->Size = System::Drawing::Size(80, 20);
+      this->snboxMinimumHatchTemperature->TabIndex = 1;
+      this->snboxMinimumHatchTemperature->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxMinimumHatchTemperature->Value = L"";
       // 
       // lblSpontaneousHatchRatio
       // 
@@ -262,7 +278,7 @@ namespace gui {
       // lblNominalSurvival
       // 
       this->lblNominalSurvival->AutoSize = true;
-      this->lblNominalSurvival->Location = System::Drawing::Point(9, 37);
+      this->lblNominalSurvival->Location = System::Drawing::Point(9, 14);
       this->lblNominalSurvival->Name = L"lblNominalSurvival";
       this->lblNominalSurvival->Size = System::Drawing::Size(87, 13);
       this->lblNominalSurvival->TabIndex = 2;
@@ -314,12 +330,48 @@ namespace gui {
       this->gboxDev->Controls->Add(this->lblDHH);
       this->gboxDev->Controls->Add(this->lblDHA);
       this->gboxDev->Controls->Add(this->lblRO25);
-      this->gboxDev->Location = System::Drawing::Point(3, 61);
+      this->gboxDev->Location = System::Drawing::Point(3, 37);
       this->gboxDev->Name = L"gboxDev";
       this->gboxDev->Size = System::Drawing::Size(374, 123);
       this->gboxDev->TabIndex = 4;
       this->gboxDev->TabStop = false;
       this->gboxDev->Text = L"Daily Development";
+      // 
+      // snboxTHALF
+      // 
+      this->snboxTHALF->Location = System::Drawing::Point(277, 96);
+      this->snboxTHALF->Name = L"snboxTHALF";
+      this->snboxTHALF->Size = System::Drawing::Size(80, 20);
+      this->snboxTHALF->TabIndex = 7;
+      this->snboxTHALF->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxTHALF->Value = L"";
+      // 
+      // snboxDHA
+      // 
+      this->snboxDHA->Location = System::Drawing::Point(277, 44);
+      this->snboxDHA->Name = L"snboxDHA";
+      this->snboxDHA->Size = System::Drawing::Size(80, 20);
+      this->snboxDHA->TabIndex = 3;
+      this->snboxDHA->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxDHA->Value = L"";
+      // 
+      // snboxDHH
+      // 
+      this->snboxDHH->Location = System::Drawing::Point(277, 70);
+      this->snboxDHH->Name = L"snboxDHH";
+      this->snboxDHH->Size = System::Drawing::Size(80, 20);
+      this->snboxDHH->TabIndex = 5;
+      this->snboxDHH->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxDHH->Value = L"";
+      // 
+      // snboxRO25
+      // 
+      this->snboxRO25->Location = System::Drawing::Point(277, 18);
+      this->snboxRO25->Name = L"snboxRO25";
+      this->snboxRO25->Size = System::Drawing::Size(80, 20);
+      this->snboxRO25->TabIndex = 1;
+      this->snboxRO25->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxRO25->Value = L"";
       // 
       // gboxTemp
       // 
@@ -335,12 +387,66 @@ namespace gui {
       this->gboxTemp->Controls->Add(this->lblTempLowThreshold);
       this->gboxTemp->Controls->Add(this->lblTempHighLethalThreshold);
       this->gboxTemp->Controls->Add(this->lblTempLowLethalThreshold);
-      this->gboxTemp->Location = System::Drawing::Point(3, 293);
+      this->gboxTemp->Location = System::Drawing::Point(3, 269);
       this->gboxTemp->Name = L"gboxTemp";
       this->gboxTemp->Size = System::Drawing::Size(374, 175);
       this->gboxTemp->TabIndex = 6;
       this->gboxTemp->TabStop = false;
       this->gboxTemp->Text = L"Survival vs. Temperature";
+      // 
+      // snboxTempHighLethalSurvival
+      // 
+      this->snboxTempHighLethalSurvival->Location = System::Drawing::Point(277, 149);
+      this->snboxTempHighLethalSurvival->Name = L"snboxTempHighLethalSurvival";
+      this->snboxTempHighLethalSurvival->Size = System::Drawing::Size(80, 20);
+      this->snboxTempHighLethalSurvival->TabIndex = 11;
+      this->snboxTempHighLethalSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxTempHighLethalSurvival->Value = L"";
+      // 
+      // snboxTempHighLethalThreshold
+      // 
+      this->snboxTempHighLethalThreshold->Location = System::Drawing::Point(277, 123);
+      this->snboxTempHighLethalThreshold->Name = L"snboxTempHighLethalThreshold";
+      this->snboxTempHighLethalThreshold->Size = System::Drawing::Size(80, 20);
+      this->snboxTempHighLethalThreshold->TabIndex = 9;
+      this->snboxTempHighLethalThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxTempHighLethalThreshold->Value = L"";
+      // 
+      // snboxTempHighThreshold
+      // 
+      this->snboxTempHighThreshold->Location = System::Drawing::Point(277, 97);
+      this->snboxTempHighThreshold->Name = L"snboxTempHighThreshold";
+      this->snboxTempHighThreshold->Size = System::Drawing::Size(80, 20);
+      this->snboxTempHighThreshold->TabIndex = 7;
+      this->snboxTempHighThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxTempHighThreshold->Value = L"";
+      // 
+      // snboxTempLowThreshold
+      // 
+      this->snboxTempLowThreshold->Location = System::Drawing::Point(277, 71);
+      this->snboxTempLowThreshold->Name = L"snboxTempLowThreshold";
+      this->snboxTempLowThreshold->Size = System::Drawing::Size(80, 20);
+      this->snboxTempLowThreshold->TabIndex = 5;
+      this->snboxTempLowThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxTempLowThreshold->Value = L"";
+      // 
+      // snboxTempLowLethalSurvival
+      // 
+      this->snboxTempLowLethalSurvival->Location = System::Drawing::Point(277, 45);
+      this->snboxTempLowLethalSurvival->Name = L"snboxTempLowLethalSurvival";
+      this->snboxTempLowLethalSurvival->Size = System::Drawing::Size(80, 20);
+      this->snboxTempLowLethalSurvival->TabIndex = 3;
+      this->snboxTempLowLethalSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxTempLowLethalSurvival->Value = L"";
+      // 
+      // snboxTempLowLethalThreshold
+      // 
+      this->snboxTempLowLethalThreshold->Location = System::Drawing::Point(277, 19);
+      this->snboxTempLowLethalThreshold->Name = L"snboxTempLowLethalThreshold";
+      this->snboxTempLowLethalThreshold->Size = System::Drawing::Size(80, 20);
+      this->snboxTempLowLethalThreshold->TabIndex = 1;
+      this->snboxTempLowLethalThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxTempLowLethalThreshold->Value = L"";
       // 
       // lblTempHighLethalSurvival
       // 
@@ -410,12 +516,39 @@ namespace gui {
       this->gboxSatDef->Controls->Add(this->lblSatDefLowThreshold);
       this->gboxSatDef->Controls->Add(this->lblSatDefHighThreshold);
       this->gboxSatDef->Controls->Add(this->lblHighSunExposureThrehsold);
-      this->gboxSatDef->Location = System::Drawing::Point(3, 474);
+      this->gboxSatDef->Location = System::Drawing::Point(3, 450);
       this->gboxSatDef->Name = L"gboxSatDef";
       this->gboxSatDef->Size = System::Drawing::Size(374, 175);
       this->gboxSatDef->TabIndex = 7;
       this->gboxSatDef->TabStop = false;
       this->gboxSatDef->Text = L"Survival vs. Saturation Deficit";
+      // 
+      // snboxSatDefHighSurvival
+      // 
+      this->snboxSatDefHighSurvival->Location = System::Drawing::Point(277, 144);
+      this->snboxSatDefHighSurvival->Name = L"snboxSatDefHighSurvival";
+      this->snboxSatDefHighSurvival->Size = System::Drawing::Size(80, 20);
+      this->snboxSatDefHighSurvival->TabIndex = 11;
+      this->snboxSatDefHighSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxSatDefHighSurvival->Value = L"";
+      // 
+      // snboxSatDefHighThreshold
+      // 
+      this->snboxSatDefHighThreshold->Location = System::Drawing::Point(277, 118);
+      this->snboxSatDefHighThreshold->Name = L"snboxSatDefHighThreshold";
+      this->snboxSatDefHighThreshold->Size = System::Drawing::Size(80, 20);
+      this->snboxSatDefHighThreshold->TabIndex = 9;
+      this->snboxSatDefHighThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxSatDefHighThreshold->Value = L"";
+      // 
+      // snboxSatDefLowSurvival
+      // 
+      this->snboxSatDefLowSurvival->Location = System::Drawing::Point(277, 92);
+      this->snboxSatDefLowSurvival->Name = L"snboxSatDefLowSurvival";
+      this->snboxSatDefLowSurvival->Size = System::Drawing::Size(80, 20);
+      this->snboxSatDefLowSurvival->TabIndex = 7;
+      this->snboxSatDefLowSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxSatDefLowSurvival->Value = L"";
       // 
       // lblSatDefHighSurvival
       // 
@@ -426,6 +559,15 @@ namespace gui {
       this->lblSatDefHighSurvival->TabIndex = 10;
       this->lblSatDefHighSurvival->Text = L"Survival at or above high saturation deficit threshold:";
       // 
+      // snboxSatDefLowThreshold
+      // 
+      this->snboxSatDefLowThreshold->Location = System::Drawing::Point(277, 66);
+      this->snboxSatDefLowThreshold->Name = L"snboxSatDefLowThreshold";
+      this->snboxSatDefLowThreshold->Size = System::Drawing::Size(80, 20);
+      this->snboxSatDefLowThreshold->TabIndex = 5;
+      this->snboxSatDefLowThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxSatDefLowThreshold->Value = L"";
+      // 
       // lblHighSunExposureSurvival
       // 
       this->lblHighSunExposureSurvival->AutoSize = true;
@@ -434,6 +576,24 @@ namespace gui {
       this->lblHighSunExposureSurvival->Size = System::Drawing::Size(240, 13);
       this->lblHighSunExposureSurvival->TabIndex = 2;
       this->lblHighSunExposureSurvival->Text = L"Survival at or above high sun exposure threshold:";
+      // 
+      // snboxHighSunExposureSurvival
+      // 
+      this->snboxHighSunExposureSurvival->Location = System::Drawing::Point(277, 40);
+      this->snboxHighSunExposureSurvival->Name = L"snboxHighSunExposureSurvival";
+      this->snboxHighSunExposureSurvival->Size = System::Drawing::Size(80, 20);
+      this->snboxHighSunExposureSurvival->TabIndex = 3;
+      this->snboxHighSunExposureSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxHighSunExposureSurvival->Value = L"";
+      // 
+      // snboxHighSunExposureThrehsold
+      // 
+      this->snboxHighSunExposureThrehsold->Location = System::Drawing::Point(277, 14);
+      this->snboxHighSunExposureThrehsold->Name = L"snboxHighSunExposureThrehsold";
+      this->snboxHighSunExposureThrehsold->Size = System::Drawing::Size(80, 20);
+      this->snboxHighSunExposureThrehsold->TabIndex = 1;
+      this->snboxHighSunExposureThrehsold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxHighSunExposureThrehsold->Value = L"";
       // 
       // lblSatDefLowSurvival
       // 
@@ -481,7 +641,7 @@ namespace gui {
       this->gboxPredation->Controls->Add(this->snboxPredHighThreshold);
       this->gboxPredation->Controls->Add(this->snboxPredLowSurvival);
       this->gboxPredation->Controls->Add(this->snboxPredLowThreshold);
-      this->gboxPredation->Location = System::Drawing::Point(6, 655);
+      this->gboxPredation->Location = System::Drawing::Point(3, 631);
       this->gboxPredation->Name = L"gboxPredation";
       this->gboxPredation->Size = System::Drawing::Size(374, 123);
       this->gboxPredation->TabIndex = 8;
@@ -506,6 +666,15 @@ namespace gui {
       this->lblPredHighThreshold->TabIndex = 4;
       this->lblPredHighThreshold->Text = L"High temperature threshold:";
       // 
+      // snboxPredHighSurvival
+      // 
+      this->snboxPredHighSurvival->Location = System::Drawing::Point(274, 97);
+      this->snboxPredHighSurvival->Name = L"snboxPredHighSurvival";
+      this->snboxPredHighSurvival->Size = System::Drawing::Size(80, 20);
+      this->snboxPredHighSurvival->TabIndex = 7;
+      this->snboxPredHighSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxPredHighSurvival->Value = L"";
+      // 
       // lblPredLowSurvival
       // 
       this->lblPredLowSurvival->AutoSize = true;
@@ -523,168 +692,6 @@ namespace gui {
       this->lblPredLowThreshold->Size = System::Drawing::Size(135, 13);
       this->lblPredLowThreshold->TabIndex = 0;
       this->lblPredLowThreshold->Text = L"Low temperature threshold:";
-      // 
-      // snboxDevelopmentThreshold
-      // 
-      this->snboxDevelopmentThreshold->Location = System::Drawing::Point(280, 8);
-      this->snboxDevelopmentThreshold->Name = L"snboxDevelopmentThreshold";
-      this->snboxDevelopmentThreshold->Size = System::Drawing::Size(80, 20);
-      this->snboxDevelopmentThreshold->TabIndex = 1;
-      this->snboxDevelopmentThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxDevelopmentThreshold->Value = L"";
-      // 
-      // snboxNominalSurvival
-      // 
-      this->snboxNominalSurvival->Location = System::Drawing::Point(280, 34);
-      this->snboxNominalSurvival->Name = L"snboxNominalSurvival";
-      this->snboxNominalSurvival->Size = System::Drawing::Size(80, 20);
-      this->snboxNominalSurvival->TabIndex = 3;
-      this->snboxNominalSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxNominalSurvival->Value = L"";
-      // 
-      // snboxSatDefHighSurvival
-      // 
-      this->snboxSatDefHighSurvival->Location = System::Drawing::Point(277, 144);
-      this->snboxSatDefHighSurvival->Name = L"snboxSatDefHighSurvival";
-      this->snboxSatDefHighSurvival->Size = System::Drawing::Size(80, 20);
-      this->snboxSatDefHighSurvival->TabIndex = 11;
-      this->snboxSatDefHighSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxSatDefHighSurvival->Value = L"";
-      // 
-      // snboxSatDefHighThreshold
-      // 
-      this->snboxSatDefHighThreshold->Location = System::Drawing::Point(277, 118);
-      this->snboxSatDefHighThreshold->Name = L"snboxSatDefHighThreshold";
-      this->snboxSatDefHighThreshold->Size = System::Drawing::Size(80, 20);
-      this->snboxSatDefHighThreshold->TabIndex = 9;
-      this->snboxSatDefHighThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxSatDefHighThreshold->Value = L"";
-      // 
-      // snboxSatDefLowSurvival
-      // 
-      this->snboxSatDefLowSurvival->Location = System::Drawing::Point(277, 92);
-      this->snboxSatDefLowSurvival->Name = L"snboxSatDefLowSurvival";
-      this->snboxSatDefLowSurvival->Size = System::Drawing::Size(80, 20);
-      this->snboxSatDefLowSurvival->TabIndex = 7;
-      this->snboxSatDefLowSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxSatDefLowSurvival->Value = L"";
-      // 
-      // snboxSatDefLowThreshold
-      // 
-      this->snboxSatDefLowThreshold->Location = System::Drawing::Point(277, 66);
-      this->snboxSatDefLowThreshold->Name = L"snboxSatDefLowThreshold";
-      this->snboxSatDefLowThreshold->Size = System::Drawing::Size(80, 20);
-      this->snboxSatDefLowThreshold->TabIndex = 5;
-      this->snboxSatDefLowThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxSatDefLowThreshold->Value = L"";
-      // 
-      // snboxHighSunExposureSurvival
-      // 
-      this->snboxHighSunExposureSurvival->Location = System::Drawing::Point(277, 40);
-      this->snboxHighSunExposureSurvival->Name = L"snboxHighSunExposureSurvival";
-      this->snboxHighSunExposureSurvival->Size = System::Drawing::Size(80, 20);
-      this->snboxHighSunExposureSurvival->TabIndex = 3;
-      this->snboxHighSunExposureSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxHighSunExposureSurvival->Value = L"";
-      // 
-      // snboxHighSunExposureThrehsold
-      // 
-      this->snboxHighSunExposureThrehsold->Location = System::Drawing::Point(277, 14);
-      this->snboxHighSunExposureThrehsold->Name = L"snboxHighSunExposureThrehsold";
-      this->snboxHighSunExposureThrehsold->Size = System::Drawing::Size(80, 20);
-      this->snboxHighSunExposureThrehsold->TabIndex = 1;
-      this->snboxHighSunExposureThrehsold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxHighSunExposureThrehsold->Value = L"";
-      // 
-      // snboxTempHighLethalSurvival
-      // 
-      this->snboxTempHighLethalSurvival->Location = System::Drawing::Point(277, 149);
-      this->snboxTempHighLethalSurvival->Name = L"snboxTempHighLethalSurvival";
-      this->snboxTempHighLethalSurvival->Size = System::Drawing::Size(80, 20);
-      this->snboxTempHighLethalSurvival->TabIndex = 11;
-      this->snboxTempHighLethalSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxTempHighLethalSurvival->Value = L"";
-      // 
-      // snboxTempHighLethalThreshold
-      // 
-      this->snboxTempHighLethalThreshold->Location = System::Drawing::Point(277, 123);
-      this->snboxTempHighLethalThreshold->Name = L"snboxTempHighLethalThreshold";
-      this->snboxTempHighLethalThreshold->Size = System::Drawing::Size(80, 20);
-      this->snboxTempHighLethalThreshold->TabIndex = 9;
-      this->snboxTempHighLethalThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxTempHighLethalThreshold->Value = L"";
-      // 
-      // snboxTempHighThreshold
-      // 
-      this->snboxTempHighThreshold->Location = System::Drawing::Point(277, 97);
-      this->snboxTempHighThreshold->Name = L"snboxTempHighThreshold";
-      this->snboxTempHighThreshold->Size = System::Drawing::Size(80, 20);
-      this->snboxTempHighThreshold->TabIndex = 7;
-      this->snboxTempHighThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxTempHighThreshold->Value = L"";
-      // 
-      // snboxTempLowThreshold
-      // 
-      this->snboxTempLowThreshold->Location = System::Drawing::Point(277, 71);
-      this->snboxTempLowThreshold->Name = L"snboxTempLowThreshold";
-      this->snboxTempLowThreshold->Size = System::Drawing::Size(80, 20);
-      this->snboxTempLowThreshold->TabIndex = 5;
-      this->snboxTempLowThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxTempLowThreshold->Value = L"";
-      // 
-      // snboxTempLowLethalSurvival
-      // 
-      this->snboxTempLowLethalSurvival->Location = System::Drawing::Point(277, 45);
-      this->snboxTempLowLethalSurvival->Name = L"snboxTempLowLethalSurvival";
-      this->snboxTempLowLethalSurvival->Size = System::Drawing::Size(80, 20);
-      this->snboxTempLowLethalSurvival->TabIndex = 3;
-      this->snboxTempLowLethalSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxTempLowLethalSurvival->Value = L"";
-      // 
-      // snboxTempLowLethalThreshold
-      // 
-      this->snboxTempLowLethalThreshold->Location = System::Drawing::Point(277, 19);
-      this->snboxTempLowLethalThreshold->Name = L"snboxTempLowLethalThreshold";
-      this->snboxTempLowLethalThreshold->Size = System::Drawing::Size(80, 20);
-      this->snboxTempLowLethalThreshold->TabIndex = 1;
-      this->snboxTempLowLethalThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxTempLowLethalThreshold->Value = L"";
-      // 
-      // snboxSpontaneousHatchRatio
-      // 
-      this->snboxSpontaneousHatchRatio->Location = System::Drawing::Point(277, 71);
-      this->snboxSpontaneousHatchRatio->Name = L"snboxSpontaneousHatchRatio";
-      this->snboxSpontaneousHatchRatio->Size = System::Drawing::Size(80, 20);
-      this->snboxSpontaneousHatchRatio->TabIndex = 5;
-      this->snboxSpontaneousHatchRatio->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxSpontaneousHatchRatio->Value = L"";
-      // 
-      // snboxFloodHatchRatio
-      // 
-      this->snboxFloodHatchRatio->Location = System::Drawing::Point(277, 45);
-      this->snboxFloodHatchRatio->Name = L"snboxFloodHatchRatio";
-      this->snboxFloodHatchRatio->Size = System::Drawing::Size(80, 20);
-      this->snboxFloodHatchRatio->TabIndex = 3;
-      this->snboxFloodHatchRatio->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxFloodHatchRatio->Value = L"";
-      // 
-      // snboxMinimumHatchTemperature
-      // 
-      this->snboxMinimumHatchTemperature->Location = System::Drawing::Point(277, 19);
-      this->snboxMinimumHatchTemperature->Name = L"snboxMinimumHatchTemperature";
-      this->snboxMinimumHatchTemperature->Size = System::Drawing::Size(80, 20);
-      this->snboxMinimumHatchTemperature->TabIndex = 1;
-      this->snboxMinimumHatchTemperature->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxMinimumHatchTemperature->Value = L"";
-      // 
-      // snboxPredHighSurvival
-      // 
-      this->snboxPredHighSurvival->Location = System::Drawing::Point(274, 97);
-      this->snboxPredHighSurvival->Name = L"snboxPredHighSurvival";
-      this->snboxPredHighSurvival->Size = System::Drawing::Size(80, 20);
-      this->snboxPredHighSurvival->TabIndex = 7;
-      this->snboxPredHighSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxPredHighSurvival->Value = L"";
       // 
       // snboxPredHighThreshold
       // 
@@ -713,48 +720,20 @@ namespace gui {
       this->snboxPredLowThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxPredLowThreshold->Value = L"";
       // 
-      // snboxTHALF
+      // snboxNominalSurvival
       // 
-      this->snboxTHALF->Location = System::Drawing::Point(277, 96);
-      this->snboxTHALF->Name = L"snboxTHALF";
-      this->snboxTHALF->Size = System::Drawing::Size(80, 20);
-      this->snboxTHALF->TabIndex = 7;
-      this->snboxTHALF->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxTHALF->Value = L"";
-      // 
-      // snboxDHA
-      // 
-      this->snboxDHA->Location = System::Drawing::Point(277, 44);
-      this->snboxDHA->Name = L"snboxDHA";
-      this->snboxDHA->Size = System::Drawing::Size(80, 20);
-      this->snboxDHA->TabIndex = 3;
-      this->snboxDHA->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxDHA->Value = L"";
-      // 
-      // snboxDHH
-      // 
-      this->snboxDHH->Location = System::Drawing::Point(277, 70);
-      this->snboxDHH->Name = L"snboxDHH";
-      this->snboxDHH->Size = System::Drawing::Size(80, 20);
-      this->snboxDHH->TabIndex = 5;
-      this->snboxDHH->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxDHH->Value = L"";
-      // 
-      // snboxRO25
-      // 
-      this->snboxRO25->Location = System::Drawing::Point(277, 18);
-      this->snboxRO25->Name = L"snboxRO25";
-      this->snboxRO25->Size = System::Drawing::Size(80, 20);
-      this->snboxRO25->TabIndex = 1;
-      this->snboxRO25->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxRO25->Value = L"";
+      this->snboxNominalSurvival->Location = System::Drawing::Point(280, 11);
+      this->snboxNominalSurvival->Name = L"snboxNominalSurvival";
+      this->snboxNominalSurvival->Size = System::Drawing::Size(80, 20);
+      this->snboxNominalSurvival->TabIndex = 3;
+      this->snboxNominalSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxNominalSurvival->Value = L"";
       // 
       // EggBiologyPanel
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
       this->AutoScroll = true;
-      this->Controls->Add(this->snboxDevelopmentThreshold);
       this->Controls->Add(this->snboxNominalSurvival);
       this->Controls->Add(this->gboxSatDef);
       this->Controls->Add(this->gboxTemp);
@@ -762,9 +741,8 @@ namespace gui {
       this->Controls->Add(this->gboxPredation);
       this->Controls->Add(this->gboxDev);
       this->Controls->Add(this->lblNominalSurvival);
-      this->Controls->Add(this->lblDevelopmentThreshold);
       this->Name = L"EggBiologyPanel";
-      this->Size = System::Drawing::Size(380, 784);
+      this->Size = System::Drawing::Size(380, 758);
       this->Load += gcnew System::EventHandler(this, &EggBiologyPanel::OnLoad);
       this->gboxHatch->ResumeLayout(false);
       this->gboxHatch->PerformLayout();

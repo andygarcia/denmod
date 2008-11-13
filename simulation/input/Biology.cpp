@@ -31,8 +31,7 @@ Biology::~Biology(void)
 
 
 Biology::EggParameters::EggParameters(void)
-: DevelopmentThreshold(0.95),
-  MinimumHatchTemperature( 22.0 ),
+: MinimumHatchTemperature( 22.0 ),
   FloodHatchRatio( 0.596 ),
   SpontaneousHatchRatio( 0.197 ),
   NominalSurvival( 0.99 ),
@@ -118,8 +117,6 @@ Biology::EggParameters::PredationParameters::~PredationParameters(void)
 
 Biology::LarvaeParameters::LarvaeParameters(void)
 : WeightAtHatch( 0.0034 ),
-  DevelopmentThreshold( 0.95 ),
-  MaximumDevelopment( 8.0 ),
   ChronologicalBasisAt26C( 0.001 ),
   NominalSurvival( 0.99 ),
   PupationSurvival( 0.95 ),
@@ -166,7 +163,7 @@ Biology::LarvaeParameters::PupationWeightParameters::PupationWeightParameters(vo
 : Slope( -0.0389 ),
   Intercept( 2.11 ),
   MinimumWeightForPupation( 0.1 ),
-  MinimumAgeForPupation( 8.0 )
+  MaximumDevelopment( 8.0 )
 {}
 
 
@@ -225,8 +222,7 @@ Biology::LarvaeParameters::FastingParameters::~FastingParameters(void)
 
 
 Biology::PupaeParameters::PupaeParameters(void)
-: DevelopmentThreshold( 0.95 ),
-  NominalSurvival( 0.99 ),
+: NominalSurvival( 0.99 ),
   EmergenceSurvival( 0.83 ),
   FemaleEmergence( 0.5 ),
   Development(new DevelopmentParameters()),
@@ -274,8 +270,7 @@ Biology::PupaeParameters::TemperatureParameters::~TemperatureParameters(void)
 
 
 Biology::AdultParameters::AdultParameters(void)
-: FirstDevelopmentThreshold( 1.0 ),
-  SecondDevelopmentThreshold( 0.58 ),
+: SecondDevelopmentThreshold( 0.58 ),
   NominalSurvival( 0.91 ),
   DryToWetWeightFactor( 1.655 ),
   FecundityFactor( 45.9 ),
@@ -284,6 +279,7 @@ Biology::AdultParameters::AdultParameters(void)
   InterruptedFeedsPerMeal( 4 ),
   ProportionOfInterruptedFeedsOnDifferentHost( 0.6 ),
   ProportionOfAdultsRestingOutdoors( 0.6 ),
+  AgeDependentSurvival(new AgeDependentSurvivalParameters()),
   Development(new DevelopmentParameters()),
   Temperature(new TemperatureParameters()),
   SaturationDeficit(new SaturationDeficitParameters()),
@@ -294,10 +290,37 @@ Biology::AdultParameters::AdultParameters(void)
 
 Biology::AdultParameters::~AdultParameters(void)
 {
+  delete AgeDependentSurvival;
   delete Development;
   delete Temperature;
   delete SaturationDeficit;
   delete DoubleBloodMeal;
+}
+
+
+
+Biology::AdultParameters::AgeDependentSurvivalParameters::AgeDependentSurvivalParameters(void)
+: CutoffAge( 4 ),
+  YoungSurvival( 0.91 ),
+  OldSurvival( 0.87 )
+{}
+
+
+
+Biology::AdultParameters::AgeDependentSurvivalParameters::~AgeDependentSurvivalParameters(void)
+{}
+
+
+
+double
+Biology::AdultParameters::AgeDependentSurvivalParameters::GetSurvival( int age )
+{
+  if( age <= CutoffAge ) {
+    return YoungSurvival;
+  }
+  else {
+    return OldSurvival;
+  }
 }
 
 

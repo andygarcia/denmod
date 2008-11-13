@@ -157,7 +157,6 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
   larvnwtnfbsu = bio->Larvae->Fasting->NoLipidReserveSurvival;
   larvnwtfbsu = bio->Larvae->Fasting->LipidReserveSurvival;
 
-  LarvaeMaxCD = bio->Larvae->MaximumDevelopment;
 
   LarvaeInitialWeight = bio->Larvae->WeightAtHatch;
   pupgeneticsu = bio->Larvae->PupationSurvival;
@@ -171,7 +170,8 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
   PupWtSlope = bio->Larvae->PupationWeight->Slope;
   PupWtConst = bio->Larvae->PupationWeight->Intercept;
   PupMinWt = bio->Larvae->PupationWeight->MinimumWeightForPupation;
-  PupMinAge = bio->Larvae->PupationWeight->MinimumAgeForPupation;
+
+  LarvaePupWtMaxDev = bio->Larvae->PupationWeight->MaximumDevelopment;
 
   EmergenceSuccess = bio->Pupae->EmergenceSurvival;
   PercentFemale = bio->Pupae->FemaleEmergence;
@@ -688,14 +688,20 @@ SimContainer::AdvanceEggs( int day )
   for( EggBandIterator itBand = EggCohorts.begin(); itBand != EggCohorts.end(); ++itBand ) {
     // current band iteration
     int currentBand = itBand->first;
-    EggBand * eggBand = &itBand->second;
+    EggBand * eggBand = &(itBand->second);
 
     // process mature cohorts
     eggBand->MatureEggs = eggBand->MatureEggs * SurvEggs;
 
+    // new develompent threshold target, using a variable CDt calculation based on today's development
+    // instead of compensating for simulation's discrete development over the course of a day by making the threshold 0.95
+    // (slightly less than 1.0), we subtract half of today's development from 1.0,
+    // the new target is always (1 - D(t)/2)
+    double targetThreshold = 1.0 - (DevRateEggs / 2.0);
+
     // process immature cohorts
     for( EggIterator itEgg = eggBand->EggCohorts.begin(); itEgg != eggBand->EggCohorts.end();  ) {
-      if( itEgg->Development <= .95 ) {
+      if( itEgg->Development <= targetThreshold ) {
         itEgg->Age++;
         itEgg->Number = itEgg->Number * SurvEggs;
         itEgg->Development = itEgg->Development + DevRateEggs;
@@ -942,6 +948,9 @@ SimContainer::AdvanceLarvae( int day )
   double newPupae = 0.0;
   double totalNewPupaeWeight = 0.0;
   double totalCadaverWeight = 0.0;
+
+  double targetThreshold = 1.0 - (DevRateLarv / 2.0);
+
   for( LarvaeIterator itLarvae = LarvaeCohorts.begin(); itLarvae != LarvaeCohorts.end(); ) {
 
     if( itLarvae->Number == 0 ) {
@@ -952,13 +961,13 @@ SimContainer::AdvanceLarvae( int day )
     else {
       // calculate pupation weight - temperature and CD dependent
       double WTerm = (PupWtSlope * abs(AvgWaterTemp)) + PupWtConst;
-      double Slope = (WTerm - PupMinWt) / (.95 - PupMinAge);
+      double Slope = (WTerm - PupMinWt) / (targetThreshold - LarvaePupWtMaxDev);
       double PupationWt = (WTerm + (Slope * itLarvae->Development));
 
       if( PupationWt < PupMinWt )
         PupationWt = PupMinWt;
 
-      if( itLarvae->Development <= .95 || itLarvae->Weight < PupationWt ) {
+      if( itLarvae->Development <= targetThreshold || itLarvae->Weight < PupationWt ) {
         // not sufficiently developed and/or below pupation weight
         if( itLarvae->WeightChange >= 0 ) {
           // positive weight gain
@@ -978,7 +987,7 @@ SimContainer::AdvanceLarvae( int day )
         }
         else {
           // negative weight gain
-          if( itLarvae->PreFastFatBody == 0 ) {                                                          
+          if( itLarvae->PreFastFatBody == 0 ) {
             // no previous fasting, establish reserve and begin fasting
             double maxfb = itLarvae->Weight * (.059f * (log(itLarvae->Weight) + 6.9f) - .15f);
             // don't allow negative fatbody reserve
@@ -1011,7 +1020,7 @@ SimContainer::AdvanceLarvae( int day )
         itLarvae->Development = itLarvae->Development + DevRateLarv;
         itLarvae->Weight = itLarvae->Weight + itLarvae->WeightChange;
 
-        if( itLarvae->Weight < .003 || itLarvae->Development > LarvaeMaxCD ) {
+        if( itLarvae->Weight < .003 || itLarvae->Development > LarvaePupWtMaxDev ) {
           // all die and add to cadaver weight
           totalCadaverWeight += number * weight;
           itLarvae = LarvaeCohorts.erase( itLarvae );
@@ -1121,12 +1130,13 @@ SimContainer::AdvancePupae(void)
   NewAdults = 0;
   PupaeWt = 0;
 
+  double targetThreshold = 1.0 - (DevRatePupae / 2.0);
   for( PupaeIterator itPupae = PupaeCohorts.begin(); itPupae != PupaeCohorts.end(); ) {
     // apply survival
     double survivingPupae = itPupae->Number * PupSurvTempDlyCt * PupSurvNom;
     double deadPupae = itPupae->Number - survivingPupae;
 
-    if( itPupae->Development <= .95 ) {
+    if( itPupae->Development <= targetThreshold ) {
       // not developed yet, advance cohort
       itPupae->Age++;
       itPupae->Number = survivingPupae;

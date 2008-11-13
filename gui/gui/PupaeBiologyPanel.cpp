@@ -26,7 +26,6 @@ PupaeBiologyPanel::~PupaeBiologyPanel()
 System::Void
 PupaeBiologyPanel::OnLoad( System::Object ^ sender, System::EventArgs ^ e )
 {
-  snboxDevelopmentThreshold->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Pupae.DevelopmentThreshold") );
   snboxNominalSurvival->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Pupae.NominalSurvival") );
   snboxEmergenceSurvival->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Pupae.EmergenceSurvival") );
   snboxFemaleEmergence->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Pupae.FemaleEmergence") );

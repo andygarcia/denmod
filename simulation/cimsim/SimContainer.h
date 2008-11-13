@@ -233,9 +233,6 @@ private:
 
   double DevRateLarv;
   double MaxLarvWt;
-  double LarvaeMaxCD;
-
-
 
   double et;
   double fT;
@@ -249,6 +246,12 @@ private:
   double cadavers;
   double LarvCadWt;
   double CadFoodEquiv;
+
+  double PupWtSlope;
+  double PupWtConst;
+  double PupMinWt;
+
+  double LarvaePupWtMaxDev;
 
   // Pupae
   PupaeCohortCollection PupaeCohorts;
@@ -274,11 +277,6 @@ private:
   double pupgeneticsu;
   double PupSurvTempDlyCt;
   double PupSurvNom;
-
-  double PupWtSlope;
-  double PupWtConst;
-  double PupMinWt;
-  double PupMinAge;
 
   double EmergenceSuccess;
   double PercentFemale;

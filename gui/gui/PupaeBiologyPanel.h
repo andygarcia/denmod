@@ -25,7 +25,7 @@ namespace gui {
   private:
     BindingSource  ^ LocationBinding;
 
-  private: System::Windows::Forms::Label^  lblDevelopmentThreshold;
+
   private: System::Windows::Forms::Label^  lblNominalSurvival;
   private: System::Windows::Forms::Label^  lblEmergenceSurvival;
   private: System::Windows::Forms::Label^  lblFemaleEmergence;
@@ -57,7 +57,7 @@ namespace gui {
 
 
 
-  private: ctrl::ScientificNotationTextBox^  snboxDevelopmentThreshold;
+
   private: ctrl::ScientificNotationTextBox^  snboxNominalSurvival;
   private: ctrl::ScientificNotationTextBox^  snboxEmergenceSurvival;
   private: ctrl::ScientificNotationTextBox^  snboxFemaleEmergence;
@@ -96,7 +96,6 @@ namespace gui {
       this->lblDHA = (gcnew System::Windows::Forms::Label());
       this->lblRO25 = (gcnew System::Windows::Forms::Label());
       this->lblNominalSurvival = (gcnew System::Windows::Forms::Label());
-      this->lblDevelopmentThreshold = (gcnew System::Windows::Forms::Label());
       this->lblEmergenceSurvival = (gcnew System::Windows::Forms::Label());
       this->lblFemaleEmergence = (gcnew System::Windows::Forms::Label());
       this->gboxTemp = (gcnew System::Windows::Forms::GroupBox());
@@ -112,7 +111,6 @@ namespace gui {
       this->lblTempLowThreshold = (gcnew System::Windows::Forms::Label());
       this->lblTempHighLethalThreshold = (gcnew System::Windows::Forms::Label());
       this->lblTempLowLethalThreshold = (gcnew System::Windows::Forms::Label());
-      this->snboxDevelopmentThreshold = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxNominalSurvival = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxEmergenceSurvival = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxFemaleEmergence = (gcnew ctrl::ScientificNotationTextBox());
@@ -130,7 +128,7 @@ namespace gui {
       this->gboxDev->Controls->Add(this->lblDHH);
       this->gboxDev->Controls->Add(this->lblDHA);
       this->gboxDev->Controls->Add(this->lblRO25);
-      this->gboxDev->Location = System::Drawing::Point(3, 116);
+      this->gboxDev->Location = System::Drawing::Point(3, 89);
       this->gboxDev->Name = L"gboxDev";
       this->gboxDev->Size = System::Drawing::Size(374, 123);
       this->gboxDev->TabIndex = 8;
@@ -145,7 +143,7 @@ namespace gui {
       this->snboxTHALF->TabIndex = 7;
       this->snboxTHALF->Text = L"0.00000";
       this->snboxTHALF->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      
+      this->snboxTHALF->Value = L"0";
       // 
       // snboxRO25
       // 
@@ -155,7 +153,7 @@ namespace gui {
       this->snboxRO25->TabIndex = 1;
       this->snboxRO25->Text = L"0.00000";
       this->snboxRO25->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      
+      this->snboxRO25->Value = L"0";
       // 
       // snboxDHH
       // 
@@ -165,7 +163,7 @@ namespace gui {
       this->snboxDHH->TabIndex = 5;
       this->snboxDHH->Text = L"0.00000";
       this->snboxDHH->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      
+      this->snboxDHH->Value = L"0";
       // 
       // snboxDHA
       // 
@@ -175,7 +173,7 @@ namespace gui {
       this->snboxDHA->TabIndex = 3;
       this->snboxDHA->Text = L"0.00000";
       this->snboxDHA->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      
+      this->snboxDHA->Value = L"0";
       // 
       // lblTHALF
       // 
@@ -216,25 +214,16 @@ namespace gui {
       // lblNominalSurvival
       // 
       this->lblNominalSurvival->AutoSize = true;
-      this->lblNominalSurvival->Location = System::Drawing::Point(9, 37);
+      this->lblNominalSurvival->Location = System::Drawing::Point(9, 14);
       this->lblNominalSurvival->Name = L"lblNominalSurvival";
       this->lblNominalSurvival->Size = System::Drawing::Size(87, 13);
       this->lblNominalSurvival->TabIndex = 2;
       this->lblNominalSurvival->Text = L"Nominal survival:";
       // 
-      // lblDevelopmentThreshold
-      // 
-      this->lblDevelopmentThreshold->AutoSize = true;
-      this->lblDevelopmentThreshold->Location = System::Drawing::Point(9, 11);
-      this->lblDevelopmentThreshold->Name = L"lblDevelopmentThreshold";
-      this->lblDevelopmentThreshold->Size = System::Drawing::Size(119, 13);
-      this->lblDevelopmentThreshold->TabIndex = 0;
-      this->lblDevelopmentThreshold->Text = L"Development threshold:";
-      // 
       // lblEmergenceSurvival
       // 
       this->lblEmergenceSurvival->AutoSize = true;
-      this->lblEmergenceSurvival->Location = System::Drawing::Point(9, 63);
+      this->lblEmergenceSurvival->Location = System::Drawing::Point(9, 40);
       this->lblEmergenceSurvival->Name = L"lblEmergenceSurvival";
       this->lblEmergenceSurvival->Size = System::Drawing::Size(103, 13);
       this->lblEmergenceSurvival->TabIndex = 4;
@@ -243,7 +232,7 @@ namespace gui {
       // lblFemaleEmergence
       // 
       this->lblFemaleEmergence->AutoSize = true;
-      this->lblFemaleEmergence->Location = System::Drawing::Point(9, 89);
+      this->lblFemaleEmergence->Location = System::Drawing::Point(9, 66);
       this->lblFemaleEmergence->Name = L"lblFemaleEmergence";
       this->lblFemaleEmergence->Size = System::Drawing::Size(123, 13);
       this->lblFemaleEmergence->TabIndex = 6;
@@ -263,7 +252,7 @@ namespace gui {
       this->gboxTemp->Controls->Add(this->lblTempLowThreshold);
       this->gboxTemp->Controls->Add(this->lblTempHighLethalThreshold);
       this->gboxTemp->Controls->Add(this->lblTempLowLethalThreshold);
-      this->gboxTemp->Location = System::Drawing::Point(3, 245);
+      this->gboxTemp->Location = System::Drawing::Point(3, 218);
       this->gboxTemp->Name = L"gboxTemp";
       this->gboxTemp->Size = System::Drawing::Size(374, 175);
       this->gboxTemp->TabIndex = 9;
@@ -274,67 +263,61 @@ namespace gui {
       // 
       this->snboxTempHighLethalSurvival->Location = System::Drawing::Point(277, 149);
       this->snboxTempHighLethalSurvival->Name = L"snboxTempHighLethalSurvival";
-      
       this->snboxTempHighLethalSurvival->Size = System::Drawing::Size(80, 20);
       this->snboxTempHighLethalSurvival->TabIndex = 11;
       this->snboxTempHighLethalSurvival->Text = L"0.00";
       this->snboxTempHighLethalSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      
+      this->snboxTempHighLethalSurvival->Value = L"0";
       // 
       // snboxTempHighThreshold
       // 
       this->snboxTempHighThreshold->Location = System::Drawing::Point(277, 97);
       this->snboxTempHighThreshold->Name = L"snboxTempHighThreshold";
-      
       this->snboxTempHighThreshold->Size = System::Drawing::Size(80, 20);
       this->snboxTempHighThreshold->TabIndex = 7;
       this->snboxTempHighThreshold->Text = L"0.00";
       this->snboxTempHighThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      
+      this->snboxTempHighThreshold->Value = L"0";
       // 
       // snboxTempLowLethalSurvival
       // 
       this->snboxTempLowLethalSurvival->Location = System::Drawing::Point(277, 45);
       this->snboxTempLowLethalSurvival->Name = L"snboxTempLowLethalSurvival";
-      
       this->snboxTempLowLethalSurvival->Size = System::Drawing::Size(80, 20);
       this->snboxTempLowLethalSurvival->TabIndex = 3;
       this->snboxTempLowLethalSurvival->Text = L"0.00";
       this->snboxTempLowLethalSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      
+      this->snboxTempLowLethalSurvival->Value = L"0";
       // 
       // snboxTempHighLethalThreshold
       // 
       this->snboxTempHighLethalThreshold->Location = System::Drawing::Point(277, 123);
       this->snboxTempHighLethalThreshold->Name = L"snboxTempHighLethalThreshold";
-      
       this->snboxTempHighLethalThreshold->Size = System::Drawing::Size(80, 20);
       this->snboxTempHighLethalThreshold->TabIndex = 9;
       this->snboxTempHighLethalThreshold->Text = L"0.00";
       this->snboxTempHighLethalThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      
+      this->snboxTempHighLethalThreshold->Value = L"0";
       // 
       // snboxTempLowThreshold
       // 
       this->snboxTempLowThreshold->Location = System::Drawing::Point(277, 71);
       this->snboxTempLowThreshold->Name = L"snboxTempLowThreshold";
-      
       this->snboxTempLowThreshold->Size = System::Drawing::Size(80, 20);
       this->snboxTempLowThreshold->TabIndex = 5;
       this->snboxTempLowThreshold->Text = L"0.00";
       this->snboxTempLowThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      
+      this->snboxTempLowThreshold->Value = L"0";
       // 
       // snboxTempLowLethalThreshold
       // 
       this->snboxTempLowLethalThreshold->Location = System::Drawing::Point(277, 19);
       this->snboxTempLowLethalThreshold->Name = L"snboxTempLowLethalThreshold";
-      
       this->snboxTempLowLethalThreshold->Size = System::Drawing::Size(80, 20);
       this->snboxTempLowLethalThreshold->TabIndex = 1;
       this->snboxTempLowLethalThreshold->Text = L"0.00";
       this->snboxTempLowLethalThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      
+      this->snboxTempLowLethalThreshold->Value = L"0";
       // 
       // lblTempHighLethalSurvival
       // 
@@ -390,49 +373,35 @@ namespace gui {
       this->lblTempLowLethalThreshold->TabIndex = 0;
       this->lblTempLowLethalThreshold->Text = L"Low lethal temperature threshold:";
       // 
-      // snboxDevelopmentThreshold
-      // 
-      this->snboxDevelopmentThreshold->Location = System::Drawing::Point(280, 11);
-      this->snboxDevelopmentThreshold->Name = L"snboxDevelopmentThreshold";
-      
-      this->snboxDevelopmentThreshold->Size = System::Drawing::Size(80, 20);
-      this->snboxDevelopmentThreshold->TabIndex = 1;
-      this->snboxDevelopmentThreshold->Text = L"0.00";
-      this->snboxDevelopmentThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      
-      // 
       // snboxNominalSurvival
       // 
-      this->snboxNominalSurvival->Location = System::Drawing::Point(280, 37);
+      this->snboxNominalSurvival->Location = System::Drawing::Point(280, 11);
       this->snboxNominalSurvival->Name = L"snboxNominalSurvival";
-      
       this->snboxNominalSurvival->Size = System::Drawing::Size(80, 20);
       this->snboxNominalSurvival->TabIndex = 3;
       this->snboxNominalSurvival->Text = L"0.00";
       this->snboxNominalSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      
+      this->snboxNominalSurvival->Value = L"0";
       // 
       // snboxEmergenceSurvival
       // 
-      this->snboxEmergenceSurvival->Location = System::Drawing::Point(280, 63);
+      this->snboxEmergenceSurvival->Location = System::Drawing::Point(280, 37);
       this->snboxEmergenceSurvival->Name = L"snboxEmergenceSurvival";
-      
       this->snboxEmergenceSurvival->Size = System::Drawing::Size(80, 20);
       this->snboxEmergenceSurvival->TabIndex = 5;
       this->snboxEmergenceSurvival->Text = L"0.00";
       this->snboxEmergenceSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      
+      this->snboxEmergenceSurvival->Value = L"0";
       // 
       // snboxFemaleEmergence
       // 
-      this->snboxFemaleEmergence->Location = System::Drawing::Point(280, 89);
+      this->snboxFemaleEmergence->Location = System::Drawing::Point(280, 63);
       this->snboxFemaleEmergence->Name = L"snboxFemaleEmergence";
-      
       this->snboxFemaleEmergence->Size = System::Drawing::Size(80, 20);
       this->snboxFemaleEmergence->TabIndex = 7;
       this->snboxFemaleEmergence->Text = L"0.00";
       this->snboxFemaleEmergence->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      
+      this->snboxFemaleEmergence->Value = L"0";
       // 
       // PupaeBiologyPanel
       // 
@@ -441,15 +410,13 @@ namespace gui {
       this->Controls->Add(this->snboxFemaleEmergence);
       this->Controls->Add(this->snboxNominalSurvival);
       this->Controls->Add(this->snboxEmergenceSurvival);
-      this->Controls->Add(this->snboxDevelopmentThreshold);
       this->Controls->Add(this->gboxTemp);
       this->Controls->Add(this->gboxDev);
       this->Controls->Add(this->lblFemaleEmergence);
       this->Controls->Add(this->lblEmergenceSurvival);
       this->Controls->Add(this->lblNominalSurvival);
-      this->Controls->Add(this->lblDevelopmentThreshold);
       this->Name = L"PupaeBiologyPanel";
-      this->Size = System::Drawing::Size(380, 423);
+      this->Size = System::Drawing::Size(380, 396);
       this->Load += gcnew System::EventHandler(this, &PupaeBiologyPanel::OnLoad);
       this->gboxDev->ResumeLayout(false);
       this->gboxDev->PerformLayout();
