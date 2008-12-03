@@ -57,6 +57,7 @@ public:
   virtual System::String ^ ToString(void) override;
 
   void BeginFoodFit(void);
+  void UpdateInitialFood(void);
   void EndFoodFit( bool save );
 #pragma region Validation
 private:
@@ -579,7 +580,7 @@ public:
       return FoodGainJan_;
     }
     void set(double d) {
-      if( d != FoodGainJan_ ) {
+        if( d != FoodGainJan_ ) {
         FoodGainJan_ = d;
         FoodGainFeb_ = d;
         FoodGainMar_ = d;
@@ -592,6 +593,12 @@ public:
         FoodGainOct_ = d;
         FoodGainNov_ = d;
         FoodGainDec_ = d;
+
+        // TODO - hard code to 10.0 or react based on daily decay?
+        if( DoingFoodFit_ ) {
+          UpdateInitialFood();
+        }
+
         NotifyAndValidate( "DailyFood" );
       }
     }
@@ -670,8 +677,10 @@ private:
   double FoodDecayRate_;
   double InitEggs_;
 
+  bool DoingFoodFit_;
   double ObservedPerContainer_;
   double PreFitFood_;
+  double PreFitInitFood_;
   double PredictedPerContainer_;
 #pragma endregion
 };

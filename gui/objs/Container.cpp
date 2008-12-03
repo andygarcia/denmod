@@ -41,6 +41,7 @@ gui::Container::Container(void)
   FoodGainDec_(0.0),
   FoodDecayRate_(0.0),
   InitEggs_(100),
+  DoingFoodFit_(false),
   ObservedPerContainer_(0.0),
   PreFitFood_(0.0),
   PredictedPerContainer_(0.0)
@@ -261,13 +262,20 @@ Container::ToString(void)
 
 
 
-
 void
 Container::BeginFoodFit(void)
 {
+  DoingFoodFit_ = true;
   PreFitFood_ = DailyFood;
+  PreFitInitFood_ = InitFood_;
 }
 
+
+
+void Container::UpdateInitialFood(void)
+{
+  InitFood = DailyFood * 10.0;
+}
 
 
 
@@ -276,7 +284,12 @@ Container::EndFoodFit( bool save )
 {
   if( !save ) {
     DailyFood = PreFitFood_;
+    InitFood = PreFitInitFood_;
   }
+  else {
+    UpdateInitialFood();
+  }
+  DoingFoodFit_ = false;
 }
 
 

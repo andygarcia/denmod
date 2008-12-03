@@ -177,7 +177,7 @@
 			AssemblyName="System.Xml, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 		/>
 		<AssemblyReference
-			RelativePath="..\..\..\..\..\..\..\..\Program Files\Dundas Software\Charting\WinControlVS2005\bin\DundasWinChart.dll"
+			RelativePath="c:\Program Files\Dundas Software\Charting\WinControlVS2005\bin\DundasWinChart.dll"
 			AssemblyName="DundasWinChart, Version=5.5.1.1700, PublicKeyToken=a4c03dce5db22406, processorArchitecture=MSIL"
 		/>
 		<ProjectReference
@@ -201,7 +201,7 @@
 			AssemblyName="System.Windows.Forms, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 		/>
 		<AssemblyReference
-			RelativePath="..\..\ref\ValidationFramework.dll"
+			RelativePath="..\..\lib\ValidationFramework.dll"
 			AssemblyName="ValidationFramework, Version=1.12.0.0, PublicKeyToken=2f07bd240683f08a, processorArchitecture=MSIL"
 		/>
 		<ProjectReference
