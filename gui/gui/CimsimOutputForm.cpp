@@ -104,6 +104,7 @@ CimsimOutputForm::OnSaveAll(System::Object^  sender, System::EventArgs^  e)
 {
   // save all output to a directory
   FolderBrowserDialog ^ fbd = gcnew FolderBrowserDialog();
+  fbd->SelectedPath = Environment::CurrentDirectory;
   if( fbd->ShowDialog() != ::DialogResult::OK ) {
     return;
   }
