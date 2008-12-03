@@ -37,6 +37,8 @@ protected:
   bool Enabled_;
 };
 
+typedef std::vector<Control*> ControlCollection;
+
 
 
 class ScheduledControl : public Control

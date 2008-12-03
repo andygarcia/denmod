@@ -16,21 +16,26 @@ namespace cs {
 
 class SimLocation
 {
-// Constructors
+// Constructors and Initializers
 public:
   SimLocation( const input::Location * location, boost::gregorian::date startDate, boost::gregorian::date stopDate, const output::PopData * popData = NULL );
   ~SimLocation(void);
 
+// Initializers
+private:
+  void InitializeControls( input::ControlCollection controls );
+  void InitializeBiology( input::Biology * biology );
+  void InitializePopulation( const output::PopData * population );
+
 // Methods
 public:
-  void Start(void);
+  void RunSimulation(void);
   output::CimsimOutput * GetSimOutput(void);
 
 private:
-  void StartSimulation(void);
   void DoYear(void);
+
   void ReadWeather(int year);
-  static bool IsEndOfMonth( boost::gregorian::date d );
 
   void CalculateAdultTemperatureSurvival(void);
   void CalculateAdultSatDefSurvival(void);
@@ -38,27 +43,27 @@ private:
 
   double GetNulliparousCount(void);
   double GetParousCount(void);
-  double GetOvipositingCount(void);
-
   double GetFemaleAverageWeight(void);
-  double GetOvipositingFemaleAverageWeight(void);
   std::pair<double,double> GetOvipositingTotals(void);
-
+  // deprecated - removed once new adult aging system in place in DENSiM
+  double GetOvipositingFemaleAverageWeight(void);
   double CalculateDoubleBloodMealProportion(void);
-  double GetPreOviBiters( double doubleProp );
-  double GetOviBiters( double doubleProp );
-
   double GetNulliparousBiters( double doubleProp );
   double GetParousBiters( double doubleProp );
 
   void CalculateDailyTotals(void);
   void UpdateOutput( boost::gregorian::date d, double adultWeight, double adultDev, double newEggs );
+
   output::PopData * GeneratePopData(void);
+
+// Helpers
+private:
+  static bool IsEndOfMonth( boost::gregorian::date d );
 
 private:
   const input::Location * _location;
 
-  output::CimsimOutput * Output_;
+  output::CimsimOutput * _output;
   bool _outputReleased;
 
 #ifdef _DEBUG
@@ -69,19 +74,19 @@ private:
   // time
   int Year;
   int Day;
-  boost::gregorian::date BeginDate_;
-  boost::gregorian::date CurrentDate_;
-  boost::gregorian::date EndDate_;
+  boost::gregorian::date _startDate;
+  boost::gregorian::date _currentDate;
+  boost::gregorian::date _stopDate;
 
   // pop data
-  bool UsingPop_;
+  bool _usingPop;
 
   // containers
   typedef std::vector<SimContainer*> ContainerCollection;
-  ContainerCollection Containers_;
+  ContainerCollection _containers;
 
   // controls
-  std::vector<input::Control*> Controls_;
+  input::ControlCollection _controls;
   std::vector<input::SourceReduction*> SourceReductions_;
   std::vector<input::OvipositionExclusion*> OvipositionExclusions_;
   std::vector<input::EggDestruction*> EggDestructions_;
@@ -108,20 +113,20 @@ private:
   const input::Biology::AdultParameters::DoubleBloodMealParameters * _adultDoubleBloodMeals;
 
   // initial adult population
-  PreOviAdultCohortCollection InitialPreOviAdultCohorts;
-  OviAdultCohortCollection InitialOviAdultCohorts;
+  PreOviAdultCohortCollection _initialPreOviAdults;
+  OviAdultCohortCollection _initialOviAdults;
+
+  // TODO deprecated - remove once changes replicated to DENSiM
+  PreOviAdultCohortCollection _preOviAdults;
+  OviAdultCohortCollection _oviAdults;
+  AdultCohortCollection _ovipositingAdults;
 
   // adult population
-  PreOviAdultCohortCollection PreOviAdultCohorts;
-  OviAdultCohortCollection OviAdultCohorts;
+  PreOviAdultCohortCollection _nulliparousAdults;
+  OviAdultCohortCollection _parousAdults;
 
-  // all cohorts currently ovipositing
-  AdultCohortCollection OvipositingCohorts;
-
-  // TODO new adult cohort system for age dependent survival
-  PreOviAdultCohortCollection NulliparousCohorts;
-  OviAdultCohortCollection ParousCohorts;
-  AdultCohortCollection NewOvipositingCohorts;
+  PreOviAdultCohortCollection _ovipositingNulliparousAdults;
+  OviAdultCohortCollection _ovipositingParousAdults;
 
   // blood seeking females
   double _preOviBiters;
@@ -137,7 +142,7 @@ private:
   double NewFemales;
   double NewFemaleWeight;
 
-  std::vector<double> MosqAgeDistr;
+  std::vector<double> _adultAgeDistribution;
 
   double TotalMales;
   double TotalSterileMales;

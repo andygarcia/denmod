@@ -23,7 +23,7 @@ Simulation::Simulation( input::Location * location, boost::gregorian::date start
 
     // run simulation for year
     SimLocation * popSim = new SimLocation( location, popStartDate, popStopDate );
-    popSim->Start();
+    popSim->RunSimulation();
     output::CimsimOutput * output = popSim->GetSimOutput();
 
     // save population
@@ -52,7 +52,7 @@ Simulation::~Simulation(void)
 void
 Simulation::Start(void)
 {
-  SimLocation_->Start();
+  SimLocation_->RunSimulation();
 }
 
 
@@ -76,7 +76,7 @@ FoodFitSimulation::FoodFitSimulation( input::Location * location, boost::gregori
   boost::gregorian::date popStopDate = boost::gregorian::date( surveyStartDate.year(), 12, 31 );
   std::vector<input::Control*> disabledControls = std::vector<input::Control*>( location->Controls_ );
   SimLocation * popSim = new SimLocation( location, popStartDate, popStopDate );
-  popSim->Start();
+  popSim->RunSimulation();
   output::CimsimOutput * output = popSim->GetSimOutput();
   _popData = output->GetPopData();
   delete output;
@@ -109,7 +109,7 @@ FoodFitSimulation::DoIteration( int numberOfRuns )
   for( int i = 0; i < numberOfRuns; ++i ) {
     // do run and save output
     SimLocation * foodRun = new SimLocation( _location, _startDate, _stopDate, _popData );
-    foodRun->Start();
+    foodRun->RunSimulation();
     output::CimsimOutput * output = foodRun->GetSimOutput();
     delete foodRun;
 

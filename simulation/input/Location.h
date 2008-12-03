@@ -30,8 +30,8 @@ public:
   std::string Name_;
   std::string Notes_;
 
-  std::vector<Container*> Containers_;
-  std::vector<Control*> Controls_;  
+  ContainerCollection Containers_;
+  ControlCollection Controls_;  
 
   Biology * Biology_;
   Weather * Weather_;

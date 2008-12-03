@@ -65,6 +65,8 @@ public:
   double InitEggs_;
 };
 
+typedef std::vector<Container*> ContainerCollection;
+
 };
 
 #endif

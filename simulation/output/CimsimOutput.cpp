@@ -45,8 +45,78 @@ CimsimOutput::AddDailyLocationOutput( DailyLocationOutput dlo, date d )
 void
 CimsimOutput::AddDailyContainerOutput( DailyContainerOutput dco, date d, int containerID )
 {
-  ContainerOutputs_[containerID][d] = dco;
+  // first reference existing values to add parameter dco values to
+  DailyContainerOutput & currentDco = ContainerOutputs_[containerID][d];
+
+#ifdef DEBUG_
+  if( currentDco.DayOfYear != dco.DayOfYear ) {
+    throw;
+  }
+
+  if( currentDco.Depth != dco.Depth ) {
+    throw;
+  }
+
+  if( currentDco.MaxTemp != dco.MaxTemp ) {
+    throw;
+  }
+
+  if( currentDco.MinTemp != dco.MinTemp ) {
+    throw;
+  }
+#endif
+
+  // TODO: the following values should be the same amongst cloned containers
+  currentDco.Depth = dco.Depth;
+  currentDco.MaxTemp = dco.MaxTemp;
+  currentDco.MinTemp = dco.MinTemp;
+  currentDco.TotalDensity = dco.TotalDensity;
+  currentDco.UntreatedDensity = dco.UntreatedDensity;
+  currentDco.TreatedDensity = dco.TreatedDensity;
+  currentDco.ExcludedDensity = dco.ExcludedDensity;
+
+  // the following values are accumulated amonst cloned containers
+  currentDco.Eggs += dco.Eggs;
+  currentDco.Larvae += dco.Larvae;
+  // wait to update pupae until average weight calculations are completed
+  //currentDco.Pupae += dco.Pupae;
+  currentDco.NewFemales += dco.NewFemales;
+  currentDco.CumulativeFemales += dco.CumulativeFemales;
+  currentDco.Oviposition += dco.Oviposition;
+
+
+  // if food value already exists for this container type, average 
+  if( currentDco.Food != 0 ) {
+    currentDco.Food = (currentDco.Food + dco.Food) / 2.0;
+  }
+  else {
+    currentDco.Food = dco.Food;
+  }
+
+  if( dco.Pupae != 0 ) {
+    if( currentDco.Pupae != 0 ) {
+      // find true population average for average pupae weight
+      double existingWeight = currentDco.Pupae * currentDco.AvgDryPupWt;
+      double newWeight = dco.Pupae + dco.AvgDryPupWt;
+      double totalWeight = existingWeight + newWeight;
+
+      currentDco.Pupae += dco.Pupae;
+      currentDco.AvgDryPupWt = totalWeight / currentDco.Pupae;
+    }
+    else {
+      currentDco.Pupae = dco.Pupae;
+      currentDco.AvgDryPupWt = dco.AvgDryPupWt;
+    }
+
+  }
 }
+
+
+
+//CimsimOutput::AddDailyContainerOutput( DailyContainerOutput dco, date d, int containerID )
+//{
+//  ContainerOutputs_[containerID][d] = dco;
+//}
 
 
 
