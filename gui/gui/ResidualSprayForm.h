@@ -20,30 +20,22 @@ namespace gui {
 
   private:
     void SetSchedulePanel(void);
-  private: System::Windows::Forms::Panel^  panel1;
-
-  private:
-    ResidualSpray ^ ResidualSpray_;
-
-  private:
     System::Void OnLoad( System::Object ^ sender, System::EventArgs ^ e );
+    System::Void OnScheduleChange( System::Object ^ sender, System::EventArgs ^ e );
     System::Void OnOk( System::Object ^ sender, System::EventArgs ^ e );
     System::Void OnCancel( System::Object ^ sender, System::EventArgs ^ e );
-    System::Void OnScheduleChange( System::Object ^ sender, System::EventArgs ^ e );
 
   private:
     BindingSource ^ LocationBinding;
     gui::Location ^ ActiveLocation;
-
+    ResidualSpray ^ ResidualSpray_;
     UserControl ^ CurrentSchedulePanel;
 
+  private: System::Windows::Forms::Panel^  panelSchedule;
   private: System::Windows::Forms::TextBox^  tboxName;
   private: System::Windows::Forms::Label^  lblName;
   private: System::Windows::Forms::Label^  lblInitialMortality;
   private: System::Windows::Forms::Label^  lblMaximumEffectPeriod;
-
-
-
   private: System::Windows::Forms::NumericUpDown^  numInitialMortality;
   private: System::Windows::Forms::NumericUpDown^  numMaximumEffectPeriod;
 
@@ -102,7 +94,7 @@ namespace gui {
       this->numOutdoorProportion = (gcnew System::Windows::Forms::NumericUpDown());
       this->lblOutdoorProportion = (gcnew System::Windows::Forms::Label());
       this->cboxSchedule = (gcnew System::Windows::Forms::ComboBox());
-      this->panel1 = (gcnew System::Windows::Forms::Panel());
+      this->panelSchedule = (gcnew System::Windows::Forms::Panel());
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->numInitialMortality))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->numMaximumEffectPeriod))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->numResidualEffectPeriod))->BeginInit();
@@ -279,20 +271,20 @@ namespace gui {
       this->cboxSchedule->TabIndex = 15;
       this->cboxSchedule->SelectionChangeCommitted += gcnew System::EventHandler(this, &ResidualSprayForm::OnScheduleChange);
       // 
-      // panel1
+      // panelSchedule
       // 
-      this->panel1->Location = System::Drawing::Point(136, 143);
-      this->panel1->Name = L"panel1";
-      this->panel1->Size = System::Drawing::Size(420, 200);
-      this->panel1->TabIndex = 16;
-      this->panel1->Visible = false;
+      this->panelSchedule->Location = System::Drawing::Point(136, 143);
+      this->panelSchedule->Name = L"panelSchedule";
+      this->panelSchedule->Size = System::Drawing::Size(420, 200);
+      this->panelSchedule->TabIndex = 16;
+      this->panelSchedule->Visible = false;
       // 
       // ResidualSprayForm
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
       this->ClientSize = System::Drawing::Size(568, 384);
-      this->Controls->Add(this->panel1);
+      this->Controls->Add(this->panelSchedule);
       this->Controls->Add(this->cboxSchedule);
       this->Controls->Add(this->numOutdoorProportion);
       this->Controls->Add(this->lblOutdoorProportion);

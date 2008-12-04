@@ -13,8 +13,8 @@ MainForm::MainForm(void)
   LocationBinding(gcnew BindingSource())
 {
 	InitializeComponent();
-  Initialize();
   NewDocument();
+  Initialize();
 }
 
 
@@ -24,8 +24,8 @@ MainForm::MainForm(String ^ filename)
   LocationBinding(gcnew BindingSource())
 {
 	InitializeComponent();
-  Initialize();
   OpenDocument(filename);
+  Initialize();
 }
 
 
@@ -63,8 +63,9 @@ MainForm::NewDocument(void)
   if( !CloseDocument() )
     return false;
 
-  // clear existing data ...
+  // create new file and set active
   ActiveDocument = DmlFile::CreateNew();
+
   // set initial document data and state
   UpdateBindings();
   UpdateTitleBar();
@@ -393,11 +394,7 @@ MainForm::UpdateTitleBar(void)
   }
   String ^ readOnly = ActiveDocument->IsReadOnly ? "[Read-Only]" : "";
   String ^ dirty = IsDocumentDirty() ? "*" : "";
-
   String ^ productName = Application::ProductName;
-
-  // TODO, which version is correct?
-  //String ^ version = Application::ProductVersion;
   String ^ version = System::Reflection::Assembly::GetExecutingAssembly()->GetName()->Version->ToString();
 
   

@@ -26,24 +26,24 @@ WeeklySchedulePanel::~WeeklySchedulePanel()
 System::Void
 WeeklySchedulePanel::OnLoad( System::Object ^ sender, System::EventArgs ^ e)
 {
-  dateTimeWeeklyStart->DataBindings->Add( "MinDate", LocationBinding, "Weather.MinDate" );
-  dateTimeWeeklyStart->DataBindings->Add( "MaxDate", LocationBinding, "Weather.MaxDate" );
-  dateTimeWeeklyStart->DataBindings->Add( "Value", Schedule_, "StartDate" );
+  dateTimeWeeklyStart->DataBindings->Add( "MinDate", LocationBinding, "Weather.MinDate", false, DataSourceUpdateMode::Never );
+  dateTimeWeeklyStart->DataBindings->Add( "MaxDate", LocationBinding, "Weather.MaxDate", false, DataSourceUpdateMode::Never );
+  dateTimeWeeklyStart->DataBindings->Add( "Value", Schedule_, "StartDate", false, DataSourceUpdateMode::OnPropertyChanged );
 
-  numWeeklyInterval->DataBindings->Add( "Text", Schedule_, "WeekInterval" );
+  numWeeklyInterval->DataBindings->Add( "Text", Schedule_, "WeekInterval", false, DataSourceUpdateMode::OnPropertyChanged );
 
-  checkSunday->DataBindings->Add( "Checked", Schedule_, "Sunday" );
-  checkMonday->DataBindings->Add( "Checked", Schedule_, "Monday" );
-  checkTuesday->DataBindings->Add( "Checked", Schedule_, "Tuesday" );
-  checkWednesday->DataBindings->Add( "Checked", Schedule_, "Wednesday" );
-  checkThursday->DataBindings->Add( "Checked", Schedule_, "Thursday" );
-  checkFriday->DataBindings->Add( "Checked", Schedule_, "Friday" );
-  checkSaturday->DataBindings->Add( "Checked", Schedule_, "Saturday" );
+  checkSunday->DataBindings->Add( "Checked", Schedule_, "Sunday", false, DataSourceUpdateMode::OnPropertyChanged );
+  checkMonday->DataBindings->Add( "Checked", Schedule_, "Monday", false, DataSourceUpdateMode::OnPropertyChanged );
+  checkTuesday->DataBindings->Add( "Checked", Schedule_, "Tuesday", false, DataSourceUpdateMode::OnPropertyChanged );
+  checkWednesday->DataBindings->Add( "Checked", Schedule_, "Wednesday", false, DataSourceUpdateMode::OnPropertyChanged );
+  checkThursday->DataBindings->Add( "Checked", Schedule_, "Thursday", false, DataSourceUpdateMode::OnPropertyChanged );
+  checkFriday->DataBindings->Add( "Checked", Schedule_, "Friday", false, DataSourceUpdateMode::OnPropertyChanged );
+  checkSaturday->DataBindings->Add( "Checked", Schedule_, "Saturday", false, DataSourceUpdateMode::OnPropertyChanged );
 
   checkWeeklyEnd->DataBindings->Add( "Checked", Schedule_, "UseStopDate", false, DataSourceUpdateMode::OnPropertyChanged );
 
-  dateTimeWeeklyEnd->DataBindings->Add( "MinDate", LocationBinding, "Weather.MinDate" );
-  dateTimeWeeklyEnd->DataBindings->Add( "MaxDate", LocationBinding, "Weather.MaxDate" );
-  dateTimeWeeklyEnd->DataBindings->Add( "Enabled", Schedule_, "UseStopDate" );
-  dateTimeWeeklyEnd->DataBindings->Add( "Value", Schedule_, "StopDate" );
+  dateTimeWeeklyEnd->DataBindings->Add( "MinDate", LocationBinding, "Weather.MinDate", false, DataSourceUpdateMode::Never );
+  dateTimeWeeklyEnd->DataBindings->Add( "MaxDate", LocationBinding, "Weather.MaxDate", false, DataSourceUpdateMode::Never );
+  dateTimeWeeklyEnd->DataBindings->Add( "Enabled", Schedule_, "UseStopDate", false, DataSourceUpdateMode::OnPropertyChanged );
+  dateTimeWeeklyEnd->DataBindings->Add( "Value", Schedule_, "StopDate", false, DataSourceUpdateMode::OnPropertyChanged );
 }

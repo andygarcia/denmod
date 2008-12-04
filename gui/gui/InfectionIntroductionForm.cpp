@@ -10,22 +10,24 @@ InfectionIntroductionForm::InfectionIntroductionForm( BindingSource ^ locationBi
 {
   InitializeComponent();
 
+  // create scheduling controls for each serotype
   ScheduleD1 = gcnew ScheduleControl( LocationBinding, "InfectionIntroduction.Dengue1.Schedule" );
-  ScheduleD1->Location = Point( lblScheduleD1->Location.X + lblScheduleD1->Size.Width + lblScheduleD1->Margin.Right, numHumansD1->Location.Y );
+  ScheduleD1->Location = Point( numHumansD1->Location.X + numHumansD1->Size.Width + numHumansD1->Margin.Right, 3 );
   tabDengue1->Controls->Add( ScheduleD1 );
 
   ScheduleD2 = gcnew ScheduleControl( LocationBinding, "InfectionIntroduction.Dengue2.Schedule" );
-  ScheduleD2->Location = Point( lblScheduleD2->Location.X + lblScheduleD2->Size.Width + lblScheduleD2->Margin.Right, numHumansD2->Location.Y );
+  ScheduleD2->Location = Point( numHumansD2->Location.X + numHumansD2->Size.Width + numHumansD2->Margin.Right, 3 );
   tabDengue2->Controls->Add( ScheduleD2 );
 
   ScheduleD3 = gcnew ScheduleControl( LocationBinding, "InfectionIntroduction.Dengue3.Schedule" );
-  ScheduleD3->Location = Point( lblScheduleD3->Location.X + lblScheduleD3->Size.Width + lblScheduleD3->Margin.Right, numHumansD3->Location.Y );
+  ScheduleD3->Location = Point( numHumansD3->Location.X + numHumansD3->Size.Width + numHumansD3->Margin.Right, 3 );
   tabDengue3->Controls->Add( ScheduleD3 );
 
   ScheduleD4 = gcnew ScheduleControl( LocationBinding, "InfectionIntroduction.Dengue4.Schedule" );
-  ScheduleD4->Location = Point( lblScheduleD4->Location.X + lblScheduleD4->Size.Width + lblScheduleD4->Margin.Right, numHumansD4->Location.Y );
+  ScheduleD4->Location = Point( numHumansD4->Location.X + numHumansD4->Size.Width + numHumansD4->Margin.Right, 3 );
   tabDengue4->Controls->Add( ScheduleD4 );
 
+  // disabled until weather until weather is added
   this->Enabled = false;
 }
 
@@ -43,15 +45,15 @@ InfectionIntroductionForm::~InfectionIntroductionForm(void)
 System::Void
 InfectionIntroductionForm::OnLoad( System::Object ^ sender, System::EventArgs ^ e )
 {
-  numHumansD1->DataBindings->Add( "Text", LocationBinding, "InfectionIntroduction.Dengue1.Humans" );
-  numMosquitoesD1->DataBindings->Add( "Text", LocationBinding, "InfectionIntroduction.Dengue1.Mosquitoes" );
+  numHumansD1->DataBindings->Add( "Text", LocationBinding, "InfectionIntroduction.Dengue1.Humans", false, DataSourceUpdateMode::OnPropertyChanged );
+  numMosquitoesD1->DataBindings->Add( "Text", LocationBinding, "InfectionIntroduction.Dengue1.Mosquitoes", false, DataSourceUpdateMode::OnPropertyChanged );
 
-  numHumansD2->DataBindings->Add( "Text", LocationBinding, "InfectionIntroduction.Dengue2.Humans" );
-  numMosquitoesD2->DataBindings->Add( "Text", LocationBinding, "InfectionIntroduction.Dengue2.Mosquitoes" );
+  numHumansD2->DataBindings->Add( "Text", LocationBinding, "InfectionIntroduction.Dengue2.Humans", false, DataSourceUpdateMode::OnPropertyChanged );
+  numMosquitoesD2->DataBindings->Add( "Text", LocationBinding, "InfectionIntroduction.Dengue2.Mosquitoes", false, DataSourceUpdateMode::OnPropertyChanged );
 
-  numHumansD3->DataBindings->Add( "Text", LocationBinding, "InfectionIntroduction.Dengue3.Humans" );
-  numMosquitoesD3->DataBindings->Add( "Text", LocationBinding, "InfectionIntroduction.Dengue3.Mosquitoes" );
+  numHumansD3->DataBindings->Add( "Text", LocationBinding, "InfectionIntroduction.Dengue3.Humans", false, DataSourceUpdateMode::OnPropertyChanged );
+  numMosquitoesD3->DataBindings->Add( "Text", LocationBinding, "InfectionIntroduction.Dengue3.Mosquitoes", false, DataSourceUpdateMode::OnPropertyChanged );
 
-  numHumansD4->DataBindings->Add( "Text", LocationBinding, "InfectionIntroduction.Dengue4.Humans" );
-  numMosquitoesD4->DataBindings->Add( "Text", LocationBinding, "InfectionIntroduction.Dengue4.Mosquitoes" );
+  numHumansD4->DataBindings->Add( "Text", LocationBinding, "InfectionIntroduction.Dengue4.Humans", false, DataSourceUpdateMode::OnPropertyChanged );
+  numMosquitoesD4->DataBindings->Add( "Text", LocationBinding, "InfectionIntroduction.Dengue4.Mosquitoes", false, DataSourceUpdateMode::OnPropertyChanged );
 }

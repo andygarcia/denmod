@@ -32,21 +32,21 @@ MonthlySchedulePanel::~MonthlySchedulePanel()
 System::Void
 MonthlySchedulePanel::OnLoad( System::Object ^ sender, System::EventArgs ^ e)
 {
-  cboxMonthlyStartMonth->DataBindings->Add( "SelectedItem", Schedule_, "StartMonth" );
+  cboxMonthlyStartMonth->DataBindings->Add( "SelectedItem", Schedule_, "StartMonth", false, DataSourceUpdateMode::OnPropertyChanged );
 
   cboxMonthlyStartYear->ValueMember = "Index";
   cboxMonthlyStartYear->DisplayMember = "Index";
-  cboxMonthlyStartYear->DataBindings->Add( "DataSource", LocationBinding, "Weather.YearsBindingList" );
+  cboxMonthlyStartYear->DataBindings->Add( "DataSource", LocationBinding, "Weather.YearsBindingList", false, DataSourceUpdateMode::OnPropertyChanged );
 
-  cboxMonthlyStartYear->DataBindings->Add( "SelectedValue", Schedule_, "StartYear" );
+  cboxMonthlyStartYear->DataBindings->Add( "SelectedValue", Schedule_, "StartYear", false, DataSourceUpdateMode::OnPropertyChanged );
 
-  numMonthlyInterval->DataBindings->Add( "Text", Schedule_, "MonthInterval" );
+  numMonthlyInterval->DataBindings->Add( "Text", Schedule_, "MonthInterval", false, DataSourceUpdateMode::OnPropertyChanged );
 
-  cboxMonthlyDay->DataBindings->Add( "SelectedItem", Schedule_, "DayOfMonth" );
+  cboxMonthlyDay->DataBindings->Add( "SelectedItem", Schedule_, "DayOfMonth", false, DataSourceUpdateMode::OnPropertyChanged );
 
   checkMonthlyEnd->DataBindings->Add( "Checked", Schedule_, "UseStopDate", false, DataSourceUpdateMode::OnPropertyChanged );
-  dateTimeMonthlyEnd->DataBindings->Add( "MinDate", LocationBinding, "Weather.MinDate" );
-  dateTimeMonthlyEnd->DataBindings->Add( "MaxDate", LocationBinding, "Weather.MaxDate" );
-  dateTimeMonthlyEnd->DataBindings->Add( "Enabled", Schedule_, "UseStopDate" );
-  dateTimeMonthlyEnd->DataBindings->Add( "Value", Schedule_, "StopDate" );
+  dateTimeMonthlyEnd->DataBindings->Add( "MinDate", LocationBinding, "Weather.MinDate", false, DataSourceUpdateMode::Never );
+  dateTimeMonthlyEnd->DataBindings->Add( "MaxDate", LocationBinding, "Weather.MaxDate", false, DataSourceUpdateMode::Never );
+  dateTimeMonthlyEnd->DataBindings->Add( "Enabled", Schedule_, "UseStopDate", false, DataSourceUpdateMode::OnPropertyChanged );
+  dateTimeMonthlyEnd->DataBindings->Add( "Value", Schedule_, "StopDate", false, DataSourceUpdateMode::OnPropertyChanged );
 }

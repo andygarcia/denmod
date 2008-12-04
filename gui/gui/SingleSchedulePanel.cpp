@@ -29,5 +29,5 @@ SingleSchedulePanel::OnLoad( System::Object ^ sender, System::EventArgs ^ e)
 {
   dateTimeSingleStart->DataBindings->Add( "MinDate", LocationBinding, "Weather.MinDate", false, DataSourceUpdateMode::Never );
   dateTimeSingleStart->DataBindings->Add( "MaxDate", LocationBinding, "Weather.MaxDate", false, DataSourceUpdateMode::Never );
-  dateTimeSingleStart->DataBindings->Add( "Value", Schedule_, "Date" );
+  dateTimeSingleStart->DataBindings->Add( "Value", Schedule_, "Date", false, DataSourceUpdateMode::OnPropertyChanged );
 }
