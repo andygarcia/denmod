@@ -397,6 +397,7 @@ void
 WeatherData::AddWeatherYear( WeatherYear ^ wy )
 {
   Years_->Add( wy->Index, wy );
+  NotifyPropertyChanged( "IsWeatherAvailable" );
   NotifyPropertyChanged( "Years" );
   NotifyPropertyChanged( "YearsBindingList" );
   NotifyPropertyChanged( "MinDate" );
@@ -409,6 +410,7 @@ void
 WeatherData::RemoveWeatherYear( int year )
 {
   Years_->Remove(year);
+  NotifyPropertyChanged( "IsWeatherAvailable" );
   NotifyPropertyChanged( "Years" );
   NotifyPropertyChanged( "YearsBindingList" );
   NotifyPropertyChanged( "MinDate" );

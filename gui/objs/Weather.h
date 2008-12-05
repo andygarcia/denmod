@@ -360,6 +360,18 @@ public:
     int get(void);
   }
 
+  [XmlIgnore]
+  property bool IsWeatherAvailable {
+    bool get(void) {
+      if( Years_->Count == 0 ) {
+        return false;
+      }
+      else {
+        return true;
+      }
+    }
+  }
+
 private:
   Generic::Dictionary<int,WeatherYear^> ^ Years_;
 };

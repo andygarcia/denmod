@@ -20,17 +20,6 @@ namespace gui {
 	protected:
 		~DensimPanel();
 
-  public:
-    property bool IsWeatherAvailable {
-      bool get(void) {
-        return IsWeatherAvailable_;
-      }
-      void set(bool b) {
-        formInfectionIntroduction->Enabled = b;
-        IsWeatherAvailable_ = b;
-      }
-    }
-
   private:
     gui::Location ^ GetLocation(void);
     System::Void RunDensim(System::Void);

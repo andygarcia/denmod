@@ -130,9 +130,11 @@ DensimPanel::RunDensim(System::Void)
 System::Void
 DensimPanel::OnTabPageSelecting( System::Object ^ sender, System::Windows::Forms::TabControlCancelEventArgs ^ e )
 {
+  gui::Location ^ location = (gui::Location^) this->LocationBinding->DataSource;
+
   if( e->Action == TabControlAction::Selecting ) {
     if( e->TabPageIndex == 3 ) {
-      if( !IsWeatherAvailable ) {
+      if( !location->Weather->IsWeatherAvailable ) {
         MessageBox::Show( "Weather data must be added before scheduling infection introductions." );
         e->Cancel = true;
       }

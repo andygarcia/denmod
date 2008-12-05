@@ -26,9 +26,6 @@ InfectionIntroductionForm::InfectionIntroductionForm( BindingSource ^ locationBi
   ScheduleD4 = gcnew ScheduleControl( LocationBinding, "InfectionIntroduction.Dengue4.Schedule" );
   ScheduleD4->Location = Point( numHumansD4->Location.X + numHumansD4->Size.Width + numHumansD4->Margin.Right, 3 );
   tabDengue4->Controls->Add( ScheduleD4 );
-
-  // disabled until weather until weather is added
-  this->Enabled = false;
 }
 
 
@@ -45,6 +42,9 @@ InfectionIntroductionForm::~InfectionIntroductionForm(void)
 System::Void
 InfectionIntroductionForm::OnLoad( System::Object ^ sender, System::EventArgs ^ e )
 {
+  // only enable infection introduction form when weather is available
+  this->DataBindings->Add( "Enabled", LocationBinding, "Weather.IsWeatherAvailable" );
+
   numHumansD1->DataBindings->Add( "Text", LocationBinding, "InfectionIntroduction.Dengue1.Humans", false, DataSourceUpdateMode::OnPropertyChanged );
   numMosquitoesD1->DataBindings->Add( "Text", LocationBinding, "InfectionIntroduction.Dengue1.Mosquitoes", false, DataSourceUpdateMode::OnPropertyChanged );
 

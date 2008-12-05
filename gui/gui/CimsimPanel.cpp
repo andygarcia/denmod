@@ -214,7 +214,7 @@ CimsimPanel::OnMouseLeaveContainers( System::Object ^ sender, System::EventArgs 
 System::Void
 CimsimPanel::OnAddControl( System::Object ^ sender, System::EventArgs ^ e )
 {
-  if( !GetLocation()->IsWeatherAvailable ) {
+  if( !GetLocation()->Weather->IsWeatherAvailable ) {
     MessageBox::Show( "Unable to add control interventions s until weather data is available.  Please add weather data.", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error );
     return;
   }
@@ -277,7 +277,7 @@ CimsimPanel::OnEditControl( System::Object ^ sender, System::EventArgs ^ e)
   gui::Control ^ selectedControl = (gui::Control^) lboxControls->SelectedItem;
 
   // find min and max weather dates for schedule constraints
-  if( !GetLocation()->IsWeatherAvailable ) {
+  if( !GetLocation()->Weather->IsWeatherAvailable ) {
     MessageBox::Show( "Unabled to edit control intervention until weather data is available.  Please add weather data.", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error );
     return;
   }

@@ -102,10 +102,6 @@ MainForm::OpenDocument( String ^ newFilename)
   UpdateBindings();
   UpdateTitleBar();
 
-  // and possibly enabled weather related gui elements
-  if( ActiveDocument->Location->IsWeatherAvailable ) {
-    DensimPanel_->IsWeatherAvailable = true;
-  }
   return true;
 }
 
@@ -124,11 +120,6 @@ MainForm::OpenSampleLocation(void)
   ActiveDocument = df;
   UpdateBindings();
   UpdateTitleBar();
-
-  // and possibly enabled weather related gui elements
-  if( ActiveDocument->Location->IsWeatherAvailable ) {
-    DensimPanel_->IsWeatherAvailable = true;
-  }
 }
 
 
@@ -349,7 +340,6 @@ MainForm::OnImportWeather( System::Object ^ sender, System::EventArgs ^ e )
     weather->RemoveWeatherYear( wy->Index );
   }
   weather->AddWeatherYear( wy );
-  DensimPanel_->IsWeatherAvailable = true;
 }
 
 

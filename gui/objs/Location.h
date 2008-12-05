@@ -185,18 +185,6 @@ public:
     }
   }
 
-  [XmlIgnore]
-  property bool IsWeatherAvailable {
-    bool get(void) {
-      if( Weather_->Years->Count == 0 ) {
-        return false;
-      }
-      else {
-        return true;
-      }
-    }
-  }
-
   // <Biology>
   [XmlElement(ElementName="Biology",Order=7)]
   property gui::BiologyParameters ^ Biology {
