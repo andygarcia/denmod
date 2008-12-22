@@ -19,6 +19,8 @@ public:
 
 public:
   std::string Name;
+  int Id;
+  int CloneId;
 
   // eggs
   sim::cs::EggBandCollection EggCohorts;
@@ -47,16 +49,21 @@ public:
 class PopData
 {
 public:
-  typedef std::map<std::string,ContainerPopData*> ContainerPopDataCollection;
+  typedef std::multimap<int,ContainerPopData*> ContainerPopDataCollection;
 
 public:
   PopData(void);
   virtual ~PopData(void);
 
 public:
-  std::map<std::string,ContainerPopData*> Containers_;
+  void AddContainerData( ContainerPopData * cpd );
+  ContainerPopData * GetContainerData( int containerId ) const;
+  ContainerPopData * GetClonedContainerData( int containerId, int cloneId ) const;
 
-  // adult cohorts
+private:
+  ContainerPopDataCollection Containers_;
+
+public:
   sim::cs::PreOviAdultCohortCollection PreOviAdultCohorts;
   sim::cs::OviAdultCohortCollection OviAdultCohorts;
   std::vector<double> MosqAgeDistr;

@@ -48,25 +48,8 @@ CimsimOutput::AddDailyContainerOutput( DailyContainerOutput dco, date d, int con
   // first reference existing values to add parameter dco values to
   DailyContainerOutput & currentDco = ContainerOutputs_[containerID][d];
 
-#ifdef DEBUG_
-  if( currentDco.DayOfYear != dco.DayOfYear ) {
-    throw;
-  }
-
-  if( currentDco.Depth != dco.Depth ) {
-    throw;
-  }
-
-  if( currentDco.MaxTemp != dco.MaxTemp ) {
-    throw;
-  }
-
-  if( currentDco.MinTemp != dco.MinTemp ) {
-    throw;
-  }
-#endif
-
-  // TODO: the following values should be the same amongst cloned containers
+  // the following values should be the same amongst cloned containers
+  // since stochastic food additions will not effect these
   currentDco.Depth = dco.Depth;
   currentDco.MaxTemp = dco.MaxTemp;
   currentDco.MinTemp = dco.MinTemp;
@@ -78,14 +61,11 @@ CimsimOutput::AddDailyContainerOutput( DailyContainerOutput dco, date d, int con
   // the following values are accumulated amonst cloned containers
   currentDco.Eggs += dco.Eggs;
   currentDco.Larvae += dco.Larvae;
-  // wait to update pupae until average weight calculations are completed
-  //currentDco.Pupae += dco.Pupae;
   currentDco.NewFemales += dco.NewFemales;
   currentDco.CumulativeFemales += dco.CumulativeFemales;
   currentDco.Oviposition += dco.Oviposition;
 
-
-  // if food value already exists for this container type, average 
+  // set or average food values
   if( currentDco.Food != 0 ) {
     currentDco.Food = (currentDco.Food + dco.Food) / 2.0;
   }
@@ -93,6 +73,7 @@ CimsimOutput::AddDailyContainerOutput( DailyContainerOutput dco, date d, int con
     currentDco.Food = dco.Food;
   }
 
+  // accumulate pupae and set/average average weight
   if( dco.Pupae != 0 ) {
     if( currentDco.Pupae != 0 ) {
       // find true population average for average pupae weight
@@ -107,7 +88,6 @@ CimsimOutput::AddDailyContainerOutput( DailyContainerOutput dco, date d, int con
       currentDco.Pupae = dco.Pupae;
       currentDco.AvgDryPupWt = dco.AvgDryPupWt;
     }
-
   }
 }
 
