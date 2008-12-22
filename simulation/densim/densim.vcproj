@@ -4,7 +4,7 @@
 	Version="8.00"
 	Name="densim"
 	ProjectGUID="{00E7FE9D-5BE6-44C7-AF50-65C84482CEB4}"
-	RootNamespace="densim"
+	RootNamespace="dssim"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -142,6 +142,10 @@
 			ReferencedProjectIdentifier="{EF97B474-CAB2-4890-ABF6-46C64A56DEF0}"
 			RelativePathToProject=".\simulation\input\input.vcproj"
 		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{466359A9-64B1-48C1-BD22-4AB59089DFC1}"
+			RelativePathToProject=".\simulation\log\log.vcproj"
+		/>
 	</References>
 	<Files>
 		<Filter
@@ -149,10 +153,6 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
-			<File
-				RelativePath=".\Population.cpp"
-				>
-			</File>
 			<File
 				RelativePath=".\SimLocation.cpp"
 				>
@@ -187,10 +187,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\Population.h"
-				>
-			</File>
 			<File
 				RelativePath=".\SimClasses.h"
 				>
