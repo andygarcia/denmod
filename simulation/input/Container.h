@@ -63,6 +63,9 @@ public:
   double FoodGainDec_;
   double FoodDecayRate_;
   double InitEggs_;
+
+  bool IsCloned_;
+  int NumberOfClones_;
 };
 
 typedef std::vector<Container*> ContainerCollection;
