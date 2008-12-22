@@ -44,7 +44,9 @@ gui::Container::Container(void)
   DoingFoodFit_(false),
   ObservedPerContainer_(0.0),
   PreFitFood_(0.0),
-  PredictedPerContainer_(0.0)
+  PredictedPerContainer_(0.0),
+  IsCloned_(false),
+  NumberOfClones_(1)
 {}
 
 
@@ -87,6 +89,8 @@ gui::Container::Container( const Container ^ c )
   this->ObservedPerContainer_ = c->ObservedPerContainer_;
   this->PreFitFood_ = c->PreFitFood_;
   this->PredictedPerContainer_ = c->PredictedPerContainer_;
+  this->IsCloned_ = c->IsCloned_;
+  this->NumberOfClones_ = c->NumberOfClones_;
 }
 
 
@@ -171,6 +175,9 @@ gui::Container::GetSimObject(void)
   container->FoodGainDec_ = this->FoodGainDec;
   container->FoodDecayRate_ = this->FoodDecayRate;
   container->InitEggs_ = this->InitEggs;
+
+  container->IsCloned_ = this->IsCloned_;
+  container->NumberOfClones_ = this->NumberOfClones_;
 
   return container;
 }

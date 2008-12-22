@@ -35,6 +35,10 @@ ContainerForm::OnLoad( System::Object^ sender, System::EventArgs^ e)
   tboxName->DataBindings->Add( "Text", Container_, "Name" );
   snboxDensity->DataBindings->Add( gcnew ParameterDisplayBinding("Value", Container_, "Density") );
 
+  chkClone->DataBindings->Add( "Checked", Container_, "IsCloned", false, DataSourceUpdateMode::OnPropertyChanged );
+  snboxNumberOfClones->DataBindings->Add( "Enabled", Container_, "IsCloned", false, DataSourceUpdateMode::Never );
+  snboxNumberOfClones->DataBindings->Add( gcnew ParameterDisplayBinding("Value", Container_, "NumberOfClones", DataSourceUpdateMode::OnPropertyChanged) );
+
   if( Container_->Shape == gui::Container::ShapeType::Circular  ) {
     radRect->Checked = false;
     radCirc->Checked = true;

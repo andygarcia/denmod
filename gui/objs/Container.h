@@ -639,6 +639,34 @@ public:
       return System::Math::Abs(PredictedPerContainer_ - ObservedPerContainer_) * Density_;
     }
   }
+
+  [XmlElementAttribute(Order=33)]
+  property bool IsCloned {
+    bool get(void) {
+      return IsCloned_;
+    }
+    void set(bool b) {
+      if( b != IsCloned_ ) {
+        IsCloned_ = b;
+        NotifyAndValidate( "IsCloned" );
+      }
+    }
+  }
+
+  [XmlElementAttribute(Order=34)]
+  [ParameterDisplayAttribute(0,true,ScientificNotationOptions::Never)]
+  [CompareIntRule( 1, CompareOperator::GreaterThanEqual, ErrorMessage = "Number of clones must be 1 or greater." )]
+  property int NumberOfClones {
+    int get(void) {
+      return NumberOfClones_;
+    }
+    void set(int i) {
+      if( i != NumberOfClones_) {
+        NumberOfClones_ = i;
+        NotifyAndValidate( "NumberOfClones" );
+      }
+    }
+  }
 #pragma endregion
 
 #pragma region Fields
@@ -682,6 +710,9 @@ private:
   double PreFitFood_;
   double PreFitInitFood_;
   double PredictedPerContainer_;
+
+  bool IsCloned_;
+  int NumberOfClones_;
 #pragma endregion
 };
 
