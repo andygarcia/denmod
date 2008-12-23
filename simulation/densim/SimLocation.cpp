@@ -64,6 +64,8 @@ SimLocation::SimLocation( const input::Location * location, sim::output::MosData
   // many processes in DENSiM are stochastic and cannot be done deterministically. In debug
   // mode we accomodate repeatability and comparability of output by setting the see constant
   srand(1);
+#else
+  srand( time(NULL));
 #endif
 
   // demographics
