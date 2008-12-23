@@ -45,6 +45,10 @@ public:
   void AddDailyLocationOutput( DailyLocationOutput dlo, boost::gregorian::date d );
   void AddDailyContainerOutput( DailyContainerOutput dco, boost::gregorian::date d, int containerID );
 
+private:
+  void CalculateContainerTotals(void);
+
+public:
   // Location outputs
   std::vector<double> GetFemales( boost::gregorian::date startDate, boost::gregorian::date endDate );
   std::vector<double> GetNewFemales( boost::gregorian::date startDate, boost::gregorian::date endDate );
@@ -70,9 +74,6 @@ public:
   std::vector<double> GetUntreatedDensity( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
   std::vector<double> GetTreatedDensity( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
   std::vector<double> GetExcludedDensity( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-
-private:
-  void CalculateContainerTotals(void);
 
 private:
   LocationOutput LocationOutput_;

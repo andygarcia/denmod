@@ -27,6 +27,9 @@ private:
   void InitializeBiology( input::Biology * biology );
   void InitializePopulation( const output::PopData * population );
 
+  void AddContainer( input::Container * container );
+  void AddPopContainer( input::Container * container, const sim::output::PopData * population );
+
 // Methods
 public:
   void RunSimulation(void);

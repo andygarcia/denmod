@@ -78,7 +78,7 @@ CimsimOutput::AddDailyContainerOutput( DailyContainerOutput dco, date d, int con
     if( currentDco.Pupae != 0 ) {
       // find true population average for average pupae weight
       double existingWeight = currentDco.Pupae * currentDco.AvgDryPupWt;
-      double newWeight = dco.Pupae + dco.AvgDryPupWt;
+      double newWeight = dco.Pupae * dco.AvgDryPupWt;
       double totalWeight = existingWeight + newWeight;
 
       currentDco.Pupae += dco.Pupae;
@@ -93,10 +93,32 @@ CimsimOutput::AddDailyContainerOutput( DailyContainerOutput dco, date d, int con
 
 
 
-//CimsimOutput::AddDailyContainerOutput( DailyContainerOutput dco, date d, int containerID )
-//{
-//  ContainerOutputs_[containerID][d] = dco;
-//}
+void
+CimsimOutput::CalculateContainerTotals(void)
+{
+  date startDate = LocationOutput_.begin()->first;
+  date endDate = LocationOutput_.rbegin()->first;
+
+  day_iterator itDate = day_iterator(startDate);
+  for( ; *itDate <= endDate; ++itDate ) {
+    DailyContainerOutput dco;
+
+    ContainerOutputs::iterator itCos;
+    for( itCos = ContainerOutputs_.begin(); itCos != ContainerOutputs_.end(); ++itCos ) {
+      ContainerOutput & co = itCos->second;
+      double densityScale = co[*itDate].UntreatedDensity + co[*itDate].TreatedDensity;
+      dco.Eggs += co[*itDate].Eggs * densityScale;
+      dco.Larvae += co[*itDate].Larvae * densityScale;
+      dco.Pupae += co[*itDate].Pupae * densityScale;
+      dco.NewFemales += co[*itDate].NewFemales * densityScale;
+      dco.CumulativeFemales += co[*itDate].CumulativeFemales * densityScale;
+      dco.Oviposition += co[*itDate].Oviposition * densityScale;
+    }
+
+    ContainerTotals_[*itDate] = dco;
+  }
+  AreContainersTotaled_ = true;
+}
 
 
 
@@ -506,35 +528,6 @@ CimsimOutput::GetExcludedDensity( date startDate, date endDate, int containerID 
   }
 
   return excludedDensity;
-}
-
-
-
-void
-CimsimOutput::CalculateContainerTotals(void)
-{
-  date startDate = LocationOutput_.begin()->first;
-  date endDate = LocationOutput_.rbegin()->first;
-
-  day_iterator itDate = day_iterator(startDate);
-  for( ; *itDate <= endDate; ++itDate ) {
-    DailyContainerOutput dco;
-
-    ContainerOutputs::iterator itCos;
-    for( itCos = ContainerOutputs_.begin(); itCos != ContainerOutputs_.end(); ++itCos ) {
-      ContainerOutput & co = itCos->second;
-      double densityScale = co[*itDate].UntreatedDensity + co[*itDate].TreatedDensity;
-      dco.Eggs += co[*itDate].Eggs * densityScale;
-      dco.Larvae += co[*itDate].Larvae * densityScale;
-      dco.Pupae += co[*itDate].Pupae * densityScale;
-      dco.NewFemales += co[*itDate].NewFemales * densityScale;
-      dco.CumulativeFemales += co[*itDate].CumulativeFemales * densityScale;
-      dco.Oviposition += co[*itDate].Oviposition * densityScale;
-    }
-
-    ContainerTotals_[*itDate] = dco;
-  }
-  AreContainersTotaled_ = true;
 }
 
 

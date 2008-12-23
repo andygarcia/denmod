@@ -14,7 +14,7 @@ PopData::PopData(void)
 PopData::~PopData(void)
 {
   ContainerPopDataCollection::iterator itCtnr;
-  for( itCtnr = Containers_.begin(); itCtnr != Containers_.end(); ++itCtnr ) {
+  for( itCtnr = _containers.begin(); itCtnr != _containers.end(); ++itCtnr ) {
     delete itCtnr->second;
   }
 }
@@ -24,7 +24,7 @@ PopData::~PopData(void)
 void
 PopData::AddContainerData( ContainerPopData * cpd )
 {
-  Containers_.insert( std::pair<int,ContainerPopData*>(cpd->Id,cpd) );
+  _containers.insert( std::pair<int,ContainerPopData*>(cpd->Id,cpd) );
 }
 
 
@@ -32,16 +32,16 @@ PopData::AddContainerData( ContainerPopData * cpd )
 ContainerPopData *
 PopData::GetContainerData( int containerId ) const
 {
-  ContainerPopDataCollection::const_iterator iter  = Containers_.find( containerId );
+  // search for container id
+  ContainerPopDataCollection::const_iterator iter = _containers.find( containerId );
 
-  if( iter != Containers_.end() ) {
-    return iter->second;
-  }
-  else {
-    // queried for non existent container
+  if( iter == _containers.end() ) {
+    // queried non existant container
     throw;
   }
-
+  else {
+    return iter->second;
+  }
 }
 
 
@@ -49,19 +49,24 @@ PopData::GetContainerData( int containerId ) const
 ContainerPopData *
 PopData::GetClonedContainerData( int containerId, int cloneId ) const
 {
-  ContainerPopDataCollection::const_iterator iter = Containers_.find( containerId );
+  // search for container id
+  ContainerPopDataCollection::const_iterator iter = _containers.find( containerId );
 
-  if( iter != Containers_.end() ) {
-    // now search for specific clone
-    ContainerPopDataCollection::const_iterator last = Containers_.upper_bound( containerId );
-    for( ; iter != last; ++iter ) {
-      if( iter->second->CloneId == cloneId ) {
-        return iter->second;
-      }
-    }
-  }
-  else {
-    // queried for non existent container
+  if( iter == _containers.end() ) {
+    // queried non existant container
     throw;
   }
+
+
+  // search for clone id
+  ContainerPopDataCollection::const_iterator last = _containers.upper_bound( containerId );
+
+  for( ; iter != last; ++iter ) {
+    if( iter->second->CloneId == cloneId ) {
+      return iter->second;
+    }
+  }
+
+  // queried non existant clone
+  throw;
 }

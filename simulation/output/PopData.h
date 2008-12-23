@@ -61,7 +61,7 @@ public:
   ContainerPopData * GetClonedContainerData( int containerId, int cloneId ) const;
 
 private:
-  ContainerPopDataCollection Containers_;
+  ContainerPopDataCollection _containers;
 
 public:
   sim::cs::PreOviAdultCohortCollection PreOviAdultCohorts;

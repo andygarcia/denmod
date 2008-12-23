@@ -32,9 +32,7 @@ SimLocation::SimLocation( const input::Location * location, boost::gregorian::da
     // read containers
     std::vector<input::Container*>::const_iterator itCtnr;
     for( itCtnr = _location->Containers_.begin(); itCtnr != _location->Containers_.end(); itCtnr++ ) {
-      // no pop data to use
-      SimContainer * newContainer = new SimContainer( *itCtnr, _location->Biology_ );
-      _containers.push_back( newContainer );
+      AddContainer( *itCtnr );
     }
   }
   else {
@@ -63,6 +61,54 @@ SimLocation::~SimLocation(void)
 
 
 void
+SimLocation::AddContainer( input::Container * container )
+{
+  // create a SimContainer from the input::Container optionally accounting for container cloning
+
+  if( container->IsCloned_ ) {
+    double cloneDensity = container->Density_ / container->NumberOfClones_;
+
+    // create each clone
+    for( int cloneId = 1; cloneId <= container->NumberOfClones_; cloneId++ ) {
+      SimContainer * newContainer = new SimContainer( container, _location->Biology_ );
+      newContainer->MakeClone( cloneId, container->NumberOfClones_, cloneDensity );
+      _containers.push_back( newContainer );
+    }
+  }
+  else {
+    SimContainer * newContainer = new SimContainer( container, _location->Biology_ );
+    _containers.push_back( newContainer );
+  }
+}
+
+
+
+void SimLocation::AddPopContainer( input::Container * container, const sim::output::PopData * population )
+{
+  // create a SimContainer from the input::Container optionally accounting for container cloning
+  // and using existing population data
+
+  if( container->IsCloned_ ) {
+    double cloneDensity = container->Density_ / container->NumberOfClones_;
+
+    // create each clone with its correspond population data
+    for( int cloneId = 1; cloneId <= container->NumberOfClones_; cloneId++ ) {
+      output::ContainerPopData * cpd = population->GetClonedContainerData( container->Id_, cloneId );
+      SimContainer * newContainer = new SimContainer( container, _location->Biology_, cpd );
+      newContainer->MakeClone( cloneId, container->NumberOfClones_, cloneDensity );
+      _containers.push_back( newContainer );
+    }
+  }
+  else {
+    output::ContainerPopData * cpd = population->GetContainerData( container->Id_ );
+    SimContainer * newContainer = new SimContainer( container, _location->Biology_, cpd );
+    _containers.push_back( newContainer );
+  }
+}
+
+
+
+void
 SimLocation::InitializePopulation( const sim::output::PopData * population )
 {
   _usingPop = true;
@@ -81,15 +127,7 @@ SimLocation::InitializePopulation( const sim::output::PopData * population )
   // initialize immatures and containers
   std::vector<input::Container*>::const_iterator itCtnr;
   for( itCtnr = _location->Containers_.begin(); itCtnr != _location->Containers_.end(); itCtnr++ ) {
-    if( population->Containers_.count((*itCtnr)->Name_) == 0 ) {
-      //SimContainer * newContainer = new SimContainer( *itCtnr, _location->Biology_ );
-      //_containers.push_back( newContainer );
-      throw;
-    }
-    else {
-      SimContainer * newContainer = new SimContainer( *itCtnr, _location->Biology_, population->Containers_.find((*itCtnr)->Name_)->second );
-      _containers.push_back( newContainer );
-    }
+    AddPopContainer( *itCtnr, population );
   }
 }
 
@@ -1027,7 +1065,7 @@ SimLocation::GeneratePopData(void)
   ContainerCollection::iterator itCont;
   for( itCont = _containers.begin(); itCont != _containers.end(); ++itCont ) {
     output::ContainerPopData * cpd = (*itCont)->GeneratePopData();
-    pd->Containers_[cpd->Name] = cpd;
+    pd->AddContainerData( cpd );
   }
 
   return pd;

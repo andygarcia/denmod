@@ -31,7 +31,10 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
   InitFood(container->InitFood_),
   MonthlyFoodAdditions(std::map<boost::date_time::months_of_year,double>()),
   FoodDecayRate(container->FoodDecayRate_),
-  InitialEggs(container->InitEggs_)
+  InitialEggs(container->InitEggs_),
+  IsCloned(false),
+  CloneId(0),
+  NumberOfClones(0)
 {
   // copy daily food additions by month
   MonthlyFoodAdditions[boost::date_time::Jan] = container->FoodGainJan_;
@@ -181,6 +184,19 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
 
 SimContainer::~SimContainer(void)
 {
+}
+
+
+
+void
+SimContainer::MakeClone( int cloneId, int numOfClones, double newDensity )
+{
+  this->IsCloned = true;
+  this->CloneId = cloneId;
+  this->NumberOfClones = numOfClones;
+
+  this->Density = newDensity;
+  this->UntreatedDensity = newDensity;
 }
 
 
@@ -1340,6 +1356,8 @@ SimContainer::GeneratePopData(void)
   sim::output::ContainerPopData * cpd = new output::ContainerPopData();
 
   cpd->Name = this->Name;
+  cpd->Id = this->Id;
+  cpd->CloneId = this->CloneId;
 
   // eggs
   cpd->EggCohorts = EggCohorts;
@@ -1444,6 +1462,23 @@ SimContainer::GetOutput( boost::gregorian::date d )
   dco.UntreatedDensity = UntreatedDensity;
   dco.TreatedDensity = TreatedDensity;
   dco.ExcludedDensity = GetTotalExcludedDensity();
+
+  if( IsCloned) {
+    // the way output is currently handled we need to downscale this container with respect to its
+    // cloned density to be able to accumulate with other cloned containers within this container type
+    double scale = 1.0 / NumberOfClones;
+    dco.Eggs *= scale;
+    dco.Larvae *= scale;
+    dco.Pupae *= scale;
+    dco.NewFemales *= scale;
+    dco.CumulativeFemales *= scale;
+    dco.Oviposition *= scale;
+
+    dco.TotalDensity *= NumberOfClones;
+    dco.UntreatedDensity *= NumberOfClones;
+    dco.TreatedDensity *= NumberOfClones;
+    dco.ExcludedDensity *= NumberOfClones;
+  }
 
   return dco;
 }
