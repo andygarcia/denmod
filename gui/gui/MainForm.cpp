@@ -383,7 +383,7 @@ MainForm::UpdateTitleBar(void)
   String ^ readOnly = ActiveDocument->IsReadOnly ? "[Read-Only]" : "";
   String ^ dirty = IsDocumentDirty() ? "*" : "";
   String ^ productName = Application::ProductName;
-  String ^ version = System::Reflection::Assembly::GetExecutingAssembly()->GetName()->Version->ToString();
+  String ^ version = DM_VERSION;
 
   
   Text = String::Format( "{0} {1} - [{2} - {3}]", filename, readOnly, productName, version );
