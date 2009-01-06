@@ -1,0 +1,52 @@
+LHSTITL CIMSim sampling
+LHSOBS  1000
+LHSSEED  1
+LHSPVAL  1
+LHSRPTS     DATA
+LHSOUT   C:\PROGRAM FILES\ARRAMIS\ARRAMIS\CIMSIM FILES\10.21.08.LSP
+LHSPOST  C:\PROGRAM FILES\ARRAMIS\ARRAMIS\CIMSIM FILES\10.21.08.MSP
+LHSMSG   C:\PROGRAM FILES\ARRAMIS\ARRAMIS\CIMSIM FILES\10.21.08.LMO
+DATASET:  
+A.dry.wet.wt.fac	Uniform		1.45		1.8
+A.min.ovip.temp		Uniform		18		24
+A.nom.surv		Uniform		0.75		0.95
+A.satdef.H.surv		Uniform		0.6		0.95
+A.satdef.H.thrsh	Uniform		25		35
+A.satdef.L.thrsh	Uniform		5		20
+A.sec.dev.thresh	Uniform		0.5		0.7
+E.flod.htch.ratio	Uniform		0.3		0.6
+E.min.htch.temp		Uniform		14		24
+E.nom.surv		Uniform		0.7		1
+E.pred.H.surv		Uniform		0.7		0.9
+E.sat.H.thresh		Uniform		30		40
+E.sat.L.surv		Uniform		0.95		0.99
+E.sat.L.thresh		Uniform		10		20
+E.sat.sun.thresh	Uniform		0.6		0.9
+E.sat.sunex.surv	Uniform		0.75		1
+E.spon.htch.ratio	Uniform		0		0.2
+E.temp.H.thresh		Uniform		25		35
+E.temp.HL.surv		Uniform		0		0.05
+E.temp.HL.thresh	Uniform		40		47
+E.temp.L.thresh		Uniform		-6		5
+L.dry.cont.surv		Uniform		0		0.1
+L.fd.assim.rate		Uniform		0.1		0.4
+L.fd.explt.rate		Uniform		0.7		0.9
+L.fd.exprt.indep	Uniform		0.05		1
+L.fd.mt.wtlos.rt	Uniform		0.014		0.018
+L.fd.wtlos.expnt	Uniform		0.59		0.73
+L.fst.lip.rsvsur	Uniform		0.9		1
+L.fst.nolip.surv	Uniform		0.3		0.7
+L.nom.surv		Uniform		0.99		1
+L.temp.H.thresh		Uniform		30		40
+L.temp.HL.surv		Uniform		0		0.05
+L.temp.HL.thresh	Uniform		40		46
+L.temp.L.thresh		Uniform		10		15
+L.temp.LL.surv		Uniform		0		0.05
+L.wt.at.hatch		Uniform		0.001		0.034
+P.emerg.surv		Uniform		0.75		0.9
+P.nom.surv		Uniform		0.85		1
+P.temp.H.thresh		Uniform		30		40
+P.temp.HL.surv		Uniform		0		0.05
+P.temp.HL.thresh	Uniform		40		46
+P.temp.L.thresh		Uniform		10		15
+P.temp.LL.surv		Uniform		0		0.05
