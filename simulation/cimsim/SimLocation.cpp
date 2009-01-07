@@ -22,6 +22,13 @@ SimLocation::SimLocation( const input::Location * location, boost::gregorian::da
   _preOviBiters(0),
   _oviBiters(0)
 {
+#ifdef _DEBUG
+  // leave whatever seed has been in use until now
+  //srand(1);
+#else
+  srand( time(NULL) );
+#endif
+
   // initialize population/containers
   if( popData == NULL ) {
     _usingPop = false;
