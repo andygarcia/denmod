@@ -179,24 +179,25 @@ private:
   double egghsdsu;
   double egglsdsu;
 
-  double eggtemp1;
-  double eggtemp2;
-  double eggtemp3;
-  double eggtemp4;
+  double _eggTemperatureLowLethalThreshold;
+  double _eggTemperatureLowLethalSurvival;
+  double _eggTemperatureLowThreshold;
+  double _eggTemperatureHighThreshold;
+  double _eggTemperatureHighLethalThreshold;
+  double _eggTemperatureHighLethalSurvival;
 
   double PredLT;
   double PredHT;
   double PredSurLT;
   double PredSurHT;
 
-  double EggSurvNom;
+  double _eggSurvival;
+  double _eggSurvivalNominal;
+  double _eggSurvivalTemperature;
+  double _eggSurvivalSatDef;
+  double _eggSurvivalPredation;
+  double _eggSurvivalEggDestruction;
 
-  double EggSurvivalTemperature;
-  double EggSurvivalSatDef;
-  double EggSurvivalPredation;
-  double EggSurvivalEggDestruction;
-
-  double SurvEggs;
   double DevRateEggs;
 
   int MaxEggBand;

@@ -343,6 +343,12 @@ Location::ProcessCimsimOutput( sim::output::CimsimOutput * uco, DateTime startDa
     CopyVectorToOutput( uco->GetUntreatedDensity(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::UntreatedDensity] );
     CopyVectorToOutput( uco->GetTreatedDensity(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::TreatedDensity] );
     CopyVectorToOutput( uco->GetExcludedDensity(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::ExcludedDensity] );
+
+    CopyVectorToOutput( uco->GetEggSurvival(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::EggSurvival] );
+    CopyVectorToOutput( uco->GetEggTemperatureSurvival(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::EggTemperatureSurvival] );
+    CopyVectorToOutput( uco->GetEggSatDefSurvival(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::EggSatDefSurvival] );
+    CopyVectorToOutput( uco->GetEggPredationSurvival(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::EggPredationSurvival] );
+
   }
 
   return mco;

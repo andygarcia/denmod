@@ -57,6 +57,11 @@ CimsimOutput::AddDailyContainerOutput( DailyContainerOutput dco, date d, int con
   currentDco.UntreatedDensity = dco.UntreatedDensity;
   currentDco.TreatedDensity = dco.TreatedDensity;
   currentDco.ExcludedDensity = dco.ExcludedDensity;
+  currentDco.EggSurvival = dco.EggSurvival;
+  currentDco.EggTemperatureSurvival = dco.EggTemperatureSurvival;
+  currentDco.EggSatDefSurvival = dco.EggSatDefSurvival;
+  currentDco.EggPredationSurvival = dco.EggPredationSurvival;
+  
 
   // the following values are accumulated amonst cloned containers
   currentDco.Eggs += dco.Eggs;
@@ -528,6 +533,70 @@ CimsimOutput::GetExcludedDensity( date startDate, date endDate, int containerID 
   }
 
   return excludedDensity;
+}
+
+
+
+std::vector<double>
+CimsimOutput::GetEggSurvival( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID )
+{
+  std::vector<double> values;
+  ContainerOutput & co = ContainerOutputs_[containerID];
+
+  day_iterator itDate = day_iterator(startDate);
+  for( ; *itDate <= endDate; ++itDate ) {
+    values.push_back( co[*itDate].EggSurvival );
+  }
+
+  return values;
+}
+
+
+
+std::vector<double>
+CimsimOutput::GetEggTemperatureSurvival( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID )
+{
+  std::vector<double> values;
+  ContainerOutput & co = ContainerOutputs_[containerID];
+
+  day_iterator itDate = day_iterator(startDate);
+  for( ; *itDate <= endDate; ++itDate ) {
+    values.push_back( co[*itDate].EggTemperatureSurvival );
+  }
+
+  return values;
+}
+
+
+
+std::vector<double>
+CimsimOutput::GetEggSatDefSurvival( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID )
+{
+  std::vector<double> values;
+  ContainerOutput & co = ContainerOutputs_[containerID];
+
+  day_iterator itDate = day_iterator(startDate);
+  for( ; *itDate <= endDate; ++itDate ) {
+    values.push_back( co[*itDate].EggSatDefSurvival );
+  }
+
+  return values;
+}
+
+
+
+std::vector<double>
+CimsimOutput::GetEggPredationSurvival( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID )
+{
+  std::vector<double> values;
+  ContainerOutput & co = ContainerOutputs_[containerID];
+
+  day_iterator itDate = day_iterator(startDate);
+  for( ; *itDate <= endDate; ++itDate ) {
+    values.push_back( co[*itDate].EggPredationSurvival );
+  }
+
+  return values;
 }
 
 
