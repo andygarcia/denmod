@@ -198,12 +198,6 @@ public:
     static DatedOutputInfo ^ UntreatedDensity = gcnew DatedOutputInfo( Group::CimsimContainer, "Untreated Density", "#/ha" );
     static DatedOutputInfo ^ TreatedDensity = gcnew DatedOutputInfo( Group::CimsimContainer, "Treated Density", "#/ha" );
     static DatedOutputInfo ^ ExcludedDensity = gcnew DatedOutputInfo( Group::CimsimContainer, "Excluded Density", "#/ha" );
-
-    static DatedOutputInfo ^ EggSurvival = gcnew DatedOutputInfo( Group::CimsimContainer, "Egg Survival", "#" );
-    static DatedOutputInfo ^ EggTemperatureSurvival = gcnew DatedOutputInfo( Group::CimsimContainer, "Egg Survival vs. Temperature", "#" );
-    static DatedOutputInfo ^ EggSatDefSurvival = gcnew DatedOutputInfo( Group::CimsimContainer, "Egg Survival vs. Saturation Deficit", "#" );
-    static DatedOutputInfo ^ EggPredationSurvival = gcnew DatedOutputInfo( Group::CimsimContainer, "Egg Survival vs. Predation", "#" );
-
   };
 
   ref class DensimLocation

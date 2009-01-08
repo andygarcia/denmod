@@ -125,16 +125,13 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
   egglsdsu = bio->Egg->SaturationDeficit->LowSurvival;
 
   PropHatchSpont = bio->Egg->SpontaneousHatchRatio;
+  EggSurvNom = bio->Egg->NominalSurvival;
 
-  _eggSurvivalNominal = bio->Egg->NominalSurvival;
-
-  _eggTemperatureLowLethalThreshold = bio->Egg->Temperature->LowLethalThreshold;
-  _eggTemperatureLowLethalSurvival = bio->Egg->Temperature->LowLethalSurvival;
-  _eggTemperatureLowThreshold = bio->Egg->Temperature->LowThreshold;
-  _eggTemperatureHighThreshold= bio->Egg->Temperature->HighThreshold;
-  _eggTemperatureHighLethalThreshold = bio->Egg->Temperature->HighLethalThreshold;
-  _eggTemperatureHighLethalSurvival = bio->Egg->Temperature->HighLethalSurvival;
-
+  eggtemp1 = bio->Egg->Temperature->LowThreshold;
+  eggtemp2 = bio->Egg->Temperature->LowLethalThreshold;
+  eggtemp3 = bio->Egg->Temperature->HighThreshold;
+  eggtemp4 = bio->Egg->Temperature->HighLethalThreshold;
+  
   PredLT = bio->Egg->Predation->LowThreshold;
   PredHT = bio->Egg->Predation->HighThreshold;
   PredSurLT = bio->Egg->Predation->LowSurvival;
@@ -146,17 +143,18 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
   LarvaeSurvivalNominal = bio->Larvae->NominalSurvival;
   CadFoodEquiv = bio->Larvae->CadaverFoodRatio;
 
-  LarvTemp1 = bio->Larvae->Temperature->LowLethalThreshold;
+  LarvTemp1 = bio->Larvae->Temperature->LowLethalSurvival;
   LarvTemp2 = bio->Larvae->Temperature->LowThreshold;
-  LarvTemp3 = bio->Larvae->Temperature->HighThreshold;
-  LarvTemp4 = bio->Larvae->Temperature->HighLethalThreshold;
+  LarvTemp3 = bio->Larvae->Temperature->HighLethalThreshold;
+  LarvTemp4 = bio->Larvae->Temperature->HighThreshold;
 
   a = bio->Larvae->Food->AssimilationRate;
   b = bio->Larvae->Food->ExploitationRate;
   c = bio->Larvae->Food->ExploitationRateIndependence;
   d1 = bio->Larvae->Food->MetabolicWeightLossRate;
   d2 = bio->Larvae->Food->MetabolicWeightLossExponent;
-  fT = .001f;                                             // chronological basis from 1993 paper
+  // TODO - this is bio->Larvae->Chrono...
+  fT = .001f;                                           // TODO: larval weight function param, figure out what this is, fix where its loaded from
 
   larvpwtsu = bio->Larvae->Fasting->NoFastingSurvival;
   larvnwtnfbsu = bio->Larvae->Fasting->NoLipidReserveSurvival;
@@ -218,7 +216,7 @@ SimContainer::Initialize( date startDate )
 void
 SimContainer::InitializeYear( int year )
 {
-  _eggSurvivalEggDestruction = 1;
+  EggSurvivalEggDestruction = 1;
   cadavers = 0;
 }
 
@@ -612,7 +610,7 @@ SimContainer::BeginNewLarvicideTreatment( input::Larvicide * li )
 void
 SimContainer::ApplyEggDestruction( double rateOfDestruction )
 {
-  _eggSurvivalEggDestruction = 1 - rateOfDestruction;
+  EggSurvivalEggDestruction = 1 - rateOfDestruction;
 }
 
 
@@ -622,23 +620,23 @@ SimContainer::CalculateSaturationDeficitEggSurvival( int day, double satDef )
 {
   if( WaterDepth == 0 ) {
     if( Exposure > this->eggdryth ) {
-      _eggSurvivalSatDef = eggdrysu;
+      EggSurvivalSatDef = eggdrysu;
     }
     else {
       if( satDef <= egglsdth ) {
-        _eggSurvivalSatDef = egglsdsu;
+        EggSurvivalSatDef = egglsdsu;
       }
       else if( satDef >= egghsdth ) {
-        _eggSurvivalSatDef = egghsdsu;
+        EggSurvivalSatDef = egghsdsu;
       }
       else {
         double eggsdslope = (egglsdsu - egghsdsu) / (egghsdth - egglsdth);
-        _eggSurvivalSatDef = egglsdsu - ((satDef - egglsdth) * eggsdslope);
+        EggSurvivalSatDef = egglsdsu - ((satDef - egglsdth) * eggsdslope);
       }
     }
   }
   else {
-    _eggSurvivalSatDef = eggwetsu;
+    EggSurvivalSatDef = eggwetsu;
   }
 }
 
@@ -647,26 +645,26 @@ SimContainer::CalculateSaturationDeficitEggSurvival( int day, double satDef )
 void
 SimContainer::CalculateTemperatureEggSurvival( int day )
 {
-  if( MinWaterTemp <= _eggTemperatureLowLethalThreshold ) {
-    _eggSurvivalTemperature = _eggTemperatureLowLethalSurvival;
+  if( MinWaterTemp <= eggtemp1 ) {
+    EggSurvivalTemperature = .05f;
   }
-  else if( MinWaterTemp >= _eggTemperatureLowThreshold ) {
-    _eggSurvivalTemperature = 1.0;
+  else if( MinWaterTemp >= eggtemp2 ) {
+    EggSurvivalTemperature = 1;
   }
   else {
-    double slope = (1.0 - _eggTemperatureLowLethalSurvival) / (_eggTemperatureLowLethalThreshold - _eggTemperatureLowThreshold);
-    _eggSurvivalTemperature = 1 + ((_eggTemperatureLowThreshold - MinWaterTemp) * slope);
+    double eggltempslope = .95f / (eggtemp1 - eggtemp2);
+    EggSurvivalTemperature = 1 + ((eggtemp2 - MinWaterTemp) * eggltempslope);
   }
 
-  if( MaxWaterTemp >= _eggTemperatureHighLethalThreshold ) {
-    _eggSurvivalTemperature = _eggSurvivalTemperature * _eggTemperatureHighLethalSurvival;
+  if( MaxWaterTemp >= eggtemp4 ) {
+    EggSurvivalTemperature = EggSurvivalTemperature * .05f;
   }
-  else if( MaxWaterTemp <= _eggTemperatureHighThreshold ) {
-    _eggSurvivalTemperature = _eggSurvivalTemperature * 1;
+  else if( MaxWaterTemp <= eggtemp3 ) {
+    EggSurvivalTemperature = EggSurvivalTemperature * 1;
   }
   else {
-    double slope = (1.0 - _eggTemperatureHighLethalSurvival) / (_eggTemperatureHighThreshold - _eggTemperatureHighLethalThreshold);
-    _eggSurvivalTemperature = _eggSurvivalTemperature * (1 + ((MaxWaterTemp - _eggTemperatureHighThreshold) * slope));
+    double egghtempslope = .95f / (eggtemp3 - eggtemp4);
+    EggSurvivalTemperature = EggSurvivalTemperature * (1 + ((MaxWaterTemp - eggtemp3) * egghtempslope));
   }
 }
 
@@ -676,14 +674,14 @@ void
 SimContainer::CalculatePredationEggSurvival( int day )
 {
   if( AvgWaterTemp <= PredLT ) {
-    _eggSurvivalPredation = PredSurLT;
+    EggSurvivalPredation = PredSurLT;
   }
   else if( AvgWaterTemp >= PredHT ) {
-    _eggSurvivalPredation = PredSurHT;
+    EggSurvivalPredation = PredSurHT;
   }
   else {
     double Slope = (PredSurLT - PredSurHT) / (PredHT - PredLT);
-    _eggSurvivalPredation = PredSurLT - ((AvgWaterTemp - PredLT) * Slope);
+    EggSurvivalPredation = PredSurLT - ((AvgWaterTemp - PredLT) * Slope);
   }
 }
 
@@ -692,7 +690,7 @@ SimContainer::CalculatePredationEggSurvival( int day )
 void
 SimContainer::CalculateCumulativeEggSurvival(void)
 {
-  _eggSurvival = _eggSurvivalSatDef * _eggSurvivalTemperature * _eggSurvivalNominal * _eggSurvivalPredation * _eggSurvivalEggDestruction;
+  SurvEggs = EggSurvivalSatDef * EggSurvivalTemperature * EggSurvNom * EggSurvivalPredation * EggSurvivalEggDestruction;
 }
 
 
@@ -709,7 +707,7 @@ SimContainer::AdvanceEggs( int day )
     EggBand * eggBand = &(itBand->second);
 
     // process mature cohorts
-    eggBand->MatureEggs = eggBand->MatureEggs * _eggSurvival;
+    eggBand->MatureEggs = eggBand->MatureEggs * SurvEggs;
 
     // new develompent threshold target, using a variable CDt calculation based on today's development
     // instead of compensating for simulation's discrete development over the course of a day by making the threshold 0.95
@@ -721,7 +719,7 @@ SimContainer::AdvanceEggs( int day )
     for( EggIterator itEgg = eggBand->EggCohorts.begin(); itEgg != eggBand->EggCohorts.end();  ) {
       if( itEgg->Development <= targetThreshold ) {
         itEgg->Age++;
-        itEgg->Number = itEgg->Number * _eggSurvival;
+        itEgg->Number = itEgg->Number * SurvEggs;
         itEgg->Development = itEgg->Development + DevRateEggs;
 
         if( itEgg->Number <= 0  || itEgg->Age == MaxAgeEggs ) {
@@ -735,17 +733,17 @@ SimContainer::AdvanceEggs( int day )
       }
       else {
         if( AvgWaterTemp < eggdiapausetemp ) {
-          eggBand->MatureEggs = eggBand->MatureEggs + (itEgg->Number * _eggSurvival);
+          eggBand->MatureEggs = eggBand->MatureEggs + (itEgg->Number * SurvEggs);
         }
         else {
           if( currentBand <= HatchBand ) {
             // band flooded, all eggs hatch
-            NewlyHatched += (itEgg->Number * _eggSurvival);
+            NewlyHatched += (itEgg->Number * SurvEggs);
           }
           else {
             // band not flooded, some proportion hatch spontaneously, rest become mature eggs
-            eggBand->MatureEggs += ((1 - PropHatchSpont) * itEgg->Number * _eggSurvival);
-            NewlyHatched += (PropHatchSpont * itEgg->Number * _eggSurvival);
+            eggBand->MatureEggs += ((1 - PropHatchSpont) * itEgg->Number * SurvEggs);
+            NewlyHatched += (PropHatchSpont * itEgg->Number * SurvEggs);
           }
         }
 
@@ -1446,8 +1444,9 @@ SimContainer::GetOutput( boost::gregorian::date d )
 {
   // record container output for this date
   sim::output::DailyContainerOutput dco;
+  int day = d.day_of_year();
 
-  dco.DayOfYear = d.day_of_year();
+  dco.DayOfYear = day;
   dco.Depth = WaterDepth;
   dco.Food = FoodAvailable;
   dco.MaxTemp = MaxWaterTemp;
@@ -1463,11 +1462,6 @@ SimContainer::GetOutput( boost::gregorian::date d )
   dco.UntreatedDensity = UntreatedDensity;
   dco.TreatedDensity = TreatedDensity;
   dco.ExcludedDensity = GetTotalExcludedDensity();
-
-  dco.EggSurvival = _eggSurvival;
-  dco.EggTemperatureSurvival = _eggSurvivalTemperature;
-  dco.EggSatDefSurvival = _eggSurvivalSatDef;
-  dco.EggPredationSurvival = _eggSurvivalPredation;
 
   if( IsCloned) {
     // the way output is currently handled we need to downscale this container with respect to its
@@ -1494,7 +1488,7 @@ SimContainer::GetOutput( boost::gregorian::date d )
 void
 SimContainer::EndDay(void)
 {
-  _eggSurvivalEggDestruction = 1;
+  EggSurvivalEggDestruction = 1;
 
   WaterDepthYesterday = WaterDepth;
   FoodRemainingYesterday = FoodAvailable;

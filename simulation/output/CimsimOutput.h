@@ -75,11 +75,6 @@ public:
   std::vector<double> GetTreatedDensity( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
   std::vector<double> GetExcludedDensity( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
 
-  std::vector<double> GetEggSurvival( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-  std::vector<double> GetEggTemperatureSurvival( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-  std::vector<double> GetEggSatDefSurvival( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-  std::vector<double> GetEggPredationSurvival( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
-
 private:
   LocationOutput LocationOutput_;
   ContainerOutputs ContainerOutputs_;
@@ -141,11 +136,6 @@ public:
     UntreatedDensity = 0;
     TreatedDensity = 0;
     ExcludedDensity = 0;    
-
-    EggSurvival = 0;
-    EggTemperatureSurvival = 0;
-    EggSatDefSurvival = 0;
-    EggPredationSurvival = 0;
   }
 
 public:
@@ -165,11 +155,6 @@ public:
   double UntreatedDensity;
   double TreatedDensity;
   double ExcludedDensity;
-
-  double EggSurvival;
-  double EggTemperatureSurvival;
-  double EggSatDefSurvival;
-  double EggPredationSurvival;
 };
 
 };
