@@ -206,35 +206,43 @@ private:
   double _eggSpontaneousHatchRatio;
   double _eggMinimumHatchTemperature;
 
+  
+  // cadavers
+  double _cadavers;
+  double _cadaverFoodRatio;
+
 
   // larvae
   LarvaeCohortCollection LarvaeCohorts;
-  double TotalLarvae;
 
-  double LarvP25;
-  double LarvDHa;
-  double LarvDH;
-  double LarvTh2;
+  double _totalLarvae;
 
-  double LarvTemp1;
-  double LarvTemp2;
-  double LarvTemp3;
-  double LarvTemp4;
+  double _newlyHatched;
+  double _larvaeInitialWeight;
+  double _larvaeMaxWeight;
+  double _larvaeCadaverWeight;
 
-  double larvpwtsu;
-  double larvnwtnfbsu;
-  double larvnwtfbsu;
+  double _larvaeDevRate;
+  double _larvaeDevRO25;
+  double _larvaeDevDHA;
+  double _larvaeDevDH;
+  double _larvaeDevTHALF;
+  double _larvaeMaximumDevelopment;
 
-  double LarvaeSurvivalNominal;
-  double LarvaeSurvivalTemperature;
-  double LarvaeSurvivalLarvicide;
-  LarvicideTreatment * CurrentLarvicideTreatment;
+  double _larvaeTemperatureLowLethalThreshold;
+  double _larvaeTemperatureLowThreshold;
+  double _larvaeTemperatureHighThreshold;
+  double _larvaeTemperatureHighLethalThreshold;
 
-  double NewlyHatched;
-  double LarvaeInitialWeight;
+  double _larvaeNoFastingSurvival;
+  double _larvaeNoLipidReserveSurvival;
+  double _larvaeLipidReserveSurvival;
 
-  double DevRateLarv;
-  double MaxLarvWt;
+  double _larvaeNominalSurvival;
+  double _larvaeTemperatureSurvival;
+  double _larvaePupationSurvival;
+  double _larvaeLarvicideSurvival;
+  LarvicideTreatment * _currentLarvicideTreatment;
 
   double et;
   double fT;
@@ -245,51 +253,46 @@ private:
   double d1;
   double d2;
 
-  double cadavers;
-  double LarvCadWt;
-  double CadFoodEquiv;
+  double _larvaePupationWeightSlope;
+  double _larvaePupationWeightIntercept;
+  double _larvaeMinimumWeightForPupation;
 
-  double PupWtSlope;
-  double PupWtConst;
-  double PupMinWt;
 
-  double LarvaePupWtMaxDev;
-
-  // Pupae
+  // pupae
   PupaeCohortCollection PupaeCohorts;
 
-  double NewPupae;
-  double DevRatePupae;
-  double PupaeWt;
+  double _newPupae;
+  double _totalPupae;
+  double _pupaeWeight;
+  double _averagePupaeWeight;
+  double _pupaeCadaverWeight;
 
-  double TotalPupae;
-  double AveragePupaeWeight;
-  double PupCadWt;
+  double _pupaeDevRate;
+  double _pupaeDevRO25;
+  double _pupaeDevDHA;
+  double _pupaeDevDHH;
+  double _pupaeDevTHALF;
 
-  double PupaeP25;
-  double PupaeDHa;
-  double PupaeDH;
-  double PupaeTh2;
+  double _pupaeTemperatureLowLethalThreshold;
+  double _pupaeTemperatureLowThreshold;
+  double _pupaeTemperatureHighThreshold;
+  double _pupaeTemperatureHighLethalThreshold;
 
-  double PupTemp1;
-  double PupTemp2;
-  double PupTemp3;
-  double PupTemp4;
+  double _pupaeTemperatureSurvival;
+  double _pupaeNominalSurvival;
 
-  double pupgeneticsu;
-  double PupSurvTempDlyCt;
-  double PupSurvNom;
+  double _pupaeEmergenceSuccess;
+  double _pupaeFemaleEmergenceRatio;
 
-  double EmergenceSuccess;
-  double PercentFemale;
 
-  // Adults
-  double NewAdults;
-  double NewFemales;
-  double CumulativeFemales;
+  // adults
+  double _newAdults;
+  double _newFemales;
+  double _cumulativeFemales;
 
-  // Oviposition
-  double ContPref;
+
+  // oviposition
+  double _ovipositionPreference;
 };
 
 };

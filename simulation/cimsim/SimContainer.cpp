@@ -56,7 +56,7 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
   _treatedDensity = 0;
 
   // initially no larvicide treatments in effect
-  CurrentLarvicideTreatment = NULL;
+  _currentLarvicideTreatment = NULL;
 
   // determine maximum egg band
   _maxEggBand = static_cast<int>( ceil(this->Height / _eggBandWidth) );
@@ -67,11 +67,11 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
     EggCohorts = containerPopData->EggCohorts;
 
     LarvaeCohorts = containerPopData->LarvaeCohorts;
-    cadavers = containerPopData->cadavers;
-    LarvCadWt = containerPopData->LarvCadWt;
+    _cadavers = containerPopData->Cadavers;
+    _larvaeCadaverWeight = containerPopData->LarvaeCadaverWeight;
 
     PupaeCohorts = containerPopData->PupaeCohorts;
-    PupCadWt = containerPopData->PupCadWt;
+    _pupaeCadaverWeight = containerPopData->PupaeCadaverWeight;
 
     _waterDepthYesterday = containerPopData->Depth;
     _foodRemainingYesterday = containerPopData->Food;
@@ -92,11 +92,11 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
     }
   
     LarvaeCohorts = LarvaeCohortCollection();
-    LarvCadWt = 0;
-    cadavers = 0;
+    _larvaeCadaverWeight = 0;
+    _cadavers = 0;
 
     PupaeCohorts = PupaeCohortCollection();
-    PupCadWt = 0;
+    _pupaeCadaverWeight = 0;
   }
 
 
@@ -106,15 +106,15 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
   _eggDevDHH = bio->Egg->Development->DHH;
   _eggDevTHALF = bio->Egg->Development->THALF;
 
-  LarvP25 = bio->Larvae->Development->RO25;
-  LarvDHa = bio->Larvae->Development->DHA;
-  LarvDH = bio->Larvae->Development->DHH;
-  LarvTh2 = bio->Larvae->Development->THALF;
+  _larvaeDevRO25 = bio->Larvae->Development->RO25;
+  _larvaeDevDHA = bio->Larvae->Development->DHA;
+  _larvaeDevDH = bio->Larvae->Development->DHH;
+  _larvaeDevTHALF = bio->Larvae->Development->THALF;
   
-  PupaeP25 = bio->Pupae->Development->RO25;
-  PupaeDHa = bio->Pupae->Development->DHA;
-  PupaeDH = bio->Pupae->Development->DHH;
-  PupaeTh2 = bio->Pupae->Development->THALF;
+  _pupaeDevRO25 = bio->Pupae->Development->RO25;
+  _pupaeDevDHA = bio->Pupae->Development->DHA;
+  _pupaeDevDHH = bio->Pupae->Development->DHH;
+  _pupaeDevTHALF = bio->Pupae->Development->THALF;
 
   _eggSatDefWetSurvival = bio->Egg->SaturationDeficit->WetSurvival;
   _eggSatDefHighSunExposureThreshold = bio->Egg->SaturationDeficit->HighSunExposureThreshold;
@@ -140,13 +140,13 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
   _eggMinimumHatchTemperature = bio->Egg->MinimumHatchTemperature;
   _eggFloodHatchRatio = bio->Egg->FloodHatchRatio;
 
-  LarvaeSurvivalNominal = bio->Larvae->NominalSurvival;
-  CadFoodEquiv = bio->Larvae->CadaverFoodRatio;
+  _larvaeNominalSurvival = bio->Larvae->NominalSurvival;
+  _cadaverFoodRatio = bio->Larvae->CadaverFoodRatio;
 
-  LarvTemp1 = bio->Larvae->Temperature->LowLethalSurvival;
-  LarvTemp2 = bio->Larvae->Temperature->LowThreshold;
-  LarvTemp3 = bio->Larvae->Temperature->HighLethalThreshold;
-  LarvTemp4 = bio->Larvae->Temperature->HighThreshold;
+  _larvaeTemperatureLowLethalThreshold = bio->Larvae->Temperature->LowLethalSurvival;
+  _larvaeTemperatureLowThreshold = bio->Larvae->Temperature->LowThreshold;
+  _larvaeTemperatureHighThreshold = bio->Larvae->Temperature->HighLethalThreshold;
+  _larvaeTemperatureHighLethalThreshold = bio->Larvae->Temperature->HighThreshold;
 
   a = bio->Larvae->Food->AssimilationRate;
   b = bio->Larvae->Food->ExploitationRate;
@@ -156,28 +156,27 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
   // TODO - this is bio->Larvae->Chrono...
   fT = .001f;                                           // TODO: larval weight function param, figure out what this is, fix where its loaded from
 
-  larvpwtsu = bio->Larvae->Fasting->NoFastingSurvival;
-  larvnwtnfbsu = bio->Larvae->Fasting->NoLipidReserveSurvival;
-  larvnwtfbsu = bio->Larvae->Fasting->LipidReserveSurvival;
+  _larvaeNoFastingSurvival = bio->Larvae->Fasting->NoFastingSurvival;
+  _larvaeNoLipidReserveSurvival = bio->Larvae->Fasting->NoLipidReserveSurvival;
+  _larvaeLipidReserveSurvival = bio->Larvae->Fasting->LipidReserveSurvival;
 
+  _larvaeInitialWeight = bio->Larvae->WeightAtHatch;
+  _larvaePupationSurvival = bio->Larvae->PupationSurvival;
 
-  LarvaeInitialWeight = bio->Larvae->WeightAtHatch;
-  pupgeneticsu = bio->Larvae->PupationSurvival;
-
-  PupTemp1 = bio->Pupae->Temperature->LowLethalThreshold;
-  PupTemp2 = bio->Pupae->Temperature->LowThreshold;
-  PupTemp3 = bio->Pupae->Temperature->HighThreshold;
-  PupTemp4 = bio->Pupae->Temperature->HighLethalThreshold;
-  PupSurvNom = bio->Pupae->NominalSurvival;
+  _pupaeTemperatureLowLethalThreshold = bio->Pupae->Temperature->LowLethalThreshold;
+  _pupaeTemperatureLowThreshold = bio->Pupae->Temperature->LowThreshold;
+  _pupaeTemperatureHighThreshold = bio->Pupae->Temperature->HighThreshold;
+  _pupaeTemperatureHighLethalThreshold = bio->Pupae->Temperature->HighLethalThreshold;
+  _pupaeNominalSurvival = bio->Pupae->NominalSurvival;
   
-  PupWtSlope = bio->Larvae->PupationWeight->Slope;
-  PupWtConst = bio->Larvae->PupationWeight->Intercept;
-  PupMinWt = bio->Larvae->PupationWeight->MinimumWeightForPupation;
+  _larvaePupationWeightSlope = bio->Larvae->PupationWeight->Slope;
+  _larvaePupationWeightIntercept = bio->Larvae->PupationWeight->Intercept;
+  _larvaeMinimumWeightForPupation = bio->Larvae->PupationWeight->MinimumWeightForPupation;
 
-  LarvaePupWtMaxDev = bio->Larvae->PupationWeight->MaximumDevelopment;
+  _larvaeMaximumDevelopment = bio->Larvae->PupationWeight->MaximumDevelopment;
 
-  EmergenceSuccess = bio->Pupae->EmergenceSurvival;
-  PercentFemale = bio->Pupae->FemaleEmergence;
+  _pupaeEmergenceSuccess = bio->Pupae->EmergenceSurvival;
+  _pupaeFemaleEmergenceRatio = bio->Pupae->FemaleEmergence;
 }
 
 
@@ -208,7 +207,7 @@ SimContainer::Initialize( date startDate )
   _previousFoodAdditionDate = startDate - days(3);
 
   // clear total productivity
-  CumulativeFemales = 0;
+  _cumulativeFemales = 0;
 }
 
 
@@ -217,7 +216,7 @@ void
 SimContainer::InitializeYear( int year )
 {
   _eggDestructionSurvival = 1;
-  cadavers = 0;
+  _cadavers = 0;
 }
 
 
@@ -429,11 +428,11 @@ SimContainer::MaxWaterTempRegression( double minAirTemp, double maxAirTemp )
 void
 SimContainer::CalculateDevelopmentRates( int day )
 {
-  static double DevRateLarv26 = DevelopmentRate( LarvP25, 26 + 273.15, LarvDHa, LarvDH, LarvTh2 );
-  static double DevRateLarv134 = DevelopmentRate( LarvP25, 13.4 + 273.15, LarvDHa, LarvDH, LarvTh2 );
+  static double DevRateLarv26 = DevelopmentRate( _larvaeDevRO25, 26 + 273.15, _larvaeDevDHA, _larvaeDevDH, _larvaeDevTHALF );
+  static double DevRateLarv134 = DevelopmentRate( _larvaeDevRO25, 13.4 + 273.15, _larvaeDevDHA, _larvaeDevDH, _larvaeDevTHALF );
 
   _eggDevRate = DevelopmentRate( _eggDevRO25, _averageWaterTemperature + 273.15f, _eggDevDHA, _eggDevDHH, _eggDevTHALF );
-  DevRateLarv = DevelopmentRate( LarvP25, _averageWaterTemperature + 273.15f, LarvDHa, LarvDH, LarvTh2 );
+  _larvaeDevRate = DevelopmentRate( _larvaeDevRO25, _averageWaterTemperature + 273.15f, _larvaeDevDHA, _larvaeDevDH, _larvaeDevTHALF );
 
   // et places food/weight calculations on a chronological basis with temperature
   // food/weight functions shutdown below 13.4 degrees celsius
@@ -441,10 +440,10 @@ SimContainer::CalculateDevelopmentRates( int day )
     et = 0;
   }
   else {
-    et = (DevRateLarv - DevRateLarv134) / (DevRateLarv26 - DevRateLarv134);
+    et = (_larvaeDevRate - DevRateLarv134) / (DevRateLarv26 - DevRateLarv134);
   }
 
-  DevRatePupae = DevelopmentRate(PupaeP25, _averageWaterTemperature + 273.15f, PupaeDHa, PupaeDH, PupaeTh2 );
+  _pupaeDevRate = DevelopmentRate(_pupaeDevRO25, _averageWaterTemperature + 273.15f, _pupaeDevDHA, _pupaeDevDHH, _pupaeDevTHALF );
 }
 
 
@@ -558,7 +557,7 @@ SimContainer::RecoverTreated(void)
     return;
   }
 
-  if( CurrentLarvicideTreatment->InEffect ) {
+  if( _currentLarvicideTreatment->InEffect ) {
     // treatment(s) in progress, do apply monthly loss however
     double numMonthlyLoss = _treatedDensity * this->Loss;
     _treatedDensity = _treatedDensity - numMonthlyLoss;
@@ -570,8 +569,8 @@ SimContainer::RecoverTreated(void)
 
     // clear treated density and current treatment
     _treatedDensity = 0;
-    delete CurrentLarvicideTreatment;
-    CurrentLarvicideTreatment = NULL;
+    delete _currentLarvicideTreatment;
+    _currentLarvicideTreatment = NULL;
   }
 }
 
@@ -597,12 +596,12 @@ SimContainer::BeginNewLarvicideTreatment( input::Larvicide * li )
   _untreatedDensity -= additionalDensity;
 
   // delete previous treatment
-  if( CurrentLarvicideTreatment != NULL ) {
-    delete CurrentLarvicideTreatment;
+  if( _currentLarvicideTreatment != NULL ) {
+    delete _currentLarvicideTreatment;
   }
 
   // new treatment
-  CurrentLarvicideTreatment = new LarvicideTreatment( li, _currentDate );
+  _currentLarvicideTreatment = new LarvicideTreatment( li, _currentDate );
 }
 
 
@@ -700,7 +699,7 @@ SimContainer::AdvanceEggs( int day )
 {
   _hatchBand = static_cast<int>(ceil( _waterDepth / _eggBandWidth ));
 
-  NewlyHatched = 0;
+  _newlyHatched = 0;
   for( EggBandIterator itBand = EggCohorts.begin(); itBand != EggCohorts.end(); ++itBand ) {
     // current band iteration
     int currentBand = itBand->first;
@@ -738,12 +737,12 @@ SimContainer::AdvanceEggs( int day )
         else {
           if( currentBand <= _hatchBand ) {
             // band flooded, all eggs hatch
-            NewlyHatched += (itEgg->Number * _eggSurvival);
+            _newlyHatched += (itEgg->Number * _eggSurvival);
           }
           else {
             // band not flooded, some proportion hatch spontaneously, rest become mature eggs
             eggBand->MatureEggs += ((1 - _eggSpontaneousHatchRatio) * itEgg->Number * _eggSurvival);
-            NewlyHatched += (_eggSpontaneousHatchRatio * itEgg->Number * _eggSurvival);
+            _newlyHatched += (_eggSpontaneousHatchRatio * itEgg->Number * _eggSurvival);
           }
         }
 
@@ -761,7 +760,7 @@ void
 SimContainer::ApplyDryContainerToNewLarvae( int day )
 {
   if( _waterDepth == 0 ) {
-    NewlyHatched = 0;
+    _newlyHatched = 0;
   }
 }
 
@@ -801,8 +800,8 @@ SimContainer::AdjustFood( date currentDate )
     }
   }
 
-  // today's food = yesterday's food + addition (if any) + cadavers
-  _foodAvailable = yesterdayFood + foodAddition + cadavers;
+  // today's food = yesterday's food + addition (if any) + _cadavers
+  _foodAvailable = yesterdayFood + foodAddition + _cadavers;
 }
 
 
@@ -811,27 +810,27 @@ void
 SimContainer::CalculateTemperatureLarvalSurvival( int day )
 {
   // survival from minimum temperatures
-  if( _minimumWaterTemperature <= LarvTemp1 ) {
-    LarvaeSurvivalTemperature = .05f;
+  if( _minimumWaterTemperature <= _larvaeTemperatureLowLethalThreshold ) {
+    _larvaeTemperatureSurvival = .05f;
   }
-  else if( _minimumWaterTemperature >= LarvTemp2 ) {
-    LarvaeSurvivalTemperature = 1.0f;
+  else if( _minimumWaterTemperature >= _larvaeTemperatureLowThreshold ) {
+    _larvaeTemperatureSurvival = 1.0f;
   }
   else {
-    double LarSlope = (.05f - 1.0f) / (LarvTemp1 - LarvTemp2);
-    LarvaeSurvivalTemperature = 1 - ((LarvTemp2 - _minimumWaterTemperature) * LarSlope);
+    double LarSlope = (.05f - 1.0f) / (_larvaeTemperatureLowLethalThreshold - _larvaeTemperatureLowThreshold);
+    _larvaeTemperatureSurvival = 1 - ((_larvaeTemperatureLowThreshold - _minimumWaterTemperature) * LarSlope);
   }
 
   // survival from maximum temperatures
-  if( _maximumWaterTemp >= LarvTemp4 ) {
-    LarvaeSurvivalTemperature = LarvaeSurvivalTemperature * .05f;
+  if( _maximumWaterTemp >= _larvaeTemperatureHighLethalThreshold ) {
+    _larvaeTemperatureSurvival = _larvaeTemperatureSurvival * .05f;
   }
-  else if( _maximumWaterTemp <= LarvTemp3 ) {
-    LarvaeSurvivalTemperature = LarvaeSurvivalTemperature * 1;
+  else if( _maximumWaterTemp <= _larvaeTemperatureHighThreshold ) {
+    _larvaeTemperatureSurvival = _larvaeTemperatureSurvival * 1;
   }
   else {
-    double LarSlope = (1 - .05f) / (LarvTemp3 - LarvTemp4);
-    LarvaeSurvivalTemperature = LarvaeSurvivalTemperature * (1 + ((_maximumWaterTemp - LarvTemp3) * LarSlope));
+    double LarSlope = (1 - .05f) / (_larvaeTemperatureHighThreshold - _larvaeTemperatureHighLethalThreshold);
+    _larvaeTemperatureSurvival = _larvaeTemperatureSurvival * (1 + ((_maximumWaterTemp - _larvaeTemperatureHighThreshold) * LarSlope));
   }
 }
 
@@ -840,26 +839,26 @@ SimContainer::CalculateTemperatureLarvalSurvival( int day )
 void
 SimContainer::CalculateLarvicideLarvalSurvival( date d )
 {
-  if( CurrentLarvicideTreatment != NULL ) {
-    if( CurrentLarvicideTreatment->InEffect ) {
+  if( _currentLarvicideTreatment != NULL ) {
+    if( _currentLarvicideTreatment->InEffect ) {
       // first check for effect loss if dry
-      if( CurrentLarvicideTreatment->LoseOnDry && this->IsDry() ) {
-        CurrentLarvicideTreatment->InEffect = false;
+      if( _currentLarvicideTreatment->LoseOnDry && this->IsDry() ) {
+        _currentLarvicideTreatment->InEffect = false;
       }
 
       // find mortality for today, and its inverse survival
-      double mortality = CurrentLarvicideTreatment->Mortality[d];
-      LarvaeSurvivalLarvicide = 1.0 - mortality;
+      double mortality = _currentLarvicideTreatment->Mortality[d];
+      _larvaeLarvicideSurvival = 1.0 - mortality;
 
       // if tomorrow is not in mortality map, treatment period and effect is over
-      if( !CurrentLarvicideTreatment->IsDateInTreatmentPeriod(d + days(1)) ) {
-        CurrentLarvicideTreatment->InEffect = false;
+      if( !_currentLarvicideTreatment->IsDateInTreatmentPeriod(d + days(1)) ) {
+        _currentLarvicideTreatment->InEffect = false;
       }
     }
   }
   else {
     // no treatments in effect, full survival
-    LarvaeSurvivalLarvicide = 1.0;
+    _larvaeLarvicideSurvival = 1.0;
   }
 }
 
@@ -871,7 +870,7 @@ SimContainer::CalculateWaterDepthLarvalSurvival( int day )
   // for empty containers, survival drops to 0.05, the reason this isn't
   // explicitly 0.0 is due to the non-uniformity of a container's surface
   if( _waterDepth == 0 )
-    LarvaeSurvivalTemperature = .05f;
+    _larvaeTemperatureSurvival = .05f;
 }
 
 
@@ -959,14 +958,14 @@ SimContainer::AdvanceLarvae( int day )
   // max.fb.wt() holds the weight of the fatbody prior to fasting
   // fatbody() holds the current weight of the fatbody
   
-  NewPupae = 0;
-  MaxLarvWt = 0;    // average wt of larval cohorts that are pupating, end value represents:  sum Wt * N / sum N
+  _newPupae = 0;
+  _larvaeMaxWeight = 0;    // average wt of larval cohorts that are pupating, end value represents:  sum Wt * N / sum N
 
   double newPupae = 0.0;
   double totalNewPupaeWeight = 0.0;
   double totalCadaverWeight = 0.0;
 
-  double targetThreshold = 1.0 - (DevRateLarv / 2.0);
+  double targetThreshold = 1.0 - (_larvaeDevRate / 2.0);
 
   for( LarvaeIterator itLarvae = LarvaeCohorts.begin(); itLarvae != LarvaeCohorts.end(); ) {
 
@@ -977,12 +976,12 @@ SimContainer::AdvanceLarvae( int day )
     }
     else {
       // calculate pupation weight - temperature and CD dependent
-      double WTerm = (PupWtSlope * abs(_averageWaterTemperature)) + PupWtConst;
-      double Slope = (WTerm - PupMinWt) / (targetThreshold - LarvaePupWtMaxDev);
+      double WTerm = (_larvaePupationWeightSlope * abs(_averageWaterTemperature)) + _larvaePupationWeightIntercept;
+      double Slope = (WTerm - _larvaeMinimumWeightForPupation) / (targetThreshold - _larvaeMaximumDevelopment);
       double PupationWt = (WTerm + (Slope * itLarvae->Development));
 
-      if( PupationWt < PupMinWt )
-        PupationWt = PupMinWt;
+      if( PupationWt < _larvaeMinimumWeightForPupation )
+        PupationWt = _larvaeMinimumWeightForPupation;
 
       if( itLarvae->Development <= targetThreshold || itLarvae->Weight < PupationWt ) {
         // not sufficiently developed and/or below pupation weight
@@ -1000,7 +999,7 @@ SimContainer::AdvanceLarvae( int day )
               itLarvae->PreFastFatBody = 0;
             }
           }
-          itLarvae->SurvivalFood = larvpwtsu;
+          itLarvae->SurvivalFood = _larvaeNoFastingSurvival;
         }
         else {
           // negative weight gain
@@ -1020,24 +1019,24 @@ SimContainer::AdvanceLarvae( int day )
           }
 
           if( itLarvae->FatBody <= 0 ) {
-            itLarvae->SurvivalFood = larvnwtnfbsu;
+            itLarvae->SurvivalFood = _larvaeNoLipidReserveSurvival;
           }
           else {
-            itLarvae->SurvivalFood = larvnwtfbsu;
+            itLarvae->SurvivalFood = _larvaeLipidReserveSurvival;
           }
         }
 
         // advance cohort
         double number = itLarvae->Number;
         double weight = itLarvae->Weight;
-        double survival = LarvaeSurvivalNominal * LarvaeSurvivalTemperature * LarvaeSurvivalLarvicide * itLarvae->SurvivalFood;
+        double survival = _larvaeNominalSurvival * _larvaeTemperatureSurvival * _larvaeLarvicideSurvival * itLarvae->SurvivalFood;
 
         itLarvae->Age++;
         itLarvae->Number = itLarvae->Number * survival;
-        itLarvae->Development = itLarvae->Development + DevRateLarv;
+        itLarvae->Development = itLarvae->Development + _larvaeDevRate;
         itLarvae->Weight = itLarvae->Weight + itLarvae->WeightChange;
 
-        if( itLarvae->Weight < .003 || itLarvae->Development > LarvaePupWtMaxDev ) {
+        if( itLarvae->Weight < .003 || itLarvae->Development > _larvaeMaximumDevelopment ) {
           // all die and add to cadaver weight
           totalCadaverWeight += number * weight;
           itLarvae = LarvaeCohorts.erase( itLarvae );
@@ -1057,7 +1056,7 @@ SimContainer::AdvanceLarvae( int day )
       else {
         double number = itLarvae->Number;
         double weight = itLarvae->Weight;
-        double survival = LarvaeSurvivalNominal * LarvaeSurvivalTemperature * LarvaeSurvivalLarvicide * itLarvae->SurvivalFood;
+        double survival = _larvaeNominalSurvival * _larvaeTemperatureSurvival * _larvaeLarvicideSurvival * itLarvae->SurvivalFood;
 
         newPupae += itLarvae->Number * survival;
         totalNewPupaeWeight += itLarvae->Weight * (itLarvae->Number * survival);
@@ -1074,9 +1073,9 @@ SimContainer::AdvanceLarvae( int day )
     avgNewPupaeWeight = totalNewPupaeWeight / newPupae;
   }
 
-  NewPupae = newPupae;
-  MaxLarvWt = avgNewPupaeWeight;
-  LarvCadWt = totalCadaverWeight;
+  _newPupae = newPupae;
+  _larvaeMaxWeight = avgNewPupaeWeight;
+  _larvaeCadaverWeight = totalCadaverWeight;
 }
 
 
@@ -1084,8 +1083,8 @@ SimContainer::AdvanceLarvae( int day )
 void
 SimContainer::ApplyGeneticPupationDeath( int day )
 {
-  PupCadWt = (NewPupae - (NewPupae * pupgeneticsu)) * MaxLarvWt;
-  NewPupae = NewPupae * pupgeneticsu;
+  _pupaeCadaverWeight = (_newPupae - (_newPupae * _larvaePupationSurvival)) * _larvaeMaxWeight;
+  _newPupae = _newPupae * _larvaePupationSurvival;
 }
 
 
@@ -1098,15 +1097,15 @@ SimContainer::HatchEggs( int day )
       EggBand * eggBand = &EggCohorts[i];
 
       double hatchedEggs = eggBand->MatureEggs * _eggFloodHatchRatio;
-      NewlyHatched += hatchedEggs;
+      _newlyHatched += hatchedEggs;
       eggBand->MatureEggs = eggBand->MatureEggs - hatchedEggs;
     }
 
     // establish new larvae cohort from all newly hatched eggs
-    if( NewlyHatched > 0 ) {
-      LarvaeCohorts.push_back( LarvaeCohort(1, NewlyHatched * LarvaeSurvivalLarvicide, DevRateLarv, LarvaeInitialWeight) );
+    if( _newlyHatched > 0 ) {
+      LarvaeCohorts.push_back( LarvaeCohort(1, _newlyHatched * _larvaeLarvicideSurvival, _larvaeDevRate, _larvaeInitialWeight) );
     }
-    NewlyHatched = 0;
+    _newlyHatched = 0;
   }
 }
 
@@ -1115,26 +1114,26 @@ SimContainer::HatchEggs( int day )
 void
 SimContainer::CalculateTemperaturePupalSurvival( int day )
 {
-  if( _minimumWaterTemperature <= PupTemp1 ) {
-    PupSurvTempDlyCt = .05f;
+  if( _minimumWaterTemperature <= _pupaeTemperatureLowLethalThreshold ) {
+    _pupaeTemperatureSurvival = .05f;
   }
-  else if( _minimumWaterTemperature >= PupTemp2 ) {
-    PupSurvTempDlyCt = 1;
+  else if( _minimumWaterTemperature >= _pupaeTemperatureLowThreshold ) {
+    _pupaeTemperatureSurvival = 1;
   }
   else {
-    double PupSlope = (.05f - 1) / (PupTemp1 - PupTemp2);
-    PupSurvTempDlyCt = 1 - ((PupTemp2 - _minimumWaterTemperature) * PupSlope);
+    double PupSlope = (.05f - 1) / (_pupaeTemperatureLowLethalThreshold - _pupaeTemperatureLowThreshold);
+    _pupaeTemperatureSurvival = 1 - ((_pupaeTemperatureLowThreshold - _minimumWaterTemperature) * PupSlope);
   }
 
-  if( _maximumWaterTemp >= PupTemp4 ) {
-    PupSurvTempDlyCt = PupSurvTempDlyCt * .05f;
+  if( _maximumWaterTemp >= _pupaeTemperatureHighLethalThreshold ) {
+    _pupaeTemperatureSurvival = _pupaeTemperatureSurvival * .05f;
   }
-  else if( _maximumWaterTemp <= PupTemp3 ) {
-    PupSurvTempDlyCt = PupSurvTempDlyCt * 1;
+  else if( _maximumWaterTemp <= _pupaeTemperatureHighThreshold ) {
+    _pupaeTemperatureSurvival = _pupaeTemperatureSurvival * 1;
   }
   else {
-    double PupSlope = (1 - .05f) / (PupTemp3 - PupTemp4);
-    PupSurvTempDlyCt = PupSurvTempDlyCt * (1 + ((_maximumWaterTemp - PupTemp3) * PupSlope));
+    double PupSlope = (1 - .05f) / (_pupaeTemperatureHighThreshold - _pupaeTemperatureHighLethalThreshold);
+    _pupaeTemperatureSurvival = _pupaeTemperatureSurvival * (1 + ((_maximumWaterTemp - _pupaeTemperatureHighThreshold) * PupSlope));
   }
 }
 
@@ -1144,22 +1143,22 @@ void
 SimContainer::AdvancePupae(void)
 {
   // clear new adult data
-  NewAdults = 0;
-  PupaeWt = 0;
+  _newAdults = 0;
+  _pupaeWeight = 0;
 
-  double targetThreshold = 1.0 - (DevRatePupae / 2.0);
+  double targetThreshold = 1.0 - (_pupaeDevRate / 2.0);
   for( PupaeIterator itPupae = PupaeCohorts.begin(); itPupae != PupaeCohorts.end(); ) {
     // apply survival
-    double survivingPupae = itPupae->Number * PupSurvTempDlyCt * PupSurvNom;
+    double survivingPupae = itPupae->Number * _pupaeTemperatureSurvival * _pupaeNominalSurvival;
     double deadPupae = itPupae->Number - survivingPupae;
 
     if( itPupae->Development <= targetThreshold ) {
       // not developed yet, advance cohort
       itPupae->Age++;
       itPupae->Number = survivingPupae;
-      itPupae->Development = itPupae->Development + DevRatePupae;
+      itPupae->Development = itPupae->Development + _pupaeDevRate;
 
-      PupCadWt += deadPupae * itPupae->Weight;
+      _pupaeCadaverWeight += deadPupae * itPupae->Weight;
 
       // remove max age cohort
       if( itPupae->Age > MaxAgePupae ) {
@@ -1171,16 +1170,16 @@ SimContainer::AdvancePupae(void)
     }
     else {
       // developed, emerge as adults
-      double emergedPupae = survivingPupae * EmergenceSuccess;
+      double emergedPupae = survivingPupae * _pupaeEmergenceSuccess;
       double nonEmergedPupae = survivingPupae - emergedPupae;
       double emergedPupaeWeight = emergedPupae * itPupae->Weight;
 
-      NewAdults += emergedPupae;
-      PupaeWt += emergedPupaeWeight;
+      _newAdults += emergedPupae;
+      _pupaeWeight += emergedPupaeWeight;
 
       // pupae die from both cumulative survival and unsuccessful emergence
       deadPupae += nonEmergedPupae;
-      PupCadWt += deadPupae * itPupae->Weight;
+      _pupaeCadaverWeight += deadPupae * itPupae->Weight;
 
       // all members of cohort either emerged or dead
       itPupae = PupaeCohorts.erase( itPupae );
@@ -1188,15 +1187,15 @@ SimContainer::AdvancePupae(void)
   }
 
   // establish new pupae cohort
-  if( NewPupae > 0 ) {
-    PupaeCohorts.push_back( PupaeCohort(1, NewPupae, DevRatePupae, MaxLarvWt) );
+  if( _newPupae > 0 ) {
+    PupaeCohorts.push_back( PupaeCohort(1, _newPupae, _pupaeDevRate, _larvaeMaxWeight) );
   }
 
-  if( NewAdults > 0 ) {
-    PupaeWt = PupaeWt / NewAdults;
+  if( _newAdults > 0 ) {
+    _pupaeWeight = _pupaeWeight / _newAdults;
   }
   else {
-    PupaeWt = 0;
+    _pupaeWeight = 0;
   }
 }
 
@@ -1205,7 +1204,7 @@ SimContainer::AdvancePupae(void)
 void
 SimContainer::SelectFemales(void)
 {
-  NewFemales = NewAdults * PercentFemale;
+  _newFemales = _newAdults * _pupaeFemaleEmergenceRatio;
 }
 
 
@@ -1213,7 +1212,7 @@ SimContainer::SelectFemales(void)
 double
 SimContainer::CalculateDensityAdjustedNewFemaleWeight(void)
 {
-  return PupaeWt * ((NewFemales * _untreatedDensity) + (NewFemales * _treatedDensity));
+  return _pupaeWeight * ((_newFemales * _untreatedDensity) + (_newFemales * _treatedDensity));
 }
 
 
@@ -1221,7 +1220,7 @@ SimContainer::CalculateDensityAdjustedNewFemaleWeight(void)
 double
 SimContainer::CalculateDensityAdjustedNewFemaleCount(void)
 {
-  return (NewFemales * _untreatedDensity) + (NewFemales * _treatedDensity);
+  return (_newFemales * _untreatedDensity) + (_newFemales * _treatedDensity);
 }
 
 
@@ -1291,7 +1290,7 @@ SimContainer::GetSurfaceArea(void)
 void
 SimContainer::ResetContPref(void)
 {
-  ContPref = 0;
+  _ovipositionPreference = 0;
 }
 
 
@@ -1299,8 +1298,8 @@ SimContainer::ResetContPref(void)
 double
 SimContainer::CalculateContPref( int day )
 {
-  ContPref = log(GetCapacityVolume() + 1) * (_untreatedDensity + _treatedDensity);
-  return ContPref;
+  _ovipositionPreference = log(GetCapacityVolume() + 1) * (_untreatedDensity + _treatedDensity);
+  return _ovipositionPreference;
 }
 
 
@@ -1308,7 +1307,7 @@ SimContainer::CalculateContPref( int day )
 void
 SimContainer::NormalizeContPref( double normTotal )
 {
-  ContPref = ContPref / normTotal;
+  _ovipositionPreference = _ovipositionPreference / normTotal;
 }
 
 
@@ -1334,9 +1333,9 @@ SimContainer::DistributeNewEggs( double totalNewEggs )
     _newEggCount = 0;
   }
   else {
-    // ContPref is the apportionment ratio of total eggs based on capacity method this is
+    // _ovipositionPreference is the apportionment ratio of total eggs based on capacity method this is
     // scaled down to a container type value by dividing by density available for oviposition
-    _newEggCount = totalNewEggs * ContPref / (_untreatedDensity + _treatedDensity);
+    _newEggCount = totalNewEggs * _ovipositionPreference / (_untreatedDensity + _treatedDensity);
 
     // cohort classes
     if( _ovipositionBand == _maxEggBand ) {
@@ -1365,12 +1364,12 @@ SimContainer::GeneratePopData(void)
 
   // larvae
   cpd->LarvaeCohorts = LarvaeCohorts;
-  cpd->cadavers = cadavers;
-  cpd->LarvCadWt = LarvCadWt;
+  cpd->Cadavers = _cadavers;
+  cpd->LarvaeCadaverWeight = _larvaeCadaverWeight;
 
   // pupae
   cpd->PupaeCohorts = PupaeCohorts;
-  cpd->PupCadWt = PupCadWt;
+  cpd->PupaeCadaverWeight = _pupaeCadaverWeight;
 
   // environment
   cpd->Depth = _waterDepthYesterday;
@@ -1392,6 +1391,7 @@ SimContainer::CalcDailyTotals()
   // tally eggs
   _embryonatingEggCount = 0;
   _matureEggCount = 0;
+
   for( EggBandIterator itBand = EggCohorts.begin(); itBand !=EggCohorts.end(); ++itBand ) {
     _matureEggCount += itBand->second.MatureEggs;
     
@@ -1402,40 +1402,40 @@ SimContainer::CalcDailyTotals()
 
 
   // tally larvae
-  TotalLarvae = 0;
+  _totalLarvae = 0;
   for( LarvaeIterator itLarvae = LarvaeCohorts.begin(); itLarvae != LarvaeCohorts.end(); ++itLarvae ) {
-    TotalLarvae += itLarvae->Number;
+    _totalLarvae += itLarvae->Number;
   }
 
 
   // tally pupae
-  TotalPupae = 0;
+  _totalPupae = 0;
   for( PupaeIterator itPupae = PupaeCohorts.begin(); itPupae != PupaeCohorts.end(); ++itPupae ) {
-    TotalPupae += itPupae->Number;
+    _totalPupae += itPupae->Number;
   }
 
   // tally avg pupae weight
-  AveragePupaeWeight = 0;
+  _averagePupaeWeight = 0;
   int Count = 0;
   for( PupaeIterator itPupae = PupaeCohorts.begin(); itPupae != PupaeCohorts.end(); ++itPupae ) {
     if( itPupae->Weight > 0 ) {
       Count++;
-      AveragePupaeWeight += itPupae->Weight;
+      _averagePupaeWeight += itPupae->Weight;
     }
   }
   if( Count > 0 ) {
-    AveragePupaeWeight = AveragePupaeWeight / Count;
+    _averagePupaeWeight = _averagePupaeWeight / Count;
   }
 
 
   // tally cumulative females
-  CumulativeFemales = CumulativeFemales + NewFemales;
+  _cumulativeFemales = _cumulativeFemales + _newFemales;
 
 
   // estimate cadaver contribution to available food
-  cadavers = (LarvCadWt + PupCadWt) * CadFoodEquiv;
-  LarvCadWt = 0;
-  PupCadWt = 0;
+  _cadavers = (_larvaeCadaverWeight + _pupaeCadaverWeight) * _cadaverFoodRatio;
+  _larvaeCadaverWeight = 0;
+  _pupaeCadaverWeight = 0;
 }
 
 
@@ -1453,18 +1453,18 @@ SimContainer::GetOutput( boost::gregorian::date d )
   dco.MaxTemp = _maximumWaterTemp;
   dco.MinTemp = _minimumWaterTemperature;
   dco.Eggs = _embryonatingEggCount + _matureEggCount;
-  dco.Larvae = TotalLarvae;
-  dco.Pupae = TotalPupae;
-  dco.AvgDryPupWt = AveragePupaeWeight;
-  dco.NewFemales = NewFemales;
-  dco.CumulativeFemales = CumulativeFemales;
+  dco.Larvae = _totalLarvae;
+  dco.Pupae = _totalPupae;
+  dco.AvgDryPupWt = _averagePupaeWeight;
+  dco.NewFemales = _newFemales;
+  dco.CumulativeFemales = _cumulativeFemales;
   dco.Oviposition = _newEggCount;
   dco.TotalDensity = Density;
   dco.UntreatedDensity = _untreatedDensity;
   dco.TreatedDensity = _treatedDensity;
   dco.ExcludedDensity = GetTotalExcludedDensity();
 
-  if( IsCloned) {
+  if( IsCloned ) {
     // the way output is currently handled we need to downscale this container with respect to its
     // cloned density to be able to accumulate with other cloned containers within this container type
     double scale = 1.0 / NumberOfClones;

@@ -27,12 +27,12 @@ public:
 
   // larvae
   sim::cs::LarvaeCohortCollection LarvaeCohorts;
-  double cadavers;
-  double LarvCadWt;
+  double Cadavers;
+  double LarvaeCadaverWeight;
 
   // pupae
   sim::cs::PupaeCohortCollection PupaeCohorts;
-  double PupCadWt;
+  double PupaeCadaverWeight;
 
   // environment
   double Depth;
