@@ -34,6 +34,8 @@ public:
 public:
   void CalculateWaterDepth( double todaysRain, double relHumid );
   void CalculateWaterTemperature( double minAirTemp, double avgAirTemp, double maxAirTemp );
+  double MaxWaterTempRegression( double minAirTemp, double maxAirTemp );
+  double MinWaterTempRegression( double minAirTemp, double maxAirTemp );
   void CalculateDevelopmentRates( int day );
 
   void ApplyMonthlyDensityAdjustment(void);
@@ -129,85 +131,80 @@ public:
 
 private:
   // current date in simulation
-  boost::gregorian::date CurrentDate_;
+  boost::gregorian::date _currentDate;
 
   // water level
-  double WaterDepth;
-  double WaterDepthYesterday;
+  double _waterDepth;
+  double _waterDepthYesterday;
 
   // food
-  double FoodAvailable;
-  double FoodRemainingYesterday;
+  double _foodAvailable;
+  double _foodRemainingYesterday;
 
   // current water temperatures
-  double MinWaterTemp;
-  double AvgWaterTemp;
-  double MaxWaterTemp;
+  double _minimumWaterTemperature;
+  double _averageWaterTemperature;
+  double _maximumWaterTemp;
 
   // previous water temperatures
-  std::list<double> PreviousMinWaterTemps;
-  std::list<double> PreviousMaxWaterTemps;
-
-  double MaxWaterTempRegression( double minAirTemp, double maxAirTemp );
-  double MinWaterTempRegression( double minAirTemp, double maxAirTemp );
+  std::list<double> _previousMinWaterTemperatures;
+  std::list<double> _previousMaxWaterTemperatures;
 
   // food delivery method
-  bool UsingRandomFood;
-  boost::gregorian::date PreviousFoodAdditionDate;
+  bool _usingRandomFood;
+  boost::gregorian::date _previousFoodAdditionDate;
 
   // density types
-  double UntreatedDensity;
-  double TreatedDensity;
-  std::vector<ExcludedDensity> ExcludedDensities;
+  double _untreatedDensity;
+  double _treatedDensity;
+  std::vector<ExcludedDensity> _excludedDensities;
 
   // eggs
   EggBandCollection EggCohorts;
-  double NewEggCount;
-  double EmbryonatingEggCount;
-  double MatureEggCount;
 
-  double EggsP25;
-  double EggsDHa;
-  double EggsDH;
-  double EggsTh2;
+  double _newEggCount;
+  double _embryonatingEggCount;
+  double _matureEggCount;
 
-  double eggwetsu;
-  double eggdryth;
-  double eggdrysu;
-  double egghsdth;
-  double egglsdth;
-  double egghsdsu;
-  double egglsdsu;
+  double _eggDevRate;
+  double _eggDevRO25;
+  double _eggDevDHA;
+  double _eggDevDHH;
+  double _eggDevTHALF;
 
-  double eggtemp1;
-  double eggtemp2;
-  double eggtemp3;
-  double eggtemp4;
+  double _eggSurvival;
+  double _eggNominalSurvival;
+  double _eggTemperatureSurvival;
+  double _eggSatDefSurvival;
+  double _eggPredationSurvival;
+  double _eggDestructionSurvival;
 
-  double PredLT;
-  double PredHT;
-  double PredSurLT;
-  double PredSurHT;
+  double _eggSatDefWetSurvival;
+  double _eggSatDefHighSunExposureThreshold;
+  double _eggSatDefHighSunExposureSurvival;
+  double _eggSatDefHighThreshold;
+  double _eggSatDefLowThreshold;
+  double _eggSatDefHighSurvival;
+  double _eggSatDefLowSurvival;
 
-  double EggSurvNom;
+  double _eggTemperatureLowLethalThreshold;
+  double _eggTemperatureLowThreshold;
+  double _eggTemperatureHighThreshold;
+  double _eggTemperatureHighLethalThreshold;
 
-  double EggSurvivalTemperature;
-  double EggSurvivalSatDef;
-  double EggSurvivalPredation;
-  double EggSurvivalEggDestruction;
+  double _eggPredationLowThreshold;
+  double _eggPredationHighThreshold;
+  double _eggPredationLowSurvival;
+  double _eggPredationHighSurvival;
 
-  double SurvEggs;
-  double DevRateEggs;
+  static const int _eggBandWidth = 2;
+  int _maxEggBand;
+  int _hatchBand;
+  int _ovipositionBand;
 
-  int MaxEggBand;
-  static const int EggBandWidth = 2;
-
-  int HatchBand;
-  int OvipositionBand;
-
-  double PropHatchflood;
-  double PropHatchSpont;
-  double eggdiapausetemp;
+  double _eggFloodHatchRatio;
+  double _eggSpontaneousHatchRatio;
+  double _eggMinimumHatchTemperature;
 
 
   // larvae
