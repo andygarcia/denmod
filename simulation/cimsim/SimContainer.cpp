@@ -127,8 +127,8 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
   _eggSpontaneousHatchRatio = bio->Egg->SpontaneousHatchRatio;
   _eggNominalSurvival = bio->Egg->NominalSurvival;
 
-  _eggTemperatureLowLethalThreshold = bio->Egg->Temperature->LowThreshold;
-  _eggTemperatureLowThreshold = bio->Egg->Temperature->LowLethalThreshold;
+  _eggTemperatureLowLethalThreshold = bio->Egg->Temperature->LowLethalThreshold;
+  _eggTemperatureLowThreshold = bio->Egg->Temperature->LowThreshold;
   _eggTemperatureHighThreshold = bio->Egg->Temperature->HighThreshold;
   _eggTemperatureHighLethalThreshold = bio->Egg->Temperature->HighLethalThreshold;
   
@@ -140,41 +140,40 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
   _eggMinimumHatchTemperature = bio->Egg->MinimumHatchTemperature;
   _eggFloodHatchRatio = bio->Egg->FloodHatchRatio;
 
-  _larvaeNominalSurvival = bio->Larvae->NominalSurvival;
   _cadaverFoodRatio = bio->Larvae->CadaverFoodRatio;
 
-  _larvaeTemperatureLowLethalThreshold = bio->Larvae->Temperature->LowLethalSurvival;
+  _larvaeNominalSurvival = bio->Larvae->NominalSurvival;
+  _larvaeInitialWeight = bio->Larvae->WeightAtHatch;
+  _larvaeMaximumDevelopment = bio->Larvae->PupationWeight->MaximumDevelopment;
+
+  _larvaeTemperatureLowLethalThreshold = bio->Larvae->Temperature->LowLethalThreshold;
   _larvaeTemperatureLowThreshold = bio->Larvae->Temperature->LowThreshold;
-  _larvaeTemperatureHighThreshold = bio->Larvae->Temperature->HighLethalThreshold;
-  _larvaeTemperatureHighLethalThreshold = bio->Larvae->Temperature->HighThreshold;
+  _larvaeTemperatureHighThreshold = bio->Larvae->Temperature->HighThreshold;
+  _larvaeTemperatureHighLethalThreshold = bio->Larvae->Temperature->HighLethalThreshold;
 
   a = bio->Larvae->Food->AssimilationRate;
   b = bio->Larvae->Food->ExploitationRate;
   c = bio->Larvae->Food->ExploitationRateIndependence;
   d1 = bio->Larvae->Food->MetabolicWeightLossRate;
   d2 = bio->Larvae->Food->MetabolicWeightLossExponent;
-  // TODO - this is bio->Larvae->Chrono...
-  fT = .001f;                                           // TODO: larval weight function param, figure out what this is, fix where its loaded from
+  // chronological basis from 1993 Focks, et. al.
+  fT = .001f;
 
   _larvaeNoFastingSurvival = bio->Larvae->Fasting->NoFastingSurvival;
   _larvaeNoLipidReserveSurvival = bio->Larvae->Fasting->NoLipidReserveSurvival;
   _larvaeLipidReserveSurvival = bio->Larvae->Fasting->LipidReserveSurvival;
 
-  _larvaeInitialWeight = bio->Larvae->WeightAtHatch;
   _larvaePupationSurvival = bio->Larvae->PupationSurvival;
-
-  _pupaeTemperatureLowLethalThreshold = bio->Pupae->Temperature->LowLethalThreshold;
-  _pupaeTemperatureLowThreshold = bio->Pupae->Temperature->LowThreshold;
-  _pupaeTemperatureHighThreshold = bio->Pupae->Temperature->HighThreshold;
-  _pupaeTemperatureHighLethalThreshold = bio->Pupae->Temperature->HighLethalThreshold;
-  _pupaeNominalSurvival = bio->Pupae->NominalSurvival;
-  
   _larvaePupationWeightSlope = bio->Larvae->PupationWeight->Slope;
   _larvaePupationWeightIntercept = bio->Larvae->PupationWeight->Intercept;
   _larvaeMinimumWeightForPupation = bio->Larvae->PupationWeight->MinimumWeightForPupation;
 
-  _larvaeMaximumDevelopment = bio->Larvae->PupationWeight->MaximumDevelopment;
-
+  _pupaeNominalSurvival = bio->Pupae->NominalSurvival;
+  _pupaeTemperatureLowLethalThreshold = bio->Pupae->Temperature->LowLethalThreshold;
+  _pupaeTemperatureLowThreshold = bio->Pupae->Temperature->LowThreshold;
+  _pupaeTemperatureHighThreshold = bio->Pupae->Temperature->HighThreshold;
+  _pupaeTemperatureHighLethalThreshold = bio->Pupae->Temperature->HighLethalThreshold;
+  
   _pupaeEmergenceSuccess = bio->Pupae->EmergenceSurvival;
   _pupaeFemaleEmergenceRatio = bio->Pupae->FemaleEmergence;
 }
