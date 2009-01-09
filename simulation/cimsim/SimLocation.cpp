@@ -254,16 +254,6 @@ SimLocation::RunSimulation(void)
 void
 SimLocation::DoYear(void)
 {
-#ifdef _DEBUG
-  // create log files for this year
-  std::ostringstream oss;
-  oss << Year;
-  std::string ssYear = oss.str();
-
-  _locationLog = output::LocationLog( "CS 3.0 - " + ssYear + " - Location" );
-  _adultSurvivalLog = output::AdultSurvivalLog( "CS 3.0 - " + ssYear + " - Adult Survival" );
-#endif
-
   // simulate each day in this year
   ContainerCollection::iterator itCont;
   day_iterator itDay = day_iterator( date(Year,1,1) );
@@ -857,10 +847,6 @@ SimLocation::DoYear(void)
 
   } // year completed
 
-#ifdef _DEBUG
-  // write log files for completed year
-  _locationLog.WriteToDisk();
-#endif
 
   // initialize container for next year
   for( itCont = _containers.begin(); itCont != _containers.end(); ++itCont ) {
@@ -1031,13 +1017,6 @@ SimLocation::UpdateOutput( date d, double adultWeight, double adultDev, double n
   dlo.AdultDevelopment = adultDev;
   dlo.OverallSurvival = AdultSurvival;
   _output->AddDailyLocationOutput( dlo, d );
-
-#ifdef _DEBUG
-  _locationLog << dayOfYear << dlo.Females << dlo.NewFemales
-               << _totalBiters << 0 << _totalBiters << 0
-               << TemperatureMax[dayOfYear] << TemperatureMin[dayOfYear] << Rain[dayOfYear]
-               << RelHumid[dayOfYear] << SD[dayOfYear] << output::Log::eor;
-#endif
 
   // record container outputs for current date
   ContainerCollection::iterator itCont;

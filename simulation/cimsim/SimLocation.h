@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include "../input/Location.h"
-#include "../output/Log.h"
 #include "SimContainer.h"
 #include "Cohorts.h"
 
@@ -68,11 +67,6 @@ private:
 
   output::CimsimOutput * _output;
   bool _outputReleased;
-
-#ifdef _DEBUG
-  output::LocationLog _locationLog;
-  output::AdultSurvivalLog _adultSurvivalLog;
-#endif
 
   // time
   int Year;
