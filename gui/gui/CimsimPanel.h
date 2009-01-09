@@ -18,15 +18,6 @@ namespace gui {
 	protected:
 		~CimsimPanel();
   private: System::Windows::Forms::SplitContainer^  splitCimsim;
-  protected: 
-
-  protected: 
-
-  protected: 
-
-  protected: 
-
-  protected: 
 
   private:
     Collections::Generic::Dictionary<System::Type^, System::Type^> ^ ControlFormMapping;
@@ -39,7 +30,7 @@ namespace gui {
     System::Void OnAddContainer( System::Object ^ sender, System::EventArgs ^ e );
     System::Void OnEditContainer( System::Object ^ sender, System::EventArgs ^ e );
     System::Void OnRemoveContainer( System::Object ^ sender, System::EventArgs ^ e );
-    System::Void OnCloneContainer( System::Object ^ sender, System::EventArgs ^ e );
+    System::Void OnCopyContainer( System::Object ^ sender, System::EventArgs ^ e );
 
     System::Void OnMouseMoveContainers( System::Object ^ sender, System::Windows::Forms::MouseEventArgs ^ e );
     System::Void OnMouseLeaveContainers( System::Object ^ sender, System::EventArgs ^ e );
@@ -57,7 +48,7 @@ namespace gui {
     gui::Location ^ GetLocation(void);
     BindingSource ^ LocationBinding;
 
-    // for container tooltips
+    // tooltips
     DateTime dtContainerLastShown;
     int PreviousContainerHoverIndex;
 
@@ -75,7 +66,8 @@ namespace gui {
   private: System::Windows::Forms::Button^  btnAddContainer;
   private: System::Windows::Forms::ListBox^  lboxContainers;
   private: System::Windows::Forms::Button^  btnFoodFitter;
-  private: System::Windows::Forms::Button^  btnCloneContainer;
+  private: System::Windows::Forms::Button^  btnCopyContainer;
+
   private: System::Windows::Forms::Button^  btnImportContainer;
   private: System::Windows::Forms::Button^  btnImportControl;
   private: System::ComponentModel::IContainer^  components;
@@ -111,7 +103,7 @@ namespace gui {
       this->btnFoodFitter = (gcnew System::Windows::Forms::Button());
       this->btnRemoveContainer = (gcnew System::Windows::Forms::Button());
       this->btnEditContainer = (gcnew System::Windows::Forms::Button());
-      this->btnCloneContainer = (gcnew System::Windows::Forms::Button());
+      this->btnCopyContainer = (gcnew System::Windows::Forms::Button());
       this->btnImportContainer = (gcnew System::Windows::Forms::Button());
       this->btnAddContainer = (gcnew System::Windows::Forms::Button());
       this->lboxContainers = (gcnew System::Windows::Forms::ListBox());
@@ -223,7 +215,7 @@ namespace gui {
       this->gboxContainer->Controls->Add(this->btnFoodFitter);
       this->gboxContainer->Controls->Add(this->btnRemoveContainer);
       this->gboxContainer->Controls->Add(this->btnEditContainer);
-      this->gboxContainer->Controls->Add(this->btnCloneContainer);
+      this->gboxContainer->Controls->Add(this->btnCopyContainer);
       this->gboxContainer->Controls->Add(this->btnImportContainer);
       this->gboxContainer->Controls->Add(this->btnAddContainer);
       this->gboxContainer->Controls->Add(this->lboxContainers);
@@ -265,15 +257,15 @@ namespace gui {
       this->btnEditContainer->UseVisualStyleBackColor = true;
       this->btnEditContainer->Click += gcnew System::EventHandler(this, &CimsimPanel::OnEditContainer);
       // 
-      // btnCloneContainer
+      // btnCopyContainer
       // 
-      this->btnCloneContainer->Location = System::Drawing::Point(6, 106);
-      this->btnCloneContainer->Name = L"btnCloneContainer";
-      this->btnCloneContainer->Size = System::Drawing::Size(75, 23);
-      this->btnCloneContainer->TabIndex = 1;
-      this->btnCloneContainer->Text = L"Clone";
-      this->btnCloneContainer->UseVisualStyleBackColor = true;
-      this->btnCloneContainer->Click += gcnew System::EventHandler(this, &CimsimPanel::OnCloneContainer);
+      this->btnCopyContainer->Location = System::Drawing::Point(6, 106);
+      this->btnCopyContainer->Name = L"btnCopyContainer";
+      this->btnCopyContainer->Size = System::Drawing::Size(75, 23);
+      this->btnCopyContainer->TabIndex = 1;
+      this->btnCopyContainer->Text = L"Copy";
+      this->btnCopyContainer->UseVisualStyleBackColor = true;
+      this->btnCopyContainer->Click += gcnew System::EventHandler(this, &CimsimPanel::OnCopyContainer);
       // 
       // btnImportContainer
       // 

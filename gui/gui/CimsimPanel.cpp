@@ -162,7 +162,7 @@ CimsimPanel::OnRemoveContainer( System::Object ^ sender, System::EventArgs ^ e )
 
 
 System::Void
-CimsimPanel::OnCloneContainer( System::Object ^ sender, System::EventArgs ^ e )
+CimsimPanel::OnCopyContainer( System::Object ^ sender, System::EventArgs ^ e )
 {
   if( lboxContainers->SelectedItem == nullptr ) {
     // no container selected
@@ -173,7 +173,7 @@ CimsimPanel::OnCloneContainer( System::Object ^ sender, System::EventArgs ^ e )
   gui::Container ^ clonedContainer = gcnew gui::Container( selectedContainer );
 
   for( int i = 1; i < System::Int32::MaxValue; ++i  ) {
-    String ^ newName = selectedContainer->Name + " Clone #" + i;
+    String ^ newName = selectedContainer->Name + " Copy #" + i;
     if( GetLocation()->ContainerNameCount(newName) == 0 ) {
       // find the next iteration of "Container - Clone #i" that doesn't exist
       clonedContainer->Name = newName;
