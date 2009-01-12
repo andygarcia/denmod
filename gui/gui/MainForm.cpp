@@ -237,7 +237,8 @@ MainForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
   SplashForm::ShowSplash( 50, "" );
 
   tboxLocName->DataBindings->Add( "Text", LocationBinding, "Name", false, DataSourceUpdateMode::OnPropertyChanged );
-  rboxNotes->DataBindings->Add( "Text", LocationBinding, "Notes", false, DataSourceUpdateMode::OnPropertyChanged );
+  //rboxNotes->DataBindings->Add( "Text", LocationBinding, "Notes", false, DataSourceUpdateMode::OnPropertyChanged );
+  rboxNotes->DataBindings->Add( "Text", LocationBinding, "Notes" );
   
   lboxWeather->DisplayMember = "Index";
   lboxWeather->ValueMember = "Index";
