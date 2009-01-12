@@ -343,6 +343,10 @@ Location::ProcessCimsimOutput( sim::output::CimsimOutput * uco, DateTime startDa
     CopyVectorToOutput( uco->GetUntreatedDensity(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::UntreatedDensity] );
     CopyVectorToOutput( uco->GetTreatedDensity(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::TreatedDensity] );
     CopyVectorToOutput( uco->GetExcludedDensity(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::ExcludedDensity] );
+
+    CopyVectorToOutput( uco->GetEggDevelopment(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::EggDevelopment] );
+    CopyVectorToOutput( uco->GetLarvaeDevelopment(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::LarvaeDevelopment] );
+    CopyVectorToOutput( uco->GetPupaeDevelopment(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::PupaeDevelopment] );
   }
 
   return mco;

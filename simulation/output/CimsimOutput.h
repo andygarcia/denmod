@@ -75,6 +75,11 @@ public:
   std::vector<double> GetTreatedDensity( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
   std::vector<double> GetExcludedDensity( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
 
+  std::vector<double> GetEggDevelopment( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
+  std::vector<double> GetLarvaeDevelopment( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
+  std::vector<double> GetPupaeDevelopment( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
+
+
 private:
   LocationOutput LocationOutput_;
   ContainerOutputs ContainerOutputs_;
@@ -135,7 +140,11 @@ public:
     TotalDensity = 0;
     UntreatedDensity = 0;
     TreatedDensity = 0;
-    ExcludedDensity = 0;    
+    ExcludedDensity = 0;
+
+    EggDevelopment = 0;
+    LarvaeDevelopment = 0;
+    PupaeDevelopment = 0;
   }
 
 public:
@@ -155,6 +164,10 @@ public:
   double UntreatedDensity;
   double TreatedDensity;
   double ExcludedDensity;
+
+  double EggDevelopment;
+  double LarvaeDevelopment;
+  double PupaeDevelopment;
 };
 
 };

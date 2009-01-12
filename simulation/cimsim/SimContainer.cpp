@@ -127,10 +127,12 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
   _eggSpontaneousHatchRatio = bio->Egg->SpontaneousHatchRatio;
   _eggNominalSurvival = bio->Egg->NominalSurvival;
 
+  _eggTemperatureLowLethalSurvival = bio->Egg->Temperature->LowLethalSurvival;
   _eggTemperatureLowLethalThreshold = bio->Egg->Temperature->LowLethalThreshold;
   _eggTemperatureLowThreshold = bio->Egg->Temperature->LowThreshold;
   _eggTemperatureHighThreshold = bio->Egg->Temperature->HighThreshold;
   _eggTemperatureHighLethalThreshold = bio->Egg->Temperature->HighLethalThreshold;
+  _eggTemperatureHighLethalSurvival = bio->Egg->Temperature->HighLethalSurvival;
   
   _eggPredationLowThreshold = bio->Egg->Predation->LowThreshold;
   _eggPredationHighThreshold = bio->Egg->Predation->HighThreshold;
@@ -146,10 +148,12 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
   _larvaeInitialWeight = bio->Larvae->WeightAtHatch;
   _larvaeMaximumDevelopment = bio->Larvae->PupationWeight->MaximumDevelopment;
 
+  _larvaeTemperatureLowLethalSurvival = bio->Larvae->Temperature->LowLethalSurvival;
   _larvaeTemperatureLowLethalThreshold = bio->Larvae->Temperature->LowLethalThreshold;
   _larvaeTemperatureLowThreshold = bio->Larvae->Temperature->LowThreshold;
   _larvaeTemperatureHighThreshold = bio->Larvae->Temperature->HighThreshold;
   _larvaeTemperatureHighLethalThreshold = bio->Larvae->Temperature->HighLethalThreshold;
+  _larvaeTemperatureHighLethalSurvival = bio->Larvae->Temperature->HighLethalSurvival;
 
   a = bio->Larvae->Food->AssimilationRate;
   b = bio->Larvae->Food->ExploitationRate;
@@ -169,10 +173,13 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
   _larvaeMinimumWeightForPupation = bio->Larvae->PupationWeight->MinimumWeightForPupation;
 
   _pupaeNominalSurvival = bio->Pupae->NominalSurvival;
+
+  _pupaeTemperatureLowLethalSurvival = bio->Pupae->Temperature->LowLethalSurvival;
   _pupaeTemperatureLowLethalThreshold = bio->Pupae->Temperature->LowLethalThreshold;
   _pupaeTemperatureLowThreshold = bio->Pupae->Temperature->LowThreshold;
   _pupaeTemperatureHighThreshold = bio->Pupae->Temperature->HighThreshold;
   _pupaeTemperatureHighLethalThreshold = bio->Pupae->Temperature->HighLethalThreshold;
+  _pupaeTemperatureHighLethalSurvival = bio->Pupae->Temperature->HighLethalSurvival;
   
   _pupaeEmergenceSuccess = bio->Pupae->EmergenceSurvival;
   _pupaeFemaleEmergenceRatio = bio->Pupae->FemaleEmergence;
@@ -1451,6 +1458,7 @@ SimContainer::GetOutput( boost::gregorian::date d )
   dco.Food = _foodAvailable;
   dco.MaxTemp = _maximumWaterTemp;
   dco.MinTemp = _minimumWaterTemperature;
+
   dco.Eggs = _embryonatingEggCount + _matureEggCount;
   dco.Larvae = _totalLarvae;
   dco.Pupae = _totalPupae;
@@ -1458,10 +1466,15 @@ SimContainer::GetOutput( boost::gregorian::date d )
   dco.NewFemales = _newFemales;
   dco.CumulativeFemales = _cumulativeFemales;
   dco.Oviposition = _newEggCount;
+
   dco.TotalDensity = Density;
   dco.UntreatedDensity = _untreatedDensity;
   dco.TreatedDensity = _treatedDensity;
   dco.ExcludedDensity = GetTotalExcludedDensity();
+
+  dco.EggDevelopment = _eggDevRate;
+  dco.LarvaeDevelopment = _larvaeDevRate;
+  dco.PupaeDevelopment = _pupaeDevRate;
 
   if( IsCloned ) {
     // the way output is currently handled we need to downscale this container with respect to its

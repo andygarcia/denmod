@@ -187,10 +187,12 @@ private:
   double _eggSatDefHighSurvival;
   double _eggSatDefLowSurvival;
 
+  double _eggTemperatureLowLethalSurvival;
   double _eggTemperatureLowLethalThreshold;
   double _eggTemperatureLowThreshold;
   double _eggTemperatureHighThreshold;
   double _eggTemperatureHighLethalThreshold;
+  double _eggTemperatureHighLethalSurvival;
 
   double _eggPredationLowThreshold;
   double _eggPredationHighThreshold;
@@ -229,10 +231,12 @@ private:
   double _larvaeDevTHALF;
   double _larvaeMaximumDevelopment;
 
+  double _larvaeTemperatureLowLethalSurvival;
   double _larvaeTemperatureLowLethalThreshold;
   double _larvaeTemperatureLowThreshold;
   double _larvaeTemperatureHighThreshold;
   double _larvaeTemperatureHighLethalThreshold;
+  double _larvaeTemperatureHighLethalSurvival;
 
   double _larvaeNoFastingSurvival;
   double _larvaeNoLipidReserveSurvival;
@@ -273,10 +277,12 @@ private:
   double _pupaeDevDHH;
   double _pupaeDevTHALF;
 
+  double _pupaeTemperatureLowLethalSurvival;
   double _pupaeTemperatureLowLethalThreshold;
   double _pupaeTemperatureLowThreshold;
   double _pupaeTemperatureHighThreshold;
   double _pupaeTemperatureHighLethalThreshold;
+  double _pupaeTemperatureHighLethalSurvival;
 
   double _pupaeTemperatureSurvival;
   double _pupaeNominalSurvival;

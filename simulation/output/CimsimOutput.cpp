@@ -57,6 +57,9 @@ CimsimOutput::AddDailyContainerOutput( DailyContainerOutput dco, date d, int con
   currentDco.UntreatedDensity = dco.UntreatedDensity;
   currentDco.TreatedDensity = dco.TreatedDensity;
   currentDco.ExcludedDensity = dco.ExcludedDensity;
+  currentDco.EggDevelopment = dco.EggDevelopment;
+  currentDco.LarvaeDevelopment = dco.LarvaeDevelopment;
+  currentDco.PupaeDevelopment = dco.PupaeDevelopment;
 
   // the following values are accumulated amonst cloned containers
   currentDco.Eggs += dco.Eggs;
@@ -529,6 +532,55 @@ CimsimOutput::GetExcludedDensity( date startDate, date endDate, int containerID 
 
   return excludedDensity;
 }
+
+
+
+std::vector<double>
+CimsimOutput::GetEggDevelopment( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID )
+{
+  std::vector<double> values;
+  ContainerOutput & co = ContainerOutputs_[containerID];
+
+  day_iterator itDate = day_iterator(startDate);
+  for( ; *itDate <= endDate; ++itDate ) {
+    values.push_back( co[*itDate].EggDevelopment );
+  }
+
+  return values;
+}
+
+
+
+std::vector<double>
+CimsimOutput::GetLarvaeDevelopment( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID )
+{
+  std::vector<double> values;
+  ContainerOutput & co = ContainerOutputs_[containerID];
+
+  day_iterator itDate = day_iterator(startDate);
+  for( ; *itDate <= endDate; ++itDate ) {
+    values.push_back( co[*itDate].LarvaeDevelopment );
+  }
+
+  return values;
+}
+
+
+
+std::vector<double>
+CimsimOutput::GetPupaeDevelopment( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID )
+{
+  std::vector<double> values;
+  ContainerOutput & co = ContainerOutputs_[containerID];
+
+  day_iterator itDate = day_iterator(startDate);
+  for( ; *itDate <= endDate; ++itDate ) {
+    values.push_back( co[*itDate].PupaeDevelopment );
+  }
+
+  return values;
+}
+
 
 
 

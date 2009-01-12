@@ -86,6 +86,7 @@ public:
     static ChartInfo ^ NewFemales = gcnew ChartInfo( "New Females", true );
     static ChartInfo ^ CumulativeFemales = gcnew ChartInfo( "Cumulative Females", true );
     static ChartInfo ^ Oviposition = gcnew ChartInfo( "Oviposition", true );
+    static ChartInfo ^ DevelopmentRates = gcnew ChartInfo( "Development Rates", true );
   };
 
   ref class DensimLocation
