@@ -188,6 +188,10 @@
 			RelativePath="System.XML.dll"
 			AssemblyName="System.Xml, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{C2329981-C757-474F-A90A-E11DBDA868BE}"
+			RelativePathToProject=".\gui\objs\objs.vcproj"
+		/>
 	</References>
 	<Files>
 		<Filter
@@ -205,6 +209,10 @@
 			</File>
 			<File
 				RelativePath=".\lhsmod.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SensitivityAnalysis.cpp"
 				>
 			</File>
 			<File
@@ -245,6 +253,10 @@
 			</File>
 			<File
 				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SensitivityAnalysis.h"
 				>
 			</File>
 			<File

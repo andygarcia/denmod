@@ -13,25 +13,9 @@ namespace lhsmod {
 	public ref class LhsForm : public System::Windows::Forms::Form
 	{
 	public:
-		LhsForm(void)
-		{
-			InitializeComponent();
-			//
-			//TODO: Add the constructor code here
-			//
-		}
-
+		LhsForm(void);
 	protected:
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
-		~LhsForm()
-		{
-			if (components)
-			{
-				delete components;
-			}
-		}
+		~LhsForm(void);
 
   private:
     System::Void OnBrowseDml(System::Object^  sender, System::EventArgs^  e);
@@ -39,12 +23,11 @@ namespace lhsmod {
     System::Void OnBrowseOutput(System::Object^  sender, System::EventArgs^  e);
     System::Void OnRun(System::Object^  sender, System::EventArgs^  e);
 
+  private:
+    Generic::Dictionary<String^,String^> ^ _saToDmlMap;
+
   private: System::Windows::Forms::TextBox^  tboxLsp;
   private: System::Windows::Forms::TextBox^  tboxOutput;
-  protected: 
-
-  protected: 
-
   private: System::Windows::Forms::Label^  lblLsp;
   private: System::Windows::Forms::Label^  lblOutput;
   private: System::Windows::Forms::Button^  btnBrowseLsp;
