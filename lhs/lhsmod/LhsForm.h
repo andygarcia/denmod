@@ -25,6 +25,7 @@ namespace lhsmod {
     void InitializeBackgroundWorker(void);
     void DoRuns( Object ^ sender, DoWorkEventArgs ^ e );
     void RunProgressChanged( Object ^ sender, ProgressChangedEventArgs ^ e );
+    void FinishedRuns( Object ^ sender, RunWorkerCompletedEventArgs ^ e );
 
   private:
 
@@ -237,7 +238,7 @@ namespace lhsmod {
       this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::SizableToolWindow;
       this->MinimumSize = System::Drawing::Size(480, 220);
       this->Name = L"LhsForm";
-      this->Text = L"LhsForm";
+      this->Text = L"LHSWIN -CIMSiM Sensitivity Analysis Study";
       this->ResumeLayout(false);
       this->PerformLayout();
 

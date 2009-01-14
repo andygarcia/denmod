@@ -75,6 +75,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_BAF303E1D1524DE2BF15F331CD47EF7B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_D088C4BCA496ACDD5E692F2C32044590"
         "OwnerKey" = "8:_319B66ADD4645AC0F6BC47AD78FF3988"
         "MsmSig" = "8:_UNDEFINED"
@@ -481,14 +487,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Dengue Models"
-        "ProductCode" = "8:{DD593E59-C889-4A55-B718-01633B86E47B}"
-        "PackageCode" = "8:{22039C5A-7CF6-4BEB-8C4F-B4840F4B73B4}"
+        "ProductCode" = "8:{5D681C7D-1B31-4588-B175-3695A289B867}"
+        "PackageCode" = "8:{9B6638DC-E2A9-4B0B-BB29-33B97876AF01}"
         "UpgradeCode" = "8:{EED99F1C-8421-42B5-9763-21628AF82B25}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:3.20.1"
+        "ProductVersion" = "8:3.20.2"
         "Manufacturer" = "8:ID-Analysis"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -1083,6 +1089,34 @@
                 "ExcludeFilters"
                 {
                 "ExcludeFilter" = "8:*.licenses"
+                }
+            }
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_BAF303E1D1524DE2BF15F331CD47EF7B"
+            {
+            "SourcePath" = "8:..\\lhs\\Release\\lhs.msi"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_75C6813F7B784E39B6E50D6637F00123"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{06D30DEA-3269-4A04-9579-B9AF8F5AB825}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
                 }
             }
         }

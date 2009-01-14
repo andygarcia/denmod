@@ -68,9 +68,14 @@ void
 LhsForm::InitializeBackgroundWorker(void)
 {
   _backgroundWorkerCimsim = gcnew BackgroundWorker();
-  _backgroundWorkerCimsim ->WorkerReportsProgress = true;
+
   _backgroundWorkerCimsim->DoWork += gcnew DoWorkEventHandler( this, &LhsForm::DoRuns );
+  
+  _backgroundWorkerCimsim->WorkerReportsProgress = true;
   _backgroundWorkerCimsim->ProgressChanged += gcnew ProgressChangedEventHandler( this, &LhsForm::RunProgressChanged );
+
+  _backgroundWorkerCimsim->WorkerSupportsCancellation = true;
+  _backgroundWorkerCimsim->RunWorkerCompleted += gcnew RunWorkerCompletedEventHandler( this, &LhsForm::FinishedRuns );
 }
 
 
@@ -107,6 +112,12 @@ LhsForm::DoRuns( Object ^ sender, DoWorkEventArgs ^ e )
   m = r->Match( s );
   int numRuns = Convert::ToInt32( m->Value );
 
+  // initial update
+  StudyState ^ ss = gcnew StudyState();
+  ss->NumberRuns = numRuns;
+  ss->CurrentRun = 0;
+  bw->ReportProgress( 0, ss );
+    
   s = sr->ReadLine();
   m = r->Match( s );
   int numParams = Convert::ToInt32( m->Value );
@@ -120,7 +131,6 @@ LhsForm::DoRuns( Object ^ sender, DoWorkEventArgs ^ e )
     sampledParameterNamesInOrder->Add( s );
   }
 
-
   // advance to SAMPLEDATA block
   while( true ) {
     String ^ s = sr->ReadLine();
@@ -128,7 +138,6 @@ LhsForm::DoRuns( Object ^ sender, DoWorkEventArgs ^ e )
       break;
     }
   }
-
 
   // collection of sampled parameter values in order encountered
   Generic::List<Generic::List<double>^> ^ allRuns = gcnew   Generic::List<Generic::List<double>^>();
@@ -175,8 +184,25 @@ LhsForm::DoRuns( Object ^ sender, DoWorkEventArgs ^ e )
     gui::DmlFile ^ runFile = gcnew gui::DmlFile( runDir + "\\run " + i + ".dml", baseLocation );
     runFile->Save();
 
+
+    if( bw->CancellationPending ) {
+      e->Cancel = true;
+      return;
+    }
+
     baseLocation->RunCimsim( true );
+
+    if( bw->CancellationPending ) {
+      e->Cancel = true;
+      return;
+    }
+
     baseLocation->SaveCimsimOutput( runDir );
+
+    if( bw->CancellationPending ) {
+      e->Cancel = true;
+      return;
+    }
 
     // end run
     DateTime runStopTime = DateTime::Now;
@@ -198,7 +224,7 @@ LhsForm::RunProgressChanged( Object ^ sender, ProgressChangedEventArgs ^ e )
 {
   // check current state
   StudyState ^ ss = dynamic_cast<StudyState^>( e->UserState );
-  
+
   // update progress bar
   pbarRuns->Maximum = ss->NumberRuns;
   pbarRuns->Value = ss->CurrentRun;
@@ -214,7 +240,22 @@ LhsForm::RunProgressChanged( Object ^ sender, ProgressChangedEventArgs ^ e )
   int hours = timeRemaining.Hours;
   int minutes = timeRemaining.Minutes;
   int seconds = timeRemaining.Seconds;
-  lblEstimatedTime->Text = "Estimated Time Left: " + hours + ":" + minutes + ":" + seconds + " (H:M:S)";
+  String ^ update = String::Format( "Estimated Time Left: {0:D2}:{1:D2}:{2:D2}", hours, minutes, seconds );
+  lblEstimatedTime->Text = update;
+}
+
+
+
+void
+LhsForm::FinishedRuns( Object ^ sender, RunWorkerCompletedEventArgs ^ e )
+{
+  btnBrowseDml->Enabled = true;
+  btnBrowseLsp->Enabled = true;
+  btnBrowseOutput->Enabled = true;
+  tboxDml->Enabled = true;
+  tboxLsp->Enabled = true;
+  tboxOutput->Enabled = true;
+  btnRun->Text = "Run";
 }
 
 
@@ -222,25 +263,48 @@ LhsForm::RunProgressChanged( Object ^ sender, ProgressChangedEventArgs ^ e )
 System::Void
 LhsForm::OnRun(System::Object^  sender, System::EventArgs^  e)
 {
-  // sanity checks on filenames and directories
-  if( !File::Exists( tboxDml->Text ) ) {
-    MessageBox::Show( "Unable to locate specified DML file.", "Error" );
-    return;
-  }
-  if( !File::Exists( tboxLsp->Text ) ) {
-    MessageBox::Show( "Unable to locate specified LSP file.", "Error" );
-    return;
-  }
-  if( !Directory::Exists( tboxOutput->Text ) ) {
-    MessageBox::Show( "Unable to locate specified root directory.", "Error" );
-    return;
-  }
+  if( btnRun->Text == "Run" ) {
+    // sanity checks on filenames and directories
+    if( !File::Exists( tboxDml->Text ) ) {
+      MessageBox::Show( "Unable to locate specified DML file.", "Error" );
+      return;
+    }
+    if( !File::Exists( tboxLsp->Text ) ) {
+      MessageBox::Show( "Unable to locate specified LSP file.", "Error" );
+      return;
+    }
+    if( !Directory::Exists( tboxOutput->Text ) ) {
+      MessageBox::Show( "Unable to locate specified root directory.", "Error" );
+      return;
+    }
 
-  // disable ui elements during run
-  btnBrowseDml->Enabled = false;
-  btnBrowseLsp->Enabled = false;
-  btnBrowseOutput->Enabled = false;
-  btnRun->Enabled = false;
+    // disable ui elements during run
+    btnBrowseDml->Enabled = false;
+    btnBrowseLsp->Enabled = false;
+    btnBrowseOutput->Enabled = false;
+    tboxDml->Enabled = false;
+    tboxLsp->Enabled = false;
+    tboxOutput->Enabled = false;
+    btnRun->Text = "Cancel";
 
-  _backgroundWorkerCimsim->RunWorkerAsync();
+    _backgroundWorkerCimsim->RunWorkerAsync();
+  }
+  else if( btnRun->Text == "Cancel" ) {
+    ::DialogResult dr = MessageBox::Show( "Are you sure you want to stop execution of this study?", "Stop study?",
+                                        MessageBoxButtons::OKCancel, MessageBoxIcon::Question, MessageBoxDefaultButton::Button2 );
+
+    if( dr == ::DialogResult::OK ) {
+      // cancel DoRuns threads
+      _backgroundWorkerCimsim->CancelAsync();
+    }
+    else if( dr == ::DialogResult::Cancel ) {
+      // do nothing
+    }
+    else {
+      throw gcnew InvalidOperationException();
+    }
+  }
+  else {
+    throw gcnew InvalidOperationException();
+  }
 }
