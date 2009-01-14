@@ -218,6 +218,18 @@ Location::ResetBiology(System::Void)
 
 
 void
+Location::RunCimsim( bool usePop )
+{
+  // run cimsim, using all available weather
+  DateTime startDate = Weather_->MinDate;
+  DateTime stopDate = Weather_->MaxDate;
+
+  RunCimsim( usePop, startDate, stopDate );
+}
+
+
+
+void
 Location::RunCimsim( bool usePop, DateTime startDate, DateTime stopDate )
 {
   int startYear = startDate.Year;
@@ -355,23 +367,6 @@ Location::ProcessCimsimOutput( sim::output::CimsimOutput * uco, DateTime startDa
 
 
 void
-Location::TestingRunCimsim(void)
-{
-  // run cs 3.0 and csp 1.0 (w/o processing output)
-  input::Location * loc = GetSimObject();
-  boost::gregorian::date startDate = loc->Weather_->GetWeatherPeriod().begin();
-  boost::gregorian::date stopDate = loc->Weather_->GetWeatherPeriod().end();
-
-  sim::cs::Simulation cs3( loc, startDate, stopDate );
-  cs3.Start();
-
-  sim::csp::csport csp1( *loc );
-  csp1.cimmain();
-}
-
-
-  
-void
 Location::RunFoodFitIteration( int numberOfRuns, DateTime surveyBegin, DateTime surveyEnd )
 {
   // convert to boost dates
@@ -433,6 +428,18 @@ Location::GetFoodFitTotals(void)
   fft->Ratio = ratio;
 
   return fft;
+}
+
+
+
+void
+Location::RunDensim(void)
+{
+  // run densim using all available cimsim data
+  DateTime startDate;
+  DateTime stopDate;
+
+  throw gcnew System::InvalidOperationException( "RunDensim() not implemented" );
 }
 
 

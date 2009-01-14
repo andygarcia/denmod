@@ -75,15 +75,16 @@ public:
 
   void ResetBiology(void);
 
+  void RunCimsim( bool usePop );
   void RunCimsim( bool usePop, DateTime startDate, DateTime stopDate );
   gui::output::CimsimOutput ^ ProcessCimsimOutput( sim::output::CimsimOutput * co, DateTime startDate, DateTime stopDate );
-  void TestingRunCimsim(void);
 
   void BeginFoodFit(void);
   void RunFoodFitIteration( int numberOfRuns, DateTime surveyStart, DateTime surveyEnd );
   FoodFitTotals ^ GetFoodFitTotals(void);
   void EndFoodFit(bool saveFitData);
 
+  void RunDensim(void);
   void RunDensim( DateTime startDate, DateTime stopDate );
   output::DensimOutput ^ ProcessDensimOutput( sim::output::DensimOutput * udo, DateTime startDate, DateTime stopDate );
 
