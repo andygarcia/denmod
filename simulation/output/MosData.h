@@ -34,10 +34,15 @@ public:
   YearlyMosData(void);
   virtual ~YearlyMosData(void);
 
+public:
   DailyMosData & GetDailyMosData( boost::gregorian::date d );
   void AddDailyMosData( boost::gregorian::date d, DailyMosData dailyMosData );
 
+
 public:
+  // TODO reimplement this using a static array:
+  // mosdata is generated from SimOutput post simulation
+  // so array bounds would be known
   std::map<boost::gregorian::date, DailyMosData> YearlyMosData_;
 };
 
