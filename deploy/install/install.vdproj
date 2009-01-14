@@ -22,6 +22,12 @@
         "Entry"
         {
         "MsmKey" = "8:_238342DCD1C59F9E1CB9AA93C9FDDC35"
+        "OwnerKey" = "8:_E74FA0BC11B84815B907C9C80C48DA95"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_238342DCD1C59F9E1CB9AA93C9FDDC35"
         "OwnerKey" = "8:_319B66ADD4645AC0F6BC47AD78FF3988"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -29,6 +35,12 @@
         {
         "MsmKey" = "8:_319B66ADD4645AC0F6BC47AD78FF3988"
         "OwnerKey" = "8:_7635DA79104A4A198EAD2EEFCC0A110B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_319B66ADD4645AC0F6BC47AD78FF3988"
+        "OwnerKey" = "8:_E74FA0BC11B84815B907C9C80C48DA95"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -47,6 +59,12 @@
         {
         "MsmKey" = "8:_49A284E6CA1B086EA2183A1DD48A3F5C"
         "OwnerKey" = "8:_319B66ADD4645AC0F6BC47AD78FF3988"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_49A284E6CA1B086EA2183A1DD48A3F5C"
+        "OwnerKey" = "8:_E74FA0BC11B84815B907C9C80C48DA95"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -75,8 +93,8 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_BAF303E1D1524DE2BF15F331CD47EF7B"
-        "OwnerKey" = "8:_UNDEFINED"
+        "MsmKey" = "8:_A3C0721A309D40BEBE333477EF855D07"
+        "OwnerKey" = "8:_E74FA0BC11B84815B907C9C80C48DA95"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -88,13 +106,31 @@
         "Entry"
         {
         "MsmKey" = "8:_D088C4BCA496ACDD5E692F2C32044590"
+        "OwnerKey" = "8:_E74FA0BC11B84815B907C9C80C48DA95"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D088C4BCA496ACDD5E692F2C32044590"
         "OwnerKey" = "8:_7635DA79104A4A198EAD2EEFCC0A110B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E74FA0BC11B84815B907C9C80C48DA95"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_7635DA79104A4A198EAD2EEFCC0A110B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_E74FA0BC11B84815B907C9C80C48DA95"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -247,7 +283,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:objs, Version=1.0.3301.20956, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:objs, Version=1.0.3301.29060, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_319B66ADD4645AC0F6BC47AD78FF3988"
@@ -278,7 +314,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ctrls, Version=1.0.3279.22076, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:ctrls, Version=1.0.3301.29032, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_3701498BDF654C755DA98CDF66F26745"
@@ -360,7 +396,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:output, Version=1.0.3301.20933, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:output, Version=1.0.3301.29031, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_D088C4BCA496ACDD5E692F2C32044590"
@@ -488,7 +524,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Dengue Models"
         "ProductCode" = "8:{5D681C7D-1B31-4588-B175-3695A289B867}"
-        "PackageCode" = "8:{9B6638DC-E2A9-4B0B-BB29-33B97876AF01}"
+        "PackageCode" = "8:{F217D730-0B88-47CF-B9B6-A7A505EA2AEE}"
         "UpgradeCode" = "8:{EED99F1C-8421-42B5-9763-21628AF82B25}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
@@ -1091,9 +1127,9 @@
                 "ExcludeFilter" = "8:*.licenses"
                 }
             }
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_BAF303E1D1524DE2BF15F331CD47EF7B"
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_E74FA0BC11B84815B907C9C80C48DA95"
             {
-            "SourcePath" = "8:..\\lhs\\Release\\lhs.msi"
+            "SourcePath" = "8:..\\..\\release\\lhsmod.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_75C6813F7B784E39B6E50D6637F00123"
@@ -1113,7 +1149,7 @@
             "ProjectOutputGroupRegister" = "3:1"
             "OutputConfiguration" = "8:"
             "OutputGroupCanonicalName" = "8:Built"
-            "OutputProjectGuid" = "8:{06D30DEA-3269-4A04-9579-B9AF8F5AB825}"
+            "OutputProjectGuid" = "8:{397D8A84-12D0-4BB5-B0C5-F6DDC633B545}"
             "ShowKeyOutput" = "11:TRUE"
                 "ExcludeFilters"
                 {
