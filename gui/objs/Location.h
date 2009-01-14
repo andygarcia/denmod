@@ -78,6 +78,7 @@ public:
   void RunCimsim( bool usePop );
   void RunCimsim( bool usePop, DateTime startDate, DateTime stopDate );
   gui::output::CimsimOutput ^ ProcessCimsimOutput( sim::output::CimsimOutput * co, DateTime startDate, DateTime stopDate );
+  void SaveCimsimOutput( System::IO::DirectoryInfo ^ di );
 
   void BeginFoodFit(void);
   void RunFoodFitIteration( int numberOfRuns, DateTime surveyStart, DateTime surveyEnd );

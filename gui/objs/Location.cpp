@@ -367,6 +367,30 @@ Location::ProcessCimsimOutput( sim::output::CimsimOutput * uco, DateTime startDa
 
 
 void
+Location::SaveCimsimOutput( System::IO::DirectoryInfo ^ di )
+{
+  // save all cimsim output into target directory
+  System::String ^ directory = di->FullName;
+
+  // write location file
+  System::String ^ locationFile = directory + "\\CIMSiM - Location Totals - " + this->Name + ".xml";
+  System::IO::StreamWriter ^ sw = gcnew System::IO::StreamWriter( locationFile );
+  sw->Write( CimsimOutput->GetLocationExcelXml() );
+  sw->Close();
+
+  // write container files
+  for each( gui::Container ^ c in this->Containers ) {
+    System::String ^ containerFile = directory + "\\CIMSiM - " + c->Name + ".xml";
+
+    System::IO::StreamWriter ^ sw = gcnew System::IO::StreamWriter( containerFile );
+    sw->Write( this->CimsimOutput->GetContainerExcelXml(c->Id) );
+    sw->Close();
+  }
+}
+
+
+
+void
 Location::RunFoodFitIteration( int numberOfRuns, DateTime surveyBegin, DateTime surveyEnd )
 {
   // convert to boost dates

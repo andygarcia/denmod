@@ -14,6 +14,7 @@ using namespace System::Text::RegularExpressions;
 LhsForm::LhsForm(void)
 {
 	InitializeComponent();
+  InitializeBackgroundWorker();
 }
 
 
@@ -63,23 +64,22 @@ LhsForm::OnBrowseOutput(System::Object^  sender, System::EventArgs^  e)
 
 
 
-System::Void
-LhsForm::OnRun(System::Object^  sender, System::EventArgs^  e)
+void
+LhsForm::InitializeBackgroundWorker(void)
 {
-  // sanity checks on filenames and directories
-  if( !File::Exists( tboxDml->Text ) ) {
-    MessageBox::Show( "Unable to locate specified DML file.", "Error" );
-    return;
-  }
-  if( !File::Exists( tboxLsp->Text ) ) {
-    MessageBox::Show( "Unable to locate specified LSP file.", "Error" );
-    return;
-  }
-  if( !Directory::Exists( tboxOutput->Text ) ) {
-    MessageBox::Show( "Unable to locate specified root directory.", "Error" );
-    return;
-  }
+  _backgroundWorkerCimsim = gcnew BackgroundWorker();
+  _backgroundWorkerCimsim ->WorkerReportsProgress = true;
+  _backgroundWorkerCimsim->DoWork += gcnew DoWorkEventHandler( this, &LhsForm::DoRuns );
+  _backgroundWorkerCimsim->ProgressChanged += gcnew ProgressChangedEventHandler( this, &LhsForm::RunProgressChanged );
+}
 
+
+
+
+void
+LhsForm::DoRuns( Object ^ sender, DoWorkEventArgs ^ e )
+{
+  BackgroundWorker ^ bw = dynamic_cast<BackgroundWorker^>( sender );
 
   // read base dml file
   String ^ baseDmlFilename = tboxDml->Text;
@@ -111,7 +111,6 @@ LhsForm::OnRun(System::Object^  sender, System::EventArgs^  e)
   m = r->Match( s );
   int numParams = Convert::ToInt32( m->Value );
 
-
   // parameter names in ordered parsed
   Generic::List<String^> ^ sampledParameterNamesInOrder = gcnew Generic::List<String^>();
 
@@ -136,6 +135,8 @@ LhsForm::OnRun(System::Object^  sender, System::EventArgs^  e)
 
   // parse each run
   for( int i = 1; i <= numRuns; ++i ) {
+    // begin run
+    DateTime runStartTime = DateTime::Now;
 
     // sampled parameters for current run
     Generic::List<double> ^ thisRun = gcnew Generic::List<double>();
@@ -158,6 +159,8 @@ LhsForm::OnRun(System::Object^  sender, System::EventArgs^  e)
       }
     }
 
+    // save current run
+    allRuns->Add( thisRun );
 
     // create directory for this run
     DirectoryInfo ^ baseDir = gcnew DirectoryInfo( tboxOutput->Text );
@@ -166,18 +169,78 @@ LhsForm::OnRun(System::Object^  sender, System::EventArgs^  e)
       runDir->Create();
     }
 
-    // create dml file for this run
+    // modify location with sampled parameters values
     SensitivityAnalysis::ModifyLocation( baseLocation, sampledParameterNamesInOrder, thisRun );
-    FileInfo ^ baseFile = gcnew FileInfo( tboxDml->Text );
-    String ^ baseFileName = baseFile->Name;
-
+    // create dml file for this run
     gui::DmlFile ^ runFile = gcnew gui::DmlFile( runDir + "\\run " + i + ".dml", baseLocation );
     runFile->Save();
 
-    // save current run
-    allRuns->Add( thisRun );
+    baseLocation->RunCimsim( true );
+    baseLocation->SaveCimsimOutput( runDir );
+
+    // end run
+    DateTime runStopTime = DateTime::Now;
+
+
+    // update progress
+    StudyState ^ ss = gcnew StudyState();
+    ss->NumberRuns = numRuns;
+    ss->CurrentRun = i;
+    ss->RunTime = runStopTime - runStartTime;
+    bw->ReportProgress( i, ss );
+  }
+}
+
+
+
+void
+LhsForm::RunProgressChanged( Object ^ sender, ProgressChangedEventArgs ^ e )
+{
+  // check current state
+  StudyState ^ ss = dynamic_cast<StudyState^>( e->UserState );
+  
+  // update progress bar
+  pbarRuns->Maximum = ss->NumberRuns;
+  pbarRuns->Value = ss->CurrentRun;
+
+  // update run status
+  lblCompletedRuns->Text = "Runs Completed: " + ss->CurrentRun + "/" + ss->NumberRuns;
+
+  // update estimated time
+  int runsRemaining = ss->NumberRuns - ss->CurrentRun;
+  Int64 ticksRemaining = ss->RunTime.Ticks * runsRemaining;
+  TimeSpan timeRemaining = TimeSpan( ticksRemaining );
+
+  int hours = timeRemaining.Hours;
+  int minutes = timeRemaining.Minutes;
+  int seconds = timeRemaining.Seconds;
+  lblEstimatedTime->Text = "Estimated Time Left: " + hours + ":" + minutes + ":" + seconds + " (H:M:S)";
+}
+
+
+
+System::Void
+LhsForm::OnRun(System::Object^  sender, System::EventArgs^  e)
+{
+  // sanity checks on filenames and directories
+  if( !File::Exists( tboxDml->Text ) ) {
+    MessageBox::Show( "Unable to locate specified DML file.", "Error" );
+    return;
+  }
+  if( !File::Exists( tboxLsp->Text ) ) {
+    MessageBox::Show( "Unable to locate specified LSP file.", "Error" );
+    return;
+  }
+  if( !Directory::Exists( tboxOutput->Text ) ) {
+    MessageBox::Show( "Unable to locate specified root directory.", "Error" );
+    return;
   }
 
+  // disable ui elements during run
+  btnBrowseDml->Enabled = false;
+  btnBrowseLsp->Enabled = false;
+  btnBrowseOutput->Enabled = false;
+  btnRun->Enabled = false;
 
-
+  _backgroundWorkerCimsim->RunWorkerAsync();
 }
