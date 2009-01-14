@@ -283,7 +283,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:objs, Version=1.0.3301.29060, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:objs, Version=1.0.3301.29511, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_319B66ADD4645AC0F6BC47AD78FF3988"
@@ -314,7 +314,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ctrls, Version=1.0.3301.29032, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:ctrls, Version=1.0.3301.29485, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_3701498BDF654C755DA98CDF66F26745"
@@ -365,7 +365,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:output, Version=1.0.3301.29031, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:output, Version=1.0.3301.29484, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_D088C4BCA496ACDD5E692F2C32044590"
@@ -523,8 +523,8 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Dengue Models"
-        "ProductCode" = "8:{5D681C7D-1B31-4588-B175-3695A289B867}"
-        "PackageCode" = "8:{F217D730-0B88-47CF-B9B6-A7A505EA2AEE}"
+        "ProductCode" = "8:{67649EAB-2D80-4733-98EE-928379D11D77}"
+        "PackageCode" = "8:{A15E175F-A5B8-404D-9204-764B0CE9604C}"
         "UpgradeCode" = "8:{EED99F1C-8421-42B5-9763-21628AF82B25}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
