@@ -139,6 +139,17 @@ LhsForm::DoRuns( Object ^ sender, DoWorkEventArgs ^ e )
     }
   }
 
+
+  // excel xml output by model is not space efficient, we will convert to the 97-2003 binary format
+  using namespace Microsoft::Office::Interop;
+  Excel::Application ^ ea = gcnew Excel::Application();
+  ea->DisplayAlerts = false;
+
+  // don't generate list of model's xml output each run, this is time consuming since it doesn't change
+  array<String^> ^ xmlFilenames;
+  bool fileListFound = false;
+
+
   // collection of sampled parameter values in order encountered
   Generic::List<Generic::List<double>^> ^ allRuns = gcnew   Generic::List<Generic::List<double>^>();
 
@@ -168,7 +179,7 @@ LhsForm::DoRuns( Object ^ sender, DoWorkEventArgs ^ e )
       }
     }
 
-    // save current run
+    // save current run's values
     allRuns->Add( thisRun );
 
     // create directory for this run
@@ -203,6 +214,34 @@ LhsForm::DoRuns( Object ^ sender, DoWorkEventArgs ^ e )
       e->Cancel = true;
       return;
     }
+
+    if( !fileListFound ) {
+      // first look for all excel .xml files in current run directory
+      array<FileInfo^> ^ xmlFiles = runDir->GetFiles( "*.xml", SearchOption::TopDirectoryOnly );
+      
+      // we only want to filename, not path (changes each time)
+      xmlFilenames = gcnew array<String^>(xmlFiles->Length);
+
+      for( int i = 0; i < xmlFiles->Length; ++i ) {
+        xmlFilenames[i] = xmlFiles[i]->Name;
+      }
+    }
+
+
+    for each( String ^ filename in xmlFilenames ) {
+      // craft filename
+      String ^ xmlFilename = Path::Combine( runDir->FullName, filename );
+
+      // open and disable compatability check
+      Excel::Workbook ^ xmlFile = ea->Workbooks->Open(xmlFilename, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing );
+      xmlFile->CheckCompatibility = false;
+
+      // save as excel 97-2003 format, changing extension, close and delete old workbook
+      xmlFile->SaveAs( Path::ChangeExtension( xmlFilename, ".xls" ), Excel::XlFileFormat::xlExcel8, Type::Missing, Type::Missing, Type::Missing, false, Excel::XlSaveAsAccessMode::xlNoChange, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing );
+      ea->Workbooks->Close();
+      File::Delete( xmlFilename );
+    }
+
 
     // end run
     DateTime runStopTime = DateTime::Now;

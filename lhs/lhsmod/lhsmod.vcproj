@@ -192,6 +192,11 @@
 			ReferencedProjectIdentifier="{C2329981-C757-474F-A90A-E11DBDA868BE}"
 			RelativePathToProject=".\gui\objs\objs.vcproj"
 		/>
+		<ActiveXReference
+			ControlGUID="{00020813-0000-0000-C000-000000000046}"
+			ControlVersion="1.6"
+			LocaleID="0"
+		/>
 	</References>
 	<Files>
 		<Filter
