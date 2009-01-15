@@ -651,24 +651,24 @@ void
 SimContainer::CalculateTemperatureEggSurvival( int day )
 {
   if( _minimumWaterTemperature <= _eggTemperatureLowLethalThreshold ) {
-    _eggTemperatureSurvival = .05f;
+    _eggTemperatureSurvival = _eggTemperatureLowLethalSurvival;
   }
   else if( _minimumWaterTemperature >= _eggTemperatureLowThreshold ) {
     _eggTemperatureSurvival = 1;
   }
   else {
-    double eggltempslope = .95f / (_eggTemperatureLowLethalThreshold - _eggTemperatureLowThreshold);
-    _eggTemperatureSurvival = 1 + ((_eggTemperatureLowThreshold - _minimumWaterTemperature) * eggltempslope);
+    double slope = (1 - _eggTemperatureLowLethalSurvival) / (_eggTemperatureLowLethalThreshold - _eggTemperatureLowThreshold);
+    _eggTemperatureSurvival = 1 + ((_eggTemperatureLowThreshold - _minimumWaterTemperature) * slope);
   }
 
   if( _maximumWaterTemp >= _eggTemperatureHighLethalThreshold ) {
-    _eggTemperatureSurvival = _eggTemperatureSurvival * .05f;
+    _eggTemperatureSurvival = _eggTemperatureSurvival * _eggTemperatureHighLethalSurvival;
   }
   else if( _maximumWaterTemp <= _eggTemperatureHighThreshold ) {
     _eggTemperatureSurvival = _eggTemperatureSurvival * 1;
   }
   else {
-    double egghtempslope = .95f / (_eggTemperatureHighThreshold - _eggTemperatureHighLethalThreshold);
+    double egghtempslope = (1 - _eggTemperatureHighLethalSurvival) / (_eggTemperatureHighThreshold - _eggTemperatureHighLethalThreshold);
     _eggTemperatureSurvival = _eggTemperatureSurvival * (1 + ((_maximumWaterTemp - _eggTemperatureHighThreshold) * egghtempslope));
   }
 }
@@ -817,25 +817,25 @@ SimContainer::CalculateTemperatureLarvalSurvival( int day )
 {
   // survival from minimum temperatures
   if( _minimumWaterTemperature <= _larvaeTemperatureLowLethalThreshold ) {
-    _larvaeTemperatureSurvival = .05f;
+    _larvaeTemperatureSurvival = _larvaeTemperatureLowLethalSurvival;
   }
   else if( _minimumWaterTemperature >= _larvaeTemperatureLowThreshold ) {
-    _larvaeTemperatureSurvival = 1.0f;
+    _larvaeTemperatureSurvival = 1.0;
   }
   else {
-    double LarSlope = (.05f - 1.0f) / (_larvaeTemperatureLowLethalThreshold - _larvaeTemperatureLowThreshold);
-    _larvaeTemperatureSurvival = 1 - ((_larvaeTemperatureLowThreshold - _minimumWaterTemperature) * LarSlope);
+    double slope = (_larvaeTemperatureLowLethalSurvival - 1.0f) / (_larvaeTemperatureLowLethalThreshold - _larvaeTemperatureLowThreshold);
+    _larvaeTemperatureSurvival = 1 - ((_larvaeTemperatureLowThreshold - _minimumWaterTemperature) * slope);
   }
 
   // survival from maximum temperatures
   if( _maximumWaterTemp >= _larvaeTemperatureHighLethalThreshold ) {
-    _larvaeTemperatureSurvival = _larvaeTemperatureSurvival * .05f;
+    _larvaeTemperatureSurvival = _larvaeTemperatureSurvival * _larvaeTemperatureHighLethalSurvival;
   }
   else if( _maximumWaterTemp <= _larvaeTemperatureHighThreshold ) {
     _larvaeTemperatureSurvival = _larvaeTemperatureSurvival * 1;
   }
   else {
-    double LarSlope = (1 - .05f) / (_larvaeTemperatureHighThreshold - _larvaeTemperatureHighLethalThreshold);
+    double LarSlope = (1 - _larvaeTemperatureHighLethalSurvival) / (_larvaeTemperatureHighThreshold - _larvaeTemperatureHighLethalThreshold);
     _larvaeTemperatureSurvival = _larvaeTemperatureSurvival * (1 + ((_maximumWaterTemp - _larvaeTemperatureHighThreshold) * LarSlope));
   }
 }
@@ -1121,25 +1121,25 @@ void
 SimContainer::CalculateTemperaturePupalSurvival( int day )
 {
   if( _minimumWaterTemperature <= _pupaeTemperatureLowLethalThreshold ) {
-    _pupaeTemperatureSurvival = .05f;
+    _pupaeTemperatureSurvival = _pupaeTemperatureLowLethalSurvival;
   }
   else if( _minimumWaterTemperature >= _pupaeTemperatureLowThreshold ) {
     _pupaeTemperatureSurvival = 1;
   }
   else {
-    double PupSlope = (.05f - 1) / (_pupaeTemperatureLowLethalThreshold - _pupaeTemperatureLowThreshold);
-    _pupaeTemperatureSurvival = 1 - ((_pupaeTemperatureLowThreshold - _minimumWaterTemperature) * PupSlope);
+    double slope = (_pupaeTemperatureLowLethalSurvival - 1) / (_pupaeTemperatureLowLethalThreshold - _pupaeTemperatureLowThreshold);
+    _pupaeTemperatureSurvival = 1 - ((_pupaeTemperatureLowThreshold - _minimumWaterTemperature) * slope);
   }
 
   if( _maximumWaterTemp >= _pupaeTemperatureHighLethalThreshold ) {
-    _pupaeTemperatureSurvival = _pupaeTemperatureSurvival * .05f;
+    _pupaeTemperatureSurvival = _pupaeTemperatureSurvival * _pupaeTemperatureHighLethalSurvival;
   }
   else if( _maximumWaterTemp <= _pupaeTemperatureHighThreshold ) {
     _pupaeTemperatureSurvival = _pupaeTemperatureSurvival * 1;
   }
   else {
-    double PupSlope = (1 - .05f) / (_pupaeTemperatureHighThreshold - _pupaeTemperatureHighLethalThreshold);
-    _pupaeTemperatureSurvival = _pupaeTemperatureSurvival * (1 + ((_maximumWaterTemp - _pupaeTemperatureHighThreshold) * PupSlope));
+    double slope = (1 - _pupaeTemperatureHighLethalSurvival) / (_pupaeTemperatureHighThreshold - _pupaeTemperatureHighLethalThreshold);
+    _pupaeTemperatureSurvival = _pupaeTemperatureSurvival * (1 + ((_maximumWaterTemp - _pupaeTemperatureHighThreshold) * slope));
   }
 }
 
