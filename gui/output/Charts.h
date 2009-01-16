@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Graphs.h"
+#include "Plots.h"
 
 using namespace System;
 
@@ -100,7 +100,6 @@ public:
     static ChartInfo ^ FemaleMosquitoesPerPerson = gcnew ChartInfo( "Female Mosquitoes Per Person", true );
     static ChartInfo ^ FemaleMosquitoSurvival = gcnew ChartInfo( "Female Mosquito Survival", true);
     static ChartInfo ^ FemaleMosquitoWetWeight = gcnew ChartInfo( "Female Mosquito Wet Weight", true );
-    static ChartInfo ^ GeneralSeroprevalence = gcnew ChartInfo( "General Seroprevalence", false );
   };
 
   ref class DensimSerotype
@@ -111,6 +110,7 @@ public:
     static ChartInfo ^ PersonsIncubating = gcnew ChartInfo( "Persons Incubating", true );
     static ChartInfo ^ PersonsViremic = gcnew ChartInfo( "Persons Viremic", true );
     static ChartInfo ^ PersonsWithVirus = gcnew ChartInfo( "Persons with Virus", true );
+    static ChartInfo ^ GeneralSeroprevalence = gcnew ChartInfo( "General Seroprevalence", false );
   };
 };
 
