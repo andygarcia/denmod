@@ -17,6 +17,11 @@ namespace gui {
     CimsimExtOutputForm( gui::Location ^ location );
 	protected:
 		~CimsimExtOutputForm();
+  private: System::Windows::Forms::Label^  lblContainer;
+  private: System::Windows::Forms::Label^  lblGraph;
+  protected: 
+
+  protected: 
 
   private:
     gui::Location ^ Location_;
@@ -73,6 +78,8 @@ namespace gui {
       this->lblSummary = (gcnew System::Windows::Forms::Label());
       this->cboxTimePeriodFunction = (gcnew System::Windows::Forms::ComboBox());
       this->cboxTimePeriod = (gcnew System::Windows::Forms::ComboBox());
+      this->lblContainer = (gcnew System::Windows::Forms::Label());
+      this->lblGraph = (gcnew System::Windows::Forms::Label());
       this->tabGraphType->SuspendLayout();
       this->tabPageLocation->SuspendLayout();
       this->tabPageContainer->SuspendLayout();
@@ -87,7 +94,7 @@ namespace gui {
       this->tabGraphType->Location = System::Drawing::Point(12, 12);
       this->tabGraphType->Name = L"tabGraphType";
       this->tabGraphType->SelectedIndex = 0;
-      this->tabGraphType->Size = System::Drawing::Size(291, 227);
+      this->tabGraphType->Size = System::Drawing::Size(291, 263);
       this->tabGraphType->TabIndex = 0;
       // 
       // tabPageLocation
@@ -110,17 +117,19 @@ namespace gui {
       this->lboxLocationGraphs->Name = L"lboxLocationGraphs";
       this->lboxLocationGraphs->Size = System::Drawing::Size(271, 186);
       this->lboxLocationGraphs->TabIndex = 0;
-      this->lboxLocationGraphs->SelectedIndexChanged += gcnew System::EventHandler(this, &CimsimExtOutputForm::OnSelectedIndexChanged);
       this->lboxLocationGraphs->DoubleClick += gcnew System::EventHandler(this, &CimsimExtOutputForm::OnViewLocationGraph);
+      this->lboxLocationGraphs->SelectedIndexChanged += gcnew System::EventHandler(this, &CimsimExtOutputForm::OnSelectedIndexChanged);
       // 
       // tabPageContainer
       // 
+      this->tabPageContainer->Controls->Add(this->lblGraph);
+      this->tabPageContainer->Controls->Add(this->lblContainer);
       this->tabPageContainer->Controls->Add(this->cboxContainers);
       this->tabPageContainer->Controls->Add(this->lboxContainerGraphs);
       this->tabPageContainer->Location = System::Drawing::Point(4, 22);
       this->tabPageContainer->Name = L"tabPageContainer";
       this->tabPageContainer->Padding = System::Windows::Forms::Padding(3);
-      this->tabPageContainer->Size = System::Drawing::Size(283, 201);
+      this->tabPageContainer->Size = System::Drawing::Size(283, 237);
       this->tabPageContainer->TabIndex = 1;
       this->tabPageContainer->Text = L"Container Graphs";
       this->tabPageContainer->UseVisualStyleBackColor = true;
@@ -131,7 +140,7 @@ namespace gui {
         | System::Windows::Forms::AnchorStyles::Right));
       this->cboxContainers->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
       this->cboxContainers->FormattingEnabled = true;
-      this->cboxContainers->Location = System::Drawing::Point(6, 6);
+      this->cboxContainers->Location = System::Drawing::Point(3, 19);
       this->cboxContainers->Name = L"cboxContainers";
       this->cboxContainers->Size = System::Drawing::Size(274, 21);
       this->cboxContainers->TabIndex = 0;
@@ -141,9 +150,9 @@ namespace gui {
       this->lboxContainerGraphs->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
         | System::Windows::Forms::AnchorStyles::Right));
       this->lboxContainerGraphs->FormattingEnabled = true;
-      this->lboxContainerGraphs->Location = System::Drawing::Point(6, 33);
+      this->lboxContainerGraphs->Location = System::Drawing::Point(6, 59);
       this->lboxContainerGraphs->Name = L"lboxContainerGraphs";
-      this->lboxContainerGraphs->Size = System::Drawing::Size(274, 160);
+      this->lboxContainerGraphs->Size = System::Drawing::Size(274, 173);
       this->lboxContainerGraphs->TabIndex = 1;
       this->lboxContainerGraphs->DoubleClick += gcnew System::EventHandler(this, &CimsimExtOutputForm::OnViewContainerGraph);
       // 
@@ -151,7 +160,7 @@ namespace gui {
       // 
       this->btnExit->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
       this->btnExit->DialogResult = System::Windows::Forms::DialogResult::OK;
-      this->btnExit->Location = System::Drawing::Point(228, 301);
+      this->btnExit->Location = System::Drawing::Point(228, 337);
       this->btnExit->Name = L"btnExit";
       this->btnExit->Size = System::Drawing::Size(75, 23);
       this->btnExit->TabIndex = 3;
@@ -161,7 +170,7 @@ namespace gui {
       // btnView
       // 
       this->btnView->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
-      this->btnView->Location = System::Drawing::Point(147, 301);
+      this->btnView->Location = System::Drawing::Point(147, 337);
       this->btnView->Name = L"btnView";
       this->btnView->Size = System::Drawing::Size(75, 23);
       this->btnView->TabIndex = 2;
@@ -173,7 +182,7 @@ namespace gui {
       // 
       this->lblSummary2->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
       this->lblSummary2->AutoSize = true;
-      this->lblSummary2->Location = System::Drawing::Point(235, 250);
+      this->lblSummary2->Location = System::Drawing::Point(235, 286);
       this->lblSummary2->Name = L"lblSummary2";
       this->lblSummary2->Size = System::Drawing::Size(34, 13);
       this->lblSummary2->TabIndex = 9;
@@ -183,7 +192,7 @@ namespace gui {
       // 
       this->label2->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
       this->label2->AutoSize = true;
-      this->label2->Location = System::Drawing::Point(235, 277);
+      this->label2->Location = System::Drawing::Point(235, 313);
       this->label2->Name = L"label2";
       this->label2->Size = System::Drawing::Size(72, 13);
       this->label2->TabIndex = 11;
@@ -193,7 +202,7 @@ namespace gui {
       // 
       this->label1->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
       this->label1->AutoSize = true;
-      this->label1->Location = System::Drawing::Point(52, 277);
+      this->label1->Location = System::Drawing::Point(52, 313);
       this->label1->Name = L"label1";
       this->label1->Size = System::Drawing::Size(50, 13);
       this->label1->TabIndex = 12;
@@ -203,7 +212,7 @@ namespace gui {
       // 
       this->lblSummary->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
       this->lblSummary->AutoSize = true;
-      this->lblSummary->Location = System::Drawing::Point(13, 250);
+      this->lblSummary->Location = System::Drawing::Point(13, 286);
       this->lblSummary->Name = L"lblSummary";
       this->lblSummary->Size = System::Drawing::Size(89, 13);
       this->lblSummary->TabIndex = 10;
@@ -214,7 +223,7 @@ namespace gui {
       this->cboxTimePeriodFunction->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
       this->cboxTimePeriodFunction->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
       this->cboxTimePeriodFunction->FormattingEnabled = true;
-      this->cboxTimePeriodFunction->Location = System::Drawing::Point(108, 274);
+      this->cboxTimePeriodFunction->Location = System::Drawing::Point(108, 310);
       this->cboxTimePeriodFunction->Name = L"cboxTimePeriodFunction";
       this->cboxTimePeriodFunction->Size = System::Drawing::Size(121, 21);
       this->cboxTimePeriodFunction->TabIndex = 8;
@@ -224,17 +233,35 @@ namespace gui {
       this->cboxTimePeriod->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
       this->cboxTimePeriod->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
       this->cboxTimePeriod->FormattingEnabled = true;
-      this->cboxTimePeriod->Location = System::Drawing::Point(108, 247);
+      this->cboxTimePeriod->Location = System::Drawing::Point(108, 283);
       this->cboxTimePeriod->Name = L"cboxTimePeriod";
       this->cboxTimePeriod->Size = System::Drawing::Size(121, 21);
       this->cboxTimePeriod->TabIndex = 7;
+      // 
+      // lblContainer
+      // 
+      this->lblContainer->AutoSize = true;
+      this->lblContainer->Location = System::Drawing::Point(6, 3);
+      this->lblContainer->Name = L"lblContainer";
+      this->lblContainer->Size = System::Drawing::Size(55, 13);
+      this->lblContainer->TabIndex = 2;
+      this->lblContainer->Text = L"Container:";
+      // 
+      // lblGraph
+      // 
+      this->lblGraph->AutoSize = true;
+      this->lblGraph->Location = System::Drawing::Point(6, 43);
+      this->lblGraph->Name = L"lblGraph";
+      this->lblGraph->Size = System::Drawing::Size(39, 13);
+      this->lblGraph->TabIndex = 2;
+      this->lblGraph->Text = L"Graph:";
       // 
       // CimsimExtOutputForm
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
       this->CancelButton = this->btnExit;
-      this->ClientSize = System::Drawing::Size(315, 336);
+      this->ClientSize = System::Drawing::Size(315, 372);
       this->Controls->Add(this->lblSummary2);
       this->Controls->Add(this->label2);
       this->Controls->Add(this->label1);
@@ -255,6 +282,7 @@ namespace gui {
       this->tabGraphType->ResumeLayout(false);
       this->tabPageLocation->ResumeLayout(false);
       this->tabPageContainer->ResumeLayout(false);
+      this->tabPageContainer->PerformLayout();
       this->ResumeLayout(false);
       this->PerformLayout();
 
