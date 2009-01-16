@@ -542,9 +542,6 @@ Location::ProcessDensimOutput( sim::output::DensimOutput * udo, DateTime startDa
     mdo->Location[output::OutputInfos::DensimLocation::DeathPercentagesByClass]->Data->Add( d / totalDeaths );
   }
 
-  //CopyVectorToOutput( udo->GetInitialSeroprevalence(), mdo->Location[output::OutputInfos::DensimLocation::InitialSeroprevalence] );
-  //CopyVectorToOutput( udo->GetFinalSeroprevalence(), mdo->Location[output::OutputInfos::DensimLocation::FinalSeroprevalence] );
-
   CopyVectorToOutput( udo->GetNumberOfHumans(bStartDate, bStopDate), mdo->Location[output::OutputInfos::DensimLocation::PopulationSize] );
   CopyVectorToOutput( udo->GetMosqTotal(bStartDate, bStopDate), mdo->Location[output::OutputInfos::DensimLocation::FemaleMosquitoesInSimulationArea] );
 
@@ -565,12 +562,14 @@ Location::ProcessDensimOutput( sim::output::DensimOutput * udo, DateTime startDa
   }
 
   for( int i = 1; i <= 4; ++i ) {
-    int serotype = i;
-    CopyVectorToOutput( udo->GetEipDevelopmentRate(bStartDate, bStopDate, serotype), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::EipDevelopmentRate] );
-    CopyVectorToOutput( udo->GetInfectiveMosquitoes(bStartDate, bStopDate, serotype), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::InfectiveMosquitoes] );
-    CopyVectorToOutput( udo->GetPersonsIncubating(bStartDate, bStopDate, serotype), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::PersonsIncubating] );
-    CopyVectorToOutput( udo->GetPersonsViremic(bStartDate, bStopDate, serotype), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::PersonsViremic] );
-    CopyVectorToOutput( udo->GetPersonsWithVirus(bStartDate, bStopDate, serotype), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::PersonsWithVirus] );
+    CopyVectorToOutput( udo->GetEipDevelopmentRate(bStartDate, bStopDate, i), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::EipDevelopmentRate] );
+    CopyVectorToOutput( udo->GetInfectiveMosquitoes(bStartDate, bStopDate, i), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::InfectiveMosquitoes] );
+    CopyVectorToOutput( udo->GetPersonsIncubating(bStartDate, bStopDate, i), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::PersonsIncubating] );
+    CopyVectorToOutput( udo->GetPersonsViremic(bStartDate, bStopDate, i), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::PersonsViremic] );
+    CopyVectorToOutput( udo->GetPersonsWithVirus(bStartDate, bStopDate, i), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::PersonsWithVirus] );
+
+    CopyVectorToOutput( udo->GetInitialSeroprevalence(i), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::InitialSeroprevalence] );
+    CopyVectorToOutput( udo->GetFinalSeroprevalence(i), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::FinalSeroprevalence] );
   }
 
   return mdo;
