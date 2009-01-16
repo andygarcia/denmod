@@ -401,5 +401,27 @@ Container::CheckValidWatershedRatio( System::Object ^ sender, CustomValidationEv
   else {
     e->IsValid = true;
   }
-
 }
+
+
+void
+Container::CheckValidDrawdown( System::Object ^ sender, CustomValidationEventArgs ^ e )
+{
+  Container ^ c = (Container^) e->TargetObjectValue;
+  double drawdown = System::Convert::ToDouble( e->TargetMemberValue );
+
+  // drawdown must not be negative
+  if( drawdown < 0 ) {
+    e->IsValid = false;
+    e->ErrorMessage = "Drawdow must be greater than 0.";
+  }
+  // or greater than container's actual capacity
+  else if( drawdown > c->CapacityInLiters ) {
+    e->IsValid = false;
+    e->ErrorMessage = "Drawdown cannot be greater than container's capacity.";
+  }
+  else {
+    e->IsValid = true;
+  }
+}
+

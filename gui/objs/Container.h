@@ -67,6 +67,7 @@ private:
   static void CheckValidDiameter( System::Object ^ sender, CustomValidationEventArgs ^ e );
   static void CheckValidCoverReduction( System::Object ^ sender, CustomValidationEventArgs ^ e );
   static void CheckValidWatershedRatio( System::Object ^ sender, CustomValidationEventArgs ^ e );
+  static void CheckValidDrawdown( System::Object ^ sender, CustomValidationEventArgs ^ e );
 #pragma endregion
 #pragma endregion
 
@@ -106,6 +107,21 @@ public:
         NotifyAndValidate( "Width" );
         NotifyAndValidate( "Height" );
         NotifyAndValidate( "Diameter" );
+      }
+    }
+  }
+
+  [XmlIgnore]
+  property double CapacityInLiters {
+    double get(void) {
+      if( Shape == ShapeType::Circular ) {
+        return System::Math::PI * System::Math::Pow( (Diameter_/2), 2) * Height_;
+      }
+      else if( Shape == ShapeType::Rectangular ) {
+        return Length_ * Width_ * Height_;
+      }
+      else {
+        throw gcnew System::InvalidOperationException( "CapacityInLiters(): invalid shape type." );
       }
     }
   }
@@ -275,7 +291,7 @@ public:
 
   [XmlElementAttribute(Order=13)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
-  [CompareDoubleRule( 0, CompareOperator::GreaterThanEqual, ErrorMessage = "Drawdown cannot be negative." )]
+  [CustomRuleAttribute( "gui.Container,objs", "CheckValidDrawdown", "Validate container's drawdown." )]
   property double Drawdown {
     double get(void) {
       return Drawdown_;
