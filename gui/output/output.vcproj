@@ -234,11 +234,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Graphs.h"
+				RelativePath=".\Outputs.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Outputs.h"
+				RelativePath=".\Plots.h"
 				>
 			</File>
 			<File

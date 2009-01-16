@@ -15,7 +15,7 @@ public ref class ChartInfo
 {
 public:
   ChartInfo( String ^ name, bool periodic)
-  : _graphs(gcnew GraphCollection()),
+  : _graphs(gcnew PlotCollection()),
     _name(name),
     _periodic(periodic)
   {}
@@ -38,7 +38,7 @@ public:
 private:
   String ^ _name;
   bool _periodic;
-  GraphCollection ^ _graphs;
+  PlotCollection ^ _graphs;
 };
 typedef ComponentModel::BindingList<ChartInfo^> ChartInfoCollection;
 
@@ -123,7 +123,7 @@ public:
 
 public:
   Chart(void)
-  : _graphs(gcnew GraphCollection())
+  : _graphs(gcnew PlotCollection())
   {}
 
   virtual ~Chart(void)
@@ -142,15 +142,15 @@ public:
     }
   }
 
-  property GraphCollection ^ Graphs {
-    GraphCollection ^ get(void) {
+  property PlotCollection ^ Graphs {
+    PlotCollection ^ get(void) {
       return _graphs;
     }
   }
 
 private:
   ChartInfo ^ _chartInfo;
-  GraphCollection ^ _graphs;
+  PlotCollection ^ _graphs;
 };
 
 
