@@ -124,6 +124,14 @@ namespace gui {
 
 
 
+
+
+
+
+
+
+
+
 	private:
 		/// <summary>
 		/// Required designer variable.
@@ -148,14 +156,6 @@ namespace gui {
       this->numRuns = (gcnew System::Windows::Forms::NumericUpDown());
       this->lblRuns = (gcnew System::Windows::Forms::Label());
       this->dgvFit = (gcnew System::Windows::Forms::DataGridView());
-      this->dgvcContainer = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-      this->dgvcDensity = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-      this->dgvcObservedPupaeContainer = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-      this->dgvcObservedHectare = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-      this->dgvcDailyFood = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-      this->dgvcPredictedPupaeContainer = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-      this->dgvcPredictedPupaeHectare = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-      this->dgvcDifferenceContainer = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
       this->lblSurveyStart = (gcnew System::Windows::Forms::Label());
       this->dateTimeSurveyStart = (gcnew System::Windows::Forms::DateTimePicker());
       this->dateTimeSurveyStop = (gcnew System::Windows::Forms::DateTimePicker());
@@ -171,6 +171,14 @@ namespace gui {
       this->snboxTotalObserved = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxTotalDifference = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxTotalRatio = (gcnew ctrl::ScientificNotationTextBox());
+      this->dgvcContainer = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+      this->dgvcDensity = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+      this->dgvcObservedPupaeContainer = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+      this->dgvcObservedHectare = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+      this->dgvcDailyFood = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+      this->dgvcPredictedPupaeContainer = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+      this->dgvcPredictedPupaeHectare = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+      this->dgvcDifferenceContainer = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->numRuns))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->dgvFit))->BeginInit();
       this->SuspendLayout();
@@ -210,83 +218,6 @@ namespace gui {
       this->dgvFit->RowHeadersVisible = false;
       this->dgvFit->Size = System::Drawing::Size(788, 273);
       this->dgvFit->TabIndex = 8;
-      // 
-      // dgvcContainer
-      // 
-      this->dgvcContainer->DataPropertyName = L"Name";
-      dataGridViewCellStyle1->BackColor = System::Drawing::SystemColors::Control;
-      this->dgvcContainer->DefaultCellStyle = dataGridViewCellStyle1;
-      this->dgvcContainer->HeaderText = L"Container";
-      this->dgvcContainer->Name = L"dgvcContainer";
-      this->dgvcContainer->ReadOnly = true;
-      // 
-      // dgvcDensity
-      // 
-      this->dgvcDensity->DataPropertyName = L"Density";
-      dataGridViewCellStyle2->BackColor = System::Drawing::SystemColors::Control;
-      this->dgvcDensity->DefaultCellStyle = dataGridViewCellStyle2;
-      this->dgvcDensity->HeaderText = L"Container Density (#/ha)";
-      this->dgvcDensity->Name = L"dgvcDensity";
-      this->dgvcDensity->ReadOnly = true;
-      // 
-      // dgvcObservedPupaeContainer
-      // 
-      this->dgvcObservedPupaeContainer->DataPropertyName = L"ObservedPerContainer";
-      dataGridViewCellStyle3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
-        static_cast<System::Byte>(0)));
-      this->dgvcObservedPupaeContainer->DefaultCellStyle = dataGridViewCellStyle3;
-      this->dgvcObservedPupaeContainer->FillWeight = 75;
-      this->dgvcObservedPupaeContainer->HeaderText = L"Observed Pupae per Container";
-      this->dgvcObservedPupaeContainer->Name = L"dgvcObservedPupaeContainer";
-      // 
-      // dgvcObservedHectare
-      // 
-      this->dgvcObservedHectare->DataPropertyName = L"ObservedPerHectare";
-      dataGridViewCellStyle4->BackColor = System::Drawing::SystemColors::Control;
-      this->dgvcObservedHectare->DefaultCellStyle = dataGridViewCellStyle4;
-      this->dgvcObservedHectare->HeaderText = L"Observed Pupae per ha";
-      this->dgvcObservedHectare->Name = L"dgvcObservedHectare";
-      this->dgvcObservedHectare->ReadOnly = true;
-      // 
-      // dgvcDailyFood
-      // 
-      this->dgvcDailyFood->DataPropertyName = L"DailyFood";
-      dataGridViewCellStyle5->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
-        static_cast<System::Byte>(0)));
-      this->dgvcDailyFood->DefaultCellStyle = dataGridViewCellStyle5;
-      this->dgvcDailyFood->FillWeight = 75;
-      this->dgvcDailyFood->HeaderText = L"Daily Food";
-      this->dgvcDailyFood->Name = L"dgvcDailyFood";
-      // 
-      // dgvcPredictedPupaeContainer
-      // 
-      this->dgvcPredictedPupaeContainer->DataPropertyName = L"PredictedPerContainer";
-      dataGridViewCellStyle6->BackColor = System::Drawing::SystemColors::Control;
-      dataGridViewCellStyle6->Format = L"N2";
-      this->dgvcPredictedPupaeContainer->DefaultCellStyle = dataGridViewCellStyle6;
-      this->dgvcPredictedPupaeContainer->HeaderText = L"Predicted Pupae per Container";
-      this->dgvcPredictedPupaeContainer->Name = L"dgvcPredictedPupaeContainer";
-      this->dgvcPredictedPupaeContainer->ReadOnly = true;
-      // 
-      // dgvcPredictedPupaeHectare
-      // 
-      this->dgvcPredictedPupaeHectare->DataPropertyName = L"PredictedPerHectare";
-      dataGridViewCellStyle7->BackColor = System::Drawing::SystemColors::Control;
-      dataGridViewCellStyle7->Format = L"N2";
-      this->dgvcPredictedPupaeHectare->DefaultCellStyle = dataGridViewCellStyle7;
-      this->dgvcPredictedPupaeHectare->HeaderText = L"Predicted Pupae per ha";
-      this->dgvcPredictedPupaeHectare->Name = L"dgvcPredictedPupaeHectare";
-      this->dgvcPredictedPupaeHectare->ReadOnly = true;
-      // 
-      // dgvcDifferenceContainer
-      // 
-      this->dgvcDifferenceContainer->DataPropertyName = L"DifferencePerHectare";
-      dataGridViewCellStyle8->BackColor = System::Drawing::SystemColors::Control;
-      dataGridViewCellStyle8->Format = L"N2";
-      this->dgvcDifferenceContainer->DefaultCellStyle = dataGridViewCellStyle8;
-      this->dgvcDifferenceContainer->HeaderText = L"Observed - Predicted";
-      this->dgvcDifferenceContainer->Name = L"dgvcDifferenceContainer";
-      this->dgvcDifferenceContainer->ReadOnly = true;
       // 
       // lblSurveyStart
       // 
@@ -407,7 +338,7 @@ namespace gui {
       this->snboxTotalPredicted->ReadOnly = true;
       this->snboxTotalPredicted->Size = System::Drawing::Size(100, 20);
       this->snboxTotalPredicted->TabIndex = 20;
-      this->snboxTotalPredicted->Text = L"0.00";
+      this->snboxTotalPredicted->Text = L"0";
       this->snboxTotalPredicted->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxTotalPredicted->Value = L"0";
       // 
@@ -419,7 +350,7 @@ namespace gui {
       this->snboxTotalObserved->ReadOnly = true;
       this->snboxTotalObserved->Size = System::Drawing::Size(100, 20);
       this->snboxTotalObserved->TabIndex = 20;
-      this->snboxTotalObserved->Text = L"0.00";
+      this->snboxTotalObserved->Text = L"0";
       this->snboxTotalObserved->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxTotalObserved->Value = L"0";
       // 
@@ -431,7 +362,7 @@ namespace gui {
       this->snboxTotalDifference->ReadOnly = true;
       this->snboxTotalDifference->Size = System::Drawing::Size(100, 20);
       this->snboxTotalDifference->TabIndex = 20;
-      this->snboxTotalDifference->Text = L"0.00";
+      this->snboxTotalDifference->Text = L"0";
       this->snboxTotalDifference->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxTotalDifference->Value = L"0";
       // 
@@ -443,9 +374,86 @@ namespace gui {
       this->snboxTotalRatio->ReadOnly = true;
       this->snboxTotalRatio->Size = System::Drawing::Size(100, 20);
       this->snboxTotalRatio->TabIndex = 20;
-      this->snboxTotalRatio->Text = L"0.000";
+      this->snboxTotalRatio->Text = L"0";
       this->snboxTotalRatio->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxTotalRatio->Value = L"0";
+      // 
+      // dgvcContainer
+      // 
+      this->dgvcContainer->DataPropertyName = L"Name";
+      dataGridViewCellStyle1->BackColor = System::Drawing::SystemColors::Control;
+      this->dgvcContainer->DefaultCellStyle = dataGridViewCellStyle1;
+      this->dgvcContainer->HeaderText = L"Container";
+      this->dgvcContainer->Name = L"dgvcContainer";
+      this->dgvcContainer->ReadOnly = true;
+      // 
+      // dgvcDensity
+      // 
+      this->dgvcDensity->DataPropertyName = L"Density";
+      dataGridViewCellStyle2->BackColor = System::Drawing::SystemColors::Control;
+      this->dgvcDensity->DefaultCellStyle = dataGridViewCellStyle2;
+      this->dgvcDensity->HeaderText = L"Container Density (#/ha)";
+      this->dgvcDensity->Name = L"dgvcDensity";
+      this->dgvcDensity->ReadOnly = true;
+      // 
+      // dgvcObservedPupaeContainer
+      // 
+      this->dgvcObservedPupaeContainer->DataPropertyName = L"ObservedPerContainer";
+      dataGridViewCellStyle3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
+        static_cast<System::Byte>(0)));
+      this->dgvcObservedPupaeContainer->DefaultCellStyle = dataGridViewCellStyle3;
+      this->dgvcObservedPupaeContainer->FillWeight = 75;
+      this->dgvcObservedPupaeContainer->HeaderText = L"Observed Pupae per Container";
+      this->dgvcObservedPupaeContainer->Name = L"dgvcObservedPupaeContainer";
+      // 
+      // dgvcObservedHectare
+      // 
+      this->dgvcObservedHectare->DataPropertyName = L"ObservedPerHectare";
+      dataGridViewCellStyle4->BackColor = System::Drawing::SystemColors::Control;
+      this->dgvcObservedHectare->DefaultCellStyle = dataGridViewCellStyle4;
+      this->dgvcObservedHectare->HeaderText = L"Observed Pupae per ha";
+      this->dgvcObservedHectare->Name = L"dgvcObservedHectare";
+      this->dgvcObservedHectare->ReadOnly = true;
+      // 
+      // dgvcDailyFood
+      // 
+      this->dgvcDailyFood->DataPropertyName = L"DailyFood";
+      dataGridViewCellStyle5->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
+        static_cast<System::Byte>(0)));
+      this->dgvcDailyFood->DefaultCellStyle = dataGridViewCellStyle5;
+      this->dgvcDailyFood->FillWeight = 75;
+      this->dgvcDailyFood->HeaderText = L"Daily Food";
+      this->dgvcDailyFood->Name = L"dgvcDailyFood";
+      // 
+      // dgvcPredictedPupaeContainer
+      // 
+      this->dgvcPredictedPupaeContainer->DataPropertyName = L"PredictedPerContainer";
+      dataGridViewCellStyle6->BackColor = System::Drawing::SystemColors::Control;
+      dataGridViewCellStyle6->Format = L"N2";
+      this->dgvcPredictedPupaeContainer->DefaultCellStyle = dataGridViewCellStyle6;
+      this->dgvcPredictedPupaeContainer->HeaderText = L"Predicted Pupae per Container";
+      this->dgvcPredictedPupaeContainer->Name = L"dgvcPredictedPupaeContainer";
+      this->dgvcPredictedPupaeContainer->ReadOnly = true;
+      // 
+      // dgvcPredictedPupaeHectare
+      // 
+      this->dgvcPredictedPupaeHectare->DataPropertyName = L"PredictedPerHectare";
+      dataGridViewCellStyle7->BackColor = System::Drawing::SystemColors::Control;
+      dataGridViewCellStyle7->Format = L"N2";
+      this->dgvcPredictedPupaeHectare->DefaultCellStyle = dataGridViewCellStyle7;
+      this->dgvcPredictedPupaeHectare->HeaderText = L"Predicted Pupae per ha";
+      this->dgvcPredictedPupaeHectare->Name = L"dgvcPredictedPupaeHectare";
+      this->dgvcPredictedPupaeHectare->ReadOnly = true;
+      // 
+      // dgvcDifferenceContainer
+      // 
+      this->dgvcDifferenceContainer->DataPropertyName = L"DifferencePerHectare";
+      dataGridViewCellStyle8->BackColor = System::Drawing::SystemColors::Control;
+      dataGridViewCellStyle8->Format = L"N2";
+      this->dgvcDifferenceContainer->DefaultCellStyle = dataGridViewCellStyle8;
+      this->dgvcDifferenceContainer->HeaderText = L"ABS( Observed - Predicted )";
+      this->dgvcDifferenceContainer->Name = L"dgvcDifferenceContainer";
+      this->dgvcDifferenceContainer->ReadOnly = true;
       // 
       // FoodFitterForm
       // 
