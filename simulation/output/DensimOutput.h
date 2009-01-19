@@ -78,6 +78,8 @@ public:
   std::vector<int> GetInitialSeroprevalence( int serotype );
   std::vector<int> GetFinalSeroprevalence( int serotype );
 
+  std::vector<double> GetDetailedSeroprevalence( boost::gregorian::date startDate, boost::gregorian::date stopdate, int ageClass, int serotype );
+
   std::vector<double> GetPersonsWithVirus( boost::gregorian::date startDate, boost::gregorian::date stopDate, int serotype );
   std::vector<double> GetPersonsIncubating( boost::gregorian::date startDate, boost::gregorian::date stopDate, int serotype );
   std::vector<double> GetPersonsViremic( boost::gregorian::date startDate, boost::gregorian::date stopDate, int serotype );

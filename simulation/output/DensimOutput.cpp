@@ -148,6 +148,21 @@ DensimOutput::GetFinalSeroprevalence( int serotype )
 
 
 std::vector<double>
+DensimOutput::GetDetailedSeroprevalence( boost::gregorian::date startDate, boost::gregorian::date stopDate, int ageClass, int serotype )
+{
+  std::vector<double> values;
+
+  day_iterator itDate = day_iterator(startDate);
+  for( ; *itDate <= stopDate; ++itDate ) {
+    values.push_back( _locationOutput[*itDate].SerPos[ageClass][serotype] );
+  }  
+
+  return values;
+}
+
+
+
+std::vector<double>
 DensimOutput::GetPersonsWithVirus( date startDate, date stopDate, int serotype )
 {
   std::vector<double> withVirus;
