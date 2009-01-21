@@ -108,7 +108,7 @@ CimsimOutputForm::OnSaveAll(System::Object^  sender, System::EventArgs^  e)
   IO::DirectoryInfo ^ di = gcnew IO::DirectoryInfo( fbd->SelectedPath );
 
   try {
-    _location->SaveCimsimOutput( di );
+    _location->CimsimOutput->SaveToDisk( di );
   }
   catch( System::IO::DirectoryNotFoundException ^ e ) {
     Console::WriteLine( "CimsimOutputForm::OnSaveAll() : " + e->ToString() + " : " + e->Message );

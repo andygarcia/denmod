@@ -95,20 +95,30 @@ public:
 ref class CimsimOutput;
 ref class DensimOutput;
 
-public ref class SimOutput
+public ref class SimOutput abstract
 {
 public:
-  SimOutput( DateTime startDate, DateTime stopDate );
+  SimOutput( String ^ name, DateTime startDate, DateTime stopDate );
   virtual ~SimOutput(void);
 
 public:
-  static String ^ GenerateExcelXml( List<String^> ^ headers, List<DateTime> ^ dates, List<array<double>^> ^ columns );
+  virtual void SaveToDisk( IO::DirectoryInfo ^ di ) abstract;
+  static String ^ GenerateExcelDateXml( List<String^> ^ headers, List<DateTime> ^ dates, List<array<double>^> ^ columns );
+
+  generic<class T>
+  static String ^ GenerateExcelClassXml( List<String^> ^ headers, List<String^> ^ indices, List<array<T>^> ^ columns );
 
 private:
   void GenerateWeeks(void);
   void GenerateMonths(void);
 
 public:
+  property String ^ Name {
+    String ^ get(void) {
+      return _name;
+    }
+  }
+
   property DateTime StartDate {
     DateTime get(void) {
       return _startDate;
@@ -146,6 +156,7 @@ public:
   }
 
 protected:
+  String ^ _name;
   DateTime _startDate;
   DateTime _stopDate;
   List<DateTime> ^ _dates;

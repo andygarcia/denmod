@@ -114,12 +114,16 @@ private:
   static DensimOutput(void);
 
 public:
-  DensimOutput( double humanDensity, DateTime startDate, DateTime stopDate );
+  DensimOutput( String ^ name, double humanDensity, DateTime startDate, DateTime stopDate );
   virtual ~DensimOutput(void);
 
 public:
+  virtual void SaveToDisk( IO::DirectoryInfo ^ di ) override;
   output::Chart ^ CreateChart( ChartInfo ^ chartInfo );
   output::Chart ^ CreateDetailedSeroprevalenceChart( int seroClass );
+
+private:
+  String ^ GetDemographicsExcelXml(void);
 
 public:
   property array<int> ^ InitialAgeDistribution {

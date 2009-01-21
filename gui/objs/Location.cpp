@@ -312,7 +312,7 @@ output::CimsimOutput ^
 Location::ProcessCimsimOutput( sim::output::CimsimOutput * uco, DateTime startDate, DateTime stopDate )
 {
   // managed cimsim output
-  output::CimsimOutput ^ mco = gcnew output::CimsimOutput( startDate, stopDate );
+  output::CimsimOutput ^ mco = gcnew output::CimsimOutput( Name_, startDate, stopDate );
 
   // get dates in boost format
   boost::gregorian::date bStartDate = boost::gregorian::date( startDate.Year, startDate.Month, startDate.Day );
@@ -351,7 +351,7 @@ Location::ProcessCimsimOutput( sim::output::CimsimOutput * uco, DateTime startDa
 
 
   for each( Container ^ c in Containers ) {
-    output::ContainerOutput ^ co = gcnew output::ContainerOutput();
+    output::ContainerOutput ^ co = gcnew output::ContainerOutput( c->Name, c->Id );
 
     co->Depth = ArrayFromDoubleVector( uco->GetDepth(bStartDate, bStopDate, c->Id) );
     co->Food = ArrayFromDoubleVector( uco->GetFood(bStartDate, bStopDate, c->Id) );
@@ -376,30 +376,6 @@ Location::ProcessCimsimOutput( sim::output::CimsimOutput * uco, DateTime startDa
   }
 
   return mco;
-}
-
-
-
-void
-Location::SaveCimsimOutput( System::IO::DirectoryInfo ^ di )
-{
-  // save all cimsim output into target directory
-  System::String ^ directory = di->FullName;
-
-  // write location file
-  System::String ^ locationFile = directory + "\\CIMSiM - Location Totals - " + this->Name + ".xml";
-  System::IO::StreamWriter ^ sw = gcnew System::IO::StreamWriter( locationFile );
-  sw->Write( CimsimOutput->GetLocationExcelXml() );
-  sw->Close();
-
-  // write container files
-  for each( gui::Container ^ c in this->Containers ) {
-    System::String ^ containerFile = directory + "\\CIMSiM - " + c->Name + ".xml";
-
-    System::IO::StreamWriter ^ sw = gcnew System::IO::StreamWriter( containerFile );
-    sw->Write( this->CimsimOutput->GetContainerExcelXml(c->Id) );
-    sw->Close();
-  }
 }
 
 
@@ -542,7 +518,7 @@ output::DensimOutput ^
 Location::ProcessDensimOutput( sim::output::DensimOutput * udo, DateTime startDate, DateTime stopDate )
 {
   // managed cimsim output
-  output::DensimOutput ^ mdo = gcnew output::DensimOutput( Demographics_->HumanHostDensity, startDate, stopDate );
+  output::DensimOutput ^ mdo = gcnew output::DensimOutput( Name_, Demographics_->HumanHostDensity, startDate, stopDate );
 
   // get dates in boost format
   boost::gregorian::date bStartDate = boost::gregorian::date( startDate.Year, startDate.Month, startDate.Day );

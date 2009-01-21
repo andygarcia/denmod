@@ -99,80 +99,29 @@ DensimOutputForm::OnSave(System::Object^  sender, System::EventArgs^  e)
 System::Void
 DensimOutputForm::OnSaveAll(System::Object^  sender, System::EventArgs^  e)
 {
+  // save all output to a directory
+  FolderBrowserDialog ^ fbd = gcnew FolderBrowserDialog();
+  fbd->SelectedPath = Environment::CurrentDirectory;
+  if( fbd->ShowDialog() != ::DialogResult::OK ) {
+    return;
+  }
+  IO::DirectoryInfo ^ di = gcnew IO::DirectoryInfo( fbd->SelectedPath );
 
-  throw gcnew InvalidOperationException( "Not implemented." );
-  //// save all output to a directory
-  //FolderBrowserDialog ^ fbd = gcnew FolderBrowserDialog();
-  //if( fbd->ShowDialog() != ::DialogResult::OK ) {
-  //  return;
-  //}
-  //String ^ directory = fbd->SelectedPath;
-
-  //// just need to create chart objects with specified series and save them all
-  //Dundas::Charting::WinControl::Chart ^ locationChart = gcnew Dundas::Charting::WinControl::Chart();
-  //locationChart->Series->Add( _location->DensimSeries_["Population Size"] );
-  //locationChart->Series->Add( _location->SerotypeSeries_[1]["Virus"] );
-  //locationChart->Series->Add( _location->SerotypeSeries_[2]["Virus"] );
-  //locationChart->Series->Add( _location->SerotypeSeries_[3]["Virus"] );
-  //locationChart->Series->Add( _location->SerotypeSeries_[4]["Virus"] );
-  //locationChart->Series->Add( _location->DensimSeries_["Female Mosquitoes Per Hectare"] );
-  //locationChart->Series->Add( _location->DensimSeries_["Female Mosquito Survival"] );
-  //locationChart->Series->Add( _location->DensimSeries_["Female Mosquito Wet Weight"] );
-  //locationChart->Series->Add( _location->DensimSeries_["Female Mosquitoes Per Person"] );
-  //locationChart->Series->Add( _location->DensimSeries_["Potentially Infective Bites"] );
-
-  //String ^ locationFile = directory + "\\DENSiM - Location Totals - " + _location->Name + ".xml";
-  //try {
-  //  System::IO::StreamWriter ^ sw = gcnew System::IO::StreamWriter( locationFile );
-  //  sw->Write( ExcelOutput::GetXml(locationChart) );
-  //  sw->Close();
-  //}
-  //catch( System::IO::IOException ^ ioe ) {
-  //  Diagnostics::Debug::WriteLine( ioe->ToString() );
-  //  MessageBox::Show( "Unable to save files.  " + locationFile + " is open.  Please close output files and try again" );
-  //  return;
-  //}
-
-  //// four serotypes
-  //for( int i = 1; i <= 4; ++i ) {
-  //  Dundas::Charting::WinControl::Chart ^ serotypeChart = gcnew Dundas::Charting::WinControl::Chart();
-  //  serotypeChart->Series->Add( _location->SerotypeSeries_[i]["Incubating"] );
-  //  serotypeChart->Series->Add( _location->SerotypeSeries_[i]["Viremic"] );
-  //  serotypeChart->Series->Add( _location->SerotypeSeries_[i]["Virus"] );
-  //  serotypeChart->Series->Add( _location->SerotypeSeries_[i]["Infective Mosquitoes"] );
-  //  serotypeChart->Series->Add( _location->SerotypeSeries_[i]["EIP Development Rate"] );
-
-  //  String ^ containerFile = directory + "\\DENSiM - Dengue " + i.ToString() + ".xml";
-  //  try {
-  //    System::IO::StreamWriter ^ sw = gcnew System::IO::StreamWriter( containerFile );
-  //    sw->Write( ExcelOutput::GetXml(serotypeChart) );
-  //    sw->Close();
-  //  }
-  //  catch( System::IO::IOException ^ ioe ) {
-  //    Diagnostics::Debug::WriteLine( ioe->ToString() );
-  //    MessageBox::Show( "Unable to save files.  " + containerFile + " is open.  Please close output files and try again" );
-  //    return;
-  //  }
-  //}
-
-  //// population and age distributions
-  //Dundas::Charting::WinControl::Chart ^ ageDistrChart = gcnew Dundas::Charting::WinControl::Chart();
-  //ageDistrChart->Series->Add( _location->DensimSeries_["Initial Age Distribution"] );
-  //ageDistrChart->Series->Add( _location->DensimSeries_["Final Age Distribution"] );
-  //ageDistrChart->Series->Add( _location->DensimSeries_["Births By Class"] );
-  //ageDistrChart->Series->Add( _location->DensimSeries_["Deaths By Class"] );
-  //ageDistrChart->Series->Add( _location->DensimSeries_["Birth Percentages By Class"] );
-  //ageDistrChart->Series->Add( _location->DensimSeries_["Death Percentages By Class"] );
-
-  //String ^ ageDistrFile = directory + "\\DENSiM - Population Structure.xml";
-  //try {
-  //  System::IO::StreamWriter ^ sw = gcnew System::IO::StreamWriter( ageDistrFile );
-  //  sw->Write( ExcelOutput::GetXml(ageDistrChart) );
-  //  sw->Close();
-  //}
-  //catch( System::IO::IOException ^ ioe ) {
-  //  Diagnostics::Debug::WriteLine( ioe->ToString() );
-  //  MessageBox::Show( "Unable to save files.  " + ageDistrFile + " is open.  Please close output files and try again" );
-  //  return;
-  //}
+  try {
+    _location->DensimOutput->SaveToDisk( di );
+  }
+  catch( System::IO::DirectoryNotFoundException ^ e ) {
+    Console::WriteLine( "CimsimOutputForm::OnSaveAll() : " + e->ToString() + " : " + e->Message );
+    MessageBox::Show( "Unable to save files. Directory not found." );
+    return;
+  }
+  catch( System::IO::DriveNotFoundException ^ e ) {
+    Console::WriteLine( "CimsimOutputForm::OnSaveAll() : " + e->ToString() + " : " + e->Message );
+    MessageBox::Show( "Unable to save files. Drive not found." );
+    return;
+  }
+  catch( System::IO::IOException ^ e ) {
+    Console::WriteLine( "CimsimOutputForm::OnSaveAll() : " + e->ToString() + " : " + e->Message );
+    MessageBox::Show( "Unable to save files. Make sure all output files are closed before saving." );
+  }
 }

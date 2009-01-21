@@ -12,10 +12,25 @@ namespace output {
 public ref class ContainerOutput
 {
 public:
-  ContainerOutput(void) {}
+  ContainerOutput(String ^ name, int id)
+  : _name(name),
+    _id(id)
+  {}
   ~ContainerOutput(void) {}
 
 public:
+  property String ^ Name {
+    String ^ get(void) {
+      return _name;
+    }
+  }
+
+  property int Id {
+    int get(void) {
+      return _id;
+    }
+  }
+
   property array<double> ^ Depth {
      array<double> ^ get(void) {
        return _depth;
@@ -179,6 +194,9 @@ public:
   }
 
 private:
+  String ^ _name;
+  int _id;
+
   array<double> ^ _depth;
   array<double> ^ _food;
   array<double> ^ _maxTemp;
@@ -206,13 +224,15 @@ public ref class CimsimOutput : SimOutput
 public:
 
 public:
-  CimsimOutput( DateTime startDate, DateTime stopDate );
+  CimsimOutput( String ^ name, DateTime startDate, DateTime stopDate );
   ~CimsimOutput(void);
 
 public:
+  virtual void SaveToDisk( IO::DirectoryInfo ^ di ) override;
   output::Chart ^ CreateLocationChart( output::ChartIds chartId );
   output::Chart ^ CreateContainerChart( output::ChartIds chartId, int containerId );
 
+private:
   String ^ GetLocationExcelXml(void);
   String ^ GetContainerExcelXml( int containerId );
 
