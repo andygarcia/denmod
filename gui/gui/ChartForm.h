@@ -76,7 +76,7 @@ namespace gui {
       this->chart->Location = System::Drawing::Point(12, 12);
       this->chart->Name = L"chart";
       this->chart->Palette = Dundas::Charting::WinControl::ChartColorPalette::Dundas;
-      this->chart->Size = System::Drawing::Size(992, 688);
+      this->chart->Size = System::Drawing::Size(992, 689);
       this->chart->TabIndex = 2;
       this->chart->Text = L"chart1";
       // 
@@ -84,7 +84,7 @@ namespace gui {
       // 
       this->btnExit->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
       this->btnExit->DialogResult = System::Windows::Forms::DialogResult::Cancel;
-      this->btnExit->Location = System::Drawing::Point(929, 706);
+      this->btnExit->Location = System::Drawing::Point(929, 707);
       this->btnExit->Name = L"btnExit";
       this->btnExit->Size = System::Drawing::Size(75, 23);
       this->btnExit->TabIndex = 3;
@@ -94,7 +94,7 @@ namespace gui {
       // btnSave
       // 
       this->btnSave->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
-      this->btnSave->Location = System::Drawing::Point(12, 706);
+      this->btnSave->Location = System::Drawing::Point(12, 707);
       this->btnSave->Name = L"btnSave";
       this->btnSave->Size = System::Drawing::Size(120, 23);
       this->btnSave->TabIndex = 4;
@@ -107,11 +107,12 @@ namespace gui {
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
       this->CancelButton = this->btnExit;
-      this->ClientSize = System::Drawing::Size(1016, 741);
+      this->ClientSize = System::Drawing::Size(1016, 742);
       this->Controls->Add(this->btnSave);
       this->Controls->Add(this->btnExit);
       this->Controls->Add(this->chart);
       this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::SizableToolWindow;
+      this->MinimumSize = System::Drawing::Size(640, 480);
       this->Name = L"ChartForm";
       this->ShowInTaskbar = false;
       this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;

@@ -13,14 +13,20 @@ ChartForm::ChartForm( gui::Location ^ location, output::Chart ^ chartData, outpu
 {
   InitializeComponent();
 
-  // set window titles
+  // set window title from output::Chart::Name
   this->Text = chartData->Name;
 
   for each( output::Plot ^ plot in chartData->Plots ) {
     // create, add, and customize chart area
     ChartArea ^ chartArea = gcnew ChartArea();
     chart->ChartAreas->Add( chartArea );
-    chartArea->Name = graph->Title;
+    chartArea->Name = plot->Title;
+
+    // create chart area title from output::Plot::Title
+    Title ^ title = gcnew Title( plot->Title, Docking::Top );
+    chart->Titles->Add( title );
+    title->DockToChartArea = chartArea->Name;
+    title->DockInsideChartArea = false;
 
     // position and size
     chartArea->Position->Auto = true;
@@ -42,7 +48,7 @@ ChartForm::ChartForm( gui::Location ^ location, output::Chart ^ chartData, outpu
     chartArea->AxisX->MajorTickMark->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
     chartArea->AxisX->Margin = false;
     chartArea->AxisX->MinorGrid->LineColor = System::Drawing::Color::Silver;
-    chartArea->AxisX->Title = graph->AxisX;
+    chartArea->AxisX->Title = plot->AxisX;
 
     // y axis
     chartArea->AxisY->LabelStyle->Interval = 0;
@@ -60,7 +66,7 @@ ChartForm::ChartForm( gui::Location ^ location, output::Chart ^ chartData, outpu
     chartArea->AxisY->MajorTickMark->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
     chartArea->AxisY->Margin = true;
     chartArea->AxisY->MinorGrid->LineColor = System::Drawing::Color::Silver;
-    chartArea->AxisY->Title = graph->AxisY;
+    chartArea->AxisY->Title = plot->AxisY;
 
     // check for custom y bounds
     if( plot->CustomYAxis ) {
@@ -100,7 +106,7 @@ ChartForm::ChartForm( gui::Location ^ location, output::Chart ^ chartData, outpu
     for each( output::IOutput ^ output in plot->PrimaryOutputs ) {
       Series ^ series = gcnew Series();
       series->Name = output->Name;
-      series->ChartType = graph->GraphType;
+      series->ChartType = plot->PlotType;
       series->ChartArea = chartArea->Name;
       series->Legend = legend->Name;
 
