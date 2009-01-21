@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Graphs.h"
+#include "Plots.h"
 
 using namespace System;
 
@@ -9,17 +9,175 @@ using namespace System;
 namespace gui {
 namespace output {
 
+public enum class ChartIds : int
+{
+  CimsimMain = 0,
+  CimsimFemales,
+  CimsimAverageFemaleWetWeight,
+  CimsimOviposition,
+  CimsimWeather,
+
+  ContainerDensity,
+  ContainerDepth,
+  ContainerFood,
+  ContainerWaterTemperature,
+  ContainerImmatures,
+  ContainerEggs,
+  ContainerLarvae,
+  ContainerPupae,
+  ContainerAveragePupalWeight,
+  ContainerNewFemales,
+  ContainerCumulativeFemales,
+  ContainerOviposition,
+  ContainerDevelopmentRates,
+
+  DensimMain,
+  DensimAgeDistributions,
+  DensimSimulationArea,
+  DensimPopulationSize,
+  DensimBirthsAndDeaths,
+  DensimFemaleMosquitoesInArea,
+  DensimFemaleMosquitoesPerPerson,
+  DensimFemaleMosquitoSurvival,
+  DensimFemaleMosquitoWetWeight,
+  DensimEipDevelopmentRate,
+  DensimInfectiveMosquitoes,
+  DensimPersonsIncubating,
+  DensimPersonsViremic,
+  DensimPersonsWithVirus,
+  DensimGeneralSeroDistribution,
+  DensimDetailedSeroDistribution
+};
+
 
 
 public ref class ChartInfo
 {
 public:
-  ChartInfo( String ^ name, bool periodic)
-  : _graphs(gcnew GraphCollection()),
+  ChartInfo( output::ChartIds chartId, String ^ name, bool periodic )
+  : _chartId(chartId),
     _name(name),
     _periodic(periodic)
   {}
-  virtual ~ChartInfo(void)
+  ~ChartInfo(void) {}
+
+public:
+  property output::ChartIds ChartId {
+    output::ChartIds get(void) {
+      return _chartId;
+    }
+  }
+
+  property String ^ Name {
+    String ^ get(void) {
+      return _name;
+    }
+  }
+
+  property bool Periodic {
+    bool get(void) {
+      return _periodic;
+    }
+  }
+
+private:
+  output::ChartIds _chartId;
+  String ^ _name;
+  bool _periodic;
+};
+
+
+
+public ref class ChartInfos
+{
+
+private:
+  static ChartInfos(void)
+  {
+    _cimsimLocationCharts = gcnew ComponentModel::BindingList<ChartInfo^>();
+    _cimsimLocationCharts->Add( gcnew ChartInfo(ChartIds::CimsimFemales, "Females", true) );
+    _cimsimLocationCharts->Add( gcnew ChartInfo(ChartIds::CimsimAverageFemaleWetWeight, "Average female wet weight", true) );
+    _cimsimLocationCharts->Add( gcnew ChartInfo(ChartIds::CimsimOviposition, "Oviposition", true) );
+    _cimsimLocationCharts->Add( gcnew ChartInfo(ChartIds::CimsimWeather, "Weather", true) );
+
+    _cimsimContainerCharts = gcnew ComponentModel::BindingList<ChartInfo^>();
+    _cimsimContainerCharts->Add( gcnew ChartInfo(ChartIds::ContainerDensity, "Container densities", true) );
+    _cimsimContainerCharts->Add( gcnew ChartInfo(ChartIds::ContainerDepth, "Water depth", true) );
+    _cimsimContainerCharts->Add( gcnew ChartInfo(ChartIds::ContainerFood, "Food", true) );
+    _cimsimContainerCharts->Add( gcnew ChartInfo(ChartIds::ContainerWaterTemperature, "Water temperature", true) );
+    _cimsimContainerCharts->Add( gcnew ChartInfo(ChartIds::ContainerImmatures, "Immature stages", true) );
+    _cimsimContainerCharts->Add( gcnew ChartInfo(ChartIds::ContainerEggs, "Eggs", true) );
+    _cimsimContainerCharts->Add( gcnew ChartInfo(ChartIds::ContainerLarvae, "Larvae", true) );
+    _cimsimContainerCharts->Add( gcnew ChartInfo(ChartIds::ContainerPupae, "Pupae", true) );
+    _cimsimContainerCharts->Add( gcnew ChartInfo(ChartIds::ContainerAveragePupalWeight, "Average pupal weight", true) );
+    _cimsimContainerCharts->Add( gcnew ChartInfo(ChartIds::ContainerNewFemales, "New females", true) );
+    _cimsimContainerCharts->Add( gcnew ChartInfo(ChartIds::ContainerCumulativeFemales, "Cumulative females", true) );
+    _cimsimContainerCharts->Add( gcnew ChartInfo(ChartIds::ContainerOviposition, "Oviposition", true) );
+    _cimsimContainerCharts->Add( gcnew ChartInfo(ChartIds::ContainerDevelopmentRates, "Development rates", true) );
+
+    _densimCharts = gcnew ComponentModel::BindingList<ChartInfo^>();
+    _densimCharts->Add( gcnew ChartInfo(ChartIds::DensimAgeDistributions, "Age distributions", false) );
+    _densimCharts->Add( gcnew ChartInfo(ChartIds::DensimSimulationArea, "Simulation area", true) );
+    _densimCharts->Add( gcnew ChartInfo(ChartIds::DensimPopulationSize, "Population", true) );
+    _densimCharts->Add( gcnew ChartInfo(ChartIds::DensimBirthsAndDeaths, "Births and deaths", false) );
+    _densimCharts->Add( gcnew ChartInfo(ChartIds::DensimFemaleMosquitoesInArea, "Female mosquitoes in area", true) );
+    _densimCharts->Add( gcnew ChartInfo(ChartIds::DensimFemaleMosquitoesPerPerson, "Female mosquitoes per person", true) );
+    //_densimCharts->Add( gcnew ChartInfo(ChartIds::DensimFemaleMosquitoSurvival, "Female survival", true) );
+    //_densimCharts->Add( gcnew ChartInfo(ChartIds::DensimFemaleMosquitoWetWeight, "Female wet weight", true) );
+
+    _densimVirusCharts = gcnew ComponentModel::BindingList<ChartInfo^>();
+    _densimVirusCharts->Add( gcnew ChartInfo(ChartIds::DensimEipDevelopmentRate, "EIP development rate", true) );
+    _densimVirusCharts->Add( gcnew ChartInfo(ChartIds::DensimInfectiveMosquitoes, "Infective mosquitoes", true) );
+    _densimVirusCharts->Add( gcnew ChartInfo(ChartIds::DensimPersonsIncubating, "Individuals with incubating infection", true) );
+    _densimVirusCharts->Add( gcnew ChartInfo(ChartIds::DensimPersonsViremic, "Individual with viremic infection", true) );
+    _densimVirusCharts->Add( gcnew ChartInfo(ChartIds::DensimPersonsWithVirus, "All individuals infected", true) );
+    _densimVirusCharts->Add( gcnew ChartInfo(ChartIds::DensimGeneralSeroDistribution, "Serology distribution", false) );
+  }
+
+public:
+  static property ComponentModel::BindingList<ChartInfo^> ^ CimsimLocationCharts {
+    ComponentModel::BindingList<ChartInfo^> ^ get(void) {
+      return _cimsimLocationCharts;
+    }
+  }
+
+  static property ComponentModel::BindingList<ChartInfo^> ^ CimsimContainerCharts {
+    ComponentModel::BindingList<ChartInfo^> ^ get(void) {
+      return _cimsimContainerCharts;
+    }
+  }
+
+  static property ComponentModel::BindingList<ChartInfo^> ^ DensimCharts {
+    ComponentModel::BindingList<ChartInfo^> ^ get(void) {
+      return _densimCharts;
+    }
+  }
+
+  static property ComponentModel::BindingList<ChartInfo^> ^ DensimVirusCharts {
+    ComponentModel::BindingList<ChartInfo^> ^ get(void) {
+      return _densimVirusCharts;
+    }
+  }
+
+private:
+  static ComponentModel::BindingList<ChartInfo^> ^ _cimsimLocationCharts;
+  static ComponentModel::BindingList<ChartInfo^> ^ _cimsimContainerCharts;
+  static ComponentModel::BindingList<ChartInfo^> ^ _densimCharts;
+  static ComponentModel::BindingList<ChartInfo^> ^ _densimVirusCharts;
+};
+
+
+
+public ref class Chart
+{
+public:
+  Chart( String ^ name, bool periodic )
+  : _name(name),
+    _periodic(periodic),
+    _plots(gcnew PlotCollection())
+  {}
+
+  virtual ~Chart(void)
   {}
 
 public:
@@ -35,122 +193,16 @@ public:
     }
   }
 
+  property PlotCollection ^ Plots {
+    PlotCollection ^ get(void) {
+      return _plots;
+    }
+  }
+
 private:
   String ^ _name;
   bool _periodic;
-  GraphCollection ^ _graphs;
-};
-typedef ComponentModel::BindingList<ChartInfo^> ChartInfoCollection;
-
-public delegate output::ChartInfo ^ CreateChartInfoDelegate(void);
-
-
-
-public ref class ChartInfos
-{
-private:
-  static ChartInfos(void);
-
-public:
-  static ChartInfoCollection ^ GetChartInfoCollection( Group outputGroup );
-
-private:
-  static Collections::Generic::Dictionary<Group,ChartInfoCollection^> ^ _groupToCollection;
-  static ChartInfoCollection ^ _cimsimLocation;
-  static ChartInfoCollection ^ _cimsimContainer;
-  static ChartInfoCollection ^ _densimLocation;
-  static ChartInfoCollection ^ _densimSerotype;
-
-public:
-  ref class CimsimLocation
-  {
-  public:
-    static ChartInfo ^ Females = gcnew ChartInfo( "Females", true );
-    static ChartInfo ^ AverageFemaleWetWeight = gcnew ChartInfo( "Average Female Wet Weight", true );
-    static ChartInfo ^ Oviposition = gcnew ChartInfo( "Oviposition", true );
-    static ChartInfo ^ Weather = gcnew ChartInfo( "Weather", true );
-  };
-
-  ref class CimsimContainer
-  {
-  public:
-    static ChartInfo ^ ContainerDensity = gcnew ChartInfo( "Container Density", true );
-    static ChartInfo ^ Depth = gcnew ChartInfo( "Water Depth", true );
-    static ChartInfo ^ Food = gcnew ChartInfo( "Food", true );
-    static ChartInfo ^ WaterTemperature = gcnew ChartInfo( "Water Temperature", true );
-    static ChartInfo ^ Immatures = gcnew ChartInfo( "All immature stages", true );
-    static ChartInfo ^ Eggs = gcnew ChartInfo( "Eggs", true );
-    static ChartInfo ^ Larvae = gcnew ChartInfo( "Larvae", true );
-    static ChartInfo ^ Pupae = gcnew ChartInfo( "Pupae", true );
-    static ChartInfo ^ AveragePupalWeight = gcnew ChartInfo( "Average Pupal Weight", true );
-    static ChartInfo ^ NewFemales = gcnew ChartInfo( "New Females", true );
-    static ChartInfo ^ CumulativeFemales = gcnew ChartInfo( "Cumulative Females", true );
-    static ChartInfo ^ Oviposition = gcnew ChartInfo( "Oviposition", true );
-    static ChartInfo ^ DevelopmentRates = gcnew ChartInfo( "Development Rates", true );
-  };
-
-  ref class DensimLocation
-  {
-  public:
-    static ChartInfo ^ AgeDistribution = gcnew ChartInfo( "Age Distributions", false );
-    static ChartInfo ^ SimulationArea = gcnew ChartInfo( "Simulation Area", true );
-    static ChartInfo ^ PopulationSize = gcnew ChartInfo( "Population Size", true );
-    static ChartInfo ^ BirthsAndDeaths = gcnew ChartInfo( "Births and Deaths", false );
-    static ChartInfo ^ FemaleMosquitoesInArea = gcnew ChartInfo( "Female Mosquitoes In Area", true );
-    static ChartInfo ^ FemaleMosquitoesPerPerson = gcnew ChartInfo( "Female Mosquitoes Per Person", true );
-    static ChartInfo ^ FemaleMosquitoSurvival = gcnew ChartInfo( "Female Mosquito Survival", true);
-    static ChartInfo ^ FemaleMosquitoWetWeight = gcnew ChartInfo( "Female Mosquito Wet Weight", true );
-    static ChartInfo ^ GeneralSeroprevalence = gcnew ChartInfo( "General Seroprevalence", false );
-  };
-
-  ref class DensimSerotype
-  {
-  public:
-    static ChartInfo ^ EipDevelopmentRate = gcnew ChartInfo( "EIP Development Rate", true );
-    static ChartInfo ^ InfectiveMosquitoes = gcnew ChartInfo( "Infective Mosquitoes", true );
-    static ChartInfo ^ PersonsIncubating = gcnew ChartInfo( "Persons Incubating", true );
-    static ChartInfo ^ PersonsViremic = gcnew ChartInfo( "Persons Viremic", true );
-    static ChartInfo ^ PersonsWithVirus = gcnew ChartInfo( "Persons with Virus", true );
-  };
-};
-
-
-
-public ref class Chart
-{
-public:
-  static Chart ^ Create( ChartInfo ^ chartInfo, CimsimOutput ^ cimsimOutput, DensimOutput ^ densimOutput, Collections::Generic::List<int> ^ indices );
-
-public:
-  Chart(void)
-  : _graphs(gcnew GraphCollection())
-  {}
-
-  virtual ~Chart(void)
-  {}
-
-public:
-  property String ^ Name {
-    String ^ get(void) {
-      return _chartInfo->Name;
-    }
-  }
-
-  property bool Periodic {
-    bool get(void) {
-      return _chartInfo->Periodic;
-    }
-  }
-
-  property GraphCollection ^ Graphs {
-    GraphCollection ^ get(void) {
-      return _graphs;
-    }
-  }
-
-private:
-  ChartInfo ^ _chartInfo;
-  GraphCollection ^ _graphs;
+  PlotCollection ^ _plots;
 };
 
 

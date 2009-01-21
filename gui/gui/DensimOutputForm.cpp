@@ -16,25 +16,23 @@ DensimOutputForm::DensimOutputForm( gui::Location ^ location )
 	InitializeComponent();
   gui::output::DensimOutput ^ dso = _location->DensimOutput;
 
-  Collections::Generic::List<output::Output^> ^ outputs = gcnew Collections::Generic::List<output::Output^>();
-  outputs->Add( dso->Serotypes[1][output::OutputInfos::DensimSerotype::PersonsWithVirus] );
-  outputs->Add( dso->Serotypes[2][output::OutputInfos::DensimSerotype::PersonsWithVirus] );
-  outputs->Add( dso->Serotypes[3][output::OutputInfos::DensimSerotype::PersonsWithVirus] );
-  outputs->Add( dso->Serotypes[4][output::OutputInfos::DensimSerotype::PersonsWithVirus] );
+  output::Chart ^ chart = dso->CreateChart( gcnew output::ChartInfo(output::ChartIds::DensimMain, "Proportion infected", true) );
+  output::Plot ^ mainPlot = chart->Plots[0];
 
-  int i = 1;
-  for each( output::DatedOutput ^ output in outputs ) {
-    Series ^ s = gcnew Series( "Dengue " + i );
+  for each( output::DatedOutput ^ output in mainPlot->PrimaryOutputs ) {
+    Series ^ s = gcnew Series( output->Name );
     s->ChartType = "Line";
     s->YAxisType = AxisType::Primary;
 
     s->Points->DataBindXY( dso->Dates, output->Data );
 
     chartOutput->Series->Add( s );
-    ++i;
   }
 
-  chartOutput->Title = "Number of individuals incubating or viremic";
+  chartOutput->ChartAreas[0]->AxisY->Minimum = 0.0;
+  chartOutput->ChartAreas[0]->AxisY->Maximum = 1.0;
+
+  chartOutput->Title = "Proportion of population with virus";
 }
 
 

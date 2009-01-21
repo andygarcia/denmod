@@ -8,7 +8,7 @@ using namespace gui;
 
 
 DensimExtOutputForm::DensimExtOutputForm( gui::Location ^ location )
-: Location_( location )
+: _location( location )
 {
 	InitializeComponent();
 }
@@ -28,10 +28,14 @@ System::Void
 DensimExtOutputForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
 {
   lboxLocationGraphs->DisplayMember = "Name";
-  lboxLocationGraphs->DataSource = output::ChartInfos::GetChartInfoCollection(output::Group::DensimLocation);
+  lboxLocationGraphs->DataSource = output::ChartInfos::DensimCharts;
 
   lboxVirusGraphs->DisplayMember = "Name";
-  lboxVirusGraphs->DataSource = output::ChartInfos::GetChartInfoCollection(output::Group::DensimSerotype);
+  lboxVirusGraphs->DataSource = output::ChartInfos::DensimVirusCharts;
+
+  lboxSeroprevalence->DisplayMember = "DisplayName";
+  lboxSeroprevalence->ValueMember = "Value";
+  lboxSeroprevalence->DataSource = output::EnumText::ConvertEnumForBinding( output::SeroClass() );
 
   // time periods
   cboxTimePeriod->DisplayMember = "DisplayName";
@@ -63,7 +67,11 @@ DensimExtOutputForm::OnView(System::Object^  sender, System::EventArgs^  e)
   else if( tabGraphType->SelectedTab == tabPageVirus ) {
     OnViewVirusGraph( btnView, nullptr );
   }
+  else if( tabGraphType->SelectedTab == tabPageSeroprevalence ) {
+    OnViewDetailedSeroprevalenceGraph( btnView, nullptr );
+  }
   else {
+    throw gcnew InvalidOperationException( "count not find selected tab" );
   }
 }
 
@@ -79,6 +87,15 @@ DensimExtOutputForm::OnGraphSelectionChanged(System::Object^  sender, System::Ev
   }
   else if( tabGraphType->SelectedTab == tabPageVirus ) {
     chartInfo = (output::ChartInfo^) lboxVirusGraphs->SelectedValue;
+  }
+  else if( tabGraphType->SelectedTab == tabPageSeroprevalence ) {
+    // all detailed seroprevalence can be summarized
+    cboxTimePeriod->Enabled = true;
+    cboxTimePeriodFunction->Enabled = true;
+    return;
+  }
+  else {
+    throw gcnew InvalidOperationException( "cound not locate tab page" );
   }
 
   if( chartInfo->Periodic ) {
@@ -105,12 +122,11 @@ DensimExtOutputForm::OnViewLocationGraph(System::Object^  sender, System::EventA
   using namespace output;
 
   ChartInfo ^ chartInfo = (ChartInfo^) lboxLocationGraphs->SelectedValue;
+  Chart ^ chart = _location->DensimOutput->CreateChart( chartInfo );
   TimePeriod timePeriod = TimePeriod( cboxTimePeriod->SelectedValue );
   TimePeriodFunction timePeriodFunction = TimePeriodFunction( cboxTimePeriodFunction->SelectedValue );
 
-  Chart ^ chart = Chart::Create( chartInfo, Location_->CimsimOutput, Location_->DensimOutput, nullptr );
-
-  ChartForm ^ gf = gcnew ChartForm( Location_, chart, timePeriod, timePeriodFunction );
+  ChartForm ^ gf = gcnew ChartForm( _location, chart, timePeriod, timePeriodFunction );
   gf->ShowDialog(this);
   gf->Close();
 }
@@ -128,18 +144,33 @@ DensimExtOutputForm::OnViewVirusGraph( System::Object ^ sender, System::EventArg
   using namespace output;
 
   ChartInfo ^ chartInfo = (ChartInfo^) lboxVirusGraphs->SelectedValue;
+  Chart ^ chart = _location->DensimOutput->CreateChart( chartInfo );
   TimePeriod timePeriod = TimePeriod( cboxTimePeriod->SelectedValue );
   TimePeriodFunction timePeriodFunction = TimePeriodFunction( cboxTimePeriodFunction->SelectedValue );
 
-  Collections::Generic::List<int> ^ serotypes = gcnew Collections::Generic::List<int>();
-  serotypes->Add(1);
-  serotypes->Add(2);
-  serotypes->Add(3);
-  serotypes->Add(4);
+  ChartForm ^ gf = gcnew ChartForm( _location, chart, timePeriod, timePeriodFunction );
+  gf->ShowDialog(this);
+  gf->Close();
+}
 
-  Chart ^ chart = Chart::Create( chartInfo, Location_->CimsimOutput, Location_->DensimOutput, serotypes );
 
-  ChartForm ^ gf = gcnew ChartForm( Location_, chart, timePeriod, timePeriodFunction );
+
+System::Void
+DensimExtOutputForm::OnViewDetailedSeroprevalenceGraph( System::Object ^ sender, System::EventArgs ^ e )
+{
+  if( lboxVirusGraphs->SelectedItem == nullptr ) {
+    MessageBox::Show( this, "Please select a graph to view." );
+    return;
+  }
+
+  using namespace output;
+
+  int seroClass = safe_cast<int>( SeroClass(lboxSeroprevalence->SelectedValue) );
+  Chart ^ chart = _location->DensimOutput->CreateDetailedSeroprevalenceChart( seroClass );
+  TimePeriod timePeriod = TimePeriod( cboxTimePeriod->SelectedValue );
+  TimePeriodFunction timePeriodFunction = TimePeriodFunction( cboxTimePeriodFunction->SelectedValue );
+
+  ChartForm ^ gf = gcnew ChartForm( _location, chart, timePeriod, timePeriodFunction );
   gf->ShowDialog(this);
   gf->Close();
 }

@@ -294,11 +294,6 @@ public:
     }
   }
 
-  [XmlIgnore]
-  OutputSeries ^ DensimSeries_;
-
-  [XmlIgnore]
-  SerotypeOutputSeries ^ SerotypeSeries_;
 
 // Fields
 private:

@@ -176,6 +176,14 @@
 			RelativePath="System.XML.dll"
 			AssemblyName="System.Xml, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 		/>
+		<AssemblyReference
+			RelativePath="c:\Program Files\Dundas Software\Charting\WinControlVS2005\bin\DundasWinChart.dll"
+			AssemblyName="DundasWinChart, Version=5.5.1.1700, PublicKeyToken=a4c03dce5db22406, processorArchitecture=MSIL"
+		/>
+		<AssemblyReference
+			RelativePath="System.Windows.Forms.dll"
+			AssemblyName="System.Windows.Forms, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
+		/>
 	</References>
 	<Files>
 		<Filter
@@ -188,7 +196,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Charts.cpp"
+				RelativePath=".\CimsimOutput.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DensimOutput.cpp"
 				>
 			</File>
 			<File
@@ -227,6 +239,14 @@
 			>
 			<File
 				RelativePath=".\Charts.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CimsimOutput.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DensimOutput.h"
 				>
 			</File>
 			<File

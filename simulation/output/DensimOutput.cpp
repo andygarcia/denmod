@@ -6,7 +6,9 @@ using namespace sim::output;
 
 
 
-DensimOutput::DensimOutput(void)
+DensimOutput::DensimOutput( date startDate, date stopDate )
+: _startDate(startDate),
+  _stopDate(stopDate)
 {}
 
 
@@ -67,28 +69,28 @@ DensimOutput::AddDailyLocationOutput( DailyLocationOutput dlo, date d )
 
 
 void
-DensimOutput::SetInitialData( std::vector<int> & initialAgeDistribution, std::vector<std::vector<int>> & initialSeroprevalence )
+DensimOutput::SetInitialData( std::vector<int> & initialAgeDistribution, std::vector<std::vector<int>> & initialSeroDistribution )
 {
   _initialAgeDistribution = initialAgeDistribution;
-  _initialSeroprevalence = initialSeroprevalence;
+  _initialSeroDistribution = initialSeroDistribution;
 }
 
 
 
 void
 DensimOutput::SetFinalData( std::vector<int> & finalAgeDistribution, std::vector<int> & births, std::vector<int> & deaths,
-                           std::vector<std::vector<int>> & finalSeroprevalence )
+                           std::vector<std::vector<int>> & finalSeroDistribution )
 {
   _finalAgeDistribution= finalAgeDistribution;
   _births = births;
   _deaths = deaths;
-  _finalSeroprevalence = finalSeroprevalence;
+  _finalSeroDistribution = finalSeroDistribution;
 }
 
 
 
 std::vector<int>
-DensimOutput::GetInitialAgeDsitribution(void)
+DensimOutput::GetInitialAgeDistribution(void)
 {
   return _initialAgeDistribution;
 }
@@ -119,14 +121,82 @@ DensimOutput::GetDeaths(void)
 
 
   
+std::vector<int>
+DensimOutput::GetInitialSeroDistribution( int serotype )
+{
+  std::vector<int> values;
+
+  for( int i = 0; i < 18; ++i ) {
+    values.push_back( _initialSeroDistribution[i][serotype] );
+  }
+
+  return values;
+}
+
+
+
+std::vector<int>
+DensimOutput::GetFinalSeroDistribution( int serotype )
+{
+  std::vector<int> values;
+
+  for( int i = 0; i < 18; ++i ) {
+    values.push_back( _finalSeroDistribution[i][serotype] );
+  }
+
+  return values;
+}
+
+
+
 std::vector<double>
-DensimOutput::GetPersonsWithVirus( date startDate, date stopDate, int serotype )
+DensimOutput::GetDetailedSeroprevalence( int seroClass, int serotype )
+{
+  // sero classes:
+  // 1 - MANA
+  // 2 - MAEA
+  // 3 - 0-1 years
+  // 4 - 1-4 years
+  // 5 - 5-9
+  // 6 - 10-14
+  // 7 - 15-19
+  // 8 - 20-24
+  // 9 - 25-29
+  // 10 - 30-34
+  // 11 - 35-39
+  // 12 - 40-44
+  // 13 - 45-49
+  // 14 - 50-54
+  // 15 - 55-59
+  // 16 - 60-64
+  // 17 - 65-69
+  // 18 - 70-74
+  // 19 - 75-79
+  // 20 - 80+
+  // 21 - 15-44
+  // 22 - 45-80+
+  // 23 - 0-80+  
+
+  std::vector<double> values;
+
+  day_iterator itDate = day_iterator(_startDate);
+  for( ; *itDate <= _stopDate; ++itDate ) {
+    values.push_back( _locationOutput[*itDate].SerPos[seroClass][serotype] );
+  }
+
+  return values;
+}
+
+
+
+std::vector<double>
+DensimOutput::GetPersonsWithVirus( int serotype )
 {
   std::vector<double> withVirus;
   SerotypeOutput & serotypeOutput = _serotypeOutputs[serotype];
 
-  day_iterator itDate = day_iterator(startDate);
-  for( ; *itDate <= stopDate; ++itDate ) {
+  day_iterator itDate = day_iterator(_startDate);
+  for( ; *itDate <= _stopDate; ++itDate ) {
     withVirus.push_back( serotypeOutput[*itDate].Incubating + serotypeOutput[*itDate].Viremic );
   }
 
@@ -136,13 +206,13 @@ DensimOutput::GetPersonsWithVirus( date startDate, date stopDate, int serotype )
 
 
 std::vector<double>
-DensimOutput::GetPersonsIncubating( date startDate, date stopDate, int serotype )
+DensimOutput::GetPersonsIncubating( int serotype )
 {
   std::vector<double> incubating;
   SerotypeOutput & serotypeOutput = _serotypeOutputs[serotype];
 
-  day_iterator itDate = day_iterator(startDate);
-  for( ; *itDate <= stopDate; ++itDate ) {
+  day_iterator itDate = day_iterator(_startDate);
+  for( ; *itDate <= _stopDate; ++itDate ) {
     incubating.push_back( serotypeOutput[*itDate].Incubating );
   }
 
@@ -152,13 +222,13 @@ DensimOutput::GetPersonsIncubating( date startDate, date stopDate, int serotype 
 
 
 std::vector<double>
-DensimOutput::GetPersonsViremic( date startDate, date stopDate, int serotype )
+DensimOutput::GetPersonsViremic( int serotype )
 {
   std::vector<double> viremic;
   SerotypeOutput & serotypeOutput = _serotypeOutputs[serotype];
 
-  day_iterator itDate = day_iterator(startDate);
-  for( ; *itDate <= stopDate; ++itDate ) {
+  day_iterator itDate = day_iterator(_startDate);
+  for( ; *itDate <= _stopDate; ++itDate ) {
     viremic.push_back( serotypeOutput[*itDate].Viremic );
   }
 
@@ -168,13 +238,13 @@ DensimOutput::GetPersonsViremic( date startDate, date stopDate, int serotype )
 
 
 std::vector<double>
-DensimOutput::GetEipDevelopmentRate(  date startDate, date stopDate,int serotype )
+DensimOutput::GetEipDevelopmentRate( int serotype )
 {
   std::vector<double> eipDevRate;
   SerotypeOutput & serotypeOutput = _serotypeOutputs[serotype];
 
-  day_iterator itDate = day_iterator(startDate);
-  for( ; *itDate <= stopDate; ++itDate ) {
+  day_iterator itDate = day_iterator(_startDate);
+  for( ; *itDate <= _stopDate; ++itDate ) {
     eipDevRate.push_back( serotypeOutput[*itDate].EipDevelopmentRate );
   }
 
@@ -184,13 +254,13 @@ DensimOutput::GetEipDevelopmentRate(  date startDate, date stopDate,int serotype
 
 
 std::vector<double>
-DensimOutput::GetInfectiveMosquitoes(  date startDate, date stopDate,int serotype )
+DensimOutput::GetInfectiveMosquitoes( int serotype )
 {
   std::vector<double> infvMosqs;
   SerotypeOutput & serotypeOutput = _serotypeOutputs[serotype];
 
-  day_iterator itDate = day_iterator(startDate);
-  for( ; *itDate <= stopDate; ++itDate ) {
+  day_iterator itDate = day_iterator(_startDate);
+  for( ; *itDate <= _stopDate; ++itDate ) {
     infvMosqs.push_back( serotypeOutput[*itDate].InfectiveMosquitoes );
   }
 
@@ -200,12 +270,12 @@ DensimOutput::GetInfectiveMosquitoes(  date startDate, date stopDate,int serotyp
 
 
 std::vector<int>
-DensimOutput::GetNumberOfHumans( boost::gregorian::date startDate, boost::gregorian::date stopDate )
+DensimOutput::GetPopulation(void)
 {
   std::vector<int> humans;
 
-  day_iterator itDate = day_iterator(startDate);
-  for( ; *itDate <= stopDate; ++itDate ) {
+  day_iterator itDate = day_iterator(_startDate);
+  for( ; *itDate <= _stopDate; ++itDate ) {
     humans.push_back( _locationOutput[*itDate].NumHumans );
   }
 
@@ -215,12 +285,12 @@ DensimOutput::GetNumberOfHumans( boost::gregorian::date startDate, boost::gregor
 
 
 std::vector<double>
-DensimOutput::GetMosqTotal( boost::gregorian::date startDate, boost::gregorian::date stopDate )
+DensimOutput::GetMosqTotal(void)
 {
   std::vector<double> mosqs;
 
-  day_iterator itDate = day_iterator(startDate);
-  for( ; *itDate <= stopDate; ++itDate ) {
+  day_iterator itDate = day_iterator(_startDate);
+  for( ; *itDate <= _stopDate; ++itDate ) {
     mosqs.push_back( _locationOutput[*itDate].MosqTotal );
   }
 
@@ -230,12 +300,12 @@ DensimOutput::GetMosqTotal( boost::gregorian::date startDate, boost::gregorian::
 
 
 std::vector<int>
-DensimOutput::GetPotentiallyInfectiveBites( boost::gregorian::date startDate, boost::gregorian::date stopDate )
+DensimOutput::GetPotentiallyInfectiveBites(void)
 {
   std::vector<int> bites;
 
-  day_iterator itDate = day_iterator(startDate);
-  for( ; *itDate <= stopDate; ++itDate ) {
+  day_iterator itDate = day_iterator(_startDate);
+  for( ; *itDate <= _stopDate; ++itDate ) {
     bites.push_back( _locationOutput[*itDate].InfvBites );
   }
 

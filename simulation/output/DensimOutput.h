@@ -50,51 +50,54 @@ public:
   typedef std::map<int, SerotypeOutput> SerotypeOutputs;
 
 public:
-  DensimOutput(void);
+  DensimOutput( boost::gregorian::date startDate, boost::gregorian::date stopDate );
   ~DensimOutput(void);
 
 public:
   boost::gregorian::date_period GetDateRange(void);
-  
   void AddDailyLocationOutput( DailyLocationOutput dlo, boost::gregorian::date d );
   void SetInitialData( std::vector<int> & initialAgeDistribution,
-                       std::vector<std::vector<int>> & initialSeroprevalence );
+                       std::vector<std::vector<int>> & initialSeroDistribution );
   void SetFinalData( std::vector<int> & finalAgeDistribution,
                      std::vector<int> & births,
                      std::vector<int> & deaths,
-                     std::vector<std::vector<int>> & finalSeroprevalence );
+                     std::vector<std::vector<int>> & finalSeroDistribution );
 
 
-  std::vector<int> GetInitialAgeDsitribution(void);
+public:
+  std::vector<int> GetInitialAgeDistribution(void);
   std::vector<int> GetFinalAgeDistribution(void);
   std::vector<int> GetBirths(void);
   std::vector<int> GetDeaths(void);
+  std::vector<double> GetArea(void);
+  std::vector<int> GetPopulation(void);
+  std::vector<double> GetMosqTotal(void);
+  std::vector<int> GetPotentiallyInfectiveBites(void);
 
-  std::vector<std::vector<int>> GetInitialSeroprevalence(void);
-  std::vector<std::vector<int>> GetFinalSeroprevalence(void);
-
-  std::vector<int> GetNumberOfHumans( boost::gregorian::date startDate, boost::gregorian::date stopDate );
-  std::vector<double> GetMosqTotal( boost::gregorian::date startDate, boost::gregorian::date stopDate );
-  std::vector<int> GetPotentiallyInfectiveBites( boost::gregorian::date startDate, boost::gregorian::date stopDate );
-
-  // serotype specific
-  std::vector<double> GetPersonsWithVirus( boost::gregorian::date startDate, boost::gregorian::date stopDate, int serotype );
-  std::vector<double> GetPersonsIncubating( boost::gregorian::date startDate, boost::gregorian::date stopDate, int serotype );
-  std::vector<double> GetPersonsViremic( boost::gregorian::date startDate, boost::gregorian::date stopDate, int serotype );
-  std::vector<double> GetEipDevelopmentRate( boost::gregorian::date startDate, boost::gregorian::date stopDate, int serotype );
-  std::vector<double> GetInfectiveMosquitoes( boost::gregorian::date startDate, boost::gregorian::date stopDate, int serotype );
+  std::vector<int> GetInitialSeroDistribution( int serotype );
+  std::vector<int> GetFinalSeroDistribution( int serotype );
+  std::vector<double> GetDetailedSeroprevalence( int seroClass, int serotype );
+  std::vector<double> GetPersonsWithVirus( int serotype );
+  std::vector<double> GetPersonsIncubating( int serotype );
+  std::vector<double> GetPersonsViremic( int serotype );
+  std::vector<double> GetEipDevelopmentRate( int serotype );
+  std::vector<double> GetInfectiveMosquitoes( int serotype );
 
 private:
+  boost::gregorian::date _startDate;
+  boost::gregorian::date _stopDate;
+
   LocationOutput _locationOutput;
   SerotypeOutputs _serotypeOutputs;
 
   std::vector<int> _initialAgeDistribution;
   std::vector<int> _finalAgeDistribution;
+
   std::vector<int> _births;
   std::vector<int> _deaths;
 
-  std::vector<std::vector<int>> _initialSeroprevalence; 
-  std::vector<std::vector<int>> _finalSeroprevalence;
+  std::vector<std::vector<int>> _initialSeroDistribution;
+  std::vector<std::vector<int>> _finalSeroDistribution;
 };
 
 };

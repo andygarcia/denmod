@@ -17,7 +17,6 @@ date BoostDateFromYearAndDayOfYear( int year, int day )
 SimLocation::SimLocation( const input::Location * location, sim::output::MosData * mosData )
 : Location_(location),
   MosData_(mosData),
-  Output_(new output::DensimOutput()),
   GasCoef(1.987f),
   CumDeaths(std::vector<double>( 18+1, 0 )),
   CumBirths(std::vector<double>( 18+1, 0 )),
@@ -193,6 +192,9 @@ SimLocation::GetSimOutput(void)
 void
 SimLocation::denmain(void)
 {
+  // initialize output manager
+  Output_ = new output::DensimOutput( BeginDate_, EndDate_ );
+
   //DiskSpooler DiskData;
   int SpRecNum;
 

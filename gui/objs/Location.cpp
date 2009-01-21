@@ -280,21 +280,30 @@ Location::RunCimsim( bool usePop, DateTime startDate, DateTime stopDate )
 }
 
 
-
-void CopyVectorToOutput( std::vector<double> & vector, output::Output ^ output )
+array<double> ^
+ArrayFromDoubleVector( std::vector<double> & vector )
 {
+  array<double> ^ values = gcnew array<double>(vector.size());
+
   for( unsigned int i = 0; i < vector.size(); ++i ) {
-    output->Data->Add( vector[i] );
+    values[i] = vector[i];
   }
+
+  return values;
 }
 
 
 
-void CopyVectorToOutput( std::vector<int> & vector, output::Output ^ output )
+array<int> ^
+ArrayFromIntVector( std::vector<int> & vector )
 {
+  array<int> ^ values = gcnew array<int>(vector.size());
+
   for( unsigned int i = 0; i < vector.size(); ++i ) {
-    output->Data->Add( vector[i] );
+    values[i] = vector[i];
   }
+
+  return values;
 }
 
 
@@ -310,55 +319,60 @@ Location::ProcessCimsimOutput( sim::output::CimsimOutput * uco, DateTime startDa
   boost::gregorian::date bStopDate = boost::gregorian::date( stopDate.Year, stopDate.Month, stopDate.Day );
 
   // copy data
-  CopyVectorToOutput( uco->GetTotalEggs(bStartDate, bStopDate), mco->Location[output::OutputInfos::CimsimLocation::TotalEggs] );
-  CopyVectorToOutput( uco->GetTotalLarvae(bStartDate, bStopDate), mco->Location[output::OutputInfos::CimsimLocation::TotalLarvae] );
-  CopyVectorToOutput( uco->GetTotalPupae(bStartDate, bStopDate), mco->Location[output::OutputInfos::CimsimLocation::TotalPupae] );
-  CopyVectorToOutput( uco->GetFemales(bStartDate, bStopDate), mco->Location[output::OutputInfos::CimsimLocation::TotalFemales] );
-  CopyVectorToOutput( uco->GetNewFemales( bStartDate, bStopDate ), mco->Location[output::OutputInfos::CimsimLocation::NewFemales] );
-  CopyVectorToOutput( uco->GetAverageFemaleWeight(bStartDate, bStopDate), mco->Location[output::OutputInfos::CimsimLocation::AverageFemaleWeight] );
-  CopyVectorToOutput( uco->GetOviposition(bStartDate, bStopDate), mco->Location[output::OutputInfos::CimsimLocation::Oviposition] );
+  mco->TotalEggs = ArrayFromDoubleVector( uco->GetTotalEggs(bStartDate, bStopDate) );
+  mco->TotalLarvae = ArrayFromDoubleVector( uco->GetTotalLarvae(bStartDate, bStopDate) );
+  mco->TotalPupae = ArrayFromDoubleVector( uco->GetTotalPupae(bStartDate, bStopDate) );
+  mco->Females = ArrayFromDoubleVector( uco->GetFemales(bStartDate, bStopDate) );
+  mco->NewFemales = ArrayFromDoubleVector( uco->GetNewFemales(bStartDate, bStopDate) );
+  // TODO
+  //mco->HostSeekingFemales = ArrayFromDoubleVector( uco->GetHostSeekingFemales(bStartDate, bStopDate) );
+  mco->AverageFemaleWeight = ArrayFromDoubleVector( uco->GetAverageFemaleWeight(bStartDate, bStopDate) );
+  mco->Oviposition = ArrayFromDoubleVector( uco->GetOviposition(bStartDate, bStopDate) );
 
-  output::Output ^ maxTemp = mco->Location[output::OutputInfos::CimsimLocation::MaximumTemperature];
-  output::Output ^ avgTemp = mco->Location[output::OutputInfos::CimsimLocation::AverageTemperature];
-  output::Output ^ minTemp = mco->Location[output::OutputInfos::CimsimLocation::MinimumTemperature];
-  output::Output ^ rainFall = mco->Location[output::OutputInfos::CimsimLocation::Rainfall];
-  output::Output ^ relHum = mco->Location[output::OutputInfos::CimsimLocation::RelativeHumidity];
-  output::Output ^ satDef = mco->Location[output::OutputInfos::CimsimLocation::SaturationDeficit];
+
+  int numDays = (stopDate - startDate).Days + 1;
+  mco->MaximumTemperature = gcnew array<double>(numDays);
+  mco->AverageTemperature = gcnew array<double>(numDays);
+  mco->MinimumTemperature = gcnew array<double>(numDays);
+  mco->Rainfall = gcnew array<double>(numDays);
+  mco->RelativeHumidity = gcnew array<double>(numDays);
+  mco->SaturationDeficit = gcnew array<double>(numDays);
 
   for( DateTime dt = startDate; dt <= stopDate; dt = dt.AddDays(1) ) {
+    int index = (dt - startDate).Days;
     WeatherDay ^ wd = Weather->GetWeather( dt );
-    maxTemp->Data->Add( wd->MaxTemp );
-    avgTemp->Data->Add( wd->AvgTemp);
-    minTemp->Data->Add( wd->MinTemp);
-    rainFall->Data->Add( wd->Rain );
-    relHum->Data->Add( wd->RelHum );
-    satDef->Data->Add( wd->SatDef );
+    mco->MaximumTemperature[index] = wd->MaxTemp;
+    mco->AverageTemperature[index] = wd->AvgTemp;
+    mco->MinimumTemperature[index] = wd->MinTemp;
+    mco->Rainfall[index] = wd->Rain;
+    mco->RelativeHumidity[index] = wd->RelHum;
+    mco->SaturationDeficit[index] = wd->SatDef;
   }
 
 
   for each( Container ^ c in Containers ) {
-    int id = c->Id;
+    output::ContainerOutput ^ co = gcnew output::ContainerOutput();
 
-    mco->AddContainerType( id );
+    co->Depth = ArrayFromDoubleVector( uco->GetDepth(bStartDate, bStopDate, c->Id) );
+    co->Food = ArrayFromDoubleVector( uco->GetFood(bStartDate, bStopDate, c->Id) );
+    co->MaxTemp = ArrayFromDoubleVector( uco->GetMaxTemp(bStartDate, bStopDate, c->Id) );
+    co->MinTemp = ArrayFromDoubleVector( uco->GetMinTemp(bStartDate, bStopDate, c->Id) );
+    co->Eggs = ArrayFromDoubleVector( uco->GetEggs(bStartDate, bStopDate, c->Id) );
+    co->Larvae = ArrayFromDoubleVector( uco->GetLarvae(bStartDate, bStopDate, c->Id) );
+    co->Pupae = ArrayFromDoubleVector( uco->GetPupae(bStartDate, bStopDate, c->Id) );
+    co->AvgDryPupWt = ArrayFromDoubleVector( uco->GetAvgDryPupWt(bStartDate, bStopDate, c->Id) );
+    co->NewFemales = ArrayFromDoubleVector( uco->GetNewFemales(bStartDate, bStopDate, c->Id) );
+    co->CumulativeFemales = ArrayFromDoubleVector( uco->GetCumulativeFemales(bStartDate, bStopDate, c->Id) );
+    co->Oviposition = ArrayFromDoubleVector( uco->GetOviposition(bStartDate, bStopDate, c->Id) );
+    co->TotalDensity = ArrayFromDoubleVector( uco->GetTotalDensity(bStartDate, bStopDate, c->Id) );
+    co->UntreatedDensity = ArrayFromDoubleVector( uco->GetUntreatedDensity(bStartDate, bStopDate, c->Id) );
+    co->TreatedDensity = ArrayFromDoubleVector( uco->GetTreatedDensity(bStartDate, bStopDate, c->Id) );
+    co->ExcludedDensity = ArrayFromDoubleVector( uco->GetExcludedDensity(bStartDate, bStopDate, c->Id) );
+    co->EggDevelopment = ArrayFromDoubleVector( uco->GetEggDevelopment(bStartDate, bStopDate, c->Id) );
+    co->LarvaeDevelopment = ArrayFromDoubleVector( uco->GetLarvaeDevelopment(bStartDate, bStopDate, c->Id) );
+    co->PupaeDevelopment = ArrayFromDoubleVector( uco->GetPupaeDevelopment(bStartDate, bStopDate, c->Id) );
 
-    CopyVectorToOutput( uco->GetDepth(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::Depth] );
-    CopyVectorToOutput( uco->GetFood(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::Food] );
-    CopyVectorToOutput( uco->GetMaxTemp(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::MaximumTemperature] );
-    CopyVectorToOutput( uco->GetMinTemp(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::MinimumTemperature] );
-    CopyVectorToOutput( uco->GetEggs(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::Eggs] );
-    CopyVectorToOutput( uco->GetLarvae(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::Larvae] );
-    CopyVectorToOutput( uco->GetPupae(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::Pupae] );
-    CopyVectorToOutput( uco->GetAvgDryPupWt(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::AveragePupalWeight] );
-    CopyVectorToOutput( uco->GetNewFemales(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::NewFemales] );
-    CopyVectorToOutput( uco->GetCumulativeFemales(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::CumulativeFemales] );
-    CopyVectorToOutput( uco->GetOviposition(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::Oviposition] );
-    CopyVectorToOutput( uco->GetUntreatedDensity(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::UntreatedDensity] );
-    CopyVectorToOutput( uco->GetTreatedDensity(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::TreatedDensity] );
-    CopyVectorToOutput( uco->GetExcludedDensity(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::ExcludedDensity] );
-
-    CopyVectorToOutput( uco->GetEggDevelopment(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::EggDevelopment] );
-    CopyVectorToOutput( uco->GetLarvaeDevelopment(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::LarvaeDevelopment] );
-    CopyVectorToOutput( uco->GetPupaeDevelopment(bStartDate, bStopDate, id), mco->Containers[id][output::OutputInfos::CimsimContainer::PupaeDevelopment] );
+    mco->Containers[c->Id] = co;
   }
 
   return mco;
@@ -510,67 +524,55 @@ Location::RunDensim( DateTime startDate, DateTime stopDate )
 }
 
 
+array<double> ^
+DoubleArrayFromIntVector( std::vector<int> & vector )
+{
+  array<double> ^ values = gcnew array<double>(vector.size());
+
+  for( unsigned int i = 0; i < vector.size(); ++i ) {
+    values[i] = (vector[i]);
+  }
+
+  return values;
+}
+
+
 
 output::DensimOutput ^
 Location::ProcessDensimOutput( sim::output::DensimOutput * udo, DateTime startDate, DateTime stopDate )
 {
   // managed cimsim output
-  output::DensimOutput ^ mdo = gcnew output::DensimOutput( startDate, stopDate );
+  output::DensimOutput ^ mdo = gcnew output::DensimOutput( Demographics_->HumanHostDensity, startDate, stopDate );
 
   // get dates in boost format
   boost::gregorian::date bStartDate = boost::gregorian::date( startDate.Year, startDate.Month, startDate.Day );
   boost::gregorian::date bStopDate = boost::gregorian::date( stopDate.Year, stopDate.Month, stopDate.Day );
 
   // copy data
-  CopyVectorToOutput( udo->GetInitialAgeDsitribution(), mdo->Location[output::OutputInfos::DensimLocation::InitialAgeDistribution] );
-  CopyVectorToOutput( udo->GetFinalAgeDistribution(), mdo->Location[output::OutputInfos::DensimLocation::FinalAgeDistribution] );
-  CopyVectorToOutput( udo->GetBirths(), mdo->Location[output::OutputInfos::DensimLocation::BirthsByClass] );
-  int totalBirths = 0;
-  for each( double d in mdo->Location[output::OutputInfos::DensimLocation::BirthsByClass]->Data ) {
-    totalBirths += d;
-  }
-  for each( double d in mdo->Location[output::OutputInfos::DensimLocation::BirthsByClass]->Data ) {
-    mdo->Location[output::OutputInfos::DensimLocation::BirthPercentagesByClass]->Data->Add( d / totalBirths );
-  }
+  mdo->InitialAgeDistribution = ArrayFromIntVector( udo->GetInitialAgeDistribution() );
+  mdo->FinalAgeDistribution = ArrayFromIntVector( udo->GetFinalAgeDistribution() );
+  mdo->BirthsByClass = ArrayFromIntVector( udo->GetBirths() );
+  mdo->DeathsByClass = ArrayFromIntVector( udo->GetDeaths() );
+  mdo->PopulationSize = DoubleArrayFromIntVector( udo->GetPopulation() );
+  mdo->FemaleMosquitoesInSimulationArea = ArrayFromDoubleVector( udo->GetMosqTotal() );
+  mdo->PotentiallyInfectiveBites = DoubleArrayFromIntVector( udo->GetPotentiallyInfectiveBites() );
 
-  CopyVectorToOutput( udo->GetDeaths(), mdo->Location[output::OutputInfos::DensimLocation::DeathsByClass] );
-  int totalDeaths = 0;
-  for each( double d in mdo->Location[output::OutputInfos::DensimLocation::DeathsByClass]->Data ) {
-    totalDeaths += d;
-  }
-  for each( double d in mdo->Location[output::OutputInfos::DensimLocation::DeathsByClass]->Data ) {
-    mdo->Location[output::OutputInfos::DensimLocation::DeathPercentagesByClass]->Data->Add( d / totalDeaths );
-  }
+  for( int serotype = 1; serotype <= 4; ++serotype ) {
+    output::SerotypeOutput ^ so = gcnew output::SerotypeOutput();
 
-  //CopyVectorToOutput( udo->GetInitialSeroprevalence(), mdo->Location[output::OutputInfos::DensimLocation::InitialSeroprevalence] );
-  //CopyVectorToOutput( udo->GetFinalSeroprevalence(), mdo->Location[output::OutputInfos::DensimLocation::FinalSeroprevalence] );
+    so->EipDevelopmentRate = ArrayFromDoubleVector( udo->GetEipDevelopmentRate(serotype) );
+    so->InfectiveMosquitoes = ArrayFromDoubleVector( udo->GetInfectiveMosquitoes(serotype) );
+    so->PersonsIncubating  = ArrayFromDoubleVector( udo->GetPersonsIncubating(serotype) );
+    so->PersonsViremic = ArrayFromDoubleVector( udo->GetPersonsViremic(serotype) );
+    so->PersonsWithVirus = ArrayFromDoubleVector( udo->GetPersonsWithVirus(serotype) );
+    so->InitialSeroDistribution = ArrayFromIntVector( udo->GetInitialSeroDistribution(serotype) );
+    so->FinalSeroDistribution = ArrayFromIntVector( udo->GetFinalSeroDistribution(serotype) );
 
-  CopyVectorToOutput( udo->GetNumberOfHumans(bStartDate, bStopDate), mdo->Location[output::OutputInfos::DensimLocation::PopulationSize] );
-  CopyVectorToOutput( udo->GetMosqTotal(bStartDate, bStopDate), mdo->Location[output::OutputInfos::DensimLocation::FemaleMosquitoesInSimulationArea] );
+    for( int seroClass = 1; seroClass <= 23; ++seroClass ) {
+      so->ClassSpecificSeroprevalence[seroClass] = ArrayFromDoubleVector( udo->GetDetailedSeroprevalence(seroClass, serotype) );
+    }
 
-  for( DateTime dt = startDate; dt <= stopDate; dt = dt.AddDays(1) ) {
-    int i = dt.Subtract( startDate ).Days;
-    int humans = mdo->Location[output::OutputInfos::DensimLocation::PopulationSize]->Data[i];
-    double mosquitoes = mdo->Location[output::OutputInfos::DensimLocation::FemaleMosquitoesInSimulationArea]->Data[i];
-
-    double simarea = humans / this->Demographics->HumanHostDensity;
-    double mosquitoesPerPerson = mosquitoes / humans;
-    double survival = MosData_->GetMosData( ToBoostDate(dt) ).OverallSurvival;
-    double weight = MosData_->GetMosData( ToBoostDate(dt) ).AverageWeight;
-
-    mdo->Location[output::OutputInfos::DensimLocation::SimulationArea]->Data->Add( simarea );
-    mdo->Location[output::OutputInfos::DensimLocation::FemaleMosquitoesPerPerson]->Data->Add( mosquitoesPerPerson );
-    mdo->Location[output::OutputInfos::DensimLocation::FemaleMosquitoSurvival]->Data->Add( survival );
-    mdo->Location[output::OutputInfos::DensimLocation::FemaleMosquitoWetWeight]->Data->Add( weight );
-  }
-
-  for( int i = 1; i <= 4; ++i ) {
-    int serotype = i;
-    CopyVectorToOutput( udo->GetEipDevelopmentRate(bStartDate, bStopDate, serotype), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::EipDevelopmentRate] );
-    CopyVectorToOutput( udo->GetInfectiveMosquitoes(bStartDate, bStopDate, serotype), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::InfectiveMosquitoes] );
-    CopyVectorToOutput( udo->GetPersonsIncubating(bStartDate, bStopDate, serotype), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::PersonsIncubating] );
-    CopyVectorToOutput( udo->GetPersonsViremic(bStartDate, bStopDate, serotype), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::PersonsViremic] );
-    CopyVectorToOutput( udo->GetPersonsWithVirus(bStartDate, bStopDate, serotype), mdo->Serotypes[i][output::OutputInfos::DensimSerotype::PersonsWithVirus] );
+    mdo->Serotypes[serotype] = so;
   }
 
   return mdo;

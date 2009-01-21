@@ -17,14 +17,21 @@ namespace gui {
     DensimExtOutputForm( gui::Location ^ location );
 	protected:
 		~DensimExtOutputForm();
+  private: System::Windows::Forms::TabPage^  tabPageSeroprevalence;
+  private: System::Windows::Forms::ListBox^  lboxSeroprevalence;
+  protected: 
+
+
+  protected: 
 
   private:
-    gui::Location ^ Location_;
+    gui::Location ^ _location;
 
   private:
     System::Void OnLoad(System::Object^  sender, System::EventArgs^  e);
     System::Void OnViewLocationGraph(System::Object^  sender, System::EventArgs^  e);
     System::Void OnViewVirusGraph( System::Object ^ sender, System::EventArgs ^ e );
+    System::Void OnViewDetailedSeroprevalenceGraph( System::Object ^ sender, System::EventArgs ^ e );
     System::Void OnView(System::Object^  sender, System::EventArgs^  e);
     System::Void OnGraphSelectionChanged(System::Object^  sender, System::EventArgs^  e);
     System::Void OnGraphTabChanged(System::Object^  sender, System::EventArgs^  e);
@@ -61,6 +68,8 @@ namespace gui {
       this->lboxLocationGraphs = (gcnew System::Windows::Forms::ListBox());
       this->tabPageVirus = (gcnew System::Windows::Forms::TabPage());
       this->lboxVirusGraphs = (gcnew System::Windows::Forms::ListBox());
+      this->tabPageSeroprevalence = (gcnew System::Windows::Forms::TabPage());
+      this->lboxSeroprevalence = (gcnew System::Windows::Forms::ListBox());
       this->btnExitLocation = (gcnew System::Windows::Forms::Button());
       this->btnView = (gcnew System::Windows::Forms::Button());
       this->cboxTimePeriod = (gcnew System::Windows::Forms::ComboBox());
@@ -72,6 +81,7 @@ namespace gui {
       this->tabGraphType->SuspendLayout();
       this->tabPageLocation->SuspendLayout();
       this->tabPageVirus->SuspendLayout();
+      this->tabPageSeroprevalence->SuspendLayout();
       this->SuspendLayout();
       // 
       // tabGraphType
@@ -80,20 +90,21 @@ namespace gui {
         | System::Windows::Forms::AnchorStyles::Right));
       this->tabGraphType->Controls->Add(this->tabPageLocation);
       this->tabGraphType->Controls->Add(this->tabPageVirus);
+      this->tabGraphType->Controls->Add(this->tabPageSeroprevalence);
       this->tabGraphType->Location = System::Drawing::Point(12, 12);
       this->tabGraphType->Name = L"tabGraphType";
       this->tabGraphType->SelectedIndex = 0;
-      this->tabGraphType->Size = System::Drawing::Size(307, 252);
+      this->tabGraphType->Size = System::Drawing::Size(333, 252);
       this->tabGraphType->TabIndex = 0;
       this->tabGraphType->SelectedIndexChanged += gcnew System::EventHandler(this, &DensimExtOutputForm::OnGraphTabChanged);
       // 
       // tabPageLocation
       // 
       this->tabPageLocation->Controls->Add(this->lboxLocationGraphs);
-      this->tabPageLocation->Location = System::Drawing::Point(4, 24);
+      this->tabPageLocation->Location = System::Drawing::Point(4, 22);
       this->tabPageLocation->Name = L"tabPageLocation";
       this->tabPageLocation->Padding = System::Windows::Forms::Padding(3);
-      this->tabPageLocation->Size = System::Drawing::Size(299, 224);
+      this->tabPageLocation->Size = System::Drawing::Size(325, 226);
       this->tabPageLocation->TabIndex = 0;
       this->tabPageLocation->Text = L"Humans & Mosquitoes";
       this->tabPageLocation->UseVisualStyleBackColor = true;
@@ -106,36 +117,62 @@ namespace gui {
       this->lboxLocationGraphs->FormattingEnabled = true;
       this->lboxLocationGraphs->Location = System::Drawing::Point(6, 6);
       this->lboxLocationGraphs->Name = L"lboxLocationGraphs";
-      this->lboxLocationGraphs->Size = System::Drawing::Size(287, 212);
+      this->lboxLocationGraphs->Size = System::Drawing::Size(313, 212);
       this->lboxLocationGraphs->TabIndex = 1;
-      this->lboxLocationGraphs->SelectedIndexChanged += gcnew System::EventHandler(this, &DensimExtOutputForm::OnGraphSelectionChanged);
       this->lboxLocationGraphs->DoubleClick += gcnew System::EventHandler(this, &DensimExtOutputForm::OnViewLocationGraph);
+      this->lboxLocationGraphs->SelectedIndexChanged += gcnew System::EventHandler(this, &DensimExtOutputForm::OnGraphSelectionChanged);
       // 
       // tabPageVirus
       // 
       this->tabPageVirus->Controls->Add(this->lboxVirusGraphs);
-      this->tabPageVirus->Location = System::Drawing::Point(4, 24);
+      this->tabPageVirus->Location = System::Drawing::Point(4, 22);
       this->tabPageVirus->Name = L"tabPageVirus";
-      this->tabPageVirus->Size = System::Drawing::Size(299, 224);
+      this->tabPageVirus->Size = System::Drawing::Size(325, 226);
       this->tabPageVirus->TabIndex = 1;
       this->tabPageVirus->Text = L"Virus";
       this->tabPageVirus->UseVisualStyleBackColor = true;
       // 
       // lboxVirusGraphs
       // 
+      this->lboxVirusGraphs->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom) 
+        | System::Windows::Forms::AnchorStyles::Left) 
+        | System::Windows::Forms::AnchorStyles::Right));
       this->lboxVirusGraphs->FormattingEnabled = true;
-      this->lboxVirusGraphs->Location = System::Drawing::Point(3, 6);
+      this->lboxVirusGraphs->Location = System::Drawing::Point(6, 6);
       this->lboxVirusGraphs->Name = L"lboxVirusGraphs";
-      this->lboxVirusGraphs->Size = System::Drawing::Size(293, 212);
+      this->lboxVirusGraphs->Size = System::Drawing::Size(316, 212);
       this->lboxVirusGraphs->TabIndex = 2;
-      this->lboxVirusGraphs->SelectedIndexChanged += gcnew System::EventHandler(this, &DensimExtOutputForm::OnGraphSelectionChanged);
       this->lboxVirusGraphs->DoubleClick += gcnew System::EventHandler(this, &DensimExtOutputForm::OnViewVirusGraph);
+      this->lboxVirusGraphs->SelectedIndexChanged += gcnew System::EventHandler(this, &DensimExtOutputForm::OnGraphSelectionChanged);
+      // 
+      // tabPageSeroprevalence
+      // 
+      this->tabPageSeroprevalence->Controls->Add(this->lboxSeroprevalence);
+      this->tabPageSeroprevalence->Location = System::Drawing::Point(4, 22);
+      this->tabPageSeroprevalence->Name = L"tabPageSeroprevalence";
+      this->tabPageSeroprevalence->Size = System::Drawing::Size(325, 226);
+      this->tabPageSeroprevalence->TabIndex = 2;
+      this->tabPageSeroprevalence->Text = L"Age specific seroprevalence";
+      this->tabPageSeroprevalence->UseVisualStyleBackColor = true;
+      // 
+      // lboxSeroprevalence
+      // 
+      this->lboxSeroprevalence->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom) 
+        | System::Windows::Forms::AnchorStyles::Left) 
+        | System::Windows::Forms::AnchorStyles::Right));
+      this->lboxSeroprevalence->FormattingEnabled = true;
+      this->lboxSeroprevalence->Location = System::Drawing::Point(6, 6);
+      this->lboxSeroprevalence->Name = L"lboxSeroprevalence";
+      this->lboxSeroprevalence->Size = System::Drawing::Size(316, 212);
+      this->lboxSeroprevalence->TabIndex = 3;
+      this->lboxSeroprevalence->DoubleClick += gcnew System::EventHandler(this, &DensimExtOutputForm::OnViewDetailedSeroprevalenceGraph);
+      this->lboxSeroprevalence->SelectedIndexChanged += gcnew System::EventHandler(this, &DensimExtOutputForm::OnGraphSelectionChanged);
       // 
       // btnExitLocation
       // 
       this->btnExitLocation->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
       this->btnExitLocation->DialogResult = System::Windows::Forms::DialogResult::OK;
-      this->btnExitLocation->Location = System::Drawing::Point(244, 332);
+      this->btnExitLocation->Location = System::Drawing::Point(270, 327);
       this->btnExitLocation->Name = L"btnExitLocation";
       this->btnExitLocation->Size = System::Drawing::Size(75, 23);
       this->btnExitLocation->TabIndex = 3;
@@ -145,7 +182,7 @@ namespace gui {
       // btnView
       // 
       this->btnView->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
-      this->btnView->Location = System::Drawing::Point(163, 332);
+      this->btnView->Location = System::Drawing::Point(189, 327);
       this->btnView->Name = L"btnView";
       this->btnView->Size = System::Drawing::Size(75, 23);
       this->btnView->TabIndex = 2;
@@ -213,7 +250,7 @@ namespace gui {
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
       this->CancelButton = this->btnExitLocation;
-      this->ClientSize = System::Drawing::Size(331, 367);
+      this->ClientSize = System::Drawing::Size(357, 362);
       this->Controls->Add(this->lblSummary2);
       this->Controls->Add(this->label2);
       this->Controls->Add(this->label1);
@@ -233,6 +270,7 @@ namespace gui {
       this->tabGraphType->ResumeLayout(false);
       this->tabPageLocation->ResumeLayout(false);
       this->tabPageVirus->ResumeLayout(false);
+      this->tabPageSeroprevalence->ResumeLayout(false);
       this->ResumeLayout(false);
       this->PerformLayout();
 

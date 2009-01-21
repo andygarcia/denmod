@@ -18,13 +18,10 @@ CimsimOutputForm::CimsimOutputForm( gui::Location ^ location )
 	InitializeComponent();
   gui::output::CimsimOutput ^ co = _location->CimsimOutput;
 
-  Collections::Generic::List<output::Output^> ^ outputs = gcnew Collections::Generic::List<output::Output^>();
-  outputs->Add( co->Location[output::OutputInfos::CimsimLocation::TotalEggs] );
-  outputs->Add( co->Location[output::OutputInfos::CimsimLocation::TotalLarvae] );
-  outputs->Add( co->Location[output::OutputInfos::CimsimLocation::TotalPupae] );
-  outputs->Add( co->Location[output::OutputInfos::CimsimLocation::TotalFemales] );
+  output::Chart ^ chart = co->CreateLocationChart( output::ChartIds::CimsimMain );
+  output::Plot ^ mainPlot = chart->Plots[0];
 
-  for each( output::DatedOutput ^ output in outputs ) {
+  for each( output::DatedOutput ^ output in mainPlot->PrimaryOutputs ) {
     Series ^ s = gcnew Series( output->Name );
     s->ChartType = "Line";
     s->YAxisType = AxisType::Primary;

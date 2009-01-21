@@ -24,7 +24,7 @@ namespace gui {
   protected: 
 
   private:
-    gui::Location ^ Location_;
+    gui::Location ^ _location;
 
   private:
     System::Void OnLoad(System::Object^  sender, System::EventArgs^  e);

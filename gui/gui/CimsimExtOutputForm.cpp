@@ -9,7 +9,7 @@ using namespace gui;
 
 
 CimsimExtOutputForm::CimsimExtOutputForm( gui::Location ^ location )
-: Location_(location)
+: _location(location)
 {
 	InitializeComponent();
 }
@@ -30,16 +30,16 @@ CimsimExtOutputForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
 {
   // location graphs
   lboxLocationGraphs->DisplayMember = "Name";
-  lboxLocationGraphs->DataSource = output::ChartInfos::GetChartInfoCollection( output::Group::CimsimLocation );
+  lboxLocationGraphs->DataSource = output::ChartInfos::CimsimLocationCharts;
 
   // container graphs
   lboxContainerGraphs->DisplayMember = "Name";
-  lboxContainerGraphs->DataSource = output::ChartInfos::GetChartInfoCollection( output::Group::CimsimContainer );
+  lboxContainerGraphs->DataSource = output::ChartInfos::CimsimContainerCharts;
 
   // container names
   cboxContainers->DisplayMember = "Name";
   cboxContainers->ValueMember = "Id";
-  cboxContainers->DataSource = Location_->Containers;
+  cboxContainers->DataSource = _location->Containers;
 
   // initially select first container
   cboxContainers->SelectedIndex = 0;
@@ -82,17 +82,14 @@ CimsimExtOutputForm::OnViewLocationGraph(System::Object^  sender, System::EventA
 
   using namespace output;
 
-  // show selected chart with optional time period and fucntion
+  // create selected chart
   ChartInfo ^ chartInfo = (ChartInfo^) lboxLocationGraphs->SelectedValue;
+  Chart ^ chart = _location->CimsimOutput->CreateLocationChart( chartInfo->ChartId );
+
+  // display chart with options
   TimePeriod timePeriod = TimePeriod( cboxTimePeriod->SelectedValue );
-  //TimePeriodFunction timePeriodFunction = TimePeriodFunction( cboxTimePeriodFunction->SelectedValue );
-  TimePeriodFunction timePeriodFunction = TimePeriodFunction::Average;
-
-  // create chart from simulation output
-  Chart ^ chart = Chart::Create( chartInfo, Location_->CimsimOutput, Location_->DensimOutput, nullptr );
-
-  // display chart
-  ChartForm ^ gf = gcnew ChartForm( Location_, chart, timePeriod, timePeriodFunction );
+  TimePeriodFunction timePeriodFunction = TimePeriodFunction( cboxTimePeriodFunction->SelectedValue );
+  ChartForm ^ gf = gcnew ChartForm( _location, chart, timePeriod, timePeriodFunction );
   gf->ShowDialog(this);
   gf->Close();
 }
@@ -108,18 +105,15 @@ CimsimExtOutputForm::OnViewContainerGraph(System::Object^  sender, System::Event
 
   using namespace output;
 
+  // create selected chart
   ChartInfo ^ chartInfo= (ChartInfo^) lboxContainerGraphs->SelectedValue;
+  int containerId = Convert::ToInt32( cboxContainers->SelectedValue );
+  Chart ^ chart = _location->CimsimOutput->CreateContainerChart( chartInfo->ChartId, containerId );
+
+  // display chart with options
   TimePeriod timePeriod = TimePeriod( cboxTimePeriod->SelectedValue );
-  //TimePeriodFunction timePeriodFunction = TimePeriodFunction( cboxTimePeriodFunction->SelectedValue );
-  TimePeriodFunction timePeriodFunction = TimePeriodFunction::Average;
-
-  // container graphs are specific to containers
-  Collections::Generic::List<int> ^ indices = gcnew Collections::Generic::List<int>();
-  indices->Add( Convert::ToInt32(cboxContainers->SelectedValue) );
-
-  Chart ^ chart = Chart::Create( chartInfo, Location_->CimsimOutput, Location_->DensimOutput, indices );
-
-  ChartForm ^ gf = gcnew ChartForm( Location_, chart, timePeriod, timePeriodFunction );
+  TimePeriodFunction timePeriodFunction = TimePeriodFunction( cboxTimePeriodFunction->SelectedValue );
+  ChartForm ^ gf = gcnew ChartForm( _location, chart, timePeriod, timePeriodFunction );
   gf->ShowDialog(this);
   gf->Close();
 }

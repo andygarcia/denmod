@@ -13,8 +13,11 @@ ChartForm::ChartForm( gui::Location ^ location, output::Chart ^ chartData, outpu
 {
   InitializeComponent();
 
-  for each( output::Graph ^ graph in chartData->Graphs ) {
-    // creat, add, and customize chart area
+  // set window titles
+  this->Text = chartData->Name;
+
+  for each( output::Plot ^ plot in chartData->Plots ) {
+    // create, add, and customize chart area
     ChartArea ^ chartArea = gcnew ChartArea();
     chart->ChartAreas->Add( chartArea );
     chartArea->Name = graph->Title;
@@ -59,6 +62,12 @@ ChartForm::ChartForm( gui::Location ^ location, output::Chart ^ chartData, outpu
     chartArea->AxisY->MinorGrid->LineColor = System::Drawing::Color::Silver;
     chartArea->AxisY->Title = graph->AxisY;
 
+    // check for custom y bounds
+    if( plot->CustomYAxis ) {
+      chartArea->AxisY->Minimum = plot->MinYAxis;
+      chartArea->AxisY->Maximum = plot->MaxYAxis;
+    }
+
     // colors
     chartArea->BackColor = System::Drawing::Color::White;
     chartArea->BorderColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(26)),
@@ -71,11 +80,14 @@ ChartForm::ChartForm( gui::Location ^ location, output::Chart ^ chartData, outpu
     chartArea->CursorX->Interval = 1;
     chartArea->CursorX->UserEnabled = true;
     chartArea->CursorX->UserSelection = true;
-    //chartArea->CursorY->Interval = 0.0001;
+    // use 1% of range of Y axis
+    chartArea->CursorY->Interval = (chartArea->AxisY->Maximum - chartArea->AxisY->Minimum) / 100.0;
     chartArea->CursorY->UserEnabled = true;
     chartArea->CursorY->UserSelection = true;
 
-    Legend ^ legend = gcnew Legend( graph->Title );
+
+
+    Legend ^ legend = gcnew Legend( plot->Title );
     legend->Enabled = true;
     legend->DockToChartArea = chartArea->Name;
     legend->BorderStyle = ChartDashStyle::Solid;
@@ -84,8 +96,8 @@ ChartForm::ChartForm( gui::Location ^ location, output::Chart ^ chartData, outpu
                                                            static_cast<System::Int32>(static_cast<System::Byte>(105)));
     chart->Legends->Add( legend );
 
-    // create series, add random data, customize, and add to chart
-    for each( output::Output ^ output in graph->PrimaryOutputs ) {
+    // create series and add to chart
+    for each( output::IOutput ^ output in plot->PrimaryOutputs ) {
       Series ^ series = gcnew Series();
       series->Name = output->Name;
       series->ChartType = graph->GraphType;

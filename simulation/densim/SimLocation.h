@@ -67,7 +67,7 @@ public:
 
 // Fields
 public:
-  static const int MaxPopSize = 1000000;
+  static const int MaxPopSize = 100000;
   static const int MaxAgeMosq = 50;
   static const int YrLen = 365;
   const double GasCoef;
