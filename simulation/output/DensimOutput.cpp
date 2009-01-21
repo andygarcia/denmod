@@ -126,7 +126,7 @@ DensimOutput::GetInitialSeroDistribution( int serotype )
 {
   std::vector<int> values;
 
-  for( int i = 0; i < 18; ++i ) {
+  for( int i = 0; i <= 18; ++i ) {
     values.push_back( _initialSeroDistribution[i][serotype] );
   }
 
@@ -140,7 +140,7 @@ DensimOutput::GetFinalSeroDistribution( int serotype )
 {
   std::vector<int> values;
 
-  for( int i = 0; i < 18; ++i ) {
+  for( int i = 0; i <= 18; ++i ) {
     values.push_back( _finalSeroDistribution[i][serotype] );
   }
 

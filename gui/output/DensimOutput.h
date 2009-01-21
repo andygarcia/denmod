@@ -124,6 +124,7 @@ public:
 
 private:
   String ^ GetDemographicsExcelXml(void);
+  String ^ GetSerologyExcelXml(void);
 
 public:
   property array<int> ^ InitialAgeDistribution {
