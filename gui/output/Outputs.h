@@ -235,7 +235,6 @@ public:
     static DatedOutputInfo ^ PersonsIncubating = gcnew DatedOutputInfo( Group::DensimSerotype, "Persons Incubating", "# of persons incubating" );
     static DatedOutputInfo ^ PersonsViremic = gcnew DatedOutputInfo( Group::DensimSerotype, "Persons Viremic", "# of persons viremic" );
     static DatedOutputInfo ^ PersonsWithVirus = gcnew DatedOutputInfo( Group::DensimSerotype, "Persons With Virus", "# of persons incubating or viremic" );
-
     static ClassOutputInfo ^ InitialSeroprevalence = gcnew ClassOutputInfo( Group::DensimSerotype, "Initial Seroprevalence", "# of individuals seropositive" );
     static ClassOutputInfo ^ FinalSeroprevalence = gcnew ClassOutputInfo( Group::DensimSerotype, "Final Seroprevalence", "# of individuals seropositive" );
   };

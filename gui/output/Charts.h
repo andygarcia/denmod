@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Plots.h"
+#include "Graphs.h"
 
 using namespace System;
 
@@ -15,7 +15,7 @@ public ref class ChartInfo
 {
 public:
   ChartInfo( String ^ name, bool periodic)
-  : _graphs(gcnew PlotCollection()),
+  : _graphs(gcnew GraphCollection()),
     _name(name),
     _periodic(periodic)
   {}
@@ -38,7 +38,7 @@ public:
 private:
   String ^ _name;
   bool _periodic;
-  PlotCollection ^ _graphs;
+  GraphCollection ^ _graphs;
 };
 typedef ComponentModel::BindingList<ChartInfo^> ChartInfoCollection;
 
@@ -100,6 +100,7 @@ public:
     static ChartInfo ^ FemaleMosquitoesPerPerson = gcnew ChartInfo( "Female Mosquitoes Per Person", true );
     static ChartInfo ^ FemaleMosquitoSurvival = gcnew ChartInfo( "Female Mosquito Survival", true);
     static ChartInfo ^ FemaleMosquitoWetWeight = gcnew ChartInfo( "Female Mosquito Wet Weight", true );
+    static ChartInfo ^ GeneralSeroprevalence = gcnew ChartInfo( "General Seroprevalence", false );
   };
 
   ref class DensimSerotype
@@ -110,7 +111,6 @@ public:
     static ChartInfo ^ PersonsIncubating = gcnew ChartInfo( "Persons Incubating", true );
     static ChartInfo ^ PersonsViremic = gcnew ChartInfo( "Persons Viremic", true );
     static ChartInfo ^ PersonsWithVirus = gcnew ChartInfo( "Persons with Virus", true );
-    static ChartInfo ^ GeneralSeroprevalence = gcnew ChartInfo( "General Seroprevalence", false );
   };
 };
 
@@ -123,7 +123,7 @@ public:
 
 public:
   Chart(void)
-  : _graphs(gcnew PlotCollection())
+  : _graphs(gcnew GraphCollection())
   {}
 
   virtual ~Chart(void)
@@ -142,15 +142,15 @@ public:
     }
   }
 
-  property PlotCollection ^ Graphs {
-    PlotCollection ^ get(void) {
+  property GraphCollection ^ Graphs {
+    GraphCollection ^ get(void) {
       return _graphs;
     }
   }
 
 private:
   ChartInfo ^ _chartInfo;
-  PlotCollection ^ _graphs;
+  GraphCollection ^ _graphs;
 };
 
 

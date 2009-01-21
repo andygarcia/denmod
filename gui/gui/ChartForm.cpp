@@ -13,11 +13,11 @@ ChartForm::ChartForm( gui::Location ^ location, output::Chart ^ chartData, outpu
 {
   InitializeComponent();
 
-  for each( output::Plot ^ plot in chartData->Graphs ) {
+  for each( output::Graph ^ graph in chartData->Graphs ) {
     // creat, add, and customize chart area
     ChartArea ^ chartArea = gcnew ChartArea();
     chart->ChartAreas->Add( chartArea );
-    chartArea->Name = plot->Title;
+    chartArea->Name = graph->Title;
 
     // position and size
     chartArea->Position->Auto = true;
@@ -39,7 +39,7 @@ ChartForm::ChartForm( gui::Location ^ location, output::Chart ^ chartData, outpu
     chartArea->AxisX->MajorTickMark->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
     chartArea->AxisX->Margin = false;
     chartArea->AxisX->MinorGrid->LineColor = System::Drawing::Color::Silver;
-    chartArea->AxisX->Title = plot->AxisX;
+    chartArea->AxisX->Title = graph->AxisX;
 
     // y axis
     chartArea->AxisY->LabelStyle->Interval = 0;
@@ -57,7 +57,7 @@ ChartForm::ChartForm( gui::Location ^ location, output::Chart ^ chartData, outpu
     chartArea->AxisY->MajorTickMark->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
     chartArea->AxisY->Margin = true;
     chartArea->AxisY->MinorGrid->LineColor = System::Drawing::Color::Silver;
-    chartArea->AxisY->Title = plot->AxisY;
+    chartArea->AxisY->Title = graph->AxisY;
 
     // colors
     chartArea->BackColor = System::Drawing::Color::White;
@@ -75,7 +75,7 @@ ChartForm::ChartForm( gui::Location ^ location, output::Chart ^ chartData, outpu
     chartArea->CursorY->UserEnabled = true;
     chartArea->CursorY->UserSelection = true;
 
-    Legend ^ legend = gcnew Legend( plot->Title );
+    Legend ^ legend = gcnew Legend( graph->Title );
     legend->Enabled = true;
     legend->DockToChartArea = chartArea->Name;
     legend->BorderStyle = ChartDashStyle::Solid;
@@ -85,10 +85,10 @@ ChartForm::ChartForm( gui::Location ^ location, output::Chart ^ chartData, outpu
     chart->Legends->Add( legend );
 
     // create series, add random data, customize, and add to chart
-    for each( output::Output ^ output in plot->PrimaryOutputs ) {
+    for each( output::Output ^ output in graph->PrimaryOutputs ) {
       Series ^ series = gcnew Series();
       series->Name = output->Name;
-      series->ChartType = plot->PlotType;
+      series->ChartType = graph->GraphType;
       series->ChartArea = chartArea->Name;
       series->Legend = legend->Name;
 

@@ -119,49 +119,6 @@ DensimOutput::GetDeaths(void)
 
 
   
-std::vector<int>
-DensimOutput::GetInitialSeroprevalence( int serotype )
-{
-  std::vector<int> values;
-
-  for( int i = 0; i < 18; ++i ) {
-    values.push_back( _initialSeroprevalence[i][serotype] );
-  }
-
-  return values;
-}
-
-
-
-std::vector<int>
-DensimOutput::GetFinalSeroprevalence( int serotype )
-{
-  std::vector<int> values;
-
-  for( int i = 0; i < 18; ++i ) {
-    values.push_back( _finalSeroprevalence[i][serotype] );
-  }
-
-  return values;
-}
-
-
-
-std::vector<double>
-DensimOutput::GetDetailedSeroprevalence( boost::gregorian::date startDate, boost::gregorian::date stopDate, int ageClass, int serotype )
-{
-  std::vector<double> values;
-
-  day_iterator itDate = day_iterator(startDate);
-  for( ; *itDate <= stopDate; ++itDate ) {
-    values.push_back( _locationOutput[*itDate].SerPos[ageClass][serotype] );
-  }  
-
-  return values;
-}
-
-
-
 std::vector<double>
 DensimOutput::GetPersonsWithVirus( date startDate, date stopDate, int serotype )
 {
