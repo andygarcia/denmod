@@ -105,34 +105,27 @@ CimsimOutputForm::OnSaveAll(System::Object^  sender, System::EventArgs^  e)
   if( fbd->ShowDialog() != ::DialogResult::OK ) {
     return;
   }
-  String ^ directory = fbd->SelectedPath;
+  IO::DirectoryInfo ^ di = gcnew IO::DirectoryInfo( fbd->SelectedPath );
 
-  String ^ locationFile = directory + "\\CIMSiM - Location Totals - " + _location->Name + ".xml";
   try {
-    System::IO::StreamWriter ^ sw = gcnew System::IO::StreamWriter( locationFile );
-    sw->Write( _location->CimsimOutput->GetLocationExcelXml() );
-    sw->Close();
+    _location->SaveCimsimOutput( di );
   }
-  catch( System::IO::IOException ^ ioe ) {
-    Diagnostics::Debug::WriteLine( ioe->ToString() );
-    MessageBox::Show( "Unable to save files.  " + locationFile + " is open.  Please close output files and try again" );
+  catch( System::IO::DirectoryNotFoundException ^ e ) {
+    Console::WriteLine( "CimsimOutputForm::OnSaveAll() : " + e->ToString() + " : " + e->Message );
+    MessageBox::Show( "Unable to save files. Directory not found." );
     return;
   }
-
-  for each( gui::Container ^ c in _location->Containers ) {
-    String ^ containerFile = directory + "\\CIMSiM - " + c->Name + ".xml";
-    try {
-      System::IO::StreamWriter ^ sw = gcnew System::IO::StreamWriter( containerFile );
-      sw->Write( _location->CimsimOutput->GetContainerExcelXml(c->Id) );
-      sw->Close();
-    }
-    catch( System::IO::IOException ^ ioe ) {
-      Diagnostics::Debug::WriteLine( ioe->ToString() );
-      MessageBox::Show( "Unable to save files.  " + containerFile + "is currently open.  Please close output files and try again" );
-      return;
-    }
+  catch( System::IO::DriveNotFoundException ^ e ) {
+    Console::WriteLine( "CimsimOutputForm::OnSaveAll() : " + e->ToString() + " : " + e->Message );
+    MessageBox::Show( "Unable to save files. Drive not found." );
+    return;
+  }
+  catch( System::IO::IOException ^ e ) {
+    Console::WriteLine( "CimsimOutputForm::OnSaveAll() : " + e->ToString() + " : " + e->Message );
+    MessageBox::Show( "Unable to save files. Make sure all output files are closed before saving." );
   }
 }
+
 
 
 System::Void
