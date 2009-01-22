@@ -208,7 +208,7 @@ LhsForm::DoRuns( Object ^ sender, DoWorkEventArgs ^ e )
       return;
     }
 
-    baseLocation->SaveCimsimOutput( runDir );
+    baseLocation->CimsimOutput->SaveToDisk( runDir );
 
     if( bw->CancellationPending ) {
       e->Cancel = true;
