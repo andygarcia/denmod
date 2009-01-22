@@ -68,6 +68,8 @@ public enum class TimePeriodFunction : int
   Sum,
 };
 
+
+
 public enum class SeroClass : int
 {
   [ComponentModel::Description("MANA Infants")]

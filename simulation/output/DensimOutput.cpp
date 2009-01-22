@@ -92,7 +92,7 @@ DensimOutput::SetFinalData( std::vector<int> & finalAgeDistribution, std::vector
 std::vector<int>
 DensimOutput::GetInitialAgeDistribution(void)
 {
-  std::vector<int> values = std::vector<int>(18);
+  std::vector<int> values = std::vector<int>();
 
   for( int i = 1; i <= 18; ++i ) {
     values.push_back( _initialAgeDistribution[i] );
@@ -106,7 +106,7 @@ DensimOutput::GetInitialAgeDistribution(void)
 std::vector<int>
 DensimOutput::GetFinalAgeDistribution(void)
 {
-  std::vector<int> values = std::vector<int>(18);
+  std::vector<int> values = std::vector<int>();
 
   for( int i = 1; i <= 18; ++i ) {
     values.push_back( _finalAgeDistribution[i] );
@@ -120,7 +120,7 @@ DensimOutput::GetFinalAgeDistribution(void)
 std::vector<int>
 DensimOutput::GetBirths(void)
 {
-  std::vector<int> values = std::vector<int>(18);
+  std::vector<int> values = std::vector<int>();
 
   for( int i = 1; i <= 18; ++i ) {
     values.push_back( _births[i] );
@@ -134,7 +134,7 @@ DensimOutput::GetBirths(void)
 std::vector<int>
 DensimOutput::GetDeaths(void)
 {
-  std::vector<int> values = std::vector<int>(18);
+  std::vector<int> values = std::vector<int>();
 
   for( int i = 1; i <= 18; ++i ) {
     values.push_back( _deaths[i] );

@@ -294,20 +294,6 @@ ArrayFromDoubleVector( std::vector<double> & vector )
 
 
 
-array<int> ^
-ArrayFromIntVector( std::vector<int> & vector )
-{
-  array<int> ^ values = gcnew array<int>(vector.size());
-
-  for( unsigned int i = 0; i < vector.size(); ++i ) {
-    values[i] = vector[i];
-  }
-
-  return values;
-}
-
-
-
 output::CimsimOutput ^
 Location::ProcessCimsimOutput( sim::output::CimsimOutput * uco, DateTime startDate, DateTime stopDate )
 {
@@ -525,10 +511,10 @@ Location::ProcessDensimOutput( sim::output::DensimOutput * udo, DateTime startDa
   boost::gregorian::date bStopDate = boost::gregorian::date( stopDate.Year, stopDate.Month, stopDate.Day );
 
   // copy data
-  mdo->InitialAgeDistribution = ArrayFromIntVector( udo->GetInitialAgeDistribution() );
-  mdo->FinalAgeDistribution = ArrayFromIntVector( udo->GetFinalAgeDistribution() );
-  mdo->BirthsByClass = ArrayFromIntVector( udo->GetBirths() );
-  mdo->DeathsByClass = ArrayFromIntVector( udo->GetDeaths() );
+  mdo->InitialAgeDistribution = DoubleArrayFromIntVector( udo->GetInitialAgeDistribution() );
+  mdo->FinalAgeDistribution = DoubleArrayFromIntVector( udo->GetFinalAgeDistribution() );
+  mdo->BirthsByClass = DoubleArrayFromIntVector( udo->GetBirths() );
+  mdo->DeathsByClass = DoubleArrayFromIntVector( udo->GetDeaths() );
   mdo->PopulationSize = DoubleArrayFromIntVector( udo->GetPopulation() );
   mdo->FemaleMosquitoesInSimulationArea = ArrayFromDoubleVector( udo->GetMosqTotal() );
   mdo->PotentiallyInfectiveBites = DoubleArrayFromIntVector( udo->GetPotentiallyInfectiveBites() );
@@ -541,8 +527,8 @@ Location::ProcessDensimOutput( sim::output::DensimOutput * udo, DateTime startDa
     so->PersonsIncubating  = ArrayFromDoubleVector( udo->GetPersonsIncubating(serotype) );
     so->PersonsViremic = ArrayFromDoubleVector( udo->GetPersonsViremic(serotype) );
     so->PersonsWithVirus = ArrayFromDoubleVector( udo->GetPersonsWithVirus(serotype) );
-    so->InitialSeroDistribution = ArrayFromIntVector( udo->GetInitialSeroDistribution(serotype) );
-    so->FinalSeroDistribution = ArrayFromIntVector( udo->GetFinalSeroDistribution(serotype) );
+    so->InitialSeroDistribution = DoubleArrayFromIntVector( udo->GetInitialSeroDistribution(serotype) );
+    so->FinalSeroDistribution = DoubleArrayFromIntVector( udo->GetFinalSeroDistribution(serotype) );
 
     for( int seroClass = 1; seroClass <= 23; ++seroClass ) {
       so->ClassSpecificSeroprevalence[seroClass] = ArrayFromDoubleVector( udo->GetDetailedSeroprevalence(seroClass, serotype) );

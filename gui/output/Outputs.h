@@ -80,11 +80,10 @@ private:
 
 
 
-generic<class T>
-public ref class ClassOutput : public Output<T>
+public ref class ClassOutput : public Output<double>
 {
 public:
-  ClassOutput( String ^ name, array<T> ^ data )
+  ClassOutput( String ^ name, array<double> ^ data )
   : Output( name, data )
   {}
   virtual ~ClassOutput(void) {}

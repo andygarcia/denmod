@@ -65,20 +65,20 @@ public:
     }
   }
 
-  property array<int> ^ InitialSeroDistribution {
-    array<int> ^ get(void) {
+  property array<double> ^ InitialSeroDistribution {
+    array<double> ^ get(void) {
       return _initialSeroDistribution;
     }
-    void set(array<int> ^ a) {
+    void set(array<double> ^ a) {
       _initialSeroDistribution = a;
     }
   }
 
-  property array<int> ^ FinalSeroDistribution {
-    array<int> ^ get(void) {
+  property array<double> ^ FinalSeroDistribution {
+    array<double> ^ get(void) {
       return _finalSeroDistribution;
     }
-    void set(array<int> ^ a) {
+    void set(array<double> ^ a) {
       _finalSeroDistribution = a;
     }
   }
@@ -100,8 +100,8 @@ private:
   array<double> ^ _personsViremic;
   array<double> ^ _personsWithVirus;
 
-  array<int> ^ _initialSeroDistribution;
-  array<int> ^ _finalSeroDistribution;
+  array<double> ^ _initialSeroDistribution;
+  array<double> ^ _finalSeroDistribution;
 
   Collections::Generic::Dictionary<int,DetailedSeroprevalence^> ^ _classSpecificSeroprevalence;
 };
@@ -125,40 +125,43 @@ public:
 private:
   String ^ GetDemographicsExcelXml(void);
   String ^ GetSerologyExcelXml(void);
+  String ^ GetLocationExcelXml(void);
+  String ^ GetSerotypeExcelXml( int serotype );
+  String ^ GetDetailedSeroprevalenceExcelXml();
 
 public:
-  property array<int> ^ InitialAgeDistribution {
-    array<int> ^ get(void) {
+  property array<double> ^ InitialAgeDistribution {
+    array<double> ^ get(void) {
       return _initialAgeDistribution;
     }
-    void set(array<int> ^ a) {
+    void set(array<double> ^ a) {
       _initialAgeDistribution = a;
     }
   }
 
-  property array<int> ^ FinalAgeDistribution {
-    array<int> ^ get(void) {
+  property array<double> ^ FinalAgeDistribution {
+    array<double> ^ get(void) {
       return _finalAgeDistribution;
     }
-    void set(array<int> ^ a) {
+    void set(array<double> ^ a) {
       _finalAgeDistribution = a;
     }
   }
 
-  property array<int> ^ BirthsByClass {
-    array<int> ^ get(void) {
+  property array<double> ^ BirthsByClass {
+    array<double> ^ get(void) {
       return _birthsByClass;
     }
-    void set(array<int> ^ a) {
+    void set(array<double> ^ a) { 
       _birthsByClass = a;
     }
   }
 
-  property array<int> ^ DeathsByClass {
-    array<int> ^ get(void) {
+  property array<double> ^ DeathsByClass {
+    array<double> ^ get(void) {
       return _deathsByClass;
     }
-    void set(array<int> ^ a) {
+    void set(array<double> ^ a) {
       _deathsByClass = a;
     }
   }
@@ -203,10 +206,10 @@ private:
   double _humanDensity;
   int _numDays;
 
-  array<int> ^ _initialAgeDistribution;
-  array<int> ^ _finalAgeDistribution;
-  array<int> ^ _birthsByClass;
-  array<int> ^ _deathsByClass;
+  array<double> ^ _initialAgeDistribution;
+  array<double> ^ _finalAgeDistribution;
+  array<double> ^ _birthsByClass;
+  array<double> ^ _deathsByClass;
 
   array<double> ^ _populationSize;
   array<double> ^ _femaleMosquitoesInSimulationArea;
