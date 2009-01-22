@@ -116,12 +116,12 @@ Biology::EggParameters::PredationParameters::~PredationParameters(void)
 
 
 Biology::LarvaeParameters::LarvaeParameters(void)
-: WeightAtHatch( 0.0034 ),
+: WeightAtHatch( 0.001 ),
   ChronologicalBasisAt26C( 0.001 ),
   NominalSurvival( 0.99 ),
   PupationSurvival( 0.95 ),
   DryContainerSurvival( 0.05 ),
-  MinimumWeightForSurvival( 0.003 ),
+  MinimumWeightForSurvival( 0.0003 ),
   NumberEulerSteps( 8),
   CadaverFoodRatio( 0.4 ),
   Development(new DevelopmentParameters()),
