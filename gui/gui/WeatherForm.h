@@ -11,11 +11,17 @@ using namespace System::Drawing;
 
 namespace gui {
 
+  public enum class WeatherFormMode : int
+  {
+    Import = 0,
+    Edit
+  };
+
 	public ref class WeatherForm : public System::Windows::Forms::Form
 	{
   // Constructors
 	public:
-		WeatherForm( BindingSource ^ locationBinding, WeatherYear ^ weatheryear );
+		WeatherForm( WeatherFormMode mode, BindingSource ^ locationBinding, WeatherYear ^ weatheryear );
 	protected:
 		~WeatherForm();
 
@@ -26,8 +32,9 @@ namespace gui {
 
     // Members
   private:
-    BindingSource ^ LocationBinding_;
-    WeatherYear ^ WeatherYear_;
+    WeatherFormMode _mode;
+    BindingSource ^ _locationBinding;
+    WeatherYear ^ _weatherYear;
   private: System::Windows::Forms::DataGridView^  dgvWeather;
 
 

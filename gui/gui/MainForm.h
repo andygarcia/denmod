@@ -47,6 +47,7 @@ namespace gui {
     System::Void MenuItemHandler( System::Object^ sender, System::EventArgs^ e );
 
     System::Void OnImportWeather( System::Object ^ sender, System::EventArgs ^ e );
+    System::Void OnViewWeather(System::Object^  sender, System::EventArgs^  e);
     System::Void OnCloneWeather( System::Object ^ sender, System::EventArgs ^ e );
     System::Void OnRemoveWeather( System::Object ^ sender, System::EventArgs ^ e );
     void OpenWeatherTemplate(void);
@@ -126,6 +127,7 @@ namespace gui {
   private: System::Windows::Forms::TabPage^  tabpgWeather;
 private: System::Windows::Forms::ToolStripMenuItem^  openWeatherTemplateToolStripMenuItem;
 private: System::Windows::Forms::ToolStripMenuItem^  tsmiOpenSampleLocation;
+private: System::Windows::Forms::Button^  btnView;
 
 
 
@@ -185,6 +187,7 @@ private: System::Windows::Forms::ToolStripMenuItem^  tsmiOpenSampleLocation;
       this->LocationBinding = (gcnew System::Windows::Forms::BindingSource(this->components));
       this->tabWeather = (gcnew System::Windows::Forms::TabControl());
       this->tabpgWeather = (gcnew System::Windows::Forms::TabPage());
+      this->btnView = (gcnew System::Windows::Forms::Button());
       this->menuStrip->SuspendLayout();
       this->toolStrip->SuspendLayout();
       this->tabSimulations->SuspendLayout();
@@ -311,7 +314,7 @@ private: System::Windows::Forms::ToolStripMenuItem^  tsmiOpenSampleLocation;
       // tsmiHelpAbout
       // 
       this->tsmiHelpAbout->Name = L"tsmiHelpAbout";
-      this->tsmiHelpAbout->Size = System::Drawing::Size(152, 22);
+      this->tsmiHelpAbout->Size = System::Drawing::Size(114, 22);
       this->tsmiHelpAbout->Text = L"&About...";
       this->tsmiHelpAbout->Click += gcnew System::EventHandler(this, &MainForm::MenuItemHandler);
       // 
@@ -381,6 +384,7 @@ private: System::Windows::Forms::ToolStripMenuItem^  tsmiOpenSampleLocation;
       this->lboxWeather->Size = System::Drawing::Size(145, 82);
       this->lboxWeather->Sorted = true;
       this->lboxWeather->TabIndex = 32;
+      this->lboxWeather->DoubleClick += gcnew System::EventHandler(this, &MainForm::OnViewWeather);
       // 
       // lblLocName
       // 
@@ -437,20 +441,20 @@ private: System::Windows::Forms::ToolStripMenuItem^  tsmiOpenSampleLocation;
       // 
       // tabpgCimsim
       // 
-      this->tabpgCimsim->Location = System::Drawing::Point(4, 24);
+      this->tabpgCimsim->Location = System::Drawing::Point(4, 22);
       this->tabpgCimsim->Name = L"tabpgCimsim";
       this->tabpgCimsim->Padding = System::Windows::Forms::Padding(3);
-      this->tabpgCimsim->Size = System::Drawing::Size(786, 342);
+      this->tabpgCimsim->Size = System::Drawing::Size(786, 344);
       this->tabpgCimsim->TabIndex = 0;
       this->tabpgCimsim->Text = L"CIMSiM";
       this->tabpgCimsim->UseVisualStyleBackColor = true;
       // 
       // tabpgDensim
       // 
-      this->tabpgDensim->Location = System::Drawing::Point(4, 24);
+      this->tabpgDensim->Location = System::Drawing::Point(4, 22);
       this->tabpgDensim->Name = L"tabpgDensim";
       this->tabpgDensim->Padding = System::Windows::Forms::Padding(3);
-      this->tabpgDensim->Size = System::Drawing::Size(786, 342);
+      this->tabpgDensim->Size = System::Drawing::Size(786, 344);
       this->tabpgDensim->TabIndex = 1;
       this->tabpgDensim->Text = L"DENSiM";
       this->tabpgDensim->UseVisualStyleBackColor = true;
@@ -472,17 +476,17 @@ private: System::Windows::Forms::ToolStripMenuItem^  tsmiOpenSampleLocation;
       this->tabpgLocation->Controls->Add(this->rboxNotes);
       this->tabpgLocation->Controls->Add(this->lblLocName);
       this->tabpgLocation->Controls->Add(this->lblLocNotes);
-      this->tabpgLocation->Location = System::Drawing::Point(4, 24);
+      this->tabpgLocation->Location = System::Drawing::Point(4, 22);
       this->tabpgLocation->Name = L"tabpgLocation";
       this->tabpgLocation->Padding = System::Windows::Forms::Padding(3);
-      this->tabpgLocation->Size = System::Drawing::Size(525, 93);
+      this->tabpgLocation->Size = System::Drawing::Size(525, 95);
       this->tabpgLocation->TabIndex = 0;
       this->tabpgLocation->Text = L"Location";
       this->tabpgLocation->UseVisualStyleBackColor = true;
       // 
       // btnRemoveWeather
       // 
-      this->btnRemoveWeather->Location = System::Drawing::Point(6, 35);
+      this->btnRemoveWeather->Location = System::Drawing::Point(6, 64);
       this->btnRemoveWeather->Name = L"btnRemoveWeather";
       this->btnRemoveWeather->Size = System::Drawing::Size(75, 23);
       this->btnRemoveWeather->TabIndex = 34;
@@ -514,14 +518,25 @@ private: System::Windows::Forms::ToolStripMenuItem^  tsmiOpenSampleLocation;
       // 
       this->tabpgWeather->Controls->Add(this->lboxWeather);
       this->tabpgWeather->Controls->Add(this->btnRemoveWeather);
+      this->tabpgWeather->Controls->Add(this->btnView);
       this->tabpgWeather->Controls->Add(this->btnAddWeather);
-      this->tabpgWeather->Location = System::Drawing::Point(4, 24);
+      this->tabpgWeather->Location = System::Drawing::Point(4, 22);
       this->tabpgWeather->Name = L"tabpgWeather";
       this->tabpgWeather->Padding = System::Windows::Forms::Padding(3);
-      this->tabpgWeather->Size = System::Drawing::Size(238, 93);
+      this->tabpgWeather->Size = System::Drawing::Size(238, 95);
       this->tabpgWeather->TabIndex = 0;
       this->tabpgWeather->Text = L"Weather";
       this->tabpgWeather->UseVisualStyleBackColor = true;
+      // 
+      // btnView
+      // 
+      this->btnView->Location = System::Drawing::Point(6, 35);
+      this->btnView->Name = L"btnView";
+      this->btnView->Size = System::Drawing::Size(75, 23);
+      this->btnView->TabIndex = 33;
+      this->btnView->Text = L"View";
+      this->btnView->UseVisualStyleBackColor = true;
+      this->btnView->Click += gcnew System::EventHandler(this, &MainForm::OnViewWeather);
       // 
       // MainForm
       // 
@@ -556,5 +571,5 @@ private: System::Windows::Forms::ToolStripMenuItem^  tsmiOpenSampleLocation;
 
     }
 #pragma endregion
-  };
+};
 }

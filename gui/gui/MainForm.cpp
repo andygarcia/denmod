@@ -329,7 +329,7 @@ MainForm::OnImportWeather( System::Object ^ sender, System::EventArgs ^ e )
   }
 
   // use import form to finish process
-  WeatherForm ^ wf = gcnew WeatherForm( LocationBinding, wy );
+  WeatherForm ^ wf = gcnew WeatherForm( WeatherFormMode::Import, LocationBinding, wy );
   if( wf->ShowDialog() != ::DialogResult::OK ) {
     return;
   }
@@ -344,8 +344,32 @@ MainForm::OnImportWeather( System::Object ^ sender, System::EventArgs ^ e )
 
 
 System::Void
+MainForm::OnViewWeather(System::Object^  sender, System::EventArgs^  e)
+{
+  if( lboxWeather->SelectedItem == nullptr ) {
+    // no weather year selected
+    return;
+  }
+
+  int year = Convert::ToInt32( lboxWeather->SelectedValue );
+  WeatherYear ^ wy = ActiveDocument->Location->Weather[year];
+
+  wy->BeginEdit();
+  WeatherForm ^ wf = gcnew WeatherForm( WeatherFormMode::Edit, LocationBinding, wy );
+  if( wf->ShowDialog() == ::DialogResult::OK ) {
+    wy->EndEdit();
+  }
+  else {
+    wy->CancelEdit();
+  }
+}
+
+
+
+System::Void
 MainForm::OnCloneWeather( System::Object ^ sender, System::EventArgs ^ e )
 {
+  throw gcnew InvalidOperationException( "OnCloneWeather() not implemented." );
 }
 
 
