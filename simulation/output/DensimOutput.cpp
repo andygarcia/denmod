@@ -81,7 +81,7 @@ void
 DensimOutput::SetFinalData( std::vector<int> & finalAgeDistribution, std::vector<int> & births, std::vector<int> & deaths,
                            std::vector<std::vector<int>> & finalSeroDistribution )
 {
-  _finalAgeDistribution= finalAgeDistribution;
+  _finalAgeDistribution = finalAgeDistribution;
   _births = births;
   _deaths = deaths;
   _finalSeroDistribution = finalSeroDistribution;
@@ -92,7 +92,13 @@ DensimOutput::SetFinalData( std::vector<int> & finalAgeDistribution, std::vector
 std::vector<int>
 DensimOutput::GetInitialAgeDistribution(void)
 {
-  return _initialAgeDistribution;
+  std::vector<int> values = std::vector<int>(18);
+
+  for( int i = 1; i <= 18; ++i ) {
+    values.push_back( _initialAgeDistribution[i] );
+  }
+
+  return values;
 }
 
 
@@ -100,7 +106,13 @@ DensimOutput::GetInitialAgeDistribution(void)
 std::vector<int>
 DensimOutput::GetFinalAgeDistribution(void)
 {
-  return _finalAgeDistribution;
+  std::vector<int> values = std::vector<int>(18);
+
+  for( int i = 1; i <= 18; ++i ) {
+    values.push_back( _finalAgeDistribution[i] );
+  }
+
+  return values;
 }
 
 
@@ -108,7 +120,13 @@ DensimOutput::GetFinalAgeDistribution(void)
 std::vector<int>
 DensimOutput::GetBirths(void)
 {
-  return _births;
+  std::vector<int> values = std::vector<int>(18);
+
+  for( int i = 1; i <= 18; ++i ) {
+    values.push_back( _births[i] );
+  }
+
+  return values;
 }
 
 
@@ -116,7 +134,13 @@ DensimOutput::GetBirths(void)
 std::vector<int>
 DensimOutput::GetDeaths(void)
 {
-  return _deaths;
+  std::vector<int> values = std::vector<int>(18);
+
+  for( int i = 1; i <= 18; ++i ) {
+    values.push_back( _deaths[i] );
+  }
+
+  return values;
 }
 
 
@@ -126,7 +150,7 @@ DensimOutput::GetInitialSeroDistribution( int serotype )
 {
   std::vector<int> values;
 
-  for( int i = 0; i <= 18; ++i ) {
+  for( int i = 1; i <= 18; ++i ) {
     values.push_back( _initialSeroDistribution[i][serotype] );
   }
 
@@ -140,7 +164,7 @@ DensimOutput::GetFinalSeroDistribution( int serotype )
 {
   std::vector<int> values;
 
-  for( int i = 0; i <= 18; ++i ) {
+  for( int i = 1; i <= 18; ++i ) {
     values.push_back( _finalSeroDistribution[i][serotype] );
   }
 
