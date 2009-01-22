@@ -121,7 +121,7 @@ Biology::LarvaeParameters::LarvaeParameters(void)
   NominalSurvival( 0.99 ),
   PupationSurvival( 0.95 ),
   DryContainerSurvival( 0.05 ),
-  MinimumWeightForSurvival( 0.0003 ),
+  MinimumWeightForSurvival( 0.0009 ),
   NumberEulerSteps( 8),
   CadaverFoodRatio( 0.4 ),
   Development(new DevelopmentParameters()),
