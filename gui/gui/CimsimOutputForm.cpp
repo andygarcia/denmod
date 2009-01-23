@@ -24,7 +24,6 @@ CimsimOutputForm::CimsimOutputForm( gui::Location ^ location )
   for each( output::DatedOutput ^ output in mainPlot->PrimaryOutputs ) {
     Series ^ s = gcnew Series( output->Name );
     s->ChartType = "Line";
-    s->YAxisType = AxisType::Primary;
 
     s->Points->DataBindXY( co->Weeks, output->GetWeeklyData( output::TimePeriodFunction::Average ) );
 

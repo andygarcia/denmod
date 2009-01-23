@@ -880,8 +880,7 @@ SimContainer::CalculateLarvicideLarvalSurvival( date d )
 void
 SimContainer::CalculateWaterDepthLarvalSurvival( int day )
 {
-  // for empty containers, survival drops to 0.05, the reason this isn't
-  // explicitly 0.0 is due to the non-uniformity of a container's surface
+  // not 0.0 because of non-uniformity of surface of container bottom
   if( _waterDepth == 0 )
     _larvaeTemperatureSurvival = _larvaeDryContainerSurvival;
 }
