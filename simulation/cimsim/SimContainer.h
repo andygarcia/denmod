@@ -246,6 +246,9 @@ private:
   double _larvaeTemperatureSurvival;
   double _larvaePupationSurvival;
   double _larvaeLarvicideSurvival;
+
+  double _larvaeDryContainerSurvival;
+
   LarvicideTreatment * _currentLarvicideTreatment;
 
   double et;
@@ -257,8 +260,13 @@ private:
   double d1;
   double d2;
 
+  double _larvaeNonDeptableLipidReserve;
+  double _larvaeWeightToLipidSlope;
+  double _larvaeWeightToLipidConstant;
+
   double _larvaePupationWeightSlope;
   double _larvaePupationWeightIntercept;
+  double _larvaeMinimumWeightForSurvival;
   double _larvaeMinimumWeightForPupation;
 
 

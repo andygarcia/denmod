@@ -148,6 +148,8 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
   _larvaeInitialWeight = bio->Larvae->WeightAtHatch;
   _larvaeMaximumDevelopment = bio->Larvae->PupationWeight->MaximumDevelopment;
 
+  _larvaeDryContainerSurvival = bio->Larvae->DryContainerSurvival;
+
   _larvaeTemperatureLowLethalSurvival = bio->Larvae->Temperature->LowLethalSurvival;
   _larvaeTemperatureLowLethalThreshold = bio->Larvae->Temperature->LowLethalThreshold;
   _larvaeTemperatureLowThreshold = bio->Larvae->Temperature->LowThreshold;
@@ -163,6 +165,10 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
   // chronological basis from 1993 Focks, et. al.
   fT = .001f;
 
+  _larvaeNonDeptableLipidReserve = bio->Larvae->Fasting->NonDepletableLipidReserve;
+  _larvaeWeightToLipidSlope = bio->Larvae->Fasting->WeightToLipidSlope;
+  _larvaeWeightToLipidConstant = bio->Larvae->Fasting->WeightToLipidConstant;
+
   _larvaeNoFastingSurvival = bio->Larvae->Fasting->NoFastingSurvival;
   _larvaeNoLipidReserveSurvival = bio->Larvae->Fasting->NoLipidReserveSurvival;
   _larvaeLipidReserveSurvival = bio->Larvae->Fasting->LipidReserveSurvival;
@@ -171,6 +177,7 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
   _larvaePupationWeightSlope = bio->Larvae->PupationWeight->Slope;
   _larvaePupationWeightIntercept = bio->Larvae->PupationWeight->Intercept;
   _larvaeMinimumWeightForPupation = bio->Larvae->PupationWeight->MinimumWeightForPupation;
+  _larvaeMinimumWeightForSurvival = bio->Larvae->MinimumWeightForSurvival;
 
   _pupaeNominalSurvival = bio->Pupae->NominalSurvival;
 
@@ -876,7 +883,7 @@ SimContainer::CalculateWaterDepthLarvalSurvival( int day )
   // for empty containers, survival drops to 0.05, the reason this isn't
   // explicitly 0.0 is due to the non-uniformity of a container's surface
   if( _waterDepth == 0 )
-    _larvaeTemperatureSurvival = .05f;
+    _larvaeTemperatureSurvival = _larvaeDryContainerSurvival;
 }
 
 
@@ -1011,13 +1018,13 @@ SimContainer::AdvanceLarvae( int day )
           // negative weight gain
           if( itLarvae->PreFastFatBody == 0 ) {
             // no previous fasting, establish reserve and begin fasting
-            double maxfb = itLarvae->Weight * (.059f * (log(itLarvae->Weight) + 6.9f) - .15f);
+            double maxFatBody = itLarvae->Weight * (_larvaeWeightToLipidSlope * (log(itLarvae->Weight) + _larvaeWeightToLipidConstant) - _larvaeNonDeptableLipidReserve);
             // don't allow negative fatbody reserve
-            if( maxfb < 0 ) {
-              maxfb = 0;
+            if( maxFatBody < 0 ) {
+              maxFatBody = 0;
             }
-            itLarvae->PreFastFatBody = maxfb;
-            itLarvae->FatBody = maxfb + itLarvae->WeightChange;
+            itLarvae->PreFastFatBody = maxFatBody;
+            itLarvae->FatBody = maxFatBody + itLarvae->WeightChange;
           }
           else {
             // previous fasting
@@ -1042,7 +1049,7 @@ SimContainer::AdvanceLarvae( int day )
         itLarvae->Development = itLarvae->Development + _larvaeDevRate;
         itLarvae->Weight = itLarvae->Weight + itLarvae->WeightChange;
 
-        if( itLarvae->Weight < .003 || itLarvae->Development > _larvaeMaximumDevelopment ) {
+        if( itLarvae->Weight < _larvaeMinimumWeightForSurvival  || itLarvae->Development > _larvaeMaximumDevelopment ) {
           // all die and add to cadaver weight
           totalCadaverWeight += number * weight;
           itLarvae = LarvaeCohorts.erase( itLarvae );
@@ -1516,4 +1523,3 @@ SimContainer::EndYear(void)
   _waterDepthYesterday = _waterDepth;
   _foodRemainingYesterday = _foodAvailable;
 }
-
