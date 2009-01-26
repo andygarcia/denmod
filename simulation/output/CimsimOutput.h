@@ -50,6 +50,7 @@ private:
 
 public:
   // Location outputs
+  std::vector<double> GetAdultDevelopment( boost::gregorian::date startDate, boost::gregorian::date endDate );
   std::vector<double> GetFemales( boost::gregorian::date startDate, boost::gregorian::date endDate );
   std::vector<double> GetHostSeekingFemales( boost::gregorian::date startDate, boost::gregorian::date endDate );
   std::vector<double> GetOvipositingFemales( boost::gregorian::date startDate, boost::gregorian::date endDate );

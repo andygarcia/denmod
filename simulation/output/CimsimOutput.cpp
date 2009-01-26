@@ -176,6 +176,21 @@ CimsimOutput::GetPopData(void)
 
 
 std::vector<double>
+CimsimOutput::GetAdultDevelopment( date startDate, date endDate )
+{
+  std::vector<double> values;
+
+  day_iterator itDate = day_iterator(startDate);
+  for( ; *itDate <= endDate; ++itDate ) {
+    values.push_back( LocationOutput_[*itDate].AdultDevelopment );
+  }
+
+  return values;
+}
+
+
+
+std::vector<double>
 CimsimOutput::GetFemales( date startDate, date endDate )
 {
   std::vector<double> values;
