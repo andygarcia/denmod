@@ -178,14 +178,44 @@ CimsimOutput::GetPopData(void)
 std::vector<double>
 CimsimOutput::GetFemales( date startDate, date endDate )
 {
-  std::vector<double> females;
+  std::vector<double> values;
 
   day_iterator itDate = day_iterator(startDate);
   for( ; *itDate <= endDate; ++itDate ) {
-    females.push_back( LocationOutput_[*itDate].Females );
+    values.push_back( LocationOutput_[*itDate].Females );
   }
 
-  return females;
+  return values;
+}
+
+
+
+std::vector<double>
+CimsimOutput::GetHostSeekingFemales( date startDate, date endDate )
+{
+  std::vector<double> values;
+
+  day_iterator itDate = day_iterator(startDate);
+  for( ; *itDate <= endDate; ++itDate ) {
+    values.push_back( LocationOutput_[*itDate].HostSeekingFemales );
+  }
+
+  return values;
+}
+
+
+
+std::vector<double>
+CimsimOutput::GetOvipositingFemales( date startDate, date endDate )
+{
+  std::vector<double> values;
+
+  day_iterator itDate = day_iterator(startDate);
+  for( ; *itDate <= endDate; ++itDate ) {
+    values.push_back( LocationOutput_[*itDate].OvipositingFemales );
+  }
+
+  return values;
 }
 
 

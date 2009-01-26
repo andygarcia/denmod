@@ -51,6 +51,8 @@ private:
 public:
   // Location outputs
   std::vector<double> GetFemales( boost::gregorian::date startDate, boost::gregorian::date endDate );
+  std::vector<double> GetHostSeekingFemales( boost::gregorian::date startDate, boost::gregorian::date endDate );
+  std::vector<double> GetOvipositingFemales( boost::gregorian::date startDate, boost::gregorian::date endDate );
   std::vector<double> GetNewFemales( boost::gregorian::date startDate, boost::gregorian::date endDate );
   std::vector<double> GetAverageFemaleWeight( boost::gregorian::date startDate, boost::gregorian::date endDate );
   std::vector<double> GetOviposition( boost::gregorian::date startDate, boost::gregorian::date endDate );
@@ -97,6 +99,8 @@ class DailyLocationOutput
 {
 public:
   double Females;
+  double HostSeekingFemales;
+  double OvipositingFemales;
   double Oviposition;
 
   double NewFemales;
