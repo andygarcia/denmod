@@ -234,7 +234,7 @@ public:
 
 private:
   String ^ GetLocationExcelXml(void);
-  String ^ GetContainerExcelXml( int containerId );
+  String ^ GetContainerExcelXml(void);
 
 public:
   property DateTime StartDate {
@@ -382,7 +382,6 @@ public:
       _saturationDeficit = a;
     }
   }
-
 
 public:
   array<double> ^ _totalEggs;

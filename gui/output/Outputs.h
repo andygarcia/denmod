@@ -102,10 +102,12 @@ public:
 
 public:
   virtual void SaveToDisk( IO::DirectoryInfo ^ di ) abstract;
-  static String ^ GenerateExcelDateXml( List<String^> ^ headers, List<DateTime> ^ dates, List<array<double>^> ^ columns );
 
-  generic<class T>
-  static String ^ GenerateExcelClassXml( List<String^> ^ headers, List<String^> ^ indices, List<array<T>^> ^ columns );
+  static String ^ GenerateExcelDateXml( List<String^> ^ headers, List<DateTime> ^ dates, List<array<double>^> ^ columns );
+  static String ^ GenerateExcelClassXml( List<String^> ^ headers, List<String^> ^ indices, List<array<double>^> ^ columns );
+
+  String ^ GenerateWorkbook( List<String^> ^ worksheetXmls );
+  String ^ GenerateWorksheet( String ^ worksheetName, List<Type^> ^ columnTypes, List<String^> ^ headers, List<List<String^>^> ^ columns );
 
 private:
   void GenerateWeeks(void);
@@ -161,6 +163,8 @@ protected:
   List<DateTime> ^ _dates;
   List<DateTime> ^ _weeks;
   List<DateTime> ^ _months;
+  Dictionary<Type^,String^> ^ _typeToStyle;
+  Dictionary<Type^,String^> ^ _typeToCellType;
 };
 
 };
