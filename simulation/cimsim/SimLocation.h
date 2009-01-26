@@ -54,7 +54,7 @@ private:
   double GetParousBiters( double doubleProp );
 
   void CalculateDailyTotals(void);
-  void UpdateOutput( boost::gregorian::date d, double adultWeight, double adultDev, double newEggs );
+  void UpdateOutput( boost::gregorian::date d, double adultDev, double newEggs );
 
   output::PopData * GeneratePopData(void);
 
@@ -140,6 +140,9 @@ private:
   double NewFemaleWeight;
 
   std::vector<double> _adultAgeDistribution;
+
+  double _totalHostSeekingFemales;
+  double _totalOvipositingFemales;
 
   double TotalMales;
   double TotalSterileMales;

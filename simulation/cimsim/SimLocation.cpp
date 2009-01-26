@@ -816,14 +816,14 @@ SimLocation::DoYear(void)
 
     // calculate count/weight of ovipositing females
     std::pair<double,double> oviTotals = GetOvipositingTotals();
-    double totalOvipositingFemales = oviTotals.first;
+    _totalOvipositingFemales = oviTotals.first;
     double ovipositingAverageWeight = oviTotals.second;
 
 
     // calculate new egg totals
     double newEggs = 0.0;
-    if( totalOvipositingFemales > 0 ) {
-      newEggs = totalOvipositingFemales * _fecundityCoefficient * ovipositingAverageWeight * sterileFactor;
+    if( _totalOvipositingFemales > 0 ) {
+      newEggs = _totalOvipositingFemales * _fecundityCoefficient * ovipositingAverageWeight * sterileFactor;
     }
 
 
@@ -843,7 +843,7 @@ SimLocation::DoYear(void)
       (*itCont)->EndDay();
     }
 
-    UpdateOutput( _currentDate, NewFemaleWeight, DevRateAdult, newEggs );
+    UpdateOutput( _currentDate, DevRateAdult, newEggs );
 
   } // year completed
 
@@ -1003,7 +1003,7 @@ SimLocation::CalculateDailyTotals(void)
 
 
 void
-SimLocation::UpdateOutput( date d, double adultWeight, double adultDev, double newEggs )
+SimLocation::UpdateOutput( date d, double adultDev, double newEggs )
 {
   // get day of year index
   int dayOfYear = d.day_of_year();
@@ -1013,6 +1013,8 @@ SimLocation::UpdateOutput( date d, double adultWeight, double adultDev, double n
   dlo.Females = GetNulliparousCount() + GetParousCount();
   dlo.Oviposition = newEggs;
   dlo.NewFemales = NewFemales;
+  dlo.HostSeekingFemales = _totalBiters;
+  dlo.OvipositingFemales = _totalOvipositingFemales;
   dlo.AverageWeight = GetFemaleAverageWeight();
   dlo.AdultDevelopment = adultDev;
   dlo.OverallSurvival = AdultSurvival;
