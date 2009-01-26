@@ -293,6 +293,15 @@ public:
     }
   }
 
+  property array<double> ^ AverageFemaleWeight {
+    array<double> ^ get(void) {
+      return _averageFemaleWeight;
+    }
+    void set(array<double> ^ a) {
+      _averageFemaleWeight = a;
+    }
+  }
+
   property array<double> ^ NewFemales {
     array<double> ^ get(void) {
       return _newFemales;
@@ -311,21 +320,21 @@ public:
     }
   }
 
+  property array<double> ^ OvipositingFemales {
+    array<double> ^ get(void) {
+      return _ovipositingFemales;
+    }
+    void set(array<double> ^ a) {
+      _ovipositingFemales = a;
+    }
+  }
+
   property array<double> ^ Oviposition {
     array<double> ^ get(void) {
       return _oviposition;
     }
     void set(array<double> ^ a) {
       _oviposition = a;
-    }
-  }
-
-  property array<double> ^ AverageFemaleWeight {
-    array<double> ^ get(void) {
-      return _averageFemaleWeight;
-    }
-    void set(array<double> ^ a) {
-      _averageFemaleWeight = a;
     }
   }
 
@@ -388,9 +397,10 @@ public:
   array<double> ^ _totalLarvae;
   array<double> ^ _totalPupae;
   array<double> ^ _females;
+  array<double> ^ _averageFemaleWeight;
   array<double> ^ _newFemales;
   array<double> ^ _hostSeekingFemales;
-  array<double> ^ _averageFemaleWeight;
+  array<double> ^ _ovipositingFemales;
   array<double> ^ _oviposition;
 
   array<double> ^ _maximumTemperature;
