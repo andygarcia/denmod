@@ -17,7 +17,6 @@ namespace gui {
 
 public ref class Container : public NotifyValidateEditBase
 {
-// TODO
 private:
   static int _nextId;
   static Container()
@@ -115,10 +114,10 @@ public:
   property double CapacityInLiters {
     double get(void) {
       if( Shape == ShapeType::Circular ) {
-        return System::Math::PI * System::Math::Pow( (Diameter_/2), 2) * Height_;
+        return System::Math::PI * System::Math::Pow( (Diameter_/2), 2) * Height_ / 1000;
       }
       else if( Shape == ShapeType::Rectangular ) {
-        return Length_ * Width_ * Height_;
+        return Length_ * Width_ * Height_ / 1000;
       }
       else {
         throw gcnew System::InvalidOperationException( "CapacityInLiters(): invalid shape type." );
@@ -300,6 +299,25 @@ public:
       if( Drawdown_ != d ) {
         Drawdown_ = d;
         NotifyAndValidate( "Drawdown" );
+      }
+    }
+  }
+
+  [XmlIgnore]
+  [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
+  [CompareDoubleRule( 0, CompareOperator::GreaterThanEqual, ErrorMessage = "Drawdown percentage must be between 0 and 100." )]
+  [CompareDoubleRule( 100, CompareOperator::LessThanEqual, ErrorMessage = "Drawdown percentage must be between 0 and 100." )]
+  property double DrawdownPercentage {
+    double get(void) {
+      // return drawdown as percentage
+      return (Drawdown_ / CapacityInLiters) * 100;
+    }
+    void set(double d) {
+      // calculate new drawdown based on percentage
+      if( Drawdown_ / CapacityInLiters * 100 != d ) {
+        Drawdown_ = (d/100) * CapacityInLiters;
+        NotifyAndValidate( "Drawdown" );
+        NotifyAndValidate( "DrawdownPercentage" );
       }
     }
   }

@@ -88,7 +88,7 @@ ContainerForm::OnLoad( System::Object^ sender, System::EventArgs^ e)
   cboxManualFillFrequency->DataSource = frequencyEnumValues;
   cboxManualFillFrequency->DataBindings->Add( "SelectedValue", Container_, "ManualFillFrequency" );
 
-  snboxDrawdown->DataBindings->Add( gcnew ParameterDisplayBinding("Value", Container_, "Drawdown", DataSourceUpdateMode::OnPropertyChanged) );
+  snboxDrawdownPercentage->DataBindings->Add( gcnew ParameterDisplayBinding("Value", Container_, "DrawdownPercentage", DataSourceUpdateMode::OnPropertyChanged) );
 
   cboxDrawdownFrequency->DisplayMember = "Value";
   cboxDrawdownFrequency->ValueMember= "Key";

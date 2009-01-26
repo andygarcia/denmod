@@ -78,8 +78,9 @@ namespace gui {
     System::Windows::Forms::ComboBox^  cboxFillMethod;
     System::Windows::Forms::Label^  lblManualFillFrequency;
     System::Windows::Forms::ComboBox^  cboxManualFillFrequency;
+  private: System::Windows::Forms::Label^  lblDrawdownPercentage;
 
-    System::Windows::Forms::Label^  lblDrawdown;
+
 
     System::Windows::Forms::Label^  lblDrawdownFrequency;
     System::Windows::Forms::ComboBox^  cboxDrawdownFrequency;
@@ -144,7 +145,8 @@ private: ctrl::ScientificNotationTextBox^  snboxWidth;
 private: ctrl::ScientificNotationTextBox^  snboxLength;
 private: ctrl::ScientificNotationTextBox^  snboxDiameter;
 private: ctrl::ScientificNotationTextBox^  snboxDensity;
-private: ctrl::ScientificNotationTextBox^  snboxDrawdown;
+private: ctrl::ScientificNotationTextBox^  snboxDrawdownPercentage;
+
 
 private: ctrl::ScientificNotationTextBox^  snboxDecayRate;
 private: ctrl::ScientificNotationTextBox^  snboxInitFood;
@@ -173,6 +175,7 @@ private: ctrl::ScientificNotationTextBox^  snboxFoodJul;
 private: ctrl::ScientificNotationTextBox^  snboxFoodJan;
 private: System::Windows::Forms::CheckBox^  chkClone;
 private: ctrl::ScientificNotationTextBox^  snboxNumberOfClones;
+
 
 
 
@@ -222,12 +225,12 @@ private: System::ComponentModel::IContainer^  components;
       this->lblInitEggs = (gcnew System::Windows::Forms::Label());
       this->lblCooling = (gcnew System::Windows::Forms::Label());
       this->tabWater = (gcnew System::Windows::Forms::TabPage());
-      this->snboxDrawdown = (gcnew ctrl::ScientificNotationTextBox());
+      this->snboxDrawdownPercentage = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxWatershed = (gcnew ctrl::ScientificNotationTextBox());
       this->lblDrawdownFrequency = (gcnew System::Windows::Forms::Label());
       this->lblManualFillFrequency = (gcnew System::Windows::Forms::Label());
       this->cboxDrawdownFrequency = (gcnew System::Windows::Forms::ComboBox());
-      this->lblDrawdown = (gcnew System::Windows::Forms::Label());
+      this->lblDrawdownPercentage = (gcnew System::Windows::Forms::Label());
       this->cboxManualFillFrequency = (gcnew System::Windows::Forms::ComboBox());
       this->lblWatershed = (gcnew System::Windows::Forms::Label());
       this->cboxFillMethod = (gcnew System::Windows::Forms::ComboBox());
@@ -575,12 +578,12 @@ private: System::ComponentModel::IContainer^  components;
       // 
       // tabWater
       // 
-      this->tabWater->Controls->Add(this->snboxDrawdown);
+      this->tabWater->Controls->Add(this->snboxDrawdownPercentage);
       this->tabWater->Controls->Add(this->snboxWatershed);
       this->tabWater->Controls->Add(this->lblDrawdownFrequency);
       this->tabWater->Controls->Add(this->lblManualFillFrequency);
       this->tabWater->Controls->Add(this->cboxDrawdownFrequency);
-      this->tabWater->Controls->Add(this->lblDrawdown);
+      this->tabWater->Controls->Add(this->lblDrawdownPercentage);
       this->tabWater->Controls->Add(this->cboxManualFillFrequency);
       this->tabWater->Controls->Add(this->lblWatershed);
       this->tabWater->Controls->Add(this->cboxFillMethod);
@@ -593,15 +596,15 @@ private: System::ComponentModel::IContainer^  components;
       this->tabWater->Text = L"Water & Filling";
       this->tabWater->UseVisualStyleBackColor = true;
       // 
-      // snboxDrawdown
+      // snboxDrawdownPercentage
       // 
-      this->snboxDrawdown->Location = System::Drawing::Point(210, 119);
-      this->snboxDrawdown->Name = L"snboxDrawdown";
-      this->snboxDrawdown->Size = System::Drawing::Size(68, 20);
-      this->snboxDrawdown->TabIndex = 7;
-      this->snboxDrawdown->Text = L"0";
-      this->snboxDrawdown->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxDrawdown->Value = L"0";
+      this->snboxDrawdownPercentage->Location = System::Drawing::Point(210, 119);
+      this->snboxDrawdownPercentage->Name = L"snboxDrawdownPercentage";
+      this->snboxDrawdownPercentage->Size = System::Drawing::Size(68, 20);
+      this->snboxDrawdownPercentage->TabIndex = 7;
+      this->snboxDrawdownPercentage->Text = L"0";
+      this->snboxDrawdownPercentage->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxDrawdownPercentage->Value = L"0";
       // 
       // snboxWatershed
       // 
@@ -640,14 +643,14 @@ private: System::ComponentModel::IContainer^  components;
       this->cboxDrawdownFrequency->Size = System::Drawing::Size(121, 21);
       this->cboxDrawdownFrequency->TabIndex = 9;
       // 
-      // lblDrawdown
+      // lblDrawdownPercentage
       // 
-      this->lblDrawdown->AutoSize = true;
-      this->lblDrawdown->Location = System::Drawing::Point(74, 122);
-      this->lblDrawdown->Name = L"lblDrawdown";
-      this->lblDrawdown->Size = System::Drawing::Size(130, 13);
-      this->lblDrawdown->TabIndex = 6;
-      this->lblDrawdown->Text = L"Drawdown Amount (liters):";
+      this->lblDrawdownPercentage->AutoSize = true;
+      this->lblDrawdownPercentage->Location = System::Drawing::Point(74, 122);
+      this->lblDrawdownPercentage->Name = L"lblDrawdownPercentage";
+      this->lblDrawdownPercentage->Size = System::Drawing::Size(131, 13);
+      this->lblDrawdownPercentage->TabIndex = 6;
+      this->lblDrawdownPercentage->Text = L"Drawdown (% of Capacity)";
       // 
       // cboxManualFillFrequency
       // 
