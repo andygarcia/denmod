@@ -292,53 +292,56 @@ MainForm::OnImportWeather( System::Object ^ sender, System::EventArgs ^ e )
   WeatherData ^ weather = ActiveDocument->Location->Weather;
   OpenFileDialog ^ ofd = gcnew OpenFileDialog();
   ofd->Filter = "Excel 97-2003 Spreadsheet (*.xls)|*.xls|CIMSiM/DENSiM 1.0 (*.dly)|*.dly";
+  ofd->Multiselect = true;
   if( ofd->ShowDialog(this) != ::DialogResult::OK ) {
     return;
   }
 
-  // basic checks on file selection
-  IO::FileInfo ^ fi = gcnew IO::FileInfo( ofd->FileName );
-  if( !fi->Exists ) {
-    MessageBox::Show( "File does not exist.");
-    return;
-  }
-
-  // get weather year from file
-  WeatherYear ^ wy = nullptr;
-  if( String::Compare(fi->Extension, ".xls", StringComparison::CurrentCultureIgnoreCase) == 0 ) {
-    try {
-      wy = WeatherYear::OpenFromXls( ofd->FileName );
+  for each( String ^ filename in ofd->FileNames ) {
+    // basic checks on file selection
+    IO::FileInfo ^ fi = gcnew IO::FileInfo( filename );
+    if( !fi->Exists ) {
+      MessageBox::Show( "File does not exist.");
+      continue;
     }
-    catch( gui::ExcelWeatherDataException ^ e ) {
-      MessageBox::Show( "Error in excel file at row " + e->RowIndex + ".  Please use weather template file and documentation to create weather spreadsheets." );
+
+    // get weather year from file
+    WeatherYear ^ wy = nullptr;
+    if( String::Compare(fi->Extension, ".xls", StringComparison::CurrentCultureIgnoreCase) == 0 ) {
+      try {
+        wy = WeatherYear::OpenFromXls( filename );
+      }
+      catch( gui::ExcelWeatherDataException ^ e ) {
+        MessageBox::Show( "Error in excel file at row " + e->RowIndex + ".  Please use weather template file and documentation to create weather spreadsheets." );
+        continue;
+      }
+    }
+    else if( String::Compare(fi->Extension, ".dly", StringComparison::CurrentCultureIgnoreCase) == 0 ) {
+      try {
+        wy = WeatherYear::OpenFromDly( filename );
+      }
+      catch( gui::DlyWeatherDataException ^ e ) {
+        MessageBox::Show( "Error in DLY file for day " + e->RowIndex + ".  Make sure DLY data is valid." );
+        continue;
+      }
+    }
+    else {
+      MessageBox::Show( "Unrecognized file type." );
+      continue;
+    }
+
+    // use import form to finish process
+    WeatherForm ^ wf = gcnew WeatherForm( WeatherFormMode::Import, LocationBinding, wy );
+    if( wf->ShowDialog() != ::DialogResult::OK ) {
       return;
     }
-  }
-  else if( String::Compare(fi->Extension, ".dly", StringComparison::CurrentCultureIgnoreCase) == 0 ) {
-    try {
-      wy = WeatherYear::OpenFromDly( ofd->FileName );
-    }
-    catch( gui::DlyWeatherDataException ^ e ) {
-      MessageBox::Show( "Error in DLY file for day " + e->RowIndex + ".  Make sure DLY data is valid." );
-      return;
-    }
-  }
-  else {
-    MessageBox::Show( "Unrecognized file type." );
-    return;
-  }
 
-  // use import form to finish process
-  WeatherForm ^ wf = gcnew WeatherForm( WeatherFormMode::Import, LocationBinding, wy );
-  if( wf->ShowDialog() != ::DialogResult::OK ) {
-    return;
+    // add year to location, possibly replacing existing year
+    if( weather->IsWeatherYearAvailable( wy->Index ) ) {
+      weather->RemoveWeatherYear( wy->Index );
+    }
+    weather->AddWeatherYear( wy );
   }
-
-  // add year to location, possibly replacing existing year
-  if( weather->IsWeatherYearAvailable( wy->Index ) ) {
-    weather->RemoveWeatherYear( wy->Index );
-  }
-  weather->AddWeatherYear( wy );
 }
 
 
