@@ -122,8 +122,6 @@ private:
     _densimCharts->Add( gcnew ChartInfo(ChartIds::DensimBirthsAndDeaths, "Births and deaths", false) );
     _densimCharts->Add( gcnew ChartInfo(ChartIds::DensimFemaleMosquitoesInArea, "Female mosquitoes in area", true) );
     _densimCharts->Add( gcnew ChartInfo(ChartIds::DensimFemaleMosquitoesPerPerson, "Female mosquitoes per person", true) );
-    //_densimCharts->Add( gcnew ChartInfo(ChartIds::DensimFemaleMosquitoSurvival, "Female survival", true) );
-    //_densimCharts->Add( gcnew ChartInfo(ChartIds::DensimFemaleMosquitoWetWeight, "Female wet weight", true) );
 
     _densimVirusCharts = gcnew ComponentModel::BindingList<ChartInfo^>();
     _densimVirusCharts->Add( gcnew ChartInfo(ChartIds::DensimEipDevelopmentRate, "EIP development rate", true) );

@@ -310,6 +310,8 @@ Location::ProcessCimsimOutput( sim::output::CimsimOutput * uco, DateTime startDa
   mco->TotalPupae = ArrayFromDoubleVector( uco->GetTotalPupae(bStartDate, bStopDate) );
   mco->Females = ArrayFromDoubleVector( uco->GetFemales(bStartDate, bStopDate) );
   mco->NewFemales = ArrayFromDoubleVector( uco->GetNewFemales(bStartDate, bStopDate) );
+  mco->HostSeekingFemales = ArrayFromDoubleVector( uco->GetHostSeekingFemales(bStartDate, bStopDate) );
+  mco->OvipositingFemales = ArrayFromDoubleVector( uco->GetOvipositingFemales(bStartDate, bStopDate) );
   // TODO
   //mco->HostSeekingFemales = ArrayFromDoubleVector( uco->GetHostSeekingFemales(bStartDate, bStopDate) );
   mco->AverageFemaleWeight = ArrayFromDoubleVector( uco->GetAverageFemaleWeight(bStartDate, bStopDate) );
