@@ -721,25 +721,10 @@ SimLocation::DoYear(void)
     // END NEW ADULT CODE
 
 
-    // calculate proportion of double blood meals as a function of female wet weight
-    // TODO: this should be per cohort
-    double doubleBloodMealProp = CalculateDoubleBloodMealProportion();
-
-
-    // calculate number of blood seeking females
-    // note this is different than CS 1.0 that used host parameters to determine densities
-    // CS 3.0 just outputs absolute number of females that are seeking blood meals
-    // this does account for double blood meals, but not for "interrupted" feeds
-
-    // a peculiarity in CS 1.0 is that survival against density as well as bites per hosts/humans/mammals
-    // were all calculated before the current day's biters were updated.  This means that survival against density
-    // as well as bites per hosts were using yesterday's counts for biters
-    _totalBiters = _preOviBiters + _oviBiters;
-
-
     // calculate today's biters
-    _preOviBiters = GetNulliparousBiters( doubleBloodMealProp );
-    _oviBiters = GetParousBiters( doubleBloodMealProp );
+    _preOviBiters = GetNulliparousBiters();
+    _oviBiters = GetParousBiters();
+    _totalBiters = _preOviBiters + _oviBiters;
 
 
     // track wild male population - needed for sterile male releases.
@@ -939,7 +924,7 @@ SimLocation::CalculateAdultAgeDependentSurvival( int age )
 
 
 double
-SimLocation::CalculateDoubleBloodMealProportion(void)
+SimLocation::CalculateDoubleBloodMealProportion( double weight )
 {
   const double & lowWeight = _adultDoubleBloodMeals->LowWeightLimit;
   const double & lowWeightProportion = _adultDoubleBloodMeals->LowWeightRatio;
@@ -947,15 +932,15 @@ SimLocation::CalculateDoubleBloodMealProportion(void)
   const double & highWeight = _adultDoubleBloodMeals->HighWeightLimit;
   const double & highWeightProportion = _adultDoubleBloodMeals->HighWeightRatio;
 
-  if( NewFemaleWeight <= lowWeight) {
+  if( weight <= lowWeight) {
     return lowWeightProportion;
   }
-  else if( NewFemaleWeight >= highWeight ) {
+  else if( weight >= highWeight ) {
     return highWeightProportion;
   }
   else {
     double slope = (lowWeightProportion - highWeightProportion) / (highWeight - lowWeight);
-    return lowWeightProportion - ((NewFemaleWeight - lowWeight) * slope);
+    return lowWeightProportion - ((weight - lowWeight) * slope);
   }
 }
 
@@ -1180,7 +1165,7 @@ SimLocation::GetOvipositingTotals(void)
 
 
 double
-SimLocation::GetNulliparousBiters( double doubleProp )
+SimLocation::GetNulliparousBiters(void)
 {
   // pre ovi biters are defined as females that are 2 days old, as well as some
   // proportion of 3 day old females, based on double blood meal proportion
@@ -1189,20 +1174,20 @@ SimLocation::GetNulliparousBiters( double doubleProp )
 
   for( PreOviAdultIterator itAdult = _nulliparousAdults.begin(); itAdult != _nulliparousAdults.end(); ++itAdult ) {
     if( itAdult->Age == 3 ) {
-      ageThreeCount = itAdult->Number;
+      ageThreeCount = itAdult->Number * CalculateDoubleBloodMealProportion( itAdult->Weight );
     }
     if( itAdult->Age == 2 ) {
       ageTwoCount = itAdult->Number;
     }
   }
 
-  return ageTwoCount + (ageThreeCount * doubleProp);
+  return ageTwoCount + ageThreeCount;
 }
 
 
 
 double
-SimLocation::GetParousBiters( double doubleProp )
+SimLocation::GetParousBiters(void)
 {
   // ovi biters are defined as ovi females on the same day they complete a cycle
   // as well as some proportion on the day after, based on double blood meal proportion
@@ -1216,12 +1201,12 @@ SimLocation::GetParousBiters( double doubleProp )
 
   for( OviAdultIterator itAdult = _parousAdults.begin(); itAdult != _parousAdults.end(); ++itAdult ) {
     if( itAdult->OvipositionAge == 2 ) {
-      ageTwoCount += itAdult->Number;
+      ageTwoCount += itAdult->Number  * CalculateDoubleBloodMealProportion( itAdult->Weight );
     }
     if( itAdult->OvipositionAge == 1 ) {
       ageOneCount += itAdult->Number;
     }
   }
 
-  return ageOneCount + (ageTwoCount * doubleProp);
+  return ageOneCount + ageTwoCount;
 }

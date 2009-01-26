@@ -46,12 +46,14 @@ private:
   double GetNulliparousCount(void);
   double GetParousCount(void);
   double GetFemaleAverageWeight(void);
+
   std::pair<double,double> GetOvipositingTotals(void);
   // deprecated - removed once new adult aging system in place in DENSiM
   double GetOvipositingFemaleAverageWeight(void);
-  double CalculateDoubleBloodMealProportion(void);
-  double GetNulliparousBiters( double doubleProp );
-  double GetParousBiters( double doubleProp );
+
+  double GetNulliparousBiters(void);
+  double GetParousBiters(void);
+  double CalculateDoubleBloodMealProportion( double weight );
 
   void CalculateDailyTotals(void);
   void UpdateOutput( boost::gregorian::date d, double adultDev, double newEggs );
