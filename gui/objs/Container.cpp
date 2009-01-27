@@ -250,8 +250,11 @@ Container::ToString(void)
     sb->AppendLine( "No drawdown" );
   }
   else {
-    sb->AppendLine( "" + Drawdown_ + " liters drawdown " + System::Enum::GetName(gui::Container::Frequency::typeid, DrawdownFrequency_)->ToLower() );
+    System::String ^ sLiters = System::Double( Drawdown_ ).ToString( "F2" );
+    System::String ^ sPercentage = System::Double( DrawdownPercentage ).ToString( "F2" );
+    sb->AppendLine( "" + sPercentage + " % drawdown (" + sLiters  + " liters) " + System::Enum::GetName(gui::Container::Frequency::typeid, DrawdownFrequency_)->ToLower() );
   }
+
 
   // initial food and decay rates
   sb->AppendLine( "Initial food = " + InitFood_ + ", Food decay rate = " + FoodDecayRate_ );
