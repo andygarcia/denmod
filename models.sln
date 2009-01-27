@@ -39,6 +39,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "output", "gui\output\output
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lhsmod", "lhs\lhsmod\lhsmod.vcproj", "{397D8A84-12D0-4BB5-B0C5-F6DDC633B545}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xml2xls", "util\xml2xls\xml2xls.vcproj", "{9CE07BE8-D000-4536-A34E-09797DF753CE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -109,6 +111,10 @@ Global
 		{397D8A84-12D0-4BB5-B0C5-F6DDC633B545}.Debug|Win32.Build.0 = Debug|Win32
 		{397D8A84-12D0-4BB5-B0C5-F6DDC633B545}.Release|Win32.ActiveCfg = Release|Win32
 		{397D8A84-12D0-4BB5-B0C5-F6DDC633B545}.Release|Win32.Build.0 = Release|Win32
+		{9CE07BE8-D000-4536-A34E-09797DF753CE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9CE07BE8-D000-4536-A34E-09797DF753CE}.Debug|Win32.Build.0 = Debug|Win32
+		{9CE07BE8-D000-4536-A34E-09797DF753CE}.Release|Win32.ActiveCfg = Release|Win32
+		{9CE07BE8-D000-4536-A34E-09797DF753CE}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -124,5 +130,6 @@ Global
 		{81AABD47-CF32-43D8-BD1C-BBC7D69F438B} = {9BE02C8B-9DA4-4680-ACC8-7C0CF9B4AE46}
 		{DD4542A3-648F-4282-9B77-4786F6B917A6} = {9BE02C8B-9DA4-4680-ACC8-7C0CF9B4AE46}
 		{96239CA0-CBC5-4DE4-BE89-223611F5CE60} = {9BE02C8B-9DA4-4680-ACC8-7C0CF9B4AE46}
+		{9CE07BE8-D000-4536-A34E-09797DF753CE} = {9BE02C8B-9DA4-4680-ACC8-7C0CF9B4AE46}
 	EndGlobalSection
 EndGlobal
