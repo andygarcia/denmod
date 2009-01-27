@@ -19,6 +19,7 @@ namespace xml2xls {
 
   private:
     System::Void OnBrowse(System::Object^  sender, System::EventArgs^  e);
+    System::Void OnClear(System::Object^  sender, System::EventArgs^  e);
     System::Void OnConvert(System::Object^  sender, System::EventArgs^  e);
     System::Void OnDragDropInput(System::Object^  sender, System::Windows::Forms::DragEventArgs^  e);
     System::Void OnDragEnter(System::Object^  sender, System::Windows::Forms::DragEventArgs^  e);
@@ -30,6 +31,7 @@ namespace xml2xls {
 
   private: System::Windows::Forms::ColumnHeader^  columnHeader1;
   private: System::Windows::Forms::ColumnHeader^  columnHeader2;
+  private: System::Windows::Forms::Button^  btnClear;
   protected: 
 
 	private:
@@ -45,12 +47,14 @@ namespace xml2xls {
 		/// </summary>
 		void InitializeComponent(void)
 		{
+      System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(InputForm::typeid));
       this->richTextBox1 = (gcnew System::Windows::Forms::RichTextBox());
       this->btnBrowse = (gcnew System::Windows::Forms::Button());
       this->btnConvert = (gcnew System::Windows::Forms::Button());
       this->lvFiles = (gcnew System::Windows::Forms::ListView());
       this->columnHeader1 = (gcnew System::Windows::Forms::ColumnHeader());
       this->columnHeader2 = (gcnew System::Windows::Forms::ColumnHeader());
+      this->btnClear = (gcnew System::Windows::Forms::Button());
       this->SuspendLayout();
       // 
       // richTextBox1
@@ -62,9 +66,7 @@ namespace xml2xls {
       this->richTextBox1->ReadOnly = true;
       this->richTextBox1->Size = System::Drawing::Size(368, 52);
       this->richTextBox1->TabIndex = 0;
-      this->richTextBox1->Text = L"This utility will convert spreadsheet files in the Excel SpreadsheetML format to " 
-        L"the Excel binary format (1997-2003).  Select files by either browsing or draggin" 
-        L"g and dropping into this window.";
+      this->richTextBox1->Text = resources->GetString(L"richTextBox1.Text");
       // 
       // btnBrowse
       // 
@@ -108,8 +110,19 @@ namespace xml2xls {
       // 
       // columnHeader2
       // 
-      this->columnHeader2->Text = L"Converted";
+      this->columnHeader2->Text = L"Result";
       this->columnHeader2->Width = 80;
+      // 
+      // btnClear
+      // 
+      this->btnClear->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
+      this->btnClear->Location = System::Drawing::Point(305, 70);
+      this->btnClear->Name = L"btnClear";
+      this->btnClear->Size = System::Drawing::Size(75, 23);
+      this->btnClear->TabIndex = 1;
+      this->btnClear->Text = L"Clear";
+      this->btnClear->UseVisualStyleBackColor = true;
+      this->btnClear->Click += gcnew System::EventHandler(this, &InputForm::OnClear);
       // 
       // InputForm
       // 
@@ -119,11 +132,12 @@ namespace xml2xls {
       this->ClientSize = System::Drawing::Size(392, 381);
       this->Controls->Add(this->lvFiles);
       this->Controls->Add(this->btnConvert);
+      this->Controls->Add(this->btnClear);
       this->Controls->Add(this->btnBrowse);
       this->Controls->Add(this->richTextBox1);
       this->MinimumSize = System::Drawing::Size(400, 240);
       this->Name = L"InputForm";
-      this->Text = L"xml2xls";
+      this->Text = L"xml2xls 0.1";
       this->DragDrop += gcnew System::Windows::Forms::DragEventHandler(this, &InputForm::OnDragDropInput);
       this->DragEnter += gcnew System::Windows::Forms::DragEventHandler(this, &InputForm::OnDragEnter);
       this->ResumeLayout(false);

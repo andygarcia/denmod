@@ -38,9 +38,17 @@ InputForm::OnBrowse(System::Object^  sender, System::EventArgs^  e)
   for each( String ^ filename  in ofd->FileNames ) {
     IO::FileInfo ^ fi = gcnew IO::FileInfo( filename );
     ListViewItem ^ lvi = lvFiles->Items->Add( fi->FullName );
-    lvi->SubItems->Add( "no" );
+    lvi->SubItems->Add( "" );
     numAdded++;
   }
+}
+
+
+
+System::Void
+InputForm::OnClear(System::Object^  sender, System::EventArgs^  e)
+{
+  this->lvFiles->Clear();
 }
 
 
@@ -56,17 +64,23 @@ InputForm::OnConvert(System::Object^  sender, System::EventArgs^  e)
 
   for each( ListViewItem ^ lvi in lvFiles->Items ) {
     String ^ xmlFilename = lvi->Text;
+    IO::FileInfo ^ fi = gcnew IO::FileInfo( xmlFilename );
 
-    // open and disable compatability check
-    Excel::Workbook ^ xmlFile = ea->Workbooks->Open(xmlFilename, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing );
-    xmlFile->CheckCompatibility = false;
+    if( fi->Exists ) {
+      // open and disable compatability check
+      Excel::Workbook ^ xmlFile = ea->Workbooks->Open(xmlFilename, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing );
+      xmlFile->CheckCompatibility = false;
 
-    // save as excel 97-2003 format, changing extension, close and delete old workbook
-    xmlFile->SaveAs( IO::Path::ChangeExtension( xmlFilename, ".xls" ), Excel::XlFileFormat::xlExcel8, Type::Missing, Type::Missing, Type::Missing, false, Excel::XlSaveAsAccessMode::xlNoChange, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing );
-    ea->Workbooks->Close();
-    //IO::File::Delete( xmlFilename );
-    lvi->SubItems[1]->Text = "yes";
-    filesConverted++;
+      // save as excel 97-2003 format, changing extension, close and delete old workbook
+      xmlFile->SaveAs( IO::Path::ChangeExtension( xmlFilename, ".xls" ), Excel::XlFileFormat::xlExcel8, Type::Missing, Type::Missing, Type::Missing, false, Excel::XlSaveAsAccessMode::xlNoChange, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing );
+      ea->Workbooks->Close();
+      //IO::File::Delete( xmlFilename );
+      lvi->SubItems[1]->Text = "converted";
+      filesConverted++;
+    }
+    else {
+      lvi->SubItems[1]->Text = "not found";
+    }
   }
 
   MessageBox::Show( "" + filesConverted + " files were converted." );
@@ -87,7 +101,7 @@ InputForm::OnDragDropInput(System::Object^  sender, System::Windows::Forms::Drag
           IO::FileInfo ^ fi = gcnew IO::FileInfo( filename );
           String ^ ext = IO::Path::GetExtension( fi->FullName );
           ListViewItem ^ lvi = lvFiles->Items->Add( fi->FullName );
-          lvi->SubItems->Add( "no" );
+          lvi->SubItems->Add( "" );
         }
       }
     }
