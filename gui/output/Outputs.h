@@ -132,6 +132,12 @@ public:
     }
   }
 
+  property int NumberOfDays {
+    int get(void) {
+      return _numberOfDays;
+    }
+  }
+
   property List<DateTime> ^ Dates {
     List<DateTime> ^ get(void) {
       return _dates;
@@ -160,6 +166,7 @@ protected:
   String ^ _name;
   DateTime _startDate;
   DateTime _stopDate;
+  int _numberOfDays;
   List<DateTime> ^ _dates;
   List<DateTime> ^ _weeks;
   List<DateTime> ^ _months;

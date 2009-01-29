@@ -204,7 +204,6 @@ public:
 
 private:
   double _humanDensity;
-  int _numDays;
 
   array<double> ^ _initialAgeDistribution;
   array<double> ^ _finalAgeDistribution;
