@@ -70,8 +70,11 @@ public:
   {}
 
 public:
+  List<DateTime> ^ GetDates(void);
+  List<DateTime> ^ GetWeeks(void);
+  List<DateTime> ^ GetMonths(void);
   List<double> ^ GetWeeklyData( TimePeriodFunction function );
-  List<double> ^ GetMonthlyData( DateTime startDate, DateTime stopDate, TimePeriodFunction function );
+  List<double> ^ GetMonthlyData( TimePeriodFunction function );
 
 private:
   DateTime _startDate;

@@ -9,7 +9,7 @@ using namespace Dundas::Charting::WinControl;
 
 
 ChartForm::ChartForm( gui::Location ^ location, output::Chart ^ chartData, output::TimePeriod timePeriod, output::TimePeriodFunction timePeriodFunction )
-: Location_(location)
+: _location(location)
 {
   InitializeComponent();
 
@@ -92,7 +92,6 @@ ChartForm::ChartForm( gui::Location ^ location, output::Chart ^ chartData, outpu
     chartArea->CursorY->UserSelection = true;
 
 
-
     Legend ^ legend = gcnew Legend( plot->Title );
     legend->Enabled = true;
     legend->DockToChartArea = chartArea->Name;
@@ -113,30 +112,24 @@ ChartForm::ChartForm( gui::Location ^ location, output::Chart ^ chartData, outpu
       if( output->GetType() == output::DatedOutput::typeid ) {
         output::DatedOutput ^ datedOutput = (output::DatedOutput^) output;
 
-        output::CimsimOutput ^ co = location->CimsimOutput;
-
-        // get dates for axis
+        // get dates and data for axis
         Collections::IEnumerable ^ dates;
-        if( timePeriod == output::TimePeriod::Daily ) {
-          dates = co->Dates;
-        }
-        else if( timePeriod == output::TimePeriod::Weekly ) {
-          dates = co->Weeks;
-        }
-        else if( timePeriod == output::TimePeriod::Monthly ) {
-          dates = co->Months;
-        }
-
-        // get period data
         Collections::IEnumerable ^ data;
+
         if( timePeriod == output::TimePeriod::Daily ) {
+          dates = datedOutput->GetDates();
           data = datedOutput->Data;
         }
         else if( timePeriod == output::TimePeriod::Weekly ) {
+          dates = datedOutput->GetWeeks();
           data = datedOutput->GetWeeklyData( timePeriodFunction );
         }
         else if( timePeriod == output::TimePeriod::Monthly ) {
-          data = datedOutput->GetMonthlyData( co->StartDate, co->StopDate, timePeriodFunction );
+          dates = datedOutput->GetMonths();
+          data = datedOutput->GetMonthlyData( timePeriodFunction );
+        }
+        else {
+          throw gcnew ArgumentException( "unrecognized time period", "timePeriod" );
         }
 
         series->Points->DataBindXY( dates, data );
@@ -167,16 +160,12 @@ System::Void ChartForm::OnSave(System::Object^  sender, System::EventArgs^  e)
   // save current chart to disk
   SaveFileDialog ^ sfd = gcnew SaveFileDialog();
   sfd->InitialDirectory = Environment::CurrentDirectory;
-  sfd->FileName = chart->Tag + ".xml";
-  if( Container_ != nullptr ) {
-    sfd->FileName = Container_->Name + " - " + sfd->FileName;
-  }
+  sfd->FileName = chart->Text + ".xml";
 
-  String ^ newFilename;
   if( sfd->ShowDialog(this) != Windows::Forms::DialogResult::OK) {
     return;
   }
-  newFilename = sfd->FileName;
+  String ^ newFilename = sfd->FileName;
 
   // ensure correct extensions
   IO::FileInfo ^ fi = gcnew IO::FileInfo(newFilename);

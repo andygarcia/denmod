@@ -22,8 +22,7 @@ namespace gui {
     System::Void OnSave(System::Object^  sender, System::EventArgs^  e);
     
   private:
-    gui::Location ^ Location_;
-    gui::Container ^ Container_;
+    gui::Location ^ _location;
 
   private: Dundas::Charting::WinControl::Chart^  chart;
   private: System::Windows::Forms::Button^  btnExit;
