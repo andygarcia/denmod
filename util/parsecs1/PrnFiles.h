@@ -4,12 +4,26 @@
 using namespace System;
 using namespace System::Collections::Generic;
 
+
+ref class PrnFile
+{
+public:
+  PrnFile( String ^ filename );
+  virtual ~PrnFile(void);
+
+protected:
+  String ^ Filename;
+  List<String^> ^ FirstHeaderRow;
+  List<String^> ^ SecondHeaderRow;
+  List<List<String^>^> ^ DataRows;
+};
+
+
+
 ref class LocationFile
 {
 public:
-  LocationFile(void);
   LocationFile( String ^ fileName );
-  virtual ~LocationFile(void);
 
 public:
   String ^ _filename;
@@ -19,56 +33,42 @@ public:
 };
 
 
-ref class ContainerFile
+
+ref class ContainerFile : public PrnFile
 {
 public:
-  ContainerFile(void);
   ContainerFile( String ^ fileName );
-  virtual ~ContainerFile(void);
-
-  bool HasContainer( String ^ containerName );
-  List<String^> ^ GetContainerData( String ^ containerName );
 
 public:
-  String ^ _filename;
-  String ^ _title;
-
-  int _numContainers;
-  List<String ^> ^ _containerNames;
-  Dictionary<String^,List<String^>^> ^ _containerData;
+  String ^ Header;
+  List<String^> ^ ContainerNames;
+  Dictionary<String^,List<String^>^> ^ ContainerData;
 };
 
 
-ref class SurvivalFile
+
+ref class SurvivalFile : public PrnFile
 {
 public:
-  SurvivalFile(void);
   SurvivalFile( String ^ fileName );
-  virtual ~SurvivalFile(void);
 
 public:
-  String ^ _filename;
-  String ^ _title;
-  String ^ _containerName;
-  List<String ^> ^ _headers;
-  Dictionary<String^, List<String^>^> ^ _data;
+  String ^ ContainerName;
+  List<String^> ^ Headers;
+  Dictionary<String^,List<String^>^> ^ Data;
 };
 
 
-ref class LarvalDataFile
+
+ref class LarvalDataFile : public PrnFile
 {
 public:
-  LarvalDataFile(void);
   LarvalDataFile( String ^ fileName );
-  virtual ~LarvalDataFile(void);
 
 public:
-  String ^ _filename;
-  String ^ _title;
-  String ^ _containerName;
-  String ^ _day;
-  array<String ^> ^ _headers;
-  array<String ^,2> ^ _data;
+  String ^ Day;
+  String ^ ContainerName;
+  List<String^> ^ Headers;
 };
 
 

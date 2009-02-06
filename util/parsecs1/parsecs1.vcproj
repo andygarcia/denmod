@@ -208,6 +208,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\HelpForm.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MainForm.cpp"
 				>
 			</File>
@@ -248,6 +252,16 @@
 			<File
 				RelativePath=".\CimsimParser.h"
 				>
+			</File>
+			<File
+				RelativePath=".\HelpForm.h"
+				FileType="3"
+				>
+				<File
+					RelativePath=".\HelpForm.resx"
+					SubType="Designer"
+					>
+				</File>
 			</File>
 			<File
 				RelativePath=".\MainForm.h"

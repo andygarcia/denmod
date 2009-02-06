@@ -117,4 +117,48 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="rtbUsage3.Text" xml:space="preserve">
+    <value>Survival:
+
+SUEGG#.PRN - Egg Survival
+SULARV#.PRN - Larvae Survival
+SUPUP#.PRN - Pupae Survival
+SUADLT - Adult Survival
+
+Larval Data:
+
+Data for each larval cohort can be accessed when running the simulation in text mode by pressing F9 on a specific day.  This program expects the table(s) to be saved with the following name:
+
+LARVDxxx.PRN
+
+where 'xxx' is the index of the day of the year.</value>
+  </data>
+  <data name="rtbUsage2.Text" xml:space="preserve">
+    <value>Location:
+
+MAIN.PRN - Main output graph (Eggs, Larvae, and Females)
+FEMSHA.PRN - Females her Hectare
+FEMSHOSTS.PRN - Blood seeking females per host
+FECUND.PRN - Fecundity
+WEATHER.PRN - Weather Data
+
+Container:
+
+DEPTH#.PRN - Water Depth
+FOOD#.PRN - Larval Food
+EGGS#.PRN - Eggs
+LARVAE#.PRN - Larvae
+PUPAE#.PRN - Pupae
+AVGPUWT#.PRN - Average Pupal Weight
+NEWFEMS# .PRN- New Females
+CUMFEMS#.PRN - Cumulative Females
+DLYOVI#.PRN - Daily Oviposition</value>
+  </data>
+  <data name="rtbUsage1.Text" xml:space="preserve">
+    <value>This program automates the process of combining various outputs from CIMSiM 1.0 (DOS) into meaningful collections of data as text files and/or spreadsheets.  Four different types of output are available, each composed of various graphs and/or tables which can be saved to disk from CS 1.0.
+
+The tedium of manually saving output in CS 1.0 can be addressed by using an AutoHotKey script which automates the process.  This script also accounts for varying number of containers, and is able to save multiple pages/containers when neccesary.
+
+The types of output and required filenames are listed below.  Filenames with the character "#" refer to an index when multiple containers are in use in the simulation:</value>
+  </data>
 </root>

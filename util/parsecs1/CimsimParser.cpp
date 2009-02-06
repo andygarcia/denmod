@@ -24,158 +24,149 @@ std::string toss( String ^ s )
 
 
 
+static
 CimsimParser::CimsimParser(void)
 {
+  _locationFilenames = gcnew List<String^>();
+  _locationFilenames->Add( "MAIN.PRN" );
+  _locationFilenames->Add( "FEMSHA.PRN" );
+  _locationFilenames->Add( "FEMSHOST.PRN" );
+  _locationFilenames->Add( "FECUND.PRN" );
+  _locationFilenames->Add( "WEATHER.PRN" );
+  _locationFilenames->Add( "SUADLT.PRN" );
+
+  _containerFilters = gcnew List<String^>();
+  _containerFilters->Add( "DEPTH*.PRN" );
+  _containerFilters->Add( "FOOD*.PRN" );
+  _containerFilters->Add( "EGGS*.PRN" );
+  _containerFilters->Add( "LARVAE*.PRN" );
+  _containerFilters->Add( "PUPAE*.PRN" );
+  _containerFilters->Add( "AVGPUWT*.PRN" );
+  _containerFilters->Add( "NEWFEMS*.PRN" );
+  _containerFilters->Add( "CUMFEMS*.PRN" );
+  _containerFilters->Add( "DLYOVI*.PRN" );
+
+  _survivalFilters = gcnew List<String^>();
+  _survivalFilters->Add( "SUEGG*.PRN" );
+  _survivalFilters->Add( "SULARV*.PRN" );
+  _survivalFilters->Add( "SUPUP*.PRN" );
+
+  _larvalDataFilename = "LARVD*.PRN";
+
 }
+
+
+CimsimParser::CimsimParser( DirectoryInfo ^ inputDirectory)
+: _inputDirectory(inputDirectory),
+  _parseCompleted(false),
+  _locationFiles(gcnew List<LocationFile^>()),
+  _containerNames(gcnew List<String^>()),
+  _containerHeaders(gcnew List<String^>()),
+  _containerData(gcnew Dictionary<String^,Dictionary<String^,List<String^>^>^>()),
+  _containerSurvivals(gcnew Dictionary<String^,List<SurvivalFile^>^>()),
+  _larvalDataFiles(gcnew List<LarvalDataFile^>())
+{}
 
 
 
 CimsimParser::~CimsimParser(void)
+{}
+
+
+
+void
+CimsimParser::Parse(void)
 {
-}
-
-
-
-bool
-CimsimParser::ParseLocation(void)
-{
-  _locationFiles = gcnew array<LocationFile^>(_locationFilenames->Length);
-
-  // open each location file
-  for( int i = 0; i < _locationFilenames->Length; i++ ) {
-    try {
-      _locationFiles[i] = gcnew LocationFile( _locationFilenames[i] );
-    }
-    catch ( FileNotFoundException ^ e ) {
-      System::Console::WriteLine( e->Message );
-      MessageBox::Show( "Unable to open " + _locationFilenames[i] + " to create location output." );
-      return false;
-    }
+  // parse each location file
+  for each( String ^ s in _locationFilenames ) {
+    String ^ filename = Path::Combine( _inputDirectory->FullName, s );
+    _locationFiles->Add( gcnew LocationFile(filename) );
   }
 
-  return true;
-}
 
-
-
-bool
-CimsimParser::ParseContainer(void)
-{
-  // collate title from each file into headers for combined output
-  _containerOutputHeaders = gcnew List<String^>();
-
-  // organize data by container name and filter for later use
-  _containerDataByNameAndHeader = gcnew Dictionary<String^,Dictionary<String^,List<String^>^>^>();
-    
-  // search each filter
-  DirectoryInfo ^ di = gcnew DirectoryInfo (System::Environment::CurrentDirectory );
+  // parse container files
   for each( String ^ filter in _containerFilters ) {
-    // find file(s) for this filter , e.g. EGGS1.PRN, EGGS2.PRN, EGGS3.PRN
-    array<FileInfo^> ^ fis = di->GetFiles( filter );
-
-    // the number will vary between different simulation, but cannot be zero
+    // find and open files for each filter, e.g. EGGS1.PRN, EGGS2.PRN, EGGS3.PRN
+    array<FileInfo^> ^ fis = _inputDirectory->GetFiles( filter );
     if( fis->Length == 0 ) {
-      MessageBox::Show( "Unable to find any files for " + filter );
-      return false;
+      throw gcnew FileNotFoundException( "Unable to find any files for container file type " + filter );
     }
 
-    // open each file
     for each( FileInfo ^ fi in fis ) {
-      try {
-        ContainerFile ^ cf = gcnew ContainerFile( fi->Name );
+      ContainerFile ^ cf = gcnew ContainerFile( fi->FullName );
 
-        // save title for output headers
-        if( !_containerOutputHeaders->Contains( cf->_title ) ) {
-          _containerOutputHeaders->Add( cf->_title );
+      // save header
+      if( !_containerHeaders->Contains(cf->Header) ) {
+        _containerHeaders->Add( cf->Header );
+      }
+
+      // save data by container
+      for each( String ^ containerName in cf->ContainerNames ) {
+        if( !_containerNames->Contains(containerName) ) {
+          // first time encountering this container
+          _containerNames->Add( containerName );
+          _containerData[containerName] = gcnew Dictionary<String^,List<String^>^>();
+          _containerSurvivals[containerName] = gcnew List<SurvivalFile^>();
         }
 
-        // save each container's column of data from this file
-        for each( String ^ containerName in cf->_containerNames ) {
-          if( !_containerDataByNameAndHeader->ContainsKey( containerName ) ) {
-            // first time container found, create its dictionary of output header to output data
-            _containerDataByNameAndHeader[containerName] = gcnew Dictionary<String^,List<String^>^>();
-          }
-          _containerDataByNameAndHeader[containerName][cf->_title]= cf->_containerData[containerName];
-        }
+        // get container's header and columns
+        _containerData[containerName][cf->Header] = cf->ContainerData[containerName];
+
       }
-      catch ( FileNotFoundException ^ e ) {
-        System::Console::WriteLine( e->Message );
-        MessageBox::Show( "Unable to open " + fi + " to create container output." );
-        return false;
-      }
-    }
+    } // for each
   }
 
-  return true;
-}
-
-
-
-bool
-CimsimParser::ParseSurvivals(void)
-{
-  _survivalFiles = gcnew List<SurvivalFile^>();
 
   // search each filter for survival files
-  DirectoryInfo ^ di = gcnew DirectoryInfo (System::Environment::CurrentDirectory );
   for each( String ^ filter in _survivalFilters ) {
-    // find file(s) for this filter , e.g. SUEGG1.PRN, SUEGG2.PRN, etc.
-    array<FileInfo^> ^ fis = di->GetFiles( filter );
-
-    // the number will vary between different simulation, but cannot be zero
+    array<FileInfo^> ^ fis = _inputDirectory->GetFiles( filter );
     if( fis->Length == 0 ) {
-      MessageBox::Show( "Unable to find any files for " + filter );
-      return false;
+      throw gcnew FileNotFoundException( "Unable to find any files for survival file type " + filter );
     }
-
-    // open each file
     for each( FileInfo ^ fi in fis ) {
-      try {
-        SurvivalFile ^ sf = gcnew SurvivalFile( fi->Name );
-        _survivalFiles->Add( sf );
-      }
-      catch ( FileNotFoundException ^ e ) {
-        System::Console::WriteLine( e->Message );
-        MessageBox::Show( "Unable to open " + fi + " to create container output." );
-        return false;
+      SurvivalFile ^ sf = gcnew SurvivalFile( fi->FullName );
+
+      // save survival data to container data
+      for each( String ^ header in sf->Headers ) {
+        _containerData[sf->ContainerName][header] = sf->Data[header];
+
       }
     }
   }
 
-  return true;
-}
 
-
-
-bool
-CimsimParser::ParseLarvalData(void)
-{
-
-  DirectoryInfo ^ di = gcnew DirectoryInfo( System::Environment::CurrentDirectory );
-  array<FileInfo^> ^ files = di->GetFiles( _larvalDataFilename );
-  if( files->Length == 0 ) {
-    MessageBox::Show( "No larval data files were found.  Unable to create larval data output." );
-    return false;
-  }
-  _larvalDataFiles = gcnew array<LarvalDataFile^>(files->Length);
-  
+  // parse larval data
+  array<FileInfo^> ^ files = _inputDirectory->GetFiles( _larvalDataFilename );
   for( int i = 0; i < files->Length; i++ ) {
-    try {
-      _larvalDataFiles[i] = gcnew LarvalDataFile( files[i]->Name );
-    }
-    catch ( FileNotFoundException ^ e ) {
-      System::Console::WriteLine( e->Message );
-      MessageBox::Show( "Unable to open " + files[i] + "." );
-      return false;
-    }
+    _larvalDataFiles->Add( gcnew LarvalDataFile(files[i]->Name) );
   }
 
-  return true;
+  _parseCompleted = true;
 }
 
 
 
-void CimsimParser::OutputLocation( OutputType ot )
+void
+CimsimParser::SaveToDisk( OutputType outputType )
+{
+  if( _parseCompleted != true ) {
+    throw gcnew InvalidOperationException( "SaveToDisk called before parsing completed." );
+  }
+  else {
+    System::String ^ pwd = System::Environment::CurrentDirectory;
+    System::Environment::CurrentDirectory = _inputDirectory->FullName;
+    OutputLocation( outputType );
+    OutputContainer( outputType );
+    OutputSurvivals( outputType );
+    OutputLarvalData( outputType );
+    System::Environment::CurrentDirectory = pwd;
+  }
+}
+
+
+
+void
+CimsimParser::OutputLocation( OutputType ot )
 {
   // collate all header names
   vector<string> headers;
@@ -184,6 +175,8 @@ void CimsimParser::OutputLocation( OutputType ot )
       headers.push_back(toss(s));
     }
   }
+
+
   String ^ title = "Location Output";
 
   ExcelOutput * eo = new ExcelOutput( toss(title), headers, 365 );
@@ -216,25 +209,28 @@ void CimsimParser::OutputLocation( OutputType ot )
 
 
 
-void CimsimParser::OutputContainer( OutputType ot )
+void
+CimsimParser::OutputContainer( OutputType ot )
 {
-  vector<string> headers;
-  for each( String ^ header in _containerOutputHeaders ) {
-    headers.push_back( toss(header) );
-  }
-
-  for each( KeyValuePair<String^,Dictionary<String^,List<String^>^>^> ^ kvp in _containerDataByNameAndHeader ) {
+  for each( KeyValuePair<String^,Dictionary<String^,List<String^>^>^> ^ kvp in _containerData ) {
     String ^ containerName = kvp->Key;
     String ^ title = "Container Output - " + containerName;
+
+    vector<string> headers;
+    for each( String ^ header in kvp->Value->Keys ) {
+      headers.push_back( toss(header) );
+    }
+
     ExcelOutput * eo = new ExcelOutput( toss(title), headers, 365 );
 
     for( int i = 0; i < 365; ++i ) {
       vector<string> newRow;
-      for each( String ^ header in _containerOutputHeaders ) {
+      for each( String ^ header in kvp->Value->Keys ) {
         newRow.push_back( toss(kvp->Value[header][i]) );
       }
       eo->AddRow( newRow );
     }
+
 
     if( ot == OutputType::XML ) {
       String ^ filename = "CS 1.0 - " + containerName + ".xml";
@@ -254,79 +250,46 @@ void CimsimParser::OutputContainer( OutputType ot )
 
 
 
-void CimsimParser::OutputSurvivals( OutputType ot )
+void
+CimsimParser::OutputSurvivals( OutputType ot )
 {
-  for each( SurvivalFile ^ sf in _survivalFiles ) {
-    // collate all header names
-    vector<string> headers;
-    for each( String ^ s in sf->_headers ) {
-      headers.push_back(toss(s));
-    }
 
-    String ^ title = sf->_containerName + " - " + sf->_title;
-
-    ExcelOutput * eo = new ExcelOutput( toss(title), headers, 365 );
-
-    for( int i = 0; i < 365; ++i ) {
-      vector<string> newRow;
-      for each( String ^ header in sf->_headers ) {
-        newRow.push_back( toss(sf->_data[header][i]) );
-      }
-      eo->AddRow( newRow );
-    }
-
-    if( ot == OutputType::XML ) {
-
-      String ^ filename = "CS 1.0 - " + title + ".xml";
-      std::ofstream containerXML(toss(filename).c_str());
-      containerXML << eo->GetOutput( ExcelOutput::XML, 7 );
-      containerXML.close();
-    }
-
-    if( ot == OutputType::ASCII ) {
-      String ^ filename = "CS 1.0 - " + title + ".txt";
-      std:: ofstream containerTXT(toss(filename).c_str());
-      containerTXT << eo->GetOutput( ExcelOutput::ASCII, 7 );
-      containerTXT.close();
-    }
-
-    delete eo;
-  }
 }
 
 
 
-void CimsimParser::OutputLarvalData( OutputType ot )
+void
+CimsimParser::OutputLarvalData( OutputType ot )
 {
-  for each( LarvalDataFile ^ ldf in _larvalDataFiles ) {
-    vector<string> headers;
-    for each( String ^ s in ldf->_headers ) {
-      headers.push_back(toss(s));
-    }
+  //for each( LarvalDataFile ^ ldf in _larvalDataFiles ) {
+  //  vector<string> headers;
+  //  for each( String ^ s in ldf->Headers ) {
+  //    headers.push_back(toss(s));
+  //  }
 
-    ExcelOutput * eo = new ExcelOutput( toss(ldf->_title), headers, 365 );
-    for( int iRow = 0; iRow < 100; ++iRow ) {
-      vector<string> newRow;
-      for( int iCol = 0; iCol <= ldf->_data->GetUpperBound(1); iCol++ ) {
-        newRow.push_back(toss(ldf->_data[iRow,iCol]));
-      }
-      eo->AddRow( newRow );
-    }
+  //  ExcelOutput * eo = new ExcelOutput( toss(ldf->_title), headers, 365 );
+  //  for( int iRow = 0; iRow < 100; ++iRow ) {
+  //    vector<string> newRow;
+  //    for( int iCol = 0; iCol <= ldf->_data->GetUpperBound(1); iCol++ ) {
+  //      newRow.push_back(toss(ldf->_data[iRow,iCol]));
+  //    }
+  //    eo->AddRow( newRow );
+  //  }
 
-    if( ot == OutputType::XML ) {
-      String ^ filename = "CS 1.0 - Larval Data - Day " + ldf->_day + ".xml";
-      std::ofstream containerXML(toss(filename).c_str());
-      containerXML << eo->GetOutput( ExcelOutput::XML, 7 );
-      containerXML.close();
-    }
+  //  if( ot == OutputType::XML ) {
+  //    String ^ filename = "CS 1.0 - Larval Data - Day " + ldf->_day + ".xml";
+  //    std::ofstream containerXML(toss(filename).c_str());
+  //    containerXML << eo->GetOutput( ExcelOutput::XML, 7 );
+  //    containerXML.close();
+  //  }
 
-    if( ot == OutputType::ASCII ) {
-      String ^ filename = "CS 1.0 - Larval Data - Day " + ldf->_day + ".txt";
-      std:: ofstream containerTXT(toss(filename).c_str());
-      containerTXT << eo->GetOutput( ExcelOutput::ASCII, 7 );
-      containerTXT.close();
-    }
+  //  if( ot == OutputType::ASCII ) {
+  //    String ^ filename = "CS 1.0 - Larval Data - Day " + ldf->_day + ".txt";
+  //    std:: ofstream containerTXT(toss(filename).c_str());
+  //    containerTXT << eo->GetOutput( ExcelOutput::ASCII, 7 );
+  //    containerTXT.close();
+  //  }
 
-    delete eo;
-  }
+  //  delete eo;
+  //}
 }

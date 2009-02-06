@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "MainForm.h"
+#include "HelpForm.h"
 
 using namespace System::IO;
 using namespace parsecs1;
@@ -78,41 +79,33 @@ MainForm::~MainForm()
 System::Void
 MainForm::OnParse(System::Object^  sender, System::EventArgs^  e)
 {
-  System::String ^ previousDirectory = System::Environment::CurrentDirectory;
-  CimsimParser ^ cp = gcnew CimsimParser();
-
-  if( chkLocation->Checked ) {
-    System::Environment::CurrentDirectory = tboxInput->Text;
-    if( cp->ParseLocation() ) {
-    //cp->OutputLocation( CimsimParser::OutputType::ASCII );
-    cp->OutputLocation( CimsimParser::OutputType::XML );
-    }
-  }
-  if( chkContainer->Checked ) {
-    System::Environment::CurrentDirectory = tboxInput->Text;
-    if( cp->ParseContainer() ) {
-      //cp->OutputContainer( CimsimParser::OutputType::ASCII );
-      cp->OutputContainer( CimsimParser::OutputType::XML );
-    }
-  }
-  if( chkSurvivals->Checked ) {
-    System::Environment::CurrentDirectory = tboxInput->Text;
-    if( cp->ParseSurvivals() ) {
-      //cp->OutputSurvivals( CimsimParser::OutputType::ASCII );
-      cp->OutputSurvivals( CimsimParser::OutputType::XML );
-    }
-  }
-  if( chkLarvalData->Checked ) {
-    System::Environment::CurrentDirectory = tboxInput->Text;
-    if( cp->ParseLarvalData() ) {
-      //cp->OutputLarvalData( CimsimParser::OutputType::ASCII );
-      cp->OutputLarvalData( CimsimParser::OutputType::XML );
-    }
+  if( !Directory::Exists( tboxInput->Text ) ) {
+    MessageBox::Show( "Unable to find input directory" );
+    return;
   }
 
-  System::Environment::CurrentDirectory = previousDirectory;
+  // parse files
+  DirectoryInfo ^ di = gcnew DirectoryInfo( tboxInput->Text );
+  CimsimParser ^ cp = gcnew CimsimParser( di );
+  cp->Parse();
+
+  // save output
+  if( cboxXml->Checked ) {
+    cp->SaveToDisk( CimsimParser::OutputType::XML );
+  }
+  if( cboxTxt->Checked ) {
+    cp->SaveToDisk( CimsimParser::OutputType::ASCII );
+  }
 }
 
+
+
+System::Void
+MainForm::OnHelp( System::Object ^ sender, System::EventArgs ^ e )
+{
+  HelpForm ^ hf = gcnew HelpForm();
+  hf->ShowDialog();
+}
 
 
 System::Void
