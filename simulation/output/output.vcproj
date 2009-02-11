@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="output"
+	Name="output1"
 	ProjectGUID="{D83788CB-CAE8-4537-B69B-65C06CC594E8}"
 	RootNamespace="output"
 	Keyword="Win32Proj"
@@ -18,7 +18,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(SolutionDir)$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="4"
 			CharacterSet="1"
 			>
@@ -79,7 +79,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(SolutionDir)$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="4"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -154,10 +154,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Log.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\MosData.cpp"
 				>
 			</File>
@@ -197,10 +193,6 @@
 			</File>
 			<File
 				RelativePath=".\DensimOutput.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Log.h"
 				>
 			</File>
 			<File

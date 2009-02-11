@@ -18,7 +18,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(SolutionDir)$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="2"
 			CharacterSet="1"
 			ManagedExtensions="1"
@@ -92,7 +92,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(SolutionDir)$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="2"
 			CharacterSet="1"
 			ManagedExtensions="1"
@@ -203,10 +203,6 @@
 		<AssemblyReference
 			RelativePath="..\..\lib\ValidationFramework.dll"
 			AssemblyName="ValidationFramework, Version=1.12.0.0, PublicKeyToken=2f07bd240683f08a, processorArchitecture=MSIL"
-		/>
-		<ProjectReference
-			ReferencedProjectIdentifier="{FC29AEB4-06A7-49FD-9AF2-2406134444AA}"
-			RelativePathToProject=".\simulation\csport\csport.vcproj"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{BDA9AE2A-9845-4511-9E46-0E7AC284147B}"
