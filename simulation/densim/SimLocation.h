@@ -9,7 +9,6 @@
 #include "../output/DensimOutput.h"
 #include "../output/MosData.h"
 #include "../output/PopData.h"
-#include "../Output/Log.h"
 
 
 
