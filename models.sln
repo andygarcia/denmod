@@ -19,7 +19,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ctrls", "gui\ctrl\ctrl.vcpr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "objs", "gui\objs\objs.vcproj", "{C2329981-C757-474F-A90A-E11DBDA868BE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "output", "simulation\output\output.vcproj", "{D83788CB-CAE8-4537-B69B-65C06CC594E8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "output1", "simulation\output\output.vcproj", "{D83788CB-CAE8-4537-B69B-65C06CC594E8}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testgui", "gui\testgui\testgui.vcproj", "{7C77FDB7-9559-4488-BA99-B4DC7411DABC}"
 EndProject
