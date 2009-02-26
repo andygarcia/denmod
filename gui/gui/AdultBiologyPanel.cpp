@@ -31,7 +31,6 @@ AdultBiologyPanel::OnLoad( System::Object ^ sender, System::EventArgs ^ e )
   snboxDryToWetWeightFactor->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.DryToWetWeightFactor") );
   snboxFecundityFactor->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.FecundityFactor") );
   snboxMinimumOvipositionTemperature->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.MinimumOvipositionTemperature") );
-  snboxInterruptedFeedsPerMeal->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.InterruptedFeedsPerMeal") );
 
   snboxYoungSurvival->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.AgeDependentSurvival.YoungSurvival") );
   snboxCutoffAge->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.AgeDependentSurvival.CutoffAge") );
@@ -58,4 +57,8 @@ AdultBiologyPanel::OnLoad( System::Object ^ sender, System::EventArgs ^ e )
   snboxDoubleBloodMealLowWeightLimit->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.DoubleBloodMeal.LowWeightLimit") );
   snboxDoubleBloodMealHighWeightRatio->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.DoubleBloodMeal.HighWeightRatio") );
   snboxDoubleBloodMealHighWeightLimit->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.DoubleBloodMeal.HighWeightLimit") );
+
+  snboxFeedingHumanProportion->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.ProportionOfFeedsOnHumans") );
+  snboxInterruptedFeedsPerMeal->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.InterruptedFeedsPerMeal") );
+  snboxFeedingProportionInterrupedDifferentHost->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.ProportionOfInterruptedFeedsOnDifferentHost") );
 }

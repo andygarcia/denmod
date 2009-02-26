@@ -141,6 +141,19 @@ private: System::Windows::Forms::Label^  label2;
 private: ctrl::ScientificNotationTextBox^  snboxCutoffAge;
 
 private: System::Windows::Forms::Label^  label3;
+private: System::Windows::Forms::GroupBox^  groupBox1;
+
+
+private: ctrl::ScientificNotationTextBox^  snboxFeedingProportionInterrupedDifferentHost;
+
+private: ctrl::ScientificNotationTextBox^  snboxFeedingHumanProportion;
+
+
+
+private: System::Windows::Forms::Label^  lblFeedingHumanProportion;
+private: System::Windows::Forms::Label^  lblFeedingProportionInterrupedDifferentHost;
+
+
 
 
 
@@ -220,17 +233,23 @@ private: System::Windows::Forms::Label^  label3;
       this->snboxFecundityFactor = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxInterruptedFeedsPerMeal = (gcnew ctrl::ScientificNotationTextBox());
       this->gboxAgeSurvival = (gcnew System::Windows::Forms::GroupBox());
-      this->label1 = (gcnew System::Windows::Forms::Label());
-      this->label2 = (gcnew System::Windows::Forms::Label());
-      this->label3 = (gcnew System::Windows::Forms::Label());
-      this->snboxCutoffAge = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxOldSurvival = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxYoungSurvival = (gcnew ctrl::ScientificNotationTextBox());
+      this->label1 = (gcnew System::Windows::Forms::Label());
+      this->snboxOldSurvival = (gcnew ctrl::ScientificNotationTextBox());
+      this->label2 = (gcnew System::Windows::Forms::Label());
+      this->snboxCutoffAge = (gcnew ctrl::ScientificNotationTextBox());
+      this->label3 = (gcnew System::Windows::Forms::Label());
+      this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
+      this->snboxFeedingProportionInterrupedDifferentHost = (gcnew ctrl::ScientificNotationTextBox());
+      this->snboxFeedingHumanProportion = (gcnew ctrl::ScientificNotationTextBox());
+      this->lblFeedingHumanProportion = (gcnew System::Windows::Forms::Label());
+      this->lblFeedingProportionInterrupedDifferentHost = (gcnew System::Windows::Forms::Label());
       this->gboxDev->SuspendLayout();
       this->gboxSatDef->SuspendLayout();
       this->gboxTemp->SuspendLayout();
       this->gboxDBM->SuspendLayout();
       this->gboxAgeSurvival->SuspendLayout();
+      this->groupBox1->SuspendLayout();
       this->SuspendLayout();
       // 
       // gboxDev
@@ -243,10 +262,10 @@ private: System::Windows::Forms::Label^  label3;
       this->gboxDev->Controls->Add(this->lblDHH);
       this->gboxDev->Controls->Add(this->lblDHA);
       this->gboxDev->Controls->Add(this->lblRO25);
-      this->gboxDev->Location = System::Drawing::Point(3, 273);
+      this->gboxDev->Location = System::Drawing::Point(0, 247);
       this->gboxDev->Name = L"gboxDev";
       this->gboxDev->Size = System::Drawing::Size(374, 123);
-      this->gboxDev->TabIndex = 14;
+      this->gboxDev->TabIndex = 11;
       this->gboxDev->TabStop = false;
       this->gboxDev->Text = L"Daily Development";
       // 
@@ -332,7 +351,7 @@ private: System::Windows::Forms::Label^  label3;
       this->lblFecundityFactor->Location = System::Drawing::Point(9, 92);
       this->lblFecundityFactor->Name = L"lblFecundityFactor";
       this->lblFecundityFactor->Size = System::Drawing::Size(86, 13);
-      this->lblFecundityFactor->TabIndex = 8;
+      this->lblFecundityFactor->TabIndex = 6;
       this->lblFecundityFactor->Text = L"Fecundity factor:";
       // 
       // lblDryToWetWeightFactor
@@ -341,7 +360,7 @@ private: System::Windows::Forms::Label^  label3;
       this->lblDryToWetWeightFactor->Location = System::Drawing::Point(9, 66);
       this->lblDryToWetWeightFactor->Name = L"lblDryToWetWeightFactor";
       this->lblDryToWetWeightFactor->Size = System::Drawing::Size(122, 13);
-      this->lblDryToWetWeightFactor->TabIndex = 6;
+      this->lblDryToWetWeightFactor->TabIndex = 4;
       this->lblDryToWetWeightFactor->Text = L"Dry to wet weight factor:";
       // 
       // lblNominalSurvival
@@ -350,7 +369,7 @@ private: System::Windows::Forms::Label^  label3;
       this->lblNominalSurvival->Location = System::Drawing::Point(9, 40);
       this->lblNominalSurvival->Name = L"lblNominalSurvival";
       this->lblNominalSurvival->Size = System::Drawing::Size(87, 13);
-      this->lblNominalSurvival->TabIndex = 4;
+      this->lblNominalSurvival->TabIndex = 2;
       this->lblNominalSurvival->Text = L"Nominal survival:";
       // 
       // lblSecondDevelopmentThreshold
@@ -359,7 +378,7 @@ private: System::Windows::Forms::Label^  label3;
       this->lblSecondDevelopmentThreshold->Location = System::Drawing::Point(9, 14);
       this->lblSecondDevelopmentThreshold->Name = L"lblSecondDevelopmentThreshold";
       this->lblSecondDevelopmentThreshold->Size = System::Drawing::Size(157, 13);
-      this->lblSecondDevelopmentThreshold->TabIndex = 2;
+      this->lblSecondDevelopmentThreshold->TabIndex = 0;
       this->lblSecondDevelopmentThreshold->Text = L"Second development threshold:";
       // 
       // lblMinimumOvipositionTemperature
@@ -368,16 +387,16 @@ private: System::Windows::Forms::Label^  label3;
       this->lblMinimumOvipositionTemperature->Location = System::Drawing::Point(9, 118);
       this->lblMinimumOvipositionTemperature->Name = L"lblMinimumOvipositionTemperature";
       this->lblMinimumOvipositionTemperature->Size = System::Drawing::Size(163, 13);
-      this->lblMinimumOvipositionTemperature->TabIndex = 10;
+      this->lblMinimumOvipositionTemperature->TabIndex = 8;
       this->lblMinimumOvipositionTemperature->Text = L"Minimum oviposition temperature:";
       // 
       // lblInterruptedFeedsPerMeal
       // 
       this->lblInterruptedFeedsPerMeal->AutoSize = true;
-      this->lblInterruptedFeedsPerMeal->Location = System::Drawing::Point(9, 144);
+      this->lblInterruptedFeedsPerMeal->Location = System::Drawing::Point(6, 48);
       this->lblInterruptedFeedsPerMeal->Name = L"lblInterruptedFeedsPerMeal";
       this->lblInterruptedFeedsPerMeal->Size = System::Drawing::Size(130, 13);
-      this->lblInterruptedFeedsPerMeal->TabIndex = 12;
+      this->lblInterruptedFeedsPerMeal->TabIndex = 2;
       this->lblInterruptedFeedsPerMeal->Text = L"Interruped feeds per meal:";
       // 
       // gboxSatDef
@@ -390,10 +409,10 @@ private: System::Windows::Forms::Label^  label3;
       this->gboxSatDef->Controls->Add(this->lblSatDefLowSurvival);
       this->gboxSatDef->Controls->Add(this->lblSatDefLowThreshold);
       this->gboxSatDef->Controls->Add(this->lblSatDefHighThreshold);
-      this->gboxSatDef->Location = System::Drawing::Point(3, 583);
+      this->gboxSatDef->Location = System::Drawing::Point(0, 557);
       this->gboxSatDef->Name = L"gboxSatDef";
       this->gboxSatDef->Size = System::Drawing::Size(374, 123);
-      this->gboxSatDef->TabIndex = 16;
+      this->gboxSatDef->TabIndex = 13;
       this->gboxSatDef->TabStop = false;
       this->gboxSatDef->Text = L"Survival vs. Saturation Deficit";
       // 
@@ -487,10 +506,10 @@ private: System::Windows::Forms::Label^  label3;
       this->gboxTemp->Controls->Add(this->lblTempLowThreshold);
       this->gboxTemp->Controls->Add(this->lblTempHighLethalThreshold);
       this->gboxTemp->Controls->Add(this->lblTempLowLethalThreshold);
-      this->gboxTemp->Location = System::Drawing::Point(3, 402);
+      this->gboxTemp->Location = System::Drawing::Point(0, 376);
       this->gboxTemp->Name = L"gboxTemp";
       this->gboxTemp->Size = System::Drawing::Size(374, 175);
-      this->gboxTemp->TabIndex = 15;
+      this->gboxTemp->TabIndex = 12;
       this->gboxTemp->TabStop = false;
       this->gboxTemp->Text = L"Survival vs. Temperature";
       // 
@@ -618,10 +637,10 @@ private: System::Windows::Forms::Label^  label3;
       this->gboxDBM->Controls->Add(this->lblDoubleBloodMealLowWeightRatio);
       this->gboxDBM->Controls->Add(this->lblDoubleBloodMealLowWeightThreshold);
       this->gboxDBM->Controls->Add(this->lblDoubleBloodMealHighWeightThreshold);
-      this->gboxDBM->Location = System::Drawing::Point(3, 712);
+      this->gboxDBM->Location = System::Drawing::Point(0, 686);
       this->gboxDBM->Name = L"gboxDBM";
       this->gboxDBM->Size = System::Drawing::Size(374, 123);
-      this->gboxDBM->TabIndex = 17;
+      this->gboxDBM->TabIndex = 14;
       this->gboxDBM->TabStop = false;
       this->gboxDBM->Text = L"Double Blood Meals";
       // 
@@ -706,7 +725,7 @@ private: System::Windows::Forms::Label^  label3;
       this->snboxSecondDevelopmentThreshold->Location = System::Drawing::Point(280, 11);
       this->snboxSecondDevelopmentThreshold->Name = L"snboxSecondDevelopmentThreshold";
       this->snboxSecondDevelopmentThreshold->Size = System::Drawing::Size(80, 20);
-      this->snboxSecondDevelopmentThreshold->TabIndex = 3;
+      this->snboxSecondDevelopmentThreshold->TabIndex = 1;
       this->snboxSecondDevelopmentThreshold->Text = L"0";
       this->snboxSecondDevelopmentThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxSecondDevelopmentThreshold->Value = L"0";
@@ -716,7 +735,7 @@ private: System::Windows::Forms::Label^  label3;
       this->snboxNominalSurvival->Location = System::Drawing::Point(280, 37);
       this->snboxNominalSurvival->Name = L"snboxNominalSurvival";
       this->snboxNominalSurvival->Size = System::Drawing::Size(80, 20);
-      this->snboxNominalSurvival->TabIndex = 5;
+      this->snboxNominalSurvival->TabIndex = 3;
       this->snboxNominalSurvival->Text = L"0";
       this->snboxNominalSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxNominalSurvival->Value = L"0";
@@ -726,7 +745,7 @@ private: System::Windows::Forms::Label^  label3;
       this->snboxDryToWetWeightFactor->Location = System::Drawing::Point(280, 63);
       this->snboxDryToWetWeightFactor->Name = L"snboxDryToWetWeightFactor";
       this->snboxDryToWetWeightFactor->Size = System::Drawing::Size(80, 20);
-      this->snboxDryToWetWeightFactor->TabIndex = 7;
+      this->snboxDryToWetWeightFactor->TabIndex = 5;
       this->snboxDryToWetWeightFactor->Text = L"0";
       this->snboxDryToWetWeightFactor->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxDryToWetWeightFactor->Value = L"0";
@@ -736,7 +755,7 @@ private: System::Windows::Forms::Label^  label3;
       this->snboxMinimumOvipositionTemperature->Location = System::Drawing::Point(280, 115);
       this->snboxMinimumOvipositionTemperature->Name = L"snboxMinimumOvipositionTemperature";
       this->snboxMinimumOvipositionTemperature->Size = System::Drawing::Size(80, 20);
-      this->snboxMinimumOvipositionTemperature->TabIndex = 11;
+      this->snboxMinimumOvipositionTemperature->TabIndex = 9;
       this->snboxMinimumOvipositionTemperature->Text = L"0";
       this->snboxMinimumOvipositionTemperature->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxMinimumOvipositionTemperature->Value = L"0";
@@ -746,17 +765,17 @@ private: System::Windows::Forms::Label^  label3;
       this->snboxFecundityFactor->Location = System::Drawing::Point(280, 89);
       this->snboxFecundityFactor->Name = L"snboxFecundityFactor";
       this->snboxFecundityFactor->Size = System::Drawing::Size(80, 20);
-      this->snboxFecundityFactor->TabIndex = 9;
+      this->snboxFecundityFactor->TabIndex = 7;
       this->snboxFecundityFactor->Text = L"0";
       this->snboxFecundityFactor->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxFecundityFactor->Value = L"0";
       // 
       // snboxInterruptedFeedsPerMeal
       // 
-      this->snboxInterruptedFeedsPerMeal->Location = System::Drawing::Point(280, 141);
+      this->snboxInterruptedFeedsPerMeal->Location = System::Drawing::Point(277, 45);
       this->snboxInterruptedFeedsPerMeal->Name = L"snboxInterruptedFeedsPerMeal";
       this->snboxInterruptedFeedsPerMeal->Size = System::Drawing::Size(80, 20);
-      this->snboxInterruptedFeedsPerMeal->TabIndex = 13;
+      this->snboxInterruptedFeedsPerMeal->TabIndex = 3;
       this->snboxInterruptedFeedsPerMeal->Text = L"0";
       this->snboxInterruptedFeedsPerMeal->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxInterruptedFeedsPerMeal->Value = L"0";
@@ -769,12 +788,22 @@ private: System::Windows::Forms::Label^  label3;
       this->gboxAgeSurvival->Controls->Add(this->label2);
       this->gboxAgeSurvival->Controls->Add(this->snboxCutoffAge);
       this->gboxAgeSurvival->Controls->Add(this->label3);
-      this->gboxAgeSurvival->Location = System::Drawing::Point(3, 167);
+      this->gboxAgeSurvival->Location = System::Drawing::Point(0, 141);
       this->gboxAgeSurvival->Name = L"gboxAgeSurvival";
       this->gboxAgeSurvival->Size = System::Drawing::Size(373, 100);
-      this->gboxAgeSurvival->TabIndex = 18;
+      this->gboxAgeSurvival->TabIndex = 10;
       this->gboxAgeSurvival->TabStop = false;
       this->gboxAgeSurvival->Text = L"Age Dependent Survival";
+      // 
+      // snboxYoungSurvival
+      // 
+      this->snboxYoungSurvival->Location = System::Drawing::Point(280, 18);
+      this->snboxYoungSurvival->Name = L"snboxYoungSurvival";
+      this->snboxYoungSurvival->Size = System::Drawing::Size(80, 20);
+      this->snboxYoungSurvival->TabIndex = 1;
+      this->snboxYoungSurvival->Text = L"0";
+      this->snboxYoungSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxYoungSurvival->Value = L"0";
       // 
       // label1
       // 
@@ -784,34 +813,6 @@ private: System::Windows::Forms::Label^  label3;
       this->label1->Size = System::Drawing::Size(125, 13);
       this->label1->TabIndex = 0;
       this->label1->Text = L"Young mosquito survival:";
-      // 
-      // label2
-      // 
-      this->label2->AutoSize = true;
-      this->label2->Location = System::Drawing::Point(9, 74);
-      this->label2->Name = L"label2";
-      this->label2->Size = System::Drawing::Size(110, 13);
-      this->label2->TabIndex = 2;
-      this->label2->Text = L"Old mosquito survival:";
-      // 
-      // label3
-      // 
-      this->label3->AutoSize = true;
-      this->label3->Location = System::Drawing::Point(9, 48);
-      this->label3->Name = L"label3";
-      this->label3->Size = System::Drawing::Size(137, 13);
-      this->label3->TabIndex = 4;
-      this->label3->Text = L"Young mosquito cutoff age:";
-      // 
-      // snboxCutoffAge
-      // 
-      this->snboxCutoffAge->Location = System::Drawing::Point(280, 45);
-      this->snboxCutoffAge->Name = L"snboxCutoffAge";
-      this->snboxCutoffAge->Size = System::Drawing::Size(80, 20);
-      this->snboxCutoffAge->TabIndex = 3;
-      this->snboxCutoffAge->Text = L"0";
-      this->snboxCutoffAge->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxCutoffAge->Value = L"0";
       // 
       // snboxOldSurvival
       // 
@@ -823,39 +824,109 @@ private: System::Windows::Forms::Label^  label3;
       this->snboxOldSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxOldSurvival->Value = L"0";
       // 
-      // snboxYoungSurvival
+      // label2
       // 
-      this->snboxYoungSurvival->Location = System::Drawing::Point(280, 19);
-      this->snboxYoungSurvival->Name = L"snboxYoungSurvival";
-      this->snboxYoungSurvival->Size = System::Drawing::Size(80, 20);
-      this->snboxYoungSurvival->TabIndex = 1;
-      this->snboxYoungSurvival->Text = L"0";
-      this->snboxYoungSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxYoungSurvival->Value = L"0";
+      this->label2->AutoSize = true;
+      this->label2->Location = System::Drawing::Point(9, 74);
+      this->label2->Name = L"label2";
+      this->label2->Size = System::Drawing::Size(110, 13);
+      this->label2->TabIndex = 2;
+      this->label2->Text = L"Old mosquito survival:";
+      // 
+      // snboxCutoffAge
+      // 
+      this->snboxCutoffAge->Location = System::Drawing::Point(280, 45);
+      this->snboxCutoffAge->Name = L"snboxCutoffAge";
+      this->snboxCutoffAge->Size = System::Drawing::Size(80, 20);
+      this->snboxCutoffAge->TabIndex = 3;
+      this->snboxCutoffAge->Text = L"0";
+      this->snboxCutoffAge->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxCutoffAge->Value = L"0";
+      // 
+      // label3
+      // 
+      this->label3->AutoSize = true;
+      this->label3->Location = System::Drawing::Point(9, 48);
+      this->label3->Name = L"label3";
+      this->label3->Size = System::Drawing::Size(137, 13);
+      this->label3->TabIndex = 4;
+      this->label3->Text = L"Young mosquito cutoff age:";
+      // 
+      // groupBox1
+      // 
+      this->groupBox1->Controls->Add(this->snboxFeedingProportionInterrupedDifferentHost);
+      this->groupBox1->Controls->Add(this->snboxInterruptedFeedsPerMeal);
+      this->groupBox1->Controls->Add(this->snboxFeedingHumanProportion);
+      this->groupBox1->Controls->Add(this->lblFeedingHumanProportion);
+      this->groupBox1->Controls->Add(this->lblFeedingProportionInterrupedDifferentHost);
+      this->groupBox1->Controls->Add(this->lblInterruptedFeedsPerMeal);
+      this->groupBox1->Location = System::Drawing::Point(0, 815);
+      this->groupBox1->Name = L"groupBox1";
+      this->groupBox1->Size = System::Drawing::Size(374, 99);
+      this->groupBox1->TabIndex = 15;
+      this->groupBox1->TabStop = false;
+      this->groupBox1->Text = L"Micellaneous Parameters";
+      // 
+      // snboxFeedingProportionInterrupedDifferentHost
+      // 
+      this->snboxFeedingProportionInterrupedDifferentHost->Location = System::Drawing::Point(277, 71);
+      this->snboxFeedingProportionInterrupedDifferentHost->Name = L"snboxFeedingProportionInterrupedDifferentHost";
+      this->snboxFeedingProportionInterrupedDifferentHost->Size = System::Drawing::Size(80, 20);
+      this->snboxFeedingProportionInterrupedDifferentHost->TabIndex = 5;
+      this->snboxFeedingProportionInterrupedDifferentHost->Text = L"0";
+      this->snboxFeedingProportionInterrupedDifferentHost->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxFeedingProportionInterrupedDifferentHost->Value = L"0";
+      // 
+      // snboxFeedingHumanProportion
+      // 
+      this->snboxFeedingHumanProportion->Location = System::Drawing::Point(277, 19);
+      this->snboxFeedingHumanProportion->Name = L"snboxFeedingHumanProportion";
+      this->snboxFeedingHumanProportion->Size = System::Drawing::Size(80, 20);
+      this->snboxFeedingHumanProportion->TabIndex = 1;
+      this->snboxFeedingHumanProportion->Text = L"0";
+      this->snboxFeedingHumanProportion->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+      this->snboxFeedingHumanProportion->Value = L"0";
+      // 
+      // lblFeedingHumanProportion
+      // 
+      this->lblFeedingHumanProportion->AutoSize = true;
+      this->lblFeedingHumanProportion->Location = System::Drawing::Point(6, 21);
+      this->lblFeedingHumanProportion->Name = L"lblFeedingHumanProportion";
+      this->lblFeedingHumanProportion->Size = System::Drawing::Size(219, 13);
+      this->lblFeedingHumanProportion->TabIndex = 0;
+      this->lblFeedingHumanProportion->Text = L"Proportion of mosquitoes feeding on humans:";
+      // 
+      // lblFeedingProportionInterrupedDifferentHost
+      // 
+      this->lblFeedingProportionInterrupedDifferentHost->AutoSize = true;
+      this->lblFeedingProportionInterrupedDifferentHost->Location = System::Drawing::Point(6, 73);
+      this->lblFeedingProportionInterrupedDifferentHost->Name = L"lblFeedingProportionInterrupedDifferentHost";
+      this->lblFeedingProportionInterrupedDifferentHost->Size = System::Drawing::Size(240, 13);
+      this->lblFeedingProportionInterrupedDifferentHost->TabIndex = 4;
+      this->lblFeedingProportionInterrupedDifferentHost->Text = L"Proportion of interrupted feeds on a different host:";
       // 
       // AdultBiologyPanel
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
       this->Controls->Add(this->gboxAgeSurvival);
-      this->Controls->Add(this->snboxInterruptedFeedsPerMeal);
       this->Controls->Add(this->snboxDryToWetWeightFactor);
       this->Controls->Add(this->snboxFecundityFactor);
       this->Controls->Add(this->snboxMinimumOvipositionTemperature);
       this->Controls->Add(this->snboxSecondDevelopmentThreshold);
       this->Controls->Add(this->snboxNominalSurvival);
+      this->Controls->Add(this->groupBox1);
       this->Controls->Add(this->gboxDBM);
       this->Controls->Add(this->gboxSatDef);
       this->Controls->Add(this->gboxTemp);
       this->Controls->Add(this->gboxDev);
-      this->Controls->Add(this->lblInterruptedFeedsPerMeal);
       this->Controls->Add(this->lblFecundityFactor);
       this->Controls->Add(this->lblDryToWetWeightFactor);
       this->Controls->Add(this->lblMinimumOvipositionTemperature);
       this->Controls->Add(this->lblSecondDevelopmentThreshold);
       this->Controls->Add(this->lblNominalSurvival);
       this->Name = L"AdultBiologyPanel";
-      this->Size = System::Drawing::Size(380, 839);
+      this->Size = System::Drawing::Size(380, 917);
       this->Load += gcnew System::EventHandler(this, &AdultBiologyPanel::OnLoad);
       this->gboxDev->ResumeLayout(false);
       this->gboxDev->PerformLayout();
@@ -867,6 +938,8 @@ private: System::Windows::Forms::Label^  label3;
       this->gboxDBM->PerformLayout();
       this->gboxAgeSurvival->ResumeLayout(false);
       this->gboxAgeSurvival->PerformLayout();
+      this->groupBox1->ResumeLayout(false);
+      this->groupBox1->PerformLayout();
       this->ResumeLayout(false);
       this->PerformLayout();
 
