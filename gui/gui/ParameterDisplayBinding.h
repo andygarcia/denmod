@@ -12,7 +12,7 @@ public ref class ParameterDisplayBinding : public System::Windows::Forms::Bindin
 public:
   ParameterDisplayBinding( System::String ^ propertyName, System::Object ^ dataSource, System::String ^ dataMember );
   ParameterDisplayBinding( System::String ^ propertyName, System::Object ^ dataSource, System::String ^ dataMember,
-                  System::Windows::Forms::DataSourceUpdateMode dataSourceUpdateMode );
+                           System::Windows::Forms::DataSourceUpdateMode dataSourceUpdateMode );
   virtual ~ParameterDisplayBinding(void);
 #pragma endregion
 

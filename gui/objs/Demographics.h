@@ -154,7 +154,6 @@ public:
   [XmlElement(ElementName="InitialPopulationSize",Order=1)]
   [ParameterDisplayAttribute( 0, true, ScientificNotationOptions::Never )]
   [CompareIntRuleAttribute( 0, CompareOperator::GreaterThan, ErrorMessage = "Initial population size must be greater than 0" )]
-  [CompareIntRuleAttribute( 100000 , CompareOperator::LessThanEqual, ErrorMessage = "Initial population cannot be greater than 100,000" )]
   property int InitialPopulationSize {
     int get(void) {
       return InitialPopulationSize_;
