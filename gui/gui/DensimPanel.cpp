@@ -60,6 +60,9 @@ DensimPanel::OnLoad(System::Object^  sender, System::EventArgs^  e)
   snboxMaeaDuration->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Serology.MAEADuration") );
   snboxHetDuration->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Serology.HetDuration") );
 
+  errProSerology->DataSource = LocationBinding;
+  errProSerology->DataMember = "Serology";
+
   // virology
   dgvVirology->DataBindings->Add( "DataSource", LocationBinding, "Virology.Serotypes" );
   snboxVirLowTiterSetPoint->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Virology.HumanToMosquitoInfection.LowTiterSetPoint") );
@@ -78,6 +81,12 @@ DensimPanel::OnLoad(System::Object^  sender, System::EventArgs^  e)
   snboxLowTiterFactor->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Virology.EIP.TiterModification.LowFactor") );
   snboxHighTiterSetPoint->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Virology.EIP.TiterModification.HighSetPoint") );
   snboxHighTiterFactor->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Virology.EIP.TiterModification.HighFactor") );
+
+  errProHumanToMosquitoInfection->DataSource = LocationBinding;
+  errProHumanToMosquitoInfection->DataMember = "Virology.HumanToMosquitoInfection";
+
+  errProTiterModification->DataSource = LocationBinding;
+  errProTiterModification->DataMember = "Virology.EIP.TiterModification";
 
   // sequentials
   dgvSequentials->DataBindings->Add( "DataSource", LocationBinding, "SequentialInfections.SequentialInfections" );

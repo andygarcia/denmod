@@ -199,6 +199,13 @@ private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcViremicPeriod;
 private: ctrl::ScientificNotationTextBox^  snboxMaeaDuration;
 private: ctrl::ScientificNotationTextBox^  snboxManaDuration;
 private: System::Windows::Forms::ErrorProvider^  errProDemographics;
+private: System::Windows::Forms::ErrorProvider^  errProSerology;
+private: System::Windows::Forms::ErrorProvider^  errProHumanToMosquitoInfection;
+private: System::Windows::Forms::ErrorProvider^  errProTiterModification;
+
+
+
+
 private: System::ComponentModel::IContainer^  components;
 
 
@@ -360,6 +367,9 @@ private: System::ComponentModel::IContainer^  components;
       this->dgvcAtRiskCutoff = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
       this->dgvcMortality = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
       this->errProDemographics = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errProSerology = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errProHumanToMosquitoInfection = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errProTiterModification = (gcnew System::Windows::Forms::ErrorProvider(this->components));
       this->tabDensim->SuspendLayout();
       this->tabDemographics->SuspendLayout();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->dgvDemographics))->BeginInit();
@@ -376,6 +386,9 @@ private: System::ComponentModel::IContainer^  components;
       this->tabDhsDss->SuspendLayout();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->dgvSequentials))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errProDemographics))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errProSerology))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errProHumanToMosquitoInfection))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errProTiterModification))->BeginInit();
       this->SuspendLayout();
       // 
       // btnRunSim
@@ -414,10 +427,10 @@ private: System::ComponentModel::IContainer^  components;
       this->tabDemographics->Controls->Add(this->lblInitialPopulationSize);
       this->tabDemographics->Controls->Add(this->lblHumHostDensity);
       this->tabDemographics->Controls->Add(this->dgvDemographics);
-      this->tabDemographics->Location = System::Drawing::Point(4, 24);
+      this->tabDemographics->Location = System::Drawing::Point(4, 22);
       this->tabDemographics->Name = L"tabDemographics";
       this->tabDemographics->Padding = System::Windows::Forms::Padding(3);
-      this->tabDemographics->Size = System::Drawing::Size(766, 272);
+      this->tabDemographics->Size = System::Drawing::Size(766, 274);
       this->tabDemographics->TabIndex = 0;
       this->tabDemographics->Text = L"Demographics";
       this->tabDemographics->UseVisualStyleBackColor = true;
@@ -490,8 +503,6 @@ private: System::ComponentModel::IContainer^  components;
       dataGridViewCellStyle3->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
       dataGridViewCellStyle3->WrapMode = System::Windows::Forms::DataGridViewTriState::False;
       this->dgvDemographics->DefaultCellStyle = dataGridViewCellStyle3;
-      this->errProDemographics->SetIconAlignment(this->dgvDemographics, System::Windows::Forms::ErrorIconAlignment::TopLeft);
-      this->errProDemographics->SetIconPadding(this->dgvDemographics, -16);
       this->dgvDemographics->Location = System::Drawing::Point(6, 58);
       this->dgvDemographics->Name = L"dgvDemographics";
       dataGridViewCellStyle4->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
@@ -544,10 +555,10 @@ private: System::ComponentModel::IContainer^  components;
       this->tabSerology->Controls->Add(this->lblManaDuration);
       this->tabSerology->Controls->Add(this->lblHetDuration);
       this->tabSerology->Controls->Add(this->lblMaeaDuration);
-      this->tabSerology->Location = System::Drawing::Point(4, 24);
+      this->tabSerology->Location = System::Drawing::Point(4, 22);
       this->tabSerology->Name = L"tabSerology";
       this->tabSerology->Padding = System::Windows::Forms::Padding(3);
-      this->tabSerology->Size = System::Drawing::Size(766, 272);
+      this->tabSerology->Size = System::Drawing::Size(766, 274);
       this->tabSerology->TabIndex = 1;
       this->tabSerology->Text = L"Serology";
       this->tabSerology->UseVisualStyleBackColor = true;
@@ -568,7 +579,6 @@ private: System::ComponentModel::IContainer^  components;
       this->snboxManaDuration->Name = L"snboxManaDuration";
       this->snboxManaDuration->Size = System::Drawing::Size(80, 20);
       this->snboxManaDuration->TabIndex = 1;
-      this->snboxManaDuration->Text = L"0.00000";
       this->snboxManaDuration->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxManaDuration->Value = L"0.00000";
       // 
@@ -691,9 +701,9 @@ private: System::ComponentModel::IContainer^  components;
       // 
       this->tabVirology->Controls->Add(this->dgvVirology);
       this->tabVirology->Controls->Add(this->tabInfectionEip);
-      this->tabVirology->Location = System::Drawing::Point(4, 24);
+      this->tabVirology->Location = System::Drawing::Point(4, 22);
       this->tabVirology->Name = L"tabVirology";
-      this->tabVirology->Size = System::Drawing::Size(766, 272);
+      this->tabVirology->Size = System::Drawing::Size(766, 274);
       this->tabVirology->TabIndex = 2;
       this->tabVirology->Text = L"Virology";
       this->tabVirology->UseVisualStyleBackColor = true;
@@ -793,10 +803,10 @@ private: System::ComponentModel::IContainer^  components;
       this->tabHumToMosInfection->Controls->Add(this->snboxNomProbInfection);
       this->tabHumToMosInfection->Controls->Add(this->lbMosqCountStochastic);
       this->tabHumToMosInfection->Controls->Add(this->lblNomProbInfection);
-      this->tabHumToMosInfection->Location = System::Drawing::Point(4, 24);
+      this->tabHumToMosInfection->Location = System::Drawing::Point(4, 22);
       this->tabHumToMosInfection->Name = L"tabHumToMosInfection";
       this->tabHumToMosInfection->Padding = System::Windows::Forms::Padding(3);
-      this->tabHumToMosInfection->Size = System::Drawing::Size(752, 124);
+      this->tabHumToMosInfection->Size = System::Drawing::Size(752, 126);
       this->tabHumToMosInfection->TabIndex = 0;
       this->tabHumToMosInfection->Text = L"Infection Parameters";
       this->tabHumToMosInfection->UseVisualStyleBackColor = true;
@@ -940,10 +950,10 @@ private: System::ComponentModel::IContainer^  components;
       // 
       this->tabEip->Controls->Add(this->groupBox1);
       this->tabEip->Controls->Add(this->gboxEipDevelopment);
-      this->tabEip->Location = System::Drawing::Point(4, 24);
+      this->tabEip->Location = System::Drawing::Point(4, 22);
       this->tabEip->Name = L"tabEip";
       this->tabEip->Padding = System::Windows::Forms::Padding(3);
-      this->tabEip->Size = System::Drawing::Size(752, 124);
+      this->tabEip->Size = System::Drawing::Size(752, 126);
       this->tabEip->TabIndex = 1;
       this->tabEip->Text = L"Virus EIP";
       this->tabEip->UseVisualStyleBackColor = true;
@@ -967,6 +977,7 @@ private: System::ComponentModel::IContainer^  components;
       // 
       // snboxLowTiterSetPoint
       // 
+      this->errProTiterModification->SetIconAlignment(this->snboxLowTiterSetPoint, System::Windows::Forms::ErrorIconAlignment::MiddleLeft);
       this->snboxLowTiterSetPoint->Location = System::Drawing::Point(281, 13);
       this->snboxLowTiterSetPoint->Name = L"snboxLowTiterSetPoint";
       this->snboxLowTiterSetPoint->Size = System::Drawing::Size(80, 20);
@@ -986,6 +997,7 @@ private: System::ComponentModel::IContainer^  components;
       // 
       // snboxLowTiterFactor
       // 
+      this->errProTiterModification->SetIconAlignment(this->snboxLowTiterFactor, System::Windows::Forms::ErrorIconAlignment::MiddleLeft);
       this->snboxLowTiterFactor->Location = System::Drawing::Point(281, 39);
       this->snboxLowTiterFactor->Name = L"snboxLowTiterFactor";
       this->snboxLowTiterFactor->Size = System::Drawing::Size(80, 20);
@@ -1005,6 +1017,7 @@ private: System::ComponentModel::IContainer^  components;
       // 
       // snboxHighTiterFactor
       // 
+      this->errProTiterModification->SetIconAlignment(this->snboxHighTiterFactor, System::Windows::Forms::ErrorIconAlignment::MiddleLeft);
       this->snboxHighTiterFactor->Location = System::Drawing::Point(281, 91);
       this->snboxHighTiterFactor->Name = L"snboxHighTiterFactor";
       this->snboxHighTiterFactor->Size = System::Drawing::Size(80, 20);
@@ -1024,6 +1037,7 @@ private: System::ComponentModel::IContainer^  components;
       // 
       // snboxHighTiterSetPoint
       // 
+      this->errProTiterModification->SetIconAlignment(this->snboxHighTiterSetPoint, System::Windows::Forms::ErrorIconAlignment::MiddleLeft);
       this->snboxHighTiterSetPoint->Location = System::Drawing::Point(281, 65);
       this->snboxHighTiterSetPoint->Name = L"snboxHighTiterSetPoint";
       this->snboxHighTiterSetPoint->Size = System::Drawing::Size(80, 20);
@@ -1140,10 +1154,10 @@ private: System::ComponentModel::IContainer^  components;
       // 
       // tabInfections
       // 
-      this->tabInfections->Location = System::Drawing::Point(4, 24);
+      this->tabInfections->Location = System::Drawing::Point(4, 22);
       this->tabInfections->Name = L"tabInfections";
       this->tabInfections->Padding = System::Windows::Forms::Padding(3);
-      this->tabInfections->Size = System::Drawing::Size(766, 272);
+      this->tabInfections->Size = System::Drawing::Size(766, 274);
       this->tabInfections->TabIndex = 3;
       this->tabInfections->Text = L"Infection Introduction";
       this->tabInfections->UseVisualStyleBackColor = true;
@@ -1151,10 +1165,10 @@ private: System::ComponentModel::IContainer^  components;
       // tabDhsDss
       // 
       this->tabDhsDss->Controls->Add(this->dgvSequentials);
-      this->tabDhsDss->Location = System::Drawing::Point(4, 24);
+      this->tabDhsDss->Location = System::Drawing::Point(4, 22);
       this->tabDhsDss->Name = L"tabDhsDss";
       this->tabDhsDss->Padding = System::Windows::Forms::Padding(3);
-      this->tabDhsDss->Size = System::Drawing::Size(766, 272);
+      this->tabDhsDss->Size = System::Drawing::Size(766, 274);
       this->tabDhsDss->TabIndex = 4;
       this->tabDhsDss->Text = L"DHF/DSS";
       this->tabDhsDss->UseVisualStyleBackColor = true;
@@ -1219,6 +1233,18 @@ private: System::ComponentModel::IContainer^  components;
       // 
       this->errProDemographics->ContainerControl = this;
       // 
+      // errProSerology
+      // 
+      this->errProSerology->ContainerControl = this;
+      // 
+      // errProHumanToMosquitoInfection
+      // 
+      this->errProHumanToMosquitoInfection->ContainerControl = this;
+      // 
+      // errProTiterModification
+      // 
+      this->errProTiterModification->ContainerControl = this;
+      // 
       // DensimPanel
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -1253,6 +1279,9 @@ private: System::ComponentModel::IContainer^  components;
       this->tabDhsDss->ResumeLayout(false);
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->dgvSequentials))->EndInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errProDemographics))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errProSerology))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errProHumanToMosquitoInfection))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errProTiterModification))->EndInit();
       this->ResumeLayout(false);
 
     }

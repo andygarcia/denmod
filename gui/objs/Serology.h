@@ -31,7 +31,7 @@ public:
     }
     void set(double d) {
       Dengue4_ = d;
-      NotifyPropertyChanged( "Dengue4" );
+      NotifyAndValidate( "Dengue4" );
     }
   }
 
@@ -43,7 +43,7 @@ public:
     }
     void set(double d) {
       Dengue3_ = d;
-      NotifyPropertyChanged( "Dengue3" );
+      NotifyAndValidate( "Dengue3" );
     }
   }
 
@@ -55,7 +55,7 @@ public:
     }
     void set(double d) {
       Dengue2_ = d;
-      NotifyPropertyChanged( "dengue2" );
+      NotifyAndValidate( "dengue2" );
     }
   }
 
@@ -67,7 +67,7 @@ public:
     }
     void set(double d) {
       Dengue1_ = d;
-      NotifyPropertyChanged( "Dengue1" );
+      NotifyAndValidate( "Dengue1" );
     }
   }
 
@@ -129,7 +129,7 @@ public:
     }
     void set(int i) {
       MANADuration_ = i;
-      NotifyPropertyChanged( "MANADuration" );
+      NotifyAndValidate( "MANADuration" );
     }
   }
 
@@ -142,7 +142,7 @@ public:
     }
     void set(int i) {
       MAEADuration_ = i;
-      NotifyPropertyChanged( "MAEADuration" );
+      NotifyAndValidate( "MAEADuration" );
     }
   }
 
@@ -155,7 +155,7 @@ public:
     }
     void set(int i) {
       HetDuration_ = i;
-      NotifyPropertyChanged( "HetDuration" );
+      NotifyAndValidate( "HetDuration" );
     }
   }
 

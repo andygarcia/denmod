@@ -157,6 +157,7 @@ public:
   }
 
   [XmlElement(ElementName="LowTiterInfection",Order=1)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Probability of infection must be between 0 and 1")]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double LowTiterInfection {
     double get(void) {
@@ -164,7 +165,7 @@ public:
     }
     void set(double d) {
       LowTiterInfection_ = d;
-      NotifyPropertyChanged( "LowTiterInfection" );
+      NotifyAndValidate( "LowTiterInfection" );
     }
   }
 
@@ -181,6 +182,7 @@ public:
   }
 
   [XmlElement(ElementName="HighTiterInfection",Order=3)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Probability of infection must be between 0 and 1")]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double HighTiterInfection {
     double get(void) {
@@ -188,7 +190,7 @@ public:
     }
     void set(double d) {
       HighTiterInfection_ = d;
-      NotifyPropertyChanged( "HighTiterInfection" );
+      NotifyAndValidate( "HighTiterInfection" );
     }
   }
 
@@ -223,6 +225,7 @@ public:
   }
 
   [XmlElement(ElementName="LowFactor",Order=1)]
+  [CompareDoubleRuleAttribute( 0, CompareOperator::GreaterThan, ErrorMessage="Modification factor must be positive" )]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double LowFactor {
     double get(void) {
@@ -230,7 +233,7 @@ public:
     }
     void set(double d) {
       LowFactor_ = d;
-      NotifyPropertyChanged( "LowFactor" );
+      NotifyAndValidate( "LowFactor" );
     }
   }
 
@@ -247,6 +250,7 @@ public:
   }
 
   [XmlElement(ElementName="HighFactor",Order=3)]
+  [CompareDoubleRuleAttribute( 0, CompareOperator::GreaterThan, ErrorMessage="Modification factor must be positive" )]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double HighFactor {
     double get(void) {
@@ -254,7 +258,7 @@ public:
     }
     void set(double d) {
       HighFactor_ = d;
-      NotifyPropertyChanged( "HighFactor" );
+      NotifyAndValidate( "HighFactor" );
     }
   }
 
