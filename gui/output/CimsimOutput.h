@@ -49,6 +49,24 @@ public:
     }
   }
 
+  property array<double> ^ FoodAddition {
+     array<double> ^ get(void) {
+       return _foodAddition;
+    }
+    void set(array<double> ^ a) {
+      _foodAddition = a;
+    }
+  }
+
+  property array<double> ^ FoodConsumption {
+     array<double> ^ get(void) {
+       return _foodConsumption;
+    }
+    void set(array<double> ^ a) {
+      _foodConsumption = a;
+    }
+  }
+
   property array<double> ^ MaxTemp {
      array<double> ^ get(void) {
        return _maxTemp;
@@ -199,6 +217,8 @@ private:
 
   array<double> ^ _depth;
   array<double> ^ _food;
+  array<double> ^ _foodAddition;
+  array<double> ^ _foodConsumption;
   array<double> ^ _maxTemp;
   array<double> ^ _minTemp;
   array<double> ^ _eggs;

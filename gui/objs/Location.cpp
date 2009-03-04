@@ -343,6 +343,8 @@ Location::ProcessCimsimOutput( sim::output::CimsimOutput * uco, DateTime startDa
 
     co->Depth = ArrayFromDoubleVector( uco->GetDepth(bStartDate, bStopDate, c->Id) );
     co->Food = ArrayFromDoubleVector( uco->GetFood(bStartDate, bStopDate, c->Id) );
+    co->FoodAddition = ArrayFromDoubleVector( uco->GetFoodAddition(bStartDate, bStopDate, c->Id) );
+    co->FoodConsumption = ArrayFromDoubleVector( uco->GetFoodConsumption(bStartDate, bStopDate, c->Id) );
     co->MaxTemp = ArrayFromDoubleVector( uco->GetMaxTemp(bStartDate, bStopDate, c->Id) );
     co->MinTemp = ArrayFromDoubleVector( uco->GetMinTemp(bStartDate, bStopDate, c->Id) );
     co->Eggs = ArrayFromDoubleVector( uco->GetEggs(bStartDate, bStopDate, c->Id) );
