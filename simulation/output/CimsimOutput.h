@@ -64,6 +64,8 @@ public:
   // Container outputs
   std::vector<double> GetDepth( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
   std::vector<double> GetFood( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
+  std::vector<double> GetFoodAddition( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
+  std::vector<double> GetFoodConsumption( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
   std::vector<double> GetMaxTemp( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
   std::vector<double> GetMinTemp( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
   std::vector<double> GetEggs( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
@@ -135,6 +137,8 @@ public:
     MaxTemp = 0;
     MinTemp = 0;
     Food = 0;
+    FoodAddition = 0;
+    FoodConsumption = 0;
     Eggs = 0;
     Larvae = 0;
     Pupae = 0;
@@ -158,6 +162,8 @@ public:
   double MaxTemp;
   double MinTemp;
   double Food;
+  double FoodAddition;
+  double FoodConsumption;
   double Eggs;
   double Larvae;
   double Pupae;

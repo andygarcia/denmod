@@ -124,6 +124,8 @@ public:
   double InitFood;                                                          // initial amount of food
   double FoodDecayRate;                                                     // daily rate of decay of food
   std::map<boost::gregorian::months_of_year, double> MonthlyFoodAdditions;  // daily food additions by month
+  double _foodAddition;
+  double _foodConsumption;
 
   bool IsCloned;                // container clone status
   int CloneId;                  // clone id within type id

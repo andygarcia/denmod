@@ -813,6 +813,9 @@ SimContainer::AdjustFood( date currentDate )
     }
   }
 
+  // save food addition for output
+  _foodAddition = foodAddition;
+
   // today's food = yesterday's food + addition (if any) + _cadavers
   _foodAvailable = yesterdayFood + foodAddition + _cadavers;
 }
@@ -895,9 +898,11 @@ SimContainer::CalculateLarvalFoodConsumptionAndWeight( int day, int eulerSteps )
     itLarvae->WeightChange = 0;
   }
 
+  
+  // track total consumption for output
+  _foodConsumption = 0.0;
 
   for( int i = 1; i <= eulerSteps; ++i ) {
-    double stepConsumption = 0.0;
     for( LarvaeIterator itLarvae = LarvaeCohorts.begin(); itLarvae != LarvaeCohorts.end(); ++itLarvae ) {
       // calculate larvae food/weight
       double cohortFoodConsumption = FoodEqn( itLarvae->Number, (itLarvae->Weight + itLarvae->WeightChange), _foodAvailable, et ) * (2880 / (double)eulerSteps);
@@ -908,6 +913,11 @@ SimContainer::CalculateLarvalFoodConsumptionAndWeight( int day, int eulerSteps )
       if( _foodAvailable < 0 ) {
         _foodAvailable = 0;
       }
+
+      // note that FoodEqn returns food consumption as a negative value (i.e. the decrease in available food)
+      // we can subtract this directory from our food value for this container, but to track total consumption
+      // requires inverting the sign
+      _foodConsumption += (0 - cohortFoodConsumption);
 
       // update cohort weight with step change in weight
       itLarvae->WeightChange += cohortWeightChange;
@@ -1462,6 +1472,8 @@ SimContainer::GetOutput( boost::gregorian::date d )
   dco.DayOfYear = day;
   dco.Depth = _waterDepth;
   dco.Food = _foodAvailable;
+  dco.FoodAddition = _foodAddition;
+  dco.FoodConsumption = _foodConsumption;
   dco.MaxTemp = _maximumWaterTemp;
   dco.MinTemp = _minimumWaterTemperature;
 
