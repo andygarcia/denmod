@@ -90,6 +90,13 @@ CimsimOutput::AddDailyContainerOutput( DailyContainerOutput dco, date d, int con
     currentDco.FoodConsumption = dco.FoodConsumption;
   }
 
+  if( currentDco.CadaverFoodContribution != 0 ) {
+    currentDco.CadaverFoodContribution = (currentDco.CadaverFoodContribution + dco.CadaverFoodContribution) / 2.0;
+  }
+  else {
+    currentDco.CadaverFoodContribution = dco.CadaverFoodContribution;
+  }
+
   // accumulate pupae and set/average average weight
   if( dco.Pupae != 0 ) {
     if( currentDco.Pupae != 0 ) {
@@ -411,6 +418,22 @@ CimsimOutput::GetFoodConsumption( boost::gregorian::date startDate, boost::grego
   day_iterator itDate = day_iterator(startDate);
   for( ; *itDate <= endDate; ++itDate ) {
     values.push_back( co[*itDate].FoodConsumption );
+  }
+
+  return values;
+}
+
+
+
+std::vector<double>
+CimsimOutput::GetCadaverFoodContribution( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID )
+{
+  std::vector<double> values;
+  ContainerOutput & co = ContainerOutputs_[containerID];
+
+  day_iterator itDate = day_iterator(startDate);
+  for( ; *itDate <= endDate; ++itDate ) {
+    values.push_back( co[*itDate].CadaverFoodContribution);
   }
 
   return values;

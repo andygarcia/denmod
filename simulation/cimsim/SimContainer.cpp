@@ -1474,6 +1474,7 @@ SimContainer::GetOutput( boost::gregorian::date d )
   dco.Food = _foodAvailable;
   dco.FoodAddition = _foodAddition;
   dco.FoodConsumption = _foodConsumption;
+  dco.CadaverFoodContribution = _cadavers;
   dco.MaxTemp = _maximumWaterTemp;
   dco.MinTemp = _minimumWaterTemperature;
 
@@ -1530,7 +1531,7 @@ SimContainer::EndDay(void)
 void
 SimContainer::EndYear(void)
 {
-  // Set next year's first day's previous depth and food to this year's last day's depth and food
+  // set next year's first day's previous depth and food to this year's last day's depth and food
   _waterDepthYesterday = _waterDepth;
   _foodRemainingYesterday = _foodAvailable;
 }
