@@ -304,7 +304,7 @@ Location::ProcessCimsimOutput( sim::output::CimsimOutput * uco, DateTime startDa
   boost::gregorian::date bStartDate = boost::gregorian::date( startDate.Year, startDate.Month, startDate.Day );
   boost::gregorian::date bStopDate = boost::gregorian::date( stopDate.Year, stopDate.Month, stopDate.Day );
 
-  // copy data
+  // copy location data
   mco->TotalEggs = ArrayFromDoubleVector( uco->GetTotalEggs(bStartDate, bStopDate) );
   mco->TotalLarvae = ArrayFromDoubleVector( uco->GetTotalLarvae(bStartDate, bStopDate) );
   mco->TotalPupae = ArrayFromDoubleVector( uco->GetTotalPupae(bStartDate, bStopDate) );
@@ -312,12 +312,10 @@ Location::ProcessCimsimOutput( sim::output::CimsimOutput * uco, DateTime startDa
   mco->NewFemales = ArrayFromDoubleVector( uco->GetNewFemales(bStartDate, bStopDate) );
   mco->HostSeekingFemales = ArrayFromDoubleVector( uco->GetHostSeekingFemales(bStartDate, bStopDate) );
   mco->OvipositingFemales = ArrayFromDoubleVector( uco->GetOvipositingFemales(bStartDate, bStopDate) );
-  // TODO
-  //mco->HostSeekingFemales = ArrayFromDoubleVector( uco->GetHostSeekingFemales(bStartDate, bStopDate) );
   mco->AverageFemaleWeight = ArrayFromDoubleVector( uco->GetAverageFemaleWeight(bStartDate, bStopDate) );
   mco->Oviposition = ArrayFromDoubleVector( uco->GetOviposition(bStartDate, bStopDate) );
 
-
+  // copy weather data
   int numDays = (stopDate - startDate).Days + 1;
   mco->MaximumTemperature = gcnew array<double>(numDays);
   mco->AverageTemperature = gcnew array<double>(numDays);
@@ -338,6 +336,7 @@ Location::ProcessCimsimOutput( sim::output::CimsimOutput * uco, DateTime startDa
   }
 
 
+  // copy container data
   for each( Container ^ c in Containers ) {
     output::ContainerOutput ^ co = gcnew output::ContainerOutput( c->Name, c->Id );
 
@@ -345,6 +344,7 @@ Location::ProcessCimsimOutput( sim::output::CimsimOutput * uco, DateTime startDa
     co->Food = ArrayFromDoubleVector( uco->GetFood(bStartDate, bStopDate, c->Id) );
     co->FoodAddition = ArrayFromDoubleVector( uco->GetFoodAddition(bStartDate, bStopDate, c->Id) );
     co->FoodConsumption = ArrayFromDoubleVector( uco->GetFoodConsumption(bStartDate, bStopDate, c->Id) );
+    co->CadaverFoodContribution = ArrayFromDoubleVector( uco->GetCadaverFoodContribution(bStartDate, bStopDate, c->Id) );
     co->MaxTemp = ArrayFromDoubleVector( uco->GetMaxTemp(bStartDate, bStopDate, c->Id) );
     co->MinTemp = ArrayFromDoubleVector( uco->GetMinTemp(bStartDate, bStopDate, c->Id) );
     co->Eggs = ArrayFromDoubleVector( uco->GetEggs(bStartDate, bStopDate, c->Id) );

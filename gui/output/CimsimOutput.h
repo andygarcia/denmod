@@ -67,6 +67,15 @@ public:
     }
   }
 
+  property array<double> ^ CadaverFoodContribution {
+     array<double> ^ get(void) {
+       return _cadaverFoodContribution;
+    }
+    void set(array<double> ^ a) {
+      _cadaverFoodContribution = a;
+    }
+  }
+
   property array<double> ^ MaxTemp {
      array<double> ^ get(void) {
        return _maxTemp;
@@ -219,6 +228,7 @@ private:
   array<double> ^ _food;
   array<double> ^ _foodAddition;
   array<double> ^ _foodConsumption;
+  array<double> ^ _cadaverFoodContribution;
   array<double> ^ _maxTemp;
   array<double> ^ _minTemp;
   array<double> ^ _eggs;
