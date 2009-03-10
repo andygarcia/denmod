@@ -39,6 +39,7 @@ namespace gui {
     bool SaveDocument(SaveType type);
     bool CloseDocument(void);
     bool IsDocumentDirty(void);
+    void Exit(void);
 
     void UpdateBindings(void);
     void UpdateTitleBar(void);
