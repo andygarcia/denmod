@@ -408,8 +408,9 @@ void
 MainForm::Exit(void)
 {
   // first close document (possibly prompting save)
-  CloseDocument();
-  Application::Exit();
+  if( CloseDocument() ) {
+    Application::Exit();
+  }
 }
 
 
