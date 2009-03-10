@@ -69,13 +69,15 @@ NotifyValidateEditBase::CopyState(void)
   System::Type ^ inspectedType = this->GetType();
   this->_state = gcnew System::Collections::Hashtable();
 
+  // moving down object heirarchy, save fields
 	do {
     for each( System::Reflection::FieldInfo ^ field in this->ReflectFields(inspectedType)) {
 			if( field->DeclaringType == inspectedType) {
 				this->CopyField(field);
 			}
 		}
-
+    
+    // move down heirarchy
 		inspectedType = inspectedType->BaseType;
   } while( inspectedType != NotifyValidateEditBase::typeid);
 }
@@ -85,6 +87,7 @@ NotifyValidateEditBase::CopyState(void)
 void
 NotifyValidateEditBase::CopyField(System::Reflection::FieldInfo ^ field)
 {
+  // don't copy fields which are flagged to be ignored on edit
   if( System::Attribute::IsDefined(field, OnEditIgnoreAttribute::typeid) ) {
     return;
   }
@@ -92,8 +95,9 @@ NotifyValidateEditBase::CopyField(System::Reflection::FieldInfo ^ field)
   System::Object ^ fieldValue = field->GetValue(this);
   System::Object ^ savedValue;
 
-  // save field's value, either by clonging or assignment
+  // save field's value, either by cloning or assignment
   if( System::Attribute::IsDefined(field, OnEditSaveCloneAttribute::typeid) ) {
+    // save by cloning, not assignment
     System::Type ^ fieldValueType = fieldValue->GetType();
     ConstructorInfo ^ ci = fieldValueType->GetConstructor( gcnew array<Type^>(1){fieldValueType} );
     if( ci == nullptr ) {
@@ -102,6 +106,7 @@ NotifyValidateEditBase::CopyField(System::Reflection::FieldInfo ^ field)
     savedValue = ci->Invoke( gcnew array<Object^>(1){fieldValue} );
   }
   else {
+    // save by assignment
     savedValue = fieldValue;
   }
 
@@ -148,6 +153,7 @@ NotifyValidateEditBase::RollbackChanges(void)
 {
   System::Type ^ inspectedType = this->GetType();
 
+  // working down heirarchy, restore field values
 	do {
     for each( System::Reflection::FieldInfo ^ field in this->ReflectFields(inspectedType) ) {
       if( field->DeclaringType == inspectedType ) {
