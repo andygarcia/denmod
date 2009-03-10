@@ -190,8 +190,13 @@ MainForm::CloseDocument(void)
     return true;
   }
 
+
+  System::String ^ shortFilename =  IO::Path::GetFileNameWithoutExtension( ActiveDocument->Filename );
+
   // prompt user
-  ::DialogResult dr = MessageBox::Show( this, "Save changes?", Application::ProductName, MessageBoxButtons::YesNoCancel );
+  ::DialogResult dr = MessageBox::Show( this, "Do you want to save the changes to " + shortFilename + " ?",
+                                        Application::ProductName, MessageBoxButtons::YesNoCancel,
+                                        MessageBoxIcon::Exclamation, MessageBoxDefaultButton::Button1);
 
   if( dr == ::DialogResult::Yes ) {
     return SaveDocument(SaveType::Save);
@@ -213,8 +218,7 @@ MainForm::CloseDocument(void)
 bool 
 MainForm::IsDocumentDirty(void)
 {
-  // TODO
-  return false;
+  return true;
 }
 
 
@@ -276,7 +280,7 @@ MainForm::MenuItemHandler( System::Object^ sender, System::EventArgs^ e )
     OpenWeatherTemplate();
   }
   else if( sender->Equals(exitToolStripMenuItem) ) {
-    Application::Exit();
+    Exit();
   }
   else if( sender->Equals(tsmiHelpAbout) ) {
     ShowAbout();
@@ -397,6 +401,15 @@ MainForm::OnRemoveWeather( System::Object ^ sender, System::EventArgs ^ e )
 void
 MainForm::OpenWeatherTemplate(void)
 {
+}
+
+
+void
+MainForm::Exit(void)
+{
+  // first close document (possibly prompting save)
+  CloseDocument();
+  Application::Exit();
 }
 
 
