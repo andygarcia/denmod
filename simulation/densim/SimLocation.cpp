@@ -44,12 +44,12 @@ SimLocation::SimLocation( const input::Location * location, sim::output::MosData
   SusceptibleNulliparousCD(std::vector<double>( (MaxAgeMosq+1) + 1, 0 )),
   SusceptibleParous(std::vector<double>( (MaxAgeMosq+1) + 1, 0 )),
   SusceptibleParousCD(std::vector<double>( (MaxAgeMosq+1) + 1, 0 )),
-  NewMosqInfd(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
-  NewMosqInfdCD(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
-  NewMosqInfdEIP(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
-  OldMosqInfd(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
-  OldMosqInfdCD(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
-  OldMosqInfdEIP(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
+  InfectedNulliparous(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
+  InfectedNulliparousCD(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
+  InfectedNulliparousEIP(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
+  InfectedParous(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
+  InfectedParousCD(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
+  InfectedParousEIP(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
   MosqInfv(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
   MosqInfvCD(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
   BitersInfdNewDB(std::vector<double>( 4+1, 0 )),
@@ -687,20 +687,20 @@ SimLocation::InitInfectives(void)
       // If no free space is found, then add to last position in the array.
       bool ifound = false;
       for( int i = 1; i <= MaxAgeMosq; ++i ) {
-        if( OldMosqInfd[i][seroType] == 0 ) {
-          //OldMosqInfd[i][seroType] = VirusIntro[seroType].Mosq;
-          OldMosqInfd[i][seroType] = serotypeIntro->Mosquitoes_;
-          OldMosqInfdCD[i][seroType] = 1.1f;
-          OldMosqInfdEIP[i][seroType] = 1.1f;
+        if( InfectedParous[i][seroType] == 0 ) {
+          //InfectedParous[i][seroType] = VirusIntro[seroType].Mosq;
+          InfectedParous[i][seroType] = serotypeIntro->Mosquitoes_;
+          InfectedParousCD[i][seroType] = 1.1f;
+          InfectedParousEIP[i][seroType] = 1.1f;
           ifound = true;
           break;
         }
       }
       if( ifound != true ) {
         // no open position found, accumulate into the oldest cohort of old infecteds
-        OldMosqInfd[MaxAgeMosq][seroType] = OldMosqInfd[MaxAgeMosq][seroType] + serotypeIntro->Mosquitoes_;
-        OldMosqInfdCD[MaxAgeMosq][seroType] = 1.1f;
-        OldMosqInfdEIP[MaxAgeMosq][seroType] = 1.1f;
+        InfectedParous[MaxAgeMosq][seroType] = InfectedParous[MaxAgeMosq][seroType] + serotypeIntro->Mosquitoes_;
+        InfectedParousCD[MaxAgeMosq][seroType] = 1.1f;
+        InfectedParousEIP[MaxAgeMosq][seroType] = 1.1f;
       }
     }
   }
@@ -966,7 +966,7 @@ SimLocation::MosqLifeCycle(void)
     BitersInfd[j] = BitersInfdNewDB[j];
     BitersInfdNewDB[j] = 0;
     for( int i = MaxAgeMosq; i >= 1; --i ) {
-      if( NewMosqInfd[i][j] <= 0 ) {
+      if( InfectedNulliparous[i][j] <= 0 ) {
         continue; //go to next cohort
       }
       else {
@@ -984,7 +984,7 @@ SimLocation::MosqLifeCycle(void)
           OldAdultDev = YearlyMosData_.GetDailyMosData(yesterday).AdultDevelopment;
         }
 
-        double CDYest = NewMosqInfdCD[i][j] - OldAdultDev;
+        double CDYest = InfectedNulliparousCD[i][j] - OldAdultDev;
         double CDTest;
         int CDFactor;
         if( CDYest < 1 ) {
@@ -995,21 +995,21 @@ SimLocation::MosqLifeCycle(void)
           CDTest = 1 + (CDFactor * .58f);
         }
 
-        if( NewMosqInfdEIP[i][j] > 1 && NewMosqInfdCD[i][j] > CDTest ) {
-          EIPTranNew[j] = EIPTranNew[j] + (NewMosqInfd[i][j] * dailyMosData.OverallSurvival);
+        if( InfectedNulliparousEIP[i][j] > 1 && InfectedNulliparousCD[i][j] > CDTest ) {
+          EIPTranNew[j] = EIPTranNew[j] + (InfectedNulliparous[i][j] * dailyMosData.OverallSurvival);
         }
         else {
-          NewMosqInfd[i + 1][j] = NewMosqInfd[i][j] * dailyMosData.OverallSurvival;
-          NewMosqInfdCD[i + 1][j] = NewMosqInfdCD[i][j] + dailyMosData.AdultDevelopment;
-          NewMosqInfdEIP[i + 1][j] = NewMosqInfdEIP[i][j] + EIPDevRate[j];
-          if( NewMosqInfdCD[i][j] > CDTest ) {
-            BitersInfd[j] = BitersInfd[j] + NewMosqInfd[i + 1][j];
-            BitersInfdNewDB[j] = BitersInfdNewDB[j] + (NewMosqInfd[i + 1][j] * DMealProp);
+          InfectedNulliparous[i + 1][j] = InfectedNulliparous[i][j] * dailyMosData.OverallSurvival;
+          InfectedNulliparousCD[i + 1][j] = InfectedNulliparousCD[i][j] + dailyMosData.AdultDevelopment;
+          InfectedNulliparousEIP[i + 1][j] = InfectedNulliparousEIP[i][j] + EIPDevRate[j];
+          if( InfectedNulliparousCD[i][j] > CDTest ) {
+            BitersInfd[j] = BitersInfd[j] + InfectedNulliparous[i + 1][j];
+            BitersInfdNewDB[j] = BitersInfdNewDB[j] + (InfectedNulliparous[i + 1][j] * DMealProp);
           }
         }
-        NewMosqInfd[i][j] = 0;
-        NewMosqInfdCD[i][j] = 0;
-        NewMosqInfdEIP[i][j] = 0;
+        InfectedNulliparous[i][j] = 0;
+        InfectedNulliparousCD[i][j] = 0;
+        InfectedNulliparousEIP[i][j] = 0;
       }
     }
   }
@@ -1021,28 +1021,28 @@ SimLocation::MosqLifeCycle(void)
     BitersInfd[j] = BitersInfd[j] + BitersInfdOldDB[j];
     BitersInfdOldDB[j] = 0;
     for( int i = MaxAgeMosq; i >= 1; --i ) {
-      if( OldMosqInfd[i][j] <= 0 ) {
+      if( InfectedParous[i][j] <= 0 ) {
         continue; // go to next cohort
       }
       else {
-        if( OldMosqInfdEIP[i][j] > 1 && OldMosqInfdCD[i][j] > .58 ) {
-          EIPTranOld[j] = EIPTranOld[j] + (OldMosqInfd[i][j] * dailyMosData.OverallSurvival);
+        if( InfectedParousEIP[i][j] > 1 && InfectedParousCD[i][j] > .58 ) {
+          EIPTranOld[j] = EIPTranOld[j] + (InfectedParous[i][j] * dailyMosData.OverallSurvival);
         }
         else {
-          OldMosqInfd[i+1][j] = OldMosqInfd[i][j] * dailyMosData.OverallSurvival;
-          if( OldMosqInfdCD[i][j] > .58 ) {
-            BitersInfd[j] = BitersInfd[j] + OldMosqInfd[i+1][j];
-            BitersInfdOldDB[j] = BitersInfdOldDB[j] + (OldMosqInfd[i+1][j] * DMealProp);
-            OldMosqInfdCD[i+1][j] = dailyMosData.AdultDevelopment;
+          InfectedParous[i+1][j] = InfectedParous[i][j] * dailyMosData.OverallSurvival;
+          if( InfectedParousCD[i][j] > .58 ) {
+            BitersInfd[j] = BitersInfd[j] + InfectedParous[i+1][j];
+            BitersInfdOldDB[j] = BitersInfdOldDB[j] + (InfectedParous[i+1][j] * DMealProp);
+            InfectedParousCD[i+1][j] = dailyMosData.AdultDevelopment;
           }
           else {
-            OldMosqInfdCD[i+1][j] = OldMosqInfdCD[i][j] + dailyMosData.AdultDevelopment;
+            InfectedParousCD[i+1][j] = InfectedParousCD[i][j] + dailyMosData.AdultDevelopment;
           }
-          OldMosqInfdEIP[i+1][j] = OldMosqInfdEIP[i][j] + EIPDevRate[j];
+          InfectedParousEIP[i+1][j] = InfectedParousEIP[i][j] + EIPDevRate[j];
         }
-        OldMosqInfd[i][j] = 0;
-        OldMosqInfdCD[i][j] = 0;
-        OldMosqInfdEIP[i][j] = 0;
+        InfectedParous[i][j] = 0;
+        InfectedParousCD[i][j] = 0;
+        InfectedParousEIP[i][j] = 0;
       }
     }
   }
@@ -1081,7 +1081,7 @@ SimLocation::MosqLifeCycle(void)
   for( int i = 1; i <= MaxAgeMosq; ++i ) {
     MosqTotal = MosqTotal + SusceptibleNulliparous[i] + SusceptibleParous[i];
     for( int j =1; j <= 4; ++j ) {
-      MosqTotal = MosqTotal + NewMosqInfd[i][j] + OldMosqInfd[i][j] + MosqInfv[i][j];
+      MosqTotal = MosqTotal + InfectedNulliparous[i][j] + InfectedParous[i][j] + MosqInfv[i][j];
       MosqInfvTotal[j] = MosqInfvTotal[j] + MosqInfv[i][j];
     }
   }
@@ -1210,12 +1210,12 @@ SimLocation::CalcNewInocMosquitoes( int iType )
     output::DailyMosData dailyMosData = YearlyMosData_.GetDailyMosData(curDate);
 
     // adjust infected mosquito arrays
-    OldMosqInfd[1][iType] = OldInfd;
-    NewMosqInfd[1][iType] = NewInfd;
-    OldMosqInfdCD[1][iType] = dailyMosData.AdultDevelopment;
-    NewMosqInfdCD[1][iType] = dailyMosData.AdultDevelopment;
-    OldMosqInfdEIP[1][iType] = EIPDevRate[iType];
-    NewMosqInfdEIP[1][iType] = EIPDevRate[iType];
+    InfectedParous[1][iType] = OldInfd;
+    InfectedNulliparous[1][iType] = NewInfd;
+    InfectedParousCD[1][iType] = dailyMosData.AdultDevelopment;
+    InfectedNulliparousCD[1][iType] = dailyMosData.AdultDevelopment;
+    InfectedParousEIP[1][iType] = EIPDevRate[iType];
+    InfectedNulliparousEIP[1][iType] = EIPDevRate[iType];
   }
 }
 

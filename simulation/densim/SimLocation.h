@@ -167,13 +167,13 @@ public:
   std::vector<double> SusceptibleParous;         // susceptible old mosquitoes and ...
   std::vector<double> SusceptibleParousCD;       // ... their gonotrophic development
 
-  std::vector<std::vector<double>> NewMosqInfd;         // infected new mosquitoes (New Infd Mosq - 1 and gono. cycle)
-  std::vector<std::vector<double>> NewMosqInfdCD;       // ... their gonotrophic development and ...
-  std::vector<std::vector<double>> NewMosqInfdEIP;      // ... their extrinsic incubation period
+  std::vector<std::vector<double>> InfectedNulliparous;         // infected new mosquitoes (New Infd Mosq - 1 and gono. cycle)
+  std::vector<std::vector<double>> InfectedNulliparousCD;       // ... their gonotrophic development and ...
+  std::vector<std::vector<double>> InfectedNulliparousEIP;      // ... their extrinsic incubation period
 
-  std::vector<std::vector<double>> OldMosqInfd;         // infected old mosquitoes (Old infd mosq - 2 gono. cycle)
-  std::vector<std::vector<double>> OldMosqInfdCD;       // ... their gonotrophic development and ...
-  std::vector<std::vector<double>> OldMosqInfdEIP;      // ... their extrinsic incubation period
+  std::vector<std::vector<double>> InfectedParous;         // infected old mosquitoes (Old infd mosq - 2 gono. cycle)
+  std::vector<std::vector<double>> InfectedParousCD;       // ... their gonotrophic development and ...
+  std::vector<std::vector<double>> InfectedParousEIP;      // ... their extrinsic incubation period
 
   std::vector<std::vector<double>> MosqInfv;            // infective mosquitoes and ...
   std::vector<std::vector<double>> MosqInfvCD;          // ... their gonotrophic Development
