@@ -349,6 +349,8 @@ Location::ProcessCimsimOutput( sim::output::CimsimOutput * uco, DateTime startDa
     co->MinTemp = ArrayFromDoubleVector( uco->GetMinTemp(bStartDate, bStopDate, c->Id) );
     co->Eggs = ArrayFromDoubleVector( uco->GetEggs(bStartDate, bStopDate, c->Id) );
     co->Larvae = ArrayFromDoubleVector( uco->GetLarvae(bStartDate, bStopDate, c->Id) );
+    co->LarvaeFasting = ArrayFromDoubleVector( uco->GetLarvaeFasting(bStartDate, bStopDate, c->Id) );
+    co->LarvaeDeathFromFasting = ArrayFromDoubleVector( uco->GetLarvaeDeathFromFasting(bStartDate, bStopDate, c->Id) );
     co->Pupae = ArrayFromDoubleVector( uco->GetPupae(bStartDate, bStopDate, c->Id) );
     co->AvgDryPupWt = ArrayFromDoubleVector( uco->GetAvgDryPupWt(bStartDate, bStopDate, c->Id) );
     co->NewFemales = ArrayFromDoubleVector( uco->GetNewFemales(bStartDate, bStopDate, c->Id) );
