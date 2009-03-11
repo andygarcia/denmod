@@ -860,8 +860,8 @@ void
 SimLocation::MosqLifeCycle(void)
 {
  
-  // BitersNew         - First time susceptible biters
-  // BitersOld         - Old susceptible biters
+  // SusceptibleNulliparousBiters         - First time susceptible biters
+  // SusceptibleParousBiters         - Old susceptible biters
   // BitersInfdNewDB() - Yesterdays double blood feeders from new infd - Global
   // BitersInfdOldDB() - Yesterdays double blood feeders from old infd - Global
   // BitersInfv()      - Infective biters - Global
@@ -907,7 +907,7 @@ SimLocation::MosqLifeCycle(void)
 
   // Advance Susceptibles - First Gonotrophic Cycle
   // Last position in the array does not accumulate
-  BitersNew = 0;
+  SusceptibleNulliparousBiters = 0;
   double EggersNew = 0;
   for( int i = MaxAgeMosq; i >= 1; --i ) {
     if( SusceptibleNulliparous[i] <= 0 ) {
@@ -932,12 +932,12 @@ SimLocation::MosqLifeCycle(void)
   }
   SusceptibleNulliparous[1] = dailyMosData.NewFemales * (ArraySize / HumHostDensity);
   SusceptibleNulliparousCD[1] = dailyMosData.AdultDevelopment;
-  BitersNew = SusceptibleNulliparous[2] + (SusceptibleNulliparous[3] * DMealProp);
+  SusceptibleNulliparousBiters = SusceptibleNulliparous[2] + (SusceptibleNulliparous[3] * DMealProp);
 
 
   // advance susceptibles - successive gonotrophic cycles
   // last position in the array does not accumulate
-  BitersOld = 0;
+  SusceptibleParousBiters = 0;
   double EggersOld = 0;
   for( int i = MaxAgeMosq; i >= 1; --i ) {
     if( SusceptibleParous[i] <= 0 ) {
@@ -957,7 +957,7 @@ SimLocation::MosqLifeCycle(void)
   }
   SusceptibleParous[1] = EggersNew + EggersOld;
   SusceptibleParousCD[1] = dailyMosData.AdultDevelopment;
-  BitersOld = SusceptibleParous[1] + (SusceptibleParous[2] * DMealProp);
+  SusceptibleParousBiters = SusceptibleParous[1] + (SusceptibleParous[2] * DMealProp);
 
 
   // Advance infected - From New Mosquitoes - First and successive Gonotrophic Cycles
@@ -1072,7 +1072,7 @@ SimLocation::MosqLifeCycle(void)
     BitersInfv[j] = InfectiveMosquitoes[1][j] + (InfectiveMosquitoes[2][j] * DMealProp);
   }
 
-  TotalBiters = BitersNew + BitersOld;
+  TotalBiters = SusceptibleNulliparousBiters + SusceptibleParousBiters;
   for( int j =1; j <= 4; ++j ) {
     TotalBiters = TotalBiters + InfectedBiters[j] + BitersInfv[j];
   }
@@ -1093,7 +1093,7 @@ void
 SimLocation::HumToMosqTrans(void)
 {
   // Number of susceptible probes per individual
-  BitesPerPerson[Day] = (BitersNew + BitersOld) * PropOnHum;
+  BitesPerPerson[Day] = (SusceptibleNulliparousBiters + SusceptibleParousBiters) * PropOnHum;
   BitesPerPerson[Day] = BitesPerPerson[Day] + (BitesPerPerson[Day] * (FdAttempts - 1) * PropDifHost);
   if( ArraySize == 0 ) {
     throw; // STOP
@@ -1181,7 +1181,7 @@ SimLocation::CalcNewInocMosquitoes( int iType )
   if( NewDlyMosqInoc > 0 ) {
 
     // calculate new infected from new and old susceptible
-    OldInfd = CINT( (BitersOld / (BitersOld + BitersNew)) * NewDlyMosqInoc );
+    OldInfd = CINT( (SusceptibleParousBiters / (SusceptibleParousBiters + SusceptibleNulliparousBiters)) * NewDlyMosqInoc );
     NewInfd = NewDlyMosqInoc - OldInfd;
 
     // adjust susceptible arrays

@@ -215,8 +215,8 @@ public:
   double DBloodLProp;              // 
 
   double TotalBiters;                          // Total biters (susc/infd/infv)
-  double BitersNew;                            // New susceptible biters
-  double BitersOld;                            // Old susceptible biters
+  double SusceptibleNulliparousBiters;         // New susceptible biters
+  double SusceptibleParousBiters;              // Old susceptible biters
   std::vector<double> BitersInfv;              // Infective biters
   std::vector<double> BitesPerPerson;          // feeds per person
   double TotalMosquitoes;                      // Total daily mosquitoes
