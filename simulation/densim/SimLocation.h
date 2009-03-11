@@ -214,12 +214,12 @@ public:
   double DBloodUProp;              // 
   double DBloodLProp;              // 
 
-  double BitersTotal;                          // Total biters (susc/infd/infv)
+  double TotalBiters;                          // Total biters (susc/infd/infv)
   double BitersNew;                            // New susceptible biters
   double BitersOld;                            // Old susceptible biters
   std::vector<double> BitersInfv;              // Infective biters
   std::vector<double> BitesPerPerson;          // feeds per person
-  double MosqTotal;                            // Total daily mosquitoes
+  double TotalMosquitoes;                      // Total daily mosquitoes
   std::vector<double> MosqInfvTotal;           // Total infective mosquitoes by type
   int NewDlyHumInoc;                           // potential no. of new infected humans
   std::vector<double> BitersInfdNewDB;         // Number of new double bloods from yesterday

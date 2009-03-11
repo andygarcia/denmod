@@ -869,11 +869,11 @@ SimLocation::MosqLifeCycle(void)
   // EggersOld         - Old egg layers
   // DMealProp         - Prop. taking double blood meals
   // OldAdultDev       - Yesterdays adult development
-  // BitersTotal       - Total biters (susc/infd/infv).  Global
+  // TotalBiters       - Total biters (susc/infd/infv).  Global
   // InSurviving       - Indoor surviving mosquitoes
   // OutSurviving      - Outdoor surviving mosquitoes
 
-  std::vector<double> BitersInfd( 4+1, 0 );        // infected biters
+  std::vector<double> InfectedBiters( 4+1, 0 );        // infected biters
   std::vector<double> EIPTranNew( 4+1, 0 );        // Infective class from infected new
   std::vector<double> EIPTranOld( 4+1, 0 );        // Infective class from infected old
   std::vector<double> EggersInfv( 4+1, 0 );        // Infective egg transfers
@@ -963,7 +963,7 @@ SimLocation::MosqLifeCycle(void)
   // Advance infected - From New Mosquitoes - First and successive Gonotrophic Cycles
   // Last position in the array does not accumumlate
   for( int j = 1; j <= 4; ++j ) {
-    BitersInfd[j] = BitersInfdNewDB[j];
+    InfectedBiters[j] = BitersInfdNewDB[j];
     BitersInfdNewDB[j] = 0;
     for( int i = MaxAgeMosq; i >= 1; --i ) {
       if( InfectedNulliparous[i][j] <= 0 ) {
@@ -1003,7 +1003,7 @@ SimLocation::MosqLifeCycle(void)
           InfectedNulliparousCD[i + 1][j] = InfectedNulliparousCD[i][j] + dailyMosData.AdultDevelopment;
           InfectedNulliparousEIP[i + 1][j] = InfectedNulliparousEIP[i][j] + EIPDevRate[j];
           if( InfectedNulliparousCD[i][j] > CDTest ) {
-            BitersInfd[j] = BitersInfd[j] + InfectedNulliparous[i + 1][j];
+            InfectedBiters[j] = InfectedBiters[j] + InfectedNulliparous[i + 1][j];
             BitersInfdNewDB[j] = BitersInfdNewDB[j] + (InfectedNulliparous[i + 1][j] * DMealProp);
           }
         }
@@ -1018,7 +1018,7 @@ SimLocation::MosqLifeCycle(void)
   // Advance infected - From old Mosquitoes - Second and successive Gonotrophic Cycles
   // Last position in the array does not accumumlate
   for( int j = 1; j <= 4; ++j ) {
-    BitersInfd[j] = BitersInfd[j] + BitersInfdOldDB[j];
+    InfectedBiters[j] = InfectedBiters[j] + BitersInfdOldDB[j];
     BitersInfdOldDB[j] = 0;
     for( int i = MaxAgeMosq; i >= 1; --i ) {
       if( InfectedParous[i][j] <= 0 ) {
@@ -1031,7 +1031,7 @@ SimLocation::MosqLifeCycle(void)
         else {
           InfectedParous[i+1][j] = InfectedParous[i][j] * dailyMosData.OverallSurvival;
           if( InfectedParousCD[i][j] > .58 ) {
-            BitersInfd[j] = BitersInfd[j] + InfectedParous[i+1][j];
+            InfectedBiters[j] = InfectedBiters[j] + InfectedParous[i+1][j];
             BitersInfdOldDB[j] = BitersInfdOldDB[j] + (InfectedParous[i+1][j] * DMealProp);
             InfectedParousCD[i+1][j] = dailyMosData.AdultDevelopment;
           }
@@ -1072,16 +1072,16 @@ SimLocation::MosqLifeCycle(void)
     BitersInfv[j] = InfectiveMosquitoes[1][j] + (InfectiveMosquitoes[2][j] * DMealProp);
   }
 
-  BitersTotal = BitersNew + BitersOld;
+  TotalBiters = BitersNew + BitersOld;
   for( int j =1; j <= 4; ++j ) {
-    BitersTotal = BitersTotal + BitersInfd[j] + BitersInfv[j];
+    TotalBiters = TotalBiters + InfectedBiters[j] + BitersInfv[j];
   }
-  MosqTotal = 0;
+  TotalMosquitoes = 0;
   MosqInfvTotal = std::vector<double>( 4+1, 0 );
   for( int i = 1; i <= MaxAgeMosq; ++i ) {
-    MosqTotal = MosqTotal + SusceptibleNulliparous[i] + SusceptibleParous[i];
+    TotalMosquitoes = TotalMosquitoes + SusceptibleNulliparous[i] + SusceptibleParous[i];
     for( int j =1; j <= 4; ++j ) {
-      MosqTotal = MosqTotal + InfectedNulliparous[i][j] + InfectedParous[i][j] + InfectiveMosquitoes[i][j];
+      TotalMosquitoes = TotalMosquitoes + InfectedNulliparous[i][j] + InfectedParous[i][j] + InfectiveMosquitoes[i][j];
       MosqInfvTotal[j] = MosqInfvTotal[j] + InfectiveMosquitoes[i][j];
     }
   }
@@ -2179,7 +2179,7 @@ SimLocation::SpoolToDisk( int SpRecNum )
   dlo.Viremic3 = TotDlyInfective[3];
   dlo.Viremic4 = TotDlyInfective[4];
 
-  dlo.MosqTotal = MosqTotal;
+  dlo.MosqTotal = TotalMosquitoes;
   for( int i = 1; i <= 4; ++i ) {
     dlo.MosqInfvTotal[i] = MosqInfvTotal[i];
     dlo.NewHumCases[i] = NewDlyInfective[i];
