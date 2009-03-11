@@ -112,6 +112,24 @@ public:
     }
   }
 
+  property array<double> ^ LarvaeFasting {
+     array<double> ^ get(void) {
+       return _larvaeFasting;
+    }
+    void set(array<double> ^ a) {
+      _larvaeFasting = a;
+    }
+  }
+
+  property array<double> ^ LarvaeDeathFromFasting {
+     array<double> ^ get(void) {
+       return _larvaeDeathFromFasting;
+    }
+    void set(array<double> ^ a) {
+      _larvaeDeathFromFasting = a;
+    }
+  }
+
   property array<double> ^ Pupae {
      array<double> ^ get(void) {
        return _pupae;
@@ -233,6 +251,8 @@ private:
   array<double> ^ _minTemp;
   array<double> ^ _eggs;
   array<double> ^ _larvae;
+  array<double> ^ _larvaeFasting;
+  array<double> ^ _larvaeDeathFromFasting;
   array<double> ^ _pupae;
   array<double> ^ _avgDryPupWt;
   array<double> ^ _newFemales;
