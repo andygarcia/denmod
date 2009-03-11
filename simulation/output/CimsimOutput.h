@@ -71,6 +71,8 @@ public:
   std::vector<double> GetMinTemp( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
   std::vector<double> GetEggs( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
   std::vector<double> GetLarvae( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
+  std::vector<double> GetLarvaeFasting( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
+  std::vector<double> GetLarvaeDeathFromFasting( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
   std::vector<double> GetPupae( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
   std::vector<double> GetAvgDryPupWt( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
   std::vector<double> GetNewFemales( boost::gregorian::date startDate, boost::gregorian::date endDate, int containerID );
@@ -143,6 +145,8 @@ public:
     CadaverFoodContribution = 0;
     Eggs = 0;
     Larvae = 0;
+    LarvaeFasting = 0;
+    LarvaeDeathFromFasting = 0;
     Pupae = 0;
     AvgDryPupWt = 0;
     NewFemales = 0;
@@ -169,6 +173,8 @@ public:
   double CadaverFoodContribution;
   double Eggs;
   double Larvae;
+  double LarvaeFasting;
+  double LarvaeDeathFromFasting;
   double Pupae;
   double AvgDryPupWt;
   double NewFemales;

@@ -220,6 +220,8 @@ private:
   LarvaeCohortCollection LarvaeCohorts;
 
   double _totalLarvae;
+  double _totalLarvaeFasting;
+  double _totalLarvaeDeathFromFasting;
 
   double _newlyHatched;
   double _larvaeInitialWeight;

@@ -987,6 +987,10 @@ SimContainer::AdvanceLarvae( int day )
   double totalNewPupaeWeight = 0.0;
   double totalCadaverWeight = 0.0;
 
+  // total fasting and total death from fasting
+  _totalLarvaeFasting = 0.0;
+  _totalLarvaeDeathFromFasting = 0.0;
+
   double targetThreshold = 1.0 - (_larvaeDevRate / 2.0);
 
   for( LarvaeIterator itLarvae = LarvaeCohorts.begin(); itLarvae != LarvaeCohorts.end(); ) {
@@ -1052,6 +1056,12 @@ SimContainer::AdvanceLarvae( int day )
         double number = itLarvae->Number;
         double weight = itLarvae->Weight;
         double survival = _larvaeNominalSurvival * _larvaeTemperatureSurvival * _larvaeLarvicideSurvival * itLarvae->SurvivalFood;
+
+        if( itLarvae->WeightChange < 0 ) {
+          // fasting is defined by a negative weight change (which consumes lipid reserves)
+          _totalFasting += number * survival;
+          _totalLarvaeDeathFromFasting += number * (1 - survival);
+        }
 
         itLarvae->Age++;
         itLarvae->Number = itLarvae->Number * survival;

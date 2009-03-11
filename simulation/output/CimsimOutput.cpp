@@ -64,6 +64,8 @@ CimsimOutput::AddDailyContainerOutput( DailyContainerOutput dco, date d, int con
   // the following values are accumulated amonst cloned containers
   currentDco.Eggs += dco.Eggs;
   currentDco.Larvae += dco.Larvae;
+  currentDco.LarvaeFasting += dco.LarvaeFasting;
+  currentDco.LarvaeDeathFromFasting += dco.LarvaeDeathFromFasting;
   currentDco.NewFemales += dco.NewFemales;
   currentDco.CumulativeFemales += dco.CumulativeFemales;
   currentDco.Oviposition += dco.Oviposition;
@@ -492,15 +494,47 @@ CimsimOutput::GetEggs( date startDate, date endDate, int containerID )
 std::vector<double>
 CimsimOutput::GetLarvae( date startDate, date endDate, int containerID )
 {
-  std::vector<double> larvae;
+  std::vector<double> values;
   ContainerOutput & co = ContainerOutputs_[containerID];
 
   day_iterator itDate = day_iterator(startDate);
   for( ; *itDate <= endDate; ++itDate ) {
-    larvae.push_back( co[*itDate].Larvae );
+    values.push_back( co[*itDate].Larvae );
   }
 
-  return larvae;
+  return values;
+}
+
+
+
+std::vector<double>
+CimsimOutput::GetLarvaeFasting( date startDate, date endDate, int containerID )
+{
+  std::vector<double> values;
+  ContainerOutput & co = ContainerOutputs_[containerID];
+
+  day_iterator itDate = day_iterator(startDate);
+  for( ; *itDate <= endDate; ++itDate ) {
+    values.push_back( co[*itDate].LarvaeFasting );
+  }
+
+  return values;
+}
+
+
+
+std::vector<double>
+CimsimOutput::GetLarvaeDeathFromFasting( date startDate, date endDate, int containerID )
+{
+  std::vector<double> values;
+  ContainerOutput & co = ContainerOutputs_[containerID];
+
+  day_iterator itDate = day_iterator(startDate);
+  for( ; *itDate <= endDate; ++itDate ) {
+    values.push_back( co[*itDate].LarvaeDeathFromFasting );
+  }
+
+  return values;
 }
 
 
