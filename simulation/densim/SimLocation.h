@@ -161,8 +161,8 @@ public:
   std::vector<int> TotalBirths;           // total number of births during simulation
   std::vector<int> TotalDeaths;           // total number of deaths during simulation
 
-  std::vector<double> NewMosqSusc;         // susceptible new mosquitoes and ...
-  std::vector<double> NewMosqSuscCD;       // ... their gonotrophic development
+  std::vector<double> SusceptibleNulliparous;         // susceptible new mosquitoes and ...
+  std::vector<double> SusceptibleNulliparousCD;       // ... their gonotrophic development
 
   std::vector<double> OldMosqSusc;         // susceptible old mosquitoes and ...
   std::vector<double> OldMosqSuscCD;       // ... their gonotrophic development

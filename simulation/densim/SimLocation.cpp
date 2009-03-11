@@ -40,8 +40,8 @@ SimLocation::SimLocation( const input::Location * location, sim::output::MosData
   TotDlyHetImm(std::vector<int>( 4+1, 0 )),
   NewDlyInfective(std::vector<int>( 4+1, 0 )),
   Virus(std::vector<input::VirusSerotype>( 4+1 )),
-  NewMosqSusc(std::vector<double>( (MaxAgeMosq+1) + 1, 0 )),
-  NewMosqSuscCD(std::vector<double>( (MaxAgeMosq+1) + 1, 0 )),
+  SusceptibleNulliparous(std::vector<double>( (MaxAgeMosq+1) + 1, 0 )),
+  SusceptibleNulliparousCD(std::vector<double>( (MaxAgeMosq+1) + 1, 0 )),
   OldMosqSusc(std::vector<double>( (MaxAgeMosq+1) + 1, 0 )),
   OldMosqSuscCD(std::vector<double>( (MaxAgeMosq+1) + 1, 0 )),
   NewMosqInfd(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
@@ -140,8 +140,8 @@ SimLocation::SimLocation( const input::Location * location, sim::output::MosData
   double initialArea = InitialPopSize / HumHostDensity;
   for( sim::cs::PreOviAdultCohortCollection::iterator itAdult = MosData_->PreOviAdultCohorts.begin();
        itAdult != MosData_->PreOviAdultCohorts.end(); ++itAdult ) {
-    NewMosqSusc[itAdult->Age] = itAdult->Number * initialArea;
-    NewMosqSuscCD[itAdult->Age] = itAdult->Development;
+    SusceptibleNulliparous[itAdult->Age] = itAdult->Number * initialArea;
+    SusceptibleNulliparousCD[itAdult->Age] = itAdult->Development;
   }
   for( sim::cs::OviAdultCohortCollection::iterator itAdult = MosData_->OviAdultCohorts.begin();
        itAdult != MosData_->OviAdultCohorts.end(); ++itAdult ) {
@@ -910,19 +910,19 @@ SimLocation::MosqLifeCycle(void)
   BitersNew = 0;
   double EggersNew = 0;
   for( int i = MaxAgeMosq; i >= 1; --i ) {
-    if( NewMosqSusc[i] <= 0 ) {
+    if( SusceptibleNulliparous[i] <= 0 ) {
       continue; // move to next youngest cohort
     }
     else {
-      if( NewMosqSuscCD[i] <= 1 ) {
-        NewMosqSusc[i + 1] = NewMosqSusc[i] * dailyMosData.OverallSurvival;
-        NewMosqSuscCD[i + 1] = NewMosqSuscCD[i] + dailyMosData.AdultDevelopment;
+      if( SusceptibleNulliparousCD[i] <= 1 ) {
+        SusceptibleNulliparous[i + 1] = SusceptibleNulliparous[i] * dailyMosData.OverallSurvival;
+        SusceptibleNulliparousCD[i + 1] = SusceptibleNulliparousCD[i] + dailyMosData.AdultDevelopment;
       }
       else {
-        EggersNew = EggersNew + (NewMosqSusc[i] * dailyMosData.OverallSurvival);
+        EggersNew = EggersNew + (SusceptibleNulliparous[i] * dailyMosData.OverallSurvival);
       }
-      NewMosqSusc[i] = 0;
-      NewMosqSuscCD[i] = 0;
+      SusceptibleNulliparous[i] = 0;
+      SusceptibleNulliparousCD[i] = 0;
     }
   }
 
@@ -930,9 +930,9 @@ SimLocation::MosqLifeCycle(void)
   if( HumHostDensity == 0 ) {
     throw; // STOP 
   }
-  NewMosqSusc[1] = dailyMosData.NewFemales * (ArraySize / HumHostDensity);
-  NewMosqSuscCD[1] = dailyMosData.AdultDevelopment;
-  BitersNew = NewMosqSusc[2] + (NewMosqSusc[3] * DMealProp);
+  SusceptibleNulliparous[1] = dailyMosData.NewFemales * (ArraySize / HumHostDensity);
+  SusceptibleNulliparousCD[1] = dailyMosData.AdultDevelopment;
+  BitersNew = SusceptibleNulliparous[2] + (SusceptibleNulliparous[3] * DMealProp);
 
 
   // advance susceptibles - successive gonotrophic cycles
@@ -1079,7 +1079,7 @@ SimLocation::MosqLifeCycle(void)
   MosqTotal = 0;
   MosqInfvTotal = std::vector<double>( 4+1, 0 );
   for( int i = 1; i <= MaxAgeMosq; ++i ) {
-    MosqTotal = MosqTotal + NewMosqSusc[i] + OldMosqSusc[i];
+    MosqTotal = MosqTotal + SusceptibleNulliparous[i] + OldMosqSusc[i];
     for( int j =1; j <= 4; ++j ) {
       MosqTotal = MosqTotal + NewMosqInfd[i][j] + OldMosqInfd[i][j] + MosqInfv[i][j];
       MosqInfvTotal[j] = MosqInfvTotal[j] + MosqInfv[i][j];
@@ -1196,14 +1196,14 @@ SimLocation::CalcNewInocMosquitoes( int iType )
       OldMosqSuscCD[1] = 0;
     }
 
-    if( NewMosqSusc[2] + NewMosqSusc[3] < NewInfd ) {
-      NewInfd = CINT( NewMosqSusc[2] + NewMosqSusc[3] );
+    if( SusceptibleNulliparous[2] + SusceptibleNulliparous[3] < NewInfd ) {
+      NewInfd = CINT( SusceptibleNulliparous[2] + SusceptibleNulliparous[3] );
     }
-    NewMosqSusc[2] = NewMosqSusc[2] - NewInfd;
-    if( NewMosqSusc[2] < 0 ) {
-      NewMosqSusc[3] = NewMosqSusc[3] + NewMosqSusc[2];
-      NewMosqSusc[2] = 0;
-      NewMosqSuscCD[2] = 0;
+    SusceptibleNulliparous[2] = SusceptibleNulliparous[2] - NewInfd;
+    if( SusceptibleNulliparous[2] < 0 ) {
+      SusceptibleNulliparous[3] = SusceptibleNulliparous[3] + SusceptibleNulliparous[2];
+      SusceptibleNulliparous[2] = 0;
+      SusceptibleNulliparousCD[2] = 0;
     }
     
     date curDate = BoostDateFromYearAndDayOfYear( Year, Day );
