@@ -1057,12 +1057,6 @@ SimContainer::AdvanceLarvae( int day )
         double weight = itLarvae->Weight;
         double survival = _larvaeNominalSurvival * _larvaeTemperatureSurvival * _larvaeLarvicideSurvival * itLarvae->SurvivalFood;
 
-        if( itLarvae->WeightChange < 0 ) {
-          // fasting is defined by a negative weight change (which consumes lipid reserves)
-          _totalFasting += number * survival;
-          _totalLarvaeDeathFromFasting += number * (1 - survival);
-        }
-
         itLarvae->Age++;
         itLarvae->Number = itLarvae->Number * survival;
         itLarvae->Development = itLarvae->Development + _larvaeDevRate;
@@ -1073,6 +1067,13 @@ SimContainer::AdvanceLarvae( int day )
           totalCadaverWeight += number * weight;
           itLarvae = LarvaeCohorts.erase( itLarvae );
           continue;
+        }
+
+        // track total larvae and death from fasting effects
+        if( itLarvae->WeightChange < 0 ) {
+          // fasting is defined by a negative weight change (which consumes lipid reserves)
+          _totalLarvaeFasting += number * survival;
+          _totalLarvaeDeathFromFasting += number * (1 - itLarvae->SurvivalFood);
         }
 
         // otherwise only a proportion to cadaver weight
@@ -1490,6 +1491,8 @@ SimContainer::GetOutput( boost::gregorian::date d )
 
   dco.Eggs = _embryonatingEggCount + _matureEggCount;
   dco.Larvae = _totalLarvae;
+  dco.LarvaeFasting = _totalLarvaeFasting;
+  dco.LarvaeDeathFromFasting = _totalLarvaeDeathFromFasting;
   dco.Pupae = _totalPupae;
   dco.AvgDryPupWt = _averagePupaeWeight;
   dco.NewFemales = _newFemales;
