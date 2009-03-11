@@ -42,8 +42,8 @@ SimLocation::SimLocation( const input::Location * location, sim::output::MosData
   Virus(std::vector<input::VirusSerotype>( 4+1 )),
   SusceptibleNulliparous(std::vector<double>( (MaxAgeMosq+1) + 1, 0 )),
   SusceptibleNulliparousCD(std::vector<double>( (MaxAgeMosq+1) + 1, 0 )),
-  OldMosqSusc(std::vector<double>( (MaxAgeMosq+1) + 1, 0 )),
-  OldMosqSuscCD(std::vector<double>( (MaxAgeMosq+1) + 1, 0 )),
+  SusceptibleParous(std::vector<double>( (MaxAgeMosq+1) + 1, 0 )),
+  SusceptibleParousCD(std::vector<double>( (MaxAgeMosq+1) + 1, 0 )),
   NewMosqInfd(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
   NewMosqInfdCD(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
   NewMosqInfdEIP(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
@@ -145,8 +145,8 @@ SimLocation::SimLocation( const input::Location * location, sim::output::MosData
   }
   for( sim::cs::OviAdultCohortCollection::iterator itAdult = MosData_->OviAdultCohorts.begin();
        itAdult != MosData_->OviAdultCohorts.end(); ++itAdult ) {
-    OldMosqSusc[itAdult->Age] = itAdult->Number * initialArea;
-    OldMosqSuscCD[itAdult->Age] = itAdult->Development;
+    SusceptibleParous[itAdult->Age] = itAdult->Number * initialArea;
+    SusceptibleParousCD[itAdult->Age] = itAdult->Development;
   }
 }
 
@@ -940,24 +940,24 @@ SimLocation::MosqLifeCycle(void)
   BitersOld = 0;
   double EggersOld = 0;
   for( int i = MaxAgeMosq; i >= 1; --i ) {
-    if( OldMosqSusc[i] <= 0 ) {
+    if( SusceptibleParous[i] <= 0 ) {
       continue;
     }
     else {
-      if( OldMosqSuscCD[i] <= .58 ) {
-        OldMosqSusc[i + 1] = OldMosqSusc[i] * dailyMosData.OverallSurvival;
-        OldMosqSuscCD[i + 1] = OldMosqSuscCD[i] + dailyMosData.AdultDevelopment;
+      if( SusceptibleParousCD[i] <= .58 ) {
+        SusceptibleParous[i + 1] = SusceptibleParous[i] * dailyMosData.OverallSurvival;
+        SusceptibleParousCD[i + 1] = SusceptibleParousCD[i] + dailyMosData.AdultDevelopment;
       }
       else {
-        EggersOld = EggersOld + (OldMosqSusc[i] * dailyMosData.OverallSurvival);
+        EggersOld = EggersOld + (SusceptibleParous[i] * dailyMosData.OverallSurvival);
       }
-      OldMosqSusc[i] = 0;
-      OldMosqSuscCD[i] = 0;
+      SusceptibleParous[i] = 0;
+      SusceptibleParousCD[i] = 0;
     }
   }
-  OldMosqSusc[1] = EggersNew + EggersOld;
-  OldMosqSuscCD[1] = dailyMosData.AdultDevelopment;
-  BitersOld = OldMosqSusc[1] + (OldMosqSusc[2] * DMealProp);
+  SusceptibleParous[1] = EggersNew + EggersOld;
+  SusceptibleParousCD[1] = dailyMosData.AdultDevelopment;
+  BitersOld = SusceptibleParous[1] + (SusceptibleParous[2] * DMealProp);
 
 
   // Advance infected - From New Mosquitoes - First and successive Gonotrophic Cycles
@@ -1079,7 +1079,7 @@ SimLocation::MosqLifeCycle(void)
   MosqTotal = 0;
   MosqInfvTotal = std::vector<double>( 4+1, 0 );
   for( int i = 1; i <= MaxAgeMosq; ++i ) {
-    MosqTotal = MosqTotal + SusceptibleNulliparous[i] + OldMosqSusc[i];
+    MosqTotal = MosqTotal + SusceptibleNulliparous[i] + SusceptibleParous[i];
     for( int j =1; j <= 4; ++j ) {
       MosqTotal = MosqTotal + NewMosqInfd[i][j] + OldMosqInfd[i][j] + MosqInfv[i][j];
       MosqInfvTotal[j] = MosqInfvTotal[j] + MosqInfv[i][j];
@@ -1186,14 +1186,14 @@ SimLocation::CalcNewInocMosquitoes( int iType )
 
     // adjust susceptible arrays
     // see if there are enough mosquitoes
-    if( OldMosqSusc[1] + OldMosqSusc[2] < OldInfd ) {
-      OldInfd = CINT( OldMosqSusc[1] + OldMosqSusc[2] );
+    if( SusceptibleParous[1] + SusceptibleParous[2] < OldInfd ) {
+      OldInfd = CINT( SusceptibleParous[1] + SusceptibleParous[2] );
     }
-    OldMosqSusc[1] = OldMosqSusc[1] - OldInfd;
-    if( OldMosqSusc[1] < 0 ) {
-      OldMosqSusc[2] = OldMosqSusc[2] + OldMosqSusc[1];
-      OldMosqSusc[1] = 0;
-      OldMosqSuscCD[1] = 0;
+    SusceptibleParous[1] = SusceptibleParous[1] - OldInfd;
+    if( SusceptibleParous[1] < 0 ) {
+      SusceptibleParous[2] = SusceptibleParous[2] + SusceptibleParous[1];
+      SusceptibleParous[1] = 0;
+      SusceptibleParousCD[1] = 0;
     }
 
     if( SusceptibleNulliparous[2] + SusceptibleNulliparous[3] < NewInfd ) {
