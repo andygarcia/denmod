@@ -175,8 +175,8 @@ public:
   std::vector<std::vector<double>> InfectedParousCD;       // ... their gonotrophic development and ...
   std::vector<std::vector<double>> InfectedParousEIP;      // ... their extrinsic incubation period
 
-  std::vector<std::vector<double>> MosqInfv;            // infective mosquitoes and ...
-  std::vector<std::vector<double>> MosqInfvCD;          // ... their gonotrophic Development
+  std::vector<std::vector<double>> InfectiveMosquitoes;            // infective mosquitoes and ...
+  std::vector<std::vector<double>> InfectiveMosquitoesCD;          // ... their gonotrophic Development
 
   output::YearlyMosData YearlyMosData_;
 
