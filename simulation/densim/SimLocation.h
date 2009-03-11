@@ -161,23 +161,6 @@ public:
   std::vector<int> TotalBirths;           // total number of births during simulation
   std::vector<int> TotalDeaths;           // total number of deaths during simulation
 
-  std::vector<double> SusceptibleNulliparous;         // susceptible new mosquitoes and ...
-  std::vector<double> SusceptibleNulliparousCD;       // ... their gonotrophic development
-
-  std::vector<double> SusceptibleParous;         // susceptible old mosquitoes and ...
-  std::vector<double> SusceptibleParousCD;       // ... their gonotrophic development
-
-  std::vector<std::vector<double>> InfectedNulliparous;         // infected new mosquitoes (New Infd Mosq - 1 and gono. cycle)
-  std::vector<std::vector<double>> InfectedNulliparousCD;       // ... their gonotrophic development and ...
-  std::vector<std::vector<double>> InfectedNulliparousEIP;      // ... their extrinsic incubation period
-
-  std::vector<std::vector<double>> InfectedParous;         // infected old mosquitoes (Old infd mosq - 2 gono. cycle)
-  std::vector<std::vector<double>> InfectedParousCD;       // ... their gonotrophic development and ...
-  std::vector<std::vector<double>> InfectedParousEIP;      // ... their extrinsic incubation period
-
-  std::vector<std::vector<double>> InfectiveMosquitoes;            // infective mosquitoes and ...
-  std::vector<std::vector<double>> InfectiveMosquitoesCD;          // ... their gonotrophic Development
-
   output::YearlyMosData YearlyMosData_;
 
   // Probability of human to mosquito transmission, based on titer
@@ -214,15 +197,36 @@ public:
   double DBloodUProp;              // 
   double DBloodLProp;              // 
 
-  double TotalMosquitoes;                      // Total daily mosquitoes
-  std::vector<double> MosqInfvTotal;           // Total infective mosquitoes by type
+  // Total mosquitoes
+  double TotalMosquitoes;                           // total mosquitoes
+  double TotalBiters;                               // total biters, including susceptible, infected, and infective
 
-  double TotalBiters;                          // Total biters (susc/infd/infv)
-  double SusceptibleNulliparousBiters;         // New susceptible biters
-  double SusceptibleParousBiters;              // Old susceptible biters
-  std::vector<double> InfectiveBiters;              // Infective biters
-  std::vector<double> BitersInfdNewDB;         // Number of new double bloods from yesterday
-  std::vector<double> BitersInfdOldDB;         // Number of old double bloods from yesterday
+  // Susceptible mosquitoes
+  std::vector<double> SusceptibleNulliparous;         // susceptible new mosquitoes and ...
+  std::vector<double> SusceptibleNulliparousCD;       // ... their gonotrophic development
+  double SusceptibleNulliparousBiters;
+
+  std::vector<double> SusceptibleParous;         // susceptible old mosquitoes and ...
+  std::vector<double> SusceptibleParousCD;       // ... their gonotrophic development
+  double SusceptibleParousBiters;
+
+  // Infected mosquitoes
+  std::vector<std::vector<double>> InfectedNulliparous;         // infected new mosquitoes (New Infd Mosq - 1 and gono. cycle)
+  std::vector<std::vector<double>> InfectedNulliparousCD;       // ... their gonotrophic development and ...
+  std::vector<std::vector<double>> InfectedNulliparousEIP;      // ... their extrinsic incubation period
+
+  std::vector<std::vector<double>> InfectedParous;         // infected old mosquitoes (Old infd mosq - 2 gono. cycle)
+  std::vector<std::vector<double>> InfectedParousCD;       // ... their gonotrophic development and ...
+  std::vector<std::vector<double>> InfectedParousEIP;      // ... their extrinsic incubation period
+
+
+  // Infective mosquitoes
+  std::vector<double> TotalInfectiveMosquitoes;           // total infective mosquitoes by type
+  std::vector<std::vector<double>> InfectiveMosquitoes;   // infective mosquitoes and ...
+  std::vector<std::vector<double>> InfectiveMosquitoesCD; // ... their gonotrophic Development
+  std::vector<double> InfectiveBiters;                    // infective biters
+  std::vector<double> InfectedBitersNulliparousDBM;       // number of nulliparous double blood meals from yesterday
+  std::vector<double> InfectedBitersParousDBM;            // number of parous double blood meals from yesterday
 
   std::vector<double> BitesPerPerson;          // feeds per person
   int NewDlyHumInoc;                           // potential no. of new infected humans
