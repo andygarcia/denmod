@@ -214,16 +214,19 @@ public:
   double DBloodUProp;              // 
   double DBloodLProp;              // 
 
+  double TotalMosquitoes;                      // Total daily mosquitoes
+  std::vector<double> MosqInfvTotal;           // Total infective mosquitoes by type
+
   double TotalBiters;                          // Total biters (susc/infd/infv)
   double SusceptibleNulliparousBiters;         // New susceptible biters
   double SusceptibleParousBiters;              // Old susceptible biters
-  std::vector<double> BitersInfv;              // Infective biters
-  std::vector<double> BitesPerPerson;          // feeds per person
-  double TotalMosquitoes;                      // Total daily mosquitoes
-  std::vector<double> MosqInfvTotal;           // Total infective mosquitoes by type
-  int NewDlyHumInoc;                           // potential no. of new infected humans
+  std::vector<double> InfectiveBiters;              // Infective biters
   std::vector<double> BitersInfdNewDB;         // Number of new double bloods from yesterday
   std::vector<double> BitersInfdOldDB;         // Number of old double bloods from yesterday
+
+  std::vector<double> BitesPerPerson;          // feeds per person
+  int NewDlyHumInoc;                           // potential no. of new infected humans
+
 
   // DENDYNAMIC.INC
   std::vector<double> CumDeaths;               // Cum. death rate for a class

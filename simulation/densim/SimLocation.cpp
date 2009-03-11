@@ -54,7 +54,7 @@ SimLocation::SimLocation( const input::Location * location, sim::output::MosData
   InfectiveMosquitoesCD(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
   BitersInfdNewDB(std::vector<double>( 4+1, 0 )),
   BitersInfdOldDB(std::vector<double>( 4+1, 0 )),
-  BitersInfv(std::vector<double>( 4+1, 0 )),
+  InfectiveBiters(std::vector<double>( 4+1, 0 )),
   EIPDevRate(std::vector<double>( 4+1, 0 )),
   MosqInfvTotal(std::vector<double>( 4+1, 0 ))
 {
@@ -864,7 +864,7 @@ SimLocation::MosqLifeCycle(void)
   // SusceptibleParousBiters         - Old susceptible biters
   // BitersInfdNewDB() - Yesterdays double blood feeders from new infd - Global
   // BitersInfdOldDB() - Yesterdays double blood feeders from old infd - Global
-  // BitersInfv()      - Infective biters - Global
+  // InfectiveBiters()      - Infective biters - Global
   // EggersNew         - First time egg layers
   // EggersOld         - Old egg layers
   // DMealProp         - Prop. taking double blood meals
@@ -877,7 +877,7 @@ SimLocation::MosqLifeCycle(void)
   std::vector<double> EIPTranNew( 4+1, 0 );        // Infective class from infected new
   std::vector<double> EIPTranOld( 4+1, 0 );        // Infective class from infected old
   std::vector<double> EggersInfv( 4+1, 0 );        // Infective egg transfers
-  BitersInfv = std::vector<double>( 4+1, 0 );      // total infective biters
+  InfectiveBiters = std::vector<double>( 4+1, 0 );      // total infective biters
   
   if( SimYear == 1 && Day == 1 ) {
     // initialize static variables
@@ -1069,12 +1069,12 @@ SimLocation::MosqLifeCycle(void)
     }
     InfectiveMosquitoes[1][j] = EggersInfv[j] + EIPTranNew[j] + EIPTranOld[j];
     InfectiveMosquitoesCD[1][j] = dailyMosData.AdultDevelopment;
-    BitersInfv[j] = InfectiveMosquitoes[1][j] + (InfectiveMosquitoes[2][j] * DMealProp);
+    InfectiveBiters[j] = InfectiveMosquitoes[1][j] + (InfectiveMosquitoes[2][j] * DMealProp);
   }
 
   TotalBiters = SusceptibleNulliparousBiters + SusceptibleParousBiters;
   for( int j =1; j <= 4; ++j ) {
-    TotalBiters = TotalBiters + InfectedBiters[j] + BitersInfv[j];
+    TotalBiters = TotalBiters + InfectedBiters[j] + InfectiveBiters[j];
   }
   TotalMosquitoes = 0;
   MosqInfvTotal = std::vector<double>( 4+1, 0 );
@@ -1253,7 +1253,7 @@ SimLocation::CalcNewInocHumans( int iType, int iOldAge )
   int r;                      // for poisson distribution
   double InocEstimate;         // number of infv bites to humans
 
-  InocEstimate = ((BitersInfv[iType] * PropOnHum) + ((BitersInfv[iType] * PropOnHum) * (FdAttempts - 1) * PropDifHost)) * MosqToHumProb;
+  InocEstimate = ((InfectiveBiters[iType] * PropOnHum) + ((InfectiveBiters[iType] * PropOnHum) * (FdAttempts - 1) * PropDifHost)) * MosqToHumProb;
 
   if( InocEstimate > StochTransNum ) {
     // discrete
