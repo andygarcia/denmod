@@ -66,7 +66,6 @@ ContainerForm::OnLoad( System::Object^ sender, System::EventArgs^ e)
 
   typedef Collections::Generic::KeyValuePair<Enum^, String^> EnumValuePair;
   typedef Collections::Generic::List<EnumValuePair> EnumValuePairCollection;
-
   EnumValuePairCollection ^ fillEnumValues = gcnew Collections::Generic::List<EnumValuePair>();
   fillEnumValues->Add( EnumValuePair( gui::Container::Fill::ManualFill, "Manually Filled" ) );
   fillEnumValues->Add( EnumValuePair( gui::Container::Fill::RainFill, "Rain Filled" ) );
@@ -78,29 +77,22 @@ ContainerForm::OnLoad( System::Object^ sender, System::EventArgs^ e)
   
   snboxWatershed->DataBindings->Add( gcnew ParameterDisplayBinding("Value", Container_, "WatershedRatio", DataSourceUpdateMode::OnPropertyChanged) );
 
-  EnumValuePairCollection ^ manualFrequencies;
-  manualFrequencies = gcnew Collections::Generic::List<EnumValuePair>();
-  manualFrequencies->Add( EnumValuePair( gui::Container::Frequency::Daily, "Daily" ) );
-  manualFrequencies->Add( EnumValuePair( gui::Container::Frequency::Weekly, "Weekly" ) );
-  manualFrequencies->Add( EnumValuePair( gui::Container::Frequency::Monthly, "Monthly" ) );
+  Collections::Generic::List<EnumValuePair> ^ frequencyEnumValues;
+  frequencyEnumValues = gcnew Collections::Generic::List<EnumValuePair>();
+  frequencyEnumValues->Add( EnumValuePair( gui::Container::Frequency::Daily, "Daily" ) );
+  frequencyEnumValues->Add( EnumValuePair( gui::Container::Frequency::Weekly, "Weekly" ) );
+  frequencyEnumValues->Add( EnumValuePair( gui::Container::Frequency::Monthly, "Monthly" ) );
 
   cboxManualFillFrequency->DisplayMember = "Value";
   cboxManualFillFrequency->ValueMember= "Key";
-  cboxManualFillFrequency->DataSource = manualFrequencies;
+  cboxManualFillFrequency->DataSource = frequencyEnumValues;
   cboxManualFillFrequency->DataBindings->Add( "SelectedValue", Container_, "ManualFillFrequency" );
 
   snboxDrawdownPercentage->DataBindings->Add( gcnew ParameterDisplayBinding("Value", Container_, "DrawdownPercentage", DataSourceUpdateMode::OnPropertyChanged) );
 
-  EnumValuePairCollection ^ drawdownFrequencies;
-  drawdownFrequencies = gcnew Collections::Generic::List<EnumValuePair>();
-  drawdownFrequencies->Add( EnumValuePair( gui::Container::Frequency::Never, "Never" ) );
-  drawdownFrequencies->Add( EnumValuePair( gui::Container::Frequency::Daily, "Daily" ) );
-  drawdownFrequencies->Add( EnumValuePair( gui::Container::Frequency::Weekly, "Weekly" ) );
-  drawdownFrequencies->Add( EnumValuePair( gui::Container::Frequency::Monthly, "Monthly" ) );
-
   cboxDrawdownFrequency->DisplayMember = "Value";
   cboxDrawdownFrequency->ValueMember= "Key";
-  cboxDrawdownFrequency->DataSource = drawdownFrequencies;
+  cboxDrawdownFrequency->DataSource = gcnew EnumValuePairCollection( frequencyEnumValues );
   cboxDrawdownFrequency->DataBindings->Add( "SelectedValue", Container_, "DrawdownFrequency" );
 
   snboxInitFood->DataBindings->Add( gcnew ParameterDisplayBinding("Value", Container_, "InitFood", DataSourceUpdateMode::OnPropertyChanged) );
@@ -188,25 +180,6 @@ ContainerForm::OnFillMethodChanged( System::Object ^ sender, System::EventArgs ^
 
 
 
-System::Void
-ContainerForm::OnDrawdownFrequencyChanged(System::Object^  sender, System::EventArgs^  e)
-{
-  if( cboxDrawdownFrequency->SelectedValue == nullptr ) {
-    return;
-  }
-
-  gui::Container::Frequency newFrequency = (gui::Container::Frequency) cboxDrawdownFrequency->SelectedValue;
-  if( newFrequency == gui::Container::Frequency::Never ) {
-    // disable drawdown amount textbox
-    snboxDrawdownPercentage->Enabled = false;
-  }
-  else {
-    snboxDrawdownPercentage->Enabled = true;
-  }
-
-}
-
-    
 System::Void
 ContainerForm::OnCopyFood( System::Object ^ sender, System::EventArgs ^ e )
 {

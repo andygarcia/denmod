@@ -16,7 +16,6 @@ public enum class ChartIds : int
   CimsimAverageFemaleWetWeight,
   CimsimOviposition,
   CimsimWeather,
-  CimsimRelativeContainerProductivity,
 
   ContainerDensity,
   ContainerDepth,
@@ -100,7 +99,6 @@ private:
     _cimsimLocationCharts->Add( gcnew ChartInfo(ChartIds::CimsimAverageFemaleWetWeight, "Average female wet weight", true) );
     _cimsimLocationCharts->Add( gcnew ChartInfo(ChartIds::CimsimOviposition, "Oviposition", true) );
     _cimsimLocationCharts->Add( gcnew ChartInfo(ChartIds::CimsimWeather, "Weather", true) );
-    _cimsimLocationCharts->Add( gcnew ChartInfo(ChartIds::CimsimRelativeContainerProductivity, "Relative Container Pupal Productivity", true) );
 
     _cimsimContainerCharts = gcnew ComponentModel::BindingList<ChartInfo^>();
     _cimsimContainerCharts->Add( gcnew ChartInfo(ChartIds::ContainerDensity, "Container densities", true) );

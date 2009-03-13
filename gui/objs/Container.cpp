@@ -140,13 +140,6 @@ gui::Container::GetSimObject(void)
 
   container->Drawdown_ = this->Drawdown;
 
-  if( DrawdownFrequency == Frequency::Never ) {
-    // added "never" option to the gui, this still translated to a zeroed daily addition
-    container->DrawdownFrequency_ = input::Container::Daily;
-    container->Drawdown_ = 0;
-    // notice this only works since we've already read the gui's drawdown above, otherwise our zero value
-    // would be reset by last entered drawdown (which is instead preserved in the dml and hence the gui)
-  }
   if( DrawdownFrequency_ == Frequency::Daily ) {
     container->DrawdownFrequency_ = input::Container::Daily;
   }
