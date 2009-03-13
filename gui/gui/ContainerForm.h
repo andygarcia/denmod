@@ -21,6 +21,7 @@ namespace gui {
     System::Void OnLoad( System::Object ^ sender, System::EventArgs ^ e );
     System::Void OnShapeChanged( System::Object ^ sender, System::EventArgs ^ e );
     System::Void OnFillMethodChanged( System::Object ^ sender, System::EventArgs ^ e );
+    System::Void OnDrawdownFrequencyChanged(System::Object^  sender, System::EventArgs^  e);
     System::Void OnCopyFood( System::Object ^ sender, System::EventArgs ^ e );
     System::Void OnOk( System::Object ^ sender, System::EventArgs ^ e );
     System::Void OnCancel( System::Object ^ sender, System::EventArgs ^ e );
@@ -419,10 +420,10 @@ private: System::ComponentModel::IContainer^  components;
       this->tabShapeSize->Controls->Add(this->radCirc);
       this->tabShapeSize->Controls->Add(this->snboxLength);
       this->tabShapeSize->Controls->Add(this->snboxDiameter);
-      this->tabShapeSize->Location = System::Drawing::Point(4, 22);
+      this->tabShapeSize->Location = System::Drawing::Point(4, 24);
       this->tabShapeSize->Name = L"tabShapeSize";
       this->tabShapeSize->Padding = System::Windows::Forms::Padding(3);
-      this->tabShapeSize->Size = System::Drawing::Size(490, 205);
+      this->tabShapeSize->Size = System::Drawing::Size(490, 203);
       this->tabShapeSize->TabIndex = 0;
       this->tabShapeSize->Text = L"Shape & Size";
       this->tabShapeSize->UseVisualStyleBackColor = true;
@@ -480,10 +481,10 @@ private: System::ComponentModel::IContainer^  components;
       this->tabConditions->Controls->Add(this->lblInitEggs);
       this->tabConditions->Controls->Add(this->lblCooling);
       this->tabConditions->Controls->Add(this->lblSunExp);
-      this->tabConditions->Location = System::Drawing::Point(4, 22);
+      this->tabConditions->Location = System::Drawing::Point(4, 24);
       this->tabConditions->Name = L"tabConditions";
       this->tabConditions->Padding = System::Windows::Forms::Padding(3);
-      this->tabConditions->Size = System::Drawing::Size(490, 205);
+      this->tabConditions->Size = System::Drawing::Size(490, 203);
       this->tabConditions->TabIndex = 1;
       this->tabConditions->Text = L"Conditions";
       this->tabConditions->UseVisualStyleBackColor = true;
@@ -588,17 +589,17 @@ private: System::ComponentModel::IContainer^  components;
       this->tabWater->Controls->Add(this->lblWatershed);
       this->tabWater->Controls->Add(this->cboxFillMethod);
       this->tabWater->Controls->Add(this->lblFillMethod);
-      this->tabWater->Location = System::Drawing::Point(4, 22);
+      this->tabWater->Location = System::Drawing::Point(4, 24);
       this->tabWater->Name = L"tabWater";
       this->tabWater->Padding = System::Windows::Forms::Padding(3);
-      this->tabWater->Size = System::Drawing::Size(490, 205);
+      this->tabWater->Size = System::Drawing::Size(490, 203);
       this->tabWater->TabIndex = 3;
       this->tabWater->Text = L"Water & Filling";
       this->tabWater->UseVisualStyleBackColor = true;
       // 
       // snboxDrawdownPercentage
       // 
-      this->snboxDrawdownPercentage->Location = System::Drawing::Point(210, 119);
+      this->snboxDrawdownPercentage->Location = System::Drawing::Point(210, 146);
       this->snboxDrawdownPercentage->Name = L"snboxDrawdownPercentage";
       this->snboxDrawdownPercentage->Size = System::Drawing::Size(68, 20);
       this->snboxDrawdownPercentage->TabIndex = 7;
@@ -619,7 +620,7 @@ private: System::ComponentModel::IContainer^  components;
       // lblDrawdownFrequency
       // 
       this->lblDrawdownFrequency->AutoSize = true;
-      this->lblDrawdownFrequency->Location = System::Drawing::Point(90, 148);
+      this->lblDrawdownFrequency->Location = System::Drawing::Point(90, 122);
       this->lblDrawdownFrequency->Name = L"lblDrawdownFrequency";
       this->lblDrawdownFrequency->Size = System::Drawing::Size(114, 13);
       this->lblDrawdownFrequency->TabIndex = 8;
@@ -628,7 +629,7 @@ private: System::ComponentModel::IContainer^  components;
       // lblManualFillFrequency
       // 
       this->lblManualFillFrequency->AutoSize = true;
-      this->lblManualFillFrequency->Location = System::Drawing::Point(91, 78);
+      this->lblManualFillFrequency->Location = System::Drawing::Point(91, 95);
       this->lblManualFillFrequency->Name = L"lblManualFillFrequency";
       this->lblManualFillFrequency->Size = System::Drawing::Size(113, 13);
       this->lblManualFillFrequency->TabIndex = 4;
@@ -638,25 +639,26 @@ private: System::ComponentModel::IContainer^  components;
       // 
       this->cboxDrawdownFrequency->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
       this->cboxDrawdownFrequency->FormattingEnabled = true;
-      this->cboxDrawdownFrequency->Location = System::Drawing::Point(210, 145);
+      this->cboxDrawdownFrequency->Location = System::Drawing::Point(210, 119);
       this->cboxDrawdownFrequency->Name = L"cboxDrawdownFrequency";
       this->cboxDrawdownFrequency->Size = System::Drawing::Size(121, 21);
       this->cboxDrawdownFrequency->TabIndex = 9;
+      this->cboxDrawdownFrequency->SelectedValueChanged += gcnew System::EventHandler(this, &ContainerForm::OnDrawdownFrequencyChanged);
       // 
       // lblDrawdownPercentage
       // 
       this->lblDrawdownPercentage->AutoSize = true;
-      this->lblDrawdownPercentage->Location = System::Drawing::Point(74, 122);
+      this->lblDrawdownPercentage->Location = System::Drawing::Point(71, 149);
       this->lblDrawdownPercentage->Name = L"lblDrawdownPercentage";
-      this->lblDrawdownPercentage->Size = System::Drawing::Size(131, 13);
+      this->lblDrawdownPercentage->Size = System::Drawing::Size(133, 13);
       this->lblDrawdownPercentage->TabIndex = 6;
-      this->lblDrawdownPercentage->Text = L"Drawdown (% of Capacity)";
+      this->lblDrawdownPercentage->Text = L"Drawdown (% of capacity):";
       // 
       // cboxManualFillFrequency
       // 
       this->cboxManualFillFrequency->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
       this->cboxManualFillFrequency->FormattingEnabled = true;
-      this->cboxManualFillFrequency->Location = System::Drawing::Point(210, 75);
+      this->cboxManualFillFrequency->Location = System::Drawing::Point(210, 92);
       this->cboxManualFillFrequency->Name = L"cboxManualFillFrequency";
       this->cboxManualFillFrequency->Size = System::Drawing::Size(121, 21);
       this->cboxManualFillFrequency->TabIndex = 5;
@@ -723,9 +725,9 @@ private: System::ComponentModel::IContainer^  components;
       this->tabFood->Controls->Add(this->lblFoodJan);
       this->tabFood->Controls->Add(this->lblFoodDecay);
       this->tabFood->Controls->Add(this->lblInitFoot);
-      this->tabFood->Location = System::Drawing::Point(4, 22);
+      this->tabFood->Location = System::Drawing::Point(4, 24);
       this->tabFood->Name = L"tabFood";
-      this->tabFood->Size = System::Drawing::Size(490, 205);
+      this->tabFood->Size = System::Drawing::Size(490, 203);
       this->tabFood->TabIndex = 2;
       this->tabFood->Text = L"Food";
       this->tabFood->UseVisualStyleBackColor = true;

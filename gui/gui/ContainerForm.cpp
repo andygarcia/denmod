@@ -66,6 +66,7 @@ ContainerForm::OnLoad( System::Object^ sender, System::EventArgs^ e)
 
   typedef Collections::Generic::KeyValuePair<Enum^, String^> EnumValuePair;
   typedef Collections::Generic::List<EnumValuePair> EnumValuePairCollection;
+
   EnumValuePairCollection ^ fillEnumValues = gcnew Collections::Generic::List<EnumValuePair>();
   fillEnumValues->Add( EnumValuePair( gui::Container::Fill::ManualFill, "Manually Filled" ) );
   fillEnumValues->Add( EnumValuePair( gui::Container::Fill::RainFill, "Rain Filled" ) );
@@ -92,6 +93,7 @@ ContainerForm::OnLoad( System::Object^ sender, System::EventArgs^ e)
 
   cboxDrawdownFrequency->DisplayMember = "Value";
   cboxDrawdownFrequency->ValueMember= "Key";
+  frequencyEnumValues->Insert( 0, EnumValuePair( gui::Container::Frequency::Never, "Never" ) );
   cboxDrawdownFrequency->DataSource = gcnew EnumValuePairCollection( frequencyEnumValues );
   cboxDrawdownFrequency->DataBindings->Add( "SelectedValue", Container_, "DrawdownFrequency" );
 
@@ -180,6 +182,25 @@ ContainerForm::OnFillMethodChanged( System::Object ^ sender, System::EventArgs ^
 
 
 
+System::Void
+ContainerForm::OnDrawdownFrequencyChanged(System::Object^  sender, System::EventArgs^  e)
+{
+  if( cboxDrawdownFrequency->SelectedValue == nullptr ) {
+    return;
+  }
+
+  gui::Container::Frequency newFrequency = (gui::Container::Frequency) cboxDrawdownFrequency->SelectedValue;
+  if( newFrequency == gui::Container::Frequency::Never ) {
+    // disable drawdown amount textbox
+    snboxDrawdownPercentage->Enabled = false;
+  }
+  else {
+    snboxDrawdownPercentage->Enabled = true;
+  }
+
+}
+
+    
 System::Void
 ContainerForm::OnCopyFood( System::Object ^ sender, System::EventArgs ^ e )
 {
