@@ -37,10 +37,10 @@ public:
   };
 
   enum class Frequency {
-    Daily = 0,
+    Never = 0,
+    Daily,
     Weekly,
     Monthly,
-    Never
   };
 #pragma endregion
 
