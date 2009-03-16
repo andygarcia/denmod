@@ -20,7 +20,7 @@ namespace gui {
 
   private:
     System::Void OnSave(System::Object^  sender, System::EventArgs^  e);
-    
+
   private:
     gui::Location ^ _location;
 
@@ -74,10 +74,10 @@ namespace gui {
       this->chart->Legends->Add(legend1);
       this->chart->Location = System::Drawing::Point(12, 12);
       this->chart->Name = L"chart";
-      this->chart->Palette = Dundas::Charting::WinControl::ChartColorPalette::Dundas;
       this->chart->Size = System::Drawing::Size(992, 689);
       this->chart->TabIndex = 2;
       this->chart->Text = L"chart1";
+      this->chart->PostPaint += gcnew Dundas::Charting::WinControl::PaintEventHandler(this, &ChartForm::OnPostPaint);
       // 
       // btnExit
       // 
@@ -121,5 +121,5 @@ namespace gui {
 
     }
 #pragma endregion
-};
+  };
 }

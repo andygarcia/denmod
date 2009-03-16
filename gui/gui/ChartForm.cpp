@@ -83,15 +83,6 @@ ChartForm::ChartForm( gui::Location ^ location, output::Chart ^ chartData, outpu
 
     chartArea->ShadowOffset = 2;
 
-    chartArea->CursorX->Interval = 1;
-    chartArea->CursorX->UserEnabled = true;
-    chartArea->CursorX->UserSelection = true;
-    // use 1% of range of Y axis
-    chartArea->CursorY->Interval = (chartArea->AxisY->Maximum - chartArea->AxisY->Minimum) / 100.0;
-    chartArea->CursorY->UserEnabled = true;
-    chartArea->CursorY->UserSelection = true;
-
-
     Legend ^ legend = gcnew Legend( plot->Title );
     legend->Enabled = true;
     legend->DockToChartArea = chartArea->Name;
@@ -141,6 +132,18 @@ ChartForm::ChartForm( gui::Location ^ location, output::Chart ^ chartData, outpu
 
       chart->Series->Add( series );
     }
+
+    // now that data is added for this plot, call method to update min/max vals for axes
+    chartArea->ReCalc();
+
+    // now enable selection/zooming with intervals based on data
+    chartArea->CursorX->Interval = 1;
+    chartArea->CursorX->UserEnabled = true;
+    chartArea->CursorX->UserSelection = true;
+
+    chartArea->CursorY->Interval = (chartArea->AxisY->Maximum - chartArea->AxisY->Minimum) / 100.0;
+    chartArea->CursorY->UserEnabled = true;
+    chartArea->CursorY->UserSelection = true;
   }
 }
 
@@ -160,7 +163,7 @@ System::Void ChartForm::OnSave(System::Object^  sender, System::EventArgs^  e)
   // save current chart to disk
   SaveFileDialog ^ sfd = gcnew SaveFileDialog();
   sfd->InitialDirectory = Environment::CurrentDirectory;
-  sfd->FileName = chart->Text + ".xml";
+  sfd->FileName = chart->ChartAreas[0]->Name + ".xml";
 
   if( sfd->ShowDialog(this) != Windows::Forms::DialogResult::OK) {
     return;
