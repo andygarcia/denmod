@@ -77,7 +77,6 @@ namespace gui {
       this->chart->Size = System::Drawing::Size(992, 689);
       this->chart->TabIndex = 2;
       this->chart->Text = L"chart1";
-      this->chart->PostPaint += gcnew Dundas::Charting::WinControl::PaintEventHandler(this, &ChartForm::OnPostPaint);
       // 
       // btnExit
       // 
