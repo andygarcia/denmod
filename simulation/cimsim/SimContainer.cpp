@@ -34,7 +34,9 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
   InitialEggs(container->InitEggs_),
   IsCloned(false),
   CloneId(0),
-  NumberOfClones(0)
+  NumberOfClones(0),
+  _nextDrawdownPeriod(date(boost::date_time::not_a_date_time),date(boost::date_time::not_a_date_time)),
+  _nextManualFillPeriod(date(boost::date_time::not_a_date_time),date(boost::date_time::not_a_date_time))
 {
   // copy daily food additions by month
   MonthlyFoodAdditions[boost::date_time::Jan] = container->FoodGainJan_;
@@ -203,10 +205,12 @@ SimContainer::~SimContainer(void)
 void
 SimContainer::MakeClone( int cloneId, int numOfClones, double newDensity )
 {
+  // set as cloned, give proper id within container type, and specify how many total clones exist
   this->IsCloned = true;
   this->CloneId = cloneId;
   this->NumberOfClones = numOfClones;
 
+  // adjust densities
   this->Density = newDensity;
   this->_untreatedDensity = newDensity;
 }
@@ -221,6 +225,41 @@ SimContainer::Initialize( date startDate )
 
   // clear total productivity
   _cumulativeFemales = 0;
+
+  // manual fill containers should always start filled
+  if( FillMethod == input::Container::ManualFill ) {
+    _waterDepthYesterday = Height;
+  }
+
+  // set periods for cloned hydrology and randomly select next day for action
+  // this only occurs for non daily frequencies, daily actions always occur
+  if( IsCloned ) {
+    // set next drawdown period for subgroup
+    if( DrawdownFrequency == input::Container::Weekly ) {
+      _nextDrawdownPeriod = date_period( startDate,  days(DAYS_IN_WEEK) );
+    }
+    if( DrawdownFrequency == input::Container::Monthly ) {
+      _nextDrawdownPeriod = date_period( startDate, startDate.end_of_month() + days(1) );
+    }
+
+    // randomly select next drawdown date
+    int numDays = _nextDrawdownPeriod.length().days();
+    int selectedOffset = rand() % numDays;
+    _nextDrawdown = _nextDrawdownPeriod.begin() + days( selectedOffset );
+
+    // set next manual fill period for subgroup
+    if( ManualFillFrequency == input::Container::Weekly ) {
+      _nextManualFillPeriod = date_period( startDate,  startDate + days(DAYS_IN_WEEK) );
+    }
+    else if( ManualFillFrequency == input::Container::Monthly ) {
+      _nextManualFillPeriod = date_period( startDate, startDate.end_of_month() + days(1) );
+    }
+
+    // randomly select next manual fill date
+    numDays = _nextManualFillPeriod.length().days();
+    selectedOffset = rand() % numDays;
+    _nextManualFill= _nextManualFillPeriod.begin() + days( selectedOffset );
+  }
 }
 
 
@@ -275,23 +314,50 @@ SimContainer::CalculateWaterDepth( double todaysRain, double relHumid )
   }
 
   
-  // possible drawdown
   double heightDrawdown = 0.0;
   if( Drawdown != 0 ) {
+    // only calculate drawdown if scheduled to occur today
     bool drawdownToday = false;
 
-    // depending on specified frequency, drawdown occurs:
+    // daily drawdowns always take place, regardless of subgrouping or not
     if( DrawdownFrequency == input::Container::Daily ) {
-      // every day for daily frequency
       drawdownToday = true;
     }
-    else if( DrawdownFrequency == input::Container::Weekly && _currentDate.day_of_week() == boost::date_time::Thursday ) {
-      // on thursday for weekly frequencies
-      drawdownToday = true;
-    }
-    else if( DrawdownFrequency == input::Container::Monthly && _currentDate.day() == 14 ) {
-      // on the 14th for monthly frequencies
-      drawdownToday = true;
+    else {
+      // non sub grouped containers have a set day based on weekly/monthly frequency
+      if( !IsCloned ) {
+        if( DrawdownFrequency == input::Container::Weekly && _currentDate.day_of_week() == boost::date_time::Thursday ) {
+          // on Thursdays for weekly frequencies
+          drawdownToday = true;
+        }
+        if( DrawdownFrequency == input::Container::Monthly && _currentDate.day() == 14 ) {
+          // on the 14th for monthly frequencies
+          drawdownToday = true;
+        }
+      }
+      // subgrouped containers select a random day based on weekly/monthly frequency
+      else {
+        if( _currentDate == _nextDrawdown ) {
+          // drawdown should occur today
+          drawdownToday = true;
+
+          // shift period forward
+          if( DrawdownFrequency == input::Container::Weekly ) {
+            _nextDrawdownPeriod.shift( days(DAYS_IN_WEEK) );
+          }
+          if( DrawdownFrequency == input::Container::Monthly ) {
+            date startOfNextMonth = _nextDrawdownPeriod.end() + days(1);
+            date endOfNextMonth = startOfNextMonth.end_of_month();
+            _nextDrawdownPeriod = date_period( startOfNextMonth, endOfNextMonth + days(1) );
+          }
+          
+          // and randomly select next date within new period
+          _nextDrawdown = _nextDrawdownPeriod.begin() + days( rand() % _nextDrawdownPeriod.length().days() );
+        }
+        else {
+          drawdownToday = false;
+        }
+      }
     }
 
     // calculate drawdown if scheduled to occur, converting from liters to cm
@@ -326,22 +392,51 @@ SimContainer::CalculateWaterDepth( double todaysRain, double relHumid )
 
   // check for manual fill
   if( FillMethod == input::Container::ManualFill ) {
-
-    // daily fills
+    // only fill if scheduled to occur today
+    double manualFillToday = false;
+    
+    // daily fills always occur
     if( ManualFillFrequency == input::Container::Daily ) {
-      _waterDepth = Height;
+      manualFillToday = true;
     }
-
-    // weekly fills occur at beginning of week
-    if( ManualFillFrequency == input::Container::Weekly ) {
-      if( _currentDate.day_of_week() == boost::date_time::Sunday ) {
-        _waterDepth = Height;
+    // weekly and monthly occur on schedule date
+    else {
+      // non sub grouped containers have a set day based on frequency
+      if( !IsCloned ) {
+        if( ManualFillFrequency == input::Container::Weekly && _currentDate.day_of_week() == boost::date_time::Sunday ) {
+          // on Sundays for weekly frequencies
+          manualFillToday = true;
+        }
+        if( ManualFillFrequency == input::Container::Monthly && _currentDate.day() == 1 ) {
+          // on the 1st for monthly frequencies
+          manualFillToday = true;
+        }
       }
-    }
+      // subgrouped containers select a random day based on frequency
+      else {
+        if( _currentDate == _nextManualFill ) {
+          // manual fill should occur today
+          manualFillToday = true;
 
-    // monthly fills occur at beginning of month
-    if( ManualFillFrequency == input::Container::Monthly ) {
-      if( _currentDate.day() == 1 ) {
+          // shift period forward
+          if( ManualFillFrequency == input::Container::Weekly ) {
+            _nextManualFillPeriod.shift( days(DAYS_IN_WEEK) );
+          }
+          if( ManualFillFrequency == input::Container::Monthly ) {
+            date startOfNextMonth = _nextManualFillPeriod.end() + days(1);
+            date endOfNextMonth = startOfNextMonth.end_of_month();
+            _nextManualFillPeriod = date_period( startOfNextMonth, endOfNextMonth + days(1) );
+          }
+
+          // and randomly select next date within new period
+          _nextManualFill = _nextManualFillPeriod.begin() + days( rand() % _nextManualFillPeriod.length().days() );
+        }
+        else {
+          manualFillToday = false;
+        }
+      }
+
+      if( manualFillToday ) {
         _waterDepth = Height;
       }
     }
@@ -1508,9 +1603,15 @@ SimContainer::GetOutput( boost::gregorian::date d )
   dco.LarvaeDevelopment = _larvaeDevRate;
   dco.PupaeDevelopment = _pupaeDevRate;
 
-  if( IsCloned ) {
-    // the way output is currently handled we need to downscale this container with respect to its
-    // cloned density to be able to accumulate with other cloned containers within this container type
+  dco.IsCloned = IsCloned;
+  if( dco.IsCloned ) {
+    // downscale mosquito counts according to number of clones
+    // this already occurs for what female emergence the location
+    // sees from this container via the CalculateDensityAdjustedNewFemaleWeight
+    // and CalculateDensityAdjustedNewFemaleCount methods
+    //
+    // alternatively we could leave counts as is, and allow CimsimOutput to
+    // average these mosquito counts
     double scale = 1.0 / NumberOfClones;
     dco.Eggs *= scale;
     dco.Larvae *= scale;
@@ -1518,11 +1619,6 @@ SimContainer::GetOutput( boost::gregorian::date d )
     dco.NewFemales *= scale;
     dco.CumulativeFemales *= scale;
     dco.Oviposition *= scale;
-
-    dco.TotalDensity *= NumberOfClones;
-    dco.UntreatedDensity *= NumberOfClones;
-    dco.TreatedDensity *= NumberOfClones;
-    dco.ExcludedDensity *= NumberOfClones;
   }
 
   return dco;

@@ -160,6 +160,9 @@ public:
     EggDevelopment = 0;
     LarvaeDevelopment = 0;
     PupaeDevelopment = 0;
+
+    IsCloned = false;
+    CloneDataCount = 0;
   }
 
 public:
@@ -188,6 +191,9 @@ public:
   double EggDevelopment;
   double LarvaeDevelopment;
   double PupaeDevelopment;
+
+  bool IsCloned;
+  int CloneDataCount;
 };
 
 };

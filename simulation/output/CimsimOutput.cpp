@@ -45,74 +45,68 @@ CimsimOutput::AddDailyLocationOutput( DailyLocationOutput dlo, date d )
 void
 CimsimOutput::AddDailyContainerOutput( DailyContainerOutput dco, date d, int containerID )
 {
-  // first reference existing values to add parameter dco values to
-  DailyContainerOutput & currentDco = ContainerOutputs_[containerID][d];
-
-  // the following values should be the same amongst cloned containers
-  // since stochastic food additions will not effect these
-  currentDco.Depth = dco.Depth;
-  currentDco.MaxTemp = dco.MaxTemp;
-  currentDco.MinTemp = dco.MinTemp;
-  currentDco.TotalDensity = dco.TotalDensity;
-  currentDco.UntreatedDensity = dco.UntreatedDensity;
-  currentDco.TreatedDensity = dco.TreatedDensity;
-  currentDco.ExcludedDensity = dco.ExcludedDensity;
-  currentDco.EggDevelopment = dco.EggDevelopment;
-  currentDco.LarvaeDevelopment = dco.LarvaeDevelopment;
-  currentDco.PupaeDevelopment = dco.PupaeDevelopment;
-
-  // the following values are accumulated amonst cloned containers
-  currentDco.Eggs += dco.Eggs;
-  currentDco.Larvae += dco.Larvae;
-  currentDco.LarvaeFasting += dco.LarvaeFasting;
-  currentDco.LarvaeDeathFromFasting += dco.LarvaeDeathFromFasting;
-  currentDco.NewFemales += dco.NewFemales;
-  currentDco.CumulativeFemales += dco.CumulativeFemales;
-  currentDco.Oviposition += dco.Oviposition;
-
-  // set or average food values
-  if( currentDco.Food != 0 ) {
-    currentDco.Food = (currentDco.Food + dco.Food) / 2.0;
+  if( !dco.IsCloned ) {
+    // simple case for non cloned containers, this dco is the only dco for the container type
+    ContainerOutputs_[containerID][d] = dco;
   }
   else {
-    currentDco.Food = dco.Food;
-  }
+    // for cloned container we require the aggregation of output
 
-  if( currentDco.FoodAddition != 0 ) {
-    currentDco.FoodAddition = (currentDco.FoodAddition + dco.FoodAddition) / 2.0;
-  }
-  else {
-    currentDco.FoodAddition = dco.FoodAddition;
-  }
+    // start by pulling the existing output for this container type
+    DailyContainerOutput & currentDco = ContainerOutputs_[containerID][d];
 
-  if( currentDco.FoodConsumption != 0 ) {
-    currentDco.FoodConsumption = (currentDco.FoodConsumption + dco.FoodConsumption) / 2.0;
-  }
-  else {
-    currentDco.FoodConsumption = dco.FoodConsumption;
-  }
+    // if no data has been added yet...
+    if( currentDco.CloneDataCount == 0 ) {
+      // just push ours in (flagged cloned) and set the count
+      currentDco = dco;
+      currentDco.CloneDataCount = 1;
+    }
+    else {
+      // this require some math to average/accumulate outputs
 
-  if( currentDco.CadaverFoodContribution != 0 ) {
-    currentDco.CadaverFoodContribution = (currentDco.CadaverFoodContribution + dco.CadaverFoodContribution) / 2.0;
-  }
-  else {
-    currentDco.CadaverFoodContribution = dco.CadaverFoodContribution;
-  }
+      // average the water environment
+      currentDco.Depth = (currentDco.Depth + dco.Depth ) / 2;
+      currentDco.MaxTemp = (currentDco.MaxTemp + dco.MaxTemp ) / 2;
+      currentDco.MinTemp = (currentDco.MinTemp + dco.MinTemp ) / 2;
 
-  // accumulate pupae and set/average average weight
-  if( dco.Pupae != 0 ) {
-    if( currentDco.Pupae != 0 ) {
-      // find true population average for average pupae weight
+      // accumulate container densities
+      currentDco.TotalDensity += dco.TotalDensity;
+      currentDco.UntreatedDensity += dco.UntreatedDensity;
+      currentDco.TreatedDensity += dco.TreatedDensity;
+      currentDco.ExcludedDensity += dco.ExcludedDensity;
+
+      // average development rates
+      currentDco.EggDevelopment = dco.EggDevelopment;
+      currentDco.LarvaeDevelopment = dco.LarvaeDevelopment;
+      currentDco.PupaeDevelopment = dco.PupaeDevelopment;
+
+      // accumulate stage related outputs
+      currentDco.Eggs += dco.Eggs;
+      currentDco.Larvae += dco.Larvae;
+      currentDco.LarvaeFasting += dco.LarvaeFasting;
+      currentDco.LarvaeDeathFromFasting += dco.LarvaeDeathFromFasting;
+      currentDco.NewFemales += dco.NewFemales;
+      currentDco.CumulativeFemales += dco.CumulativeFemales;
+      currentDco.Oviposition += dco.Oviposition;
+
+      // average food related output
+      currentDco.Food = (currentDco.Food + dco.Food) / 2.0;
+      currentDco.FoodAddition = (currentDco.FoodAddition + dco.FoodAddition) / 2.0;
+      currentDco.FoodConsumption = (currentDco.FoodConsumption + dco.FoodConsumption) / 2.0;
+      currentDco.CadaverFoodContribution = (currentDco.CadaverFoodContribution + dco.CadaverFoodContribution) / 2.0;
+
+      // accumulate pupae and average their weight (using true population average, not container averages)
       double existingWeight = currentDco.Pupae * currentDco.AvgDryPupWt;
       double newWeight = dco.Pupae * dco.AvgDryPupWt;
       double totalWeight = existingWeight + newWeight;
 
       currentDco.Pupae += dco.Pupae;
-      currentDco.AvgDryPupWt = totalWeight / currentDco.Pupae;
-    }
-    else {
-      currentDco.Pupae = dco.Pupae;
-      currentDco.AvgDryPupWt = dco.AvgDryPupWt;
+      if( currentDco.Pupae != 0 ) {
+        currentDco.AvgDryPupWt = totalWeight / currentDco.Pupae;
+      }
+      else {
+        currentDco.AvgDryPupWt = 0;
+      }
     }
   }
 }

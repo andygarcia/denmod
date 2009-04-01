@@ -119,8 +119,7 @@ public:
   bool IsCovered;               // if container is covered
   double CoverRed;              // reduction in evaporative loss from cover
 
-  double InitialEggs;           // initial number of eggs
-
+  double InitialEggs;                                                       // initial number of eggs
   double InitFood;                                                          // initial amount of food
   double FoodDecayRate;                                                     // daily rate of decay of food
   std::map<boost::gregorian::months_of_year, double> MonthlyFoodAdditions;  // daily food additions by month
@@ -130,6 +129,13 @@ public:
   bool IsCloned;                // container clone status
   int CloneId;                  // clone id within type id
   int NumberOfClones;           // number of clones within type
+
+  // used for cloned hydrology
+  boost::gregorian::date_period _nextDrawdownPeriod;      // period in which next drawdown should take place
+  boost::gregorian::date _nextDrawdown;                   // date for next drawdown
+
+  boost::gregorian::date_period _nextManualFillPeriod;    // period in which next manual fill should take place
+  boost::gregorian::date _nextManualFill;                 // date for next manual fill
 
 private:
   // current date in simulation
