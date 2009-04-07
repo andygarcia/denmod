@@ -312,6 +312,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OptionsForms.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ParameterDisplayBinding.cpp"
 				>
 			</File>
@@ -598,6 +602,15 @@
 				<File
 					RelativePath=".\MonthlySchedulePanel.resx"
 					SubType="Designer"
+					>
+				</File>
+			</File>
+			<File
+				RelativePath=".\OptionsForms.h"
+				FileType="3"
+				>
+				<File
+					RelativePath=".\OptionsForms.resx"
 					>
 				</File>
 			</File>
