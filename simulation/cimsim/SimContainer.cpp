@@ -435,10 +435,10 @@ SimContainer::CalculateWaterDepth( double todaysRain, double relHumid )
           manualFillToday = false;
         }
       }
+    }
 
-      if( manualFillToday ) {
-        _waterDepth = Height;
-      }
+    if( manualFillToday ) {
+      _waterDepth = Height;
     }
   }
 }
