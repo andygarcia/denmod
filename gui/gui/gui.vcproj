@@ -805,7 +805,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Updating denmod.cfg"
-					CommandLine="denmod.cfg &gt; $(TargetDir)\denmod.cfg"
+					CommandLine="denmod.cfg &gt; $(TargetDir)\denmod.cfg&#x0D;&#x0A;"
 					Outputs="denmod.cfg"
 				/>
 			</FileConfiguration>

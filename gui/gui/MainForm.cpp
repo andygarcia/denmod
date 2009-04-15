@@ -37,7 +37,7 @@ MainForm::Initialize(void)
   ReadSettings();
 
   // create cimsim and densim panels
-  CimsimPanel_ = gcnew CimsimPanel( LocationBinding );
+  CimsimPanel_ = gcnew CimsimPanel( LocationBinding, _userSettings );
   DensimPanel_ = gcnew DensimPanel( LocationBinding );
 
   // anchor all sides of panels for resizing

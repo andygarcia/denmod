@@ -1,4 +1,5 @@
 #pragma once
+#include "Settings.h"
 
 using namespace System;
 using namespace System::ComponentModel;
@@ -14,7 +15,7 @@ namespace gui {
   public ref class CimsimOutputForm : public System::Windows::Forms::Form
 	{
 	public:
-    CimsimOutputForm( gui::Location ^ Location );
+    CimsimOutputForm( gui::Location ^ Location, Settings ^ _userSettings );
 	protected:
 		~CimsimOutputForm();
 

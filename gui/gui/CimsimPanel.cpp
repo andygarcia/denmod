@@ -16,8 +16,9 @@ using namespace gui;
 
 
 
-CimsimPanel::CimsimPanel( BindingSource ^ locationBinding )
+CimsimPanel::CimsimPanel( BindingSource ^ locationBinding, Settings ^ userSettings )
 : LocationBinding(locationBinding),
+  _userSettings(userSettings),
   ControlFormMapping(gcnew Collections::Generic::Dictionary<System::Type^, System::Type^>())
 {
 	InitializeComponent();
@@ -101,7 +102,7 @@ CimsimPanel::RunCimsim(void)
     rcf->Close();
 
     // process output
-    CimsimOutputForm ^ cof = gcnew CimsimOutputForm( GetLocation() );
+    CimsimOutputForm ^ cof = gcnew CimsimOutputForm( GetLocation(), _userSettings );
     cof->ShowDialog(this);
     cof->Close();    
   }
