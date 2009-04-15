@@ -312,7 +312,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\OptionsForms.cpp"
+				RelativePath=".\OptionsForm.cpp"
 				>
 			</File>
 			<File
@@ -341,6 +341,10 @@
 			</File>
 			<File
 				RelativePath=".\ScheduleControl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Settings.cpp"
 				>
 			</File>
 			<File
@@ -606,11 +610,12 @@
 				</File>
 			</File>
 			<File
-				RelativePath=".\OptionsForms.h"
+				RelativePath=".\OptionsForm.h"
 				FileType="3"
 				>
 				<File
-					RelativePath=".\OptionsForms.resx"
+					RelativePath=".\OptionsForm.resx"
+					SubType="Designer"
 					>
 				</File>
 			</File>
@@ -681,6 +686,10 @@
 					SubType="Designer"
 					>
 				</File>
+			</File>
+			<File
+				RelativePath=".\Settings.h"
+				>
 			</File>
 			<File
 				RelativePath=".\SingleSchedulePanel.h"
@@ -786,6 +795,21 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\denmod.cfg"
+			DeploymentContent="true"
+			>
+			<FileConfiguration
+				Name="Release|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Updating denmod.cfg"
+					CommandLine="denmod.cfg &gt; $(TargetDir)\denmod.cfg"
+					Outputs="denmod.cfg"
+				/>
+			</FileConfiguration>
+		</File>
 		<File
 			RelativePath=".\licenses.licx"
 			>

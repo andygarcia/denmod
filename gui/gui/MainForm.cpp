@@ -3,6 +3,7 @@
 #include "SplashForm.h"
 #include "AboutDialog.h"
 #include "WeatherForm.h"
+#include "OptionsForm.h"
 
 using namespace gui;
 
@@ -33,6 +34,9 @@ MainForm::MainForm(String ^ filename)
 void
 MainForm::Initialize(void)
 {
+  ReadSettings();
+
+  // create cimsim and densim panels
   CimsimPanel_ = gcnew CimsimPanel( LocationBinding );
   DensimPanel_ = gcnew DensimPanel( LocationBinding );
 
@@ -110,6 +114,10 @@ MainForm::OpenDocument( String ^ newFilename)
 void
 MainForm::OpenSampleLocation(void)
 {
+  // check if active document can be closed
+  if( !CloseDocument() )
+    return;
+
   // load sample location from resource
   Resources::ResourceManager ^ rm = gcnew Resources::ResourceManager( "gui.gui", Reflection::Assembly::GetExecutingAssembly() );
   array<Byte> ^ bytes = (array<Byte> ^) rm->GetObject( "Sample.dml" );
@@ -276,6 +284,9 @@ MainForm::MenuItemHandler( System::Object^ sender, System::EventArgs^ e )
   else if( sender->Equals(saveAsToolStripMenuItem) ) {
     SaveDocument( SaveType::SaveAs );
   }
+  else if( sender->Equals(optionsToolStripMenuItem) ) {
+    ShowOptions();
+  }
   else if( sender->Equals(openWeatherTemplateToolStripMenuItem) ) {
     OpenWeatherTemplate();
   }
@@ -285,6 +296,15 @@ MainForm::MenuItemHandler( System::Object^ sender, System::EventArgs^ e )
   else if( sender->Equals(tsmiHelpAbout) ) {
     ShowAbout();
   }
+}
+
+
+
+void
+MainForm::ShowOptions(void)
+{
+  OptionsForm ^ of = gcnew OptionsForm( _userSettings );
+  of->ShowDialog();
 }
 
 
@@ -404,13 +424,77 @@ MainForm::OpenWeatherTemplate(void)
 }
 
 
+
+System::Void
+MainForm::OnFormClosing( System::Object ^ sender, System::Windows::Forms::FormClosingEventArgs ^ e )
+{
+  // cancel close unless a result of Application::Exit() in MainForm::Exit()
+  if( e->CloseReason == ::CloseReason::UserClosing ) {
+    e->Cancel = true;
+    Exit();
+  }
+}
+
+
+
 void
 MainForm::Exit(void)
 {
   // first close document (possibly prompting save)
-  if( CloseDocument() ) {
-    Application::Exit();
+  if( !CloseDocument() ) {
+    return;
   }
+
+  // save possible changes to user settings
+  WriteSettings();
+
+  Application::Exit();
+}
+
+
+
+void
+MainForm::ReadSettings(void)
+{
+  using namespace IO;
+  using namespace Xml::Serialization;
+
+  // read user settings
+  String ^ filename;
+  filename = Path::Combine( Environment::GetFolderPath(Environment::SpecialFolder::ApplicationData), Application::CompanyName );
+  filename = Path::Combine( filename, Application::ProductName );
+  filename = Path::Combine( filename, "denmod.cfg" );
+
+  try {
+    FileStream ^ fs = gcnew FileStream( filename, FileMode::Open );
+    XmlSerializer ^ xs = gcnew XmlSerializer( gui::Settings::typeid );
+    _userSettings = dynamic_cast<gui::Settings^>( xs->Deserialize(fs) );
+  }
+  catch( Exception ^ e ) {
+    // unable to open/deserialize file, WriteSettings will create
+    Diagnostics::Trace::WriteLine(e->ToString());
+    _userSettings = gcnew Settings();
+  }
+}
+
+
+
+void
+MainForm::WriteSettings(void)
+{
+  using namespace IO;
+  using namespace Xml::Serialization;
+
+  // write user settings
+  String ^ filename;
+  filename = Path::Combine( Environment::GetFolderPath(Environment::SpecialFolder::ApplicationData), Application::CompanyName );
+  filename = Path::Combine( filename, Application::ProductName );
+  filename = Path::Combine( filename, "denmod.cfg" );
+
+  FileStream ^ fs = gcnew FileStream( filename, FileMode::OpenOrCreate );
+
+  XmlSerializer ^ xs = gcnew XmlSerializer( gui::Settings::typeid );
+  xs->Serialize( fs, _userSettings );
 }
 
 

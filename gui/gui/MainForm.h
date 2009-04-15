@@ -2,6 +2,8 @@
 
 #include "CimsimPanel.h"
 #include "DensimPanel.h"
+#include "Settings.h"
+
 
 using namespace System;
 using namespace System::ComponentModel;
@@ -41,25 +43,31 @@ namespace gui {
     bool IsDocumentDirty(void);
     void Exit(void);
 
+    void ReadSettings(void);
+    void WriteSettings(void);
+
+    void ShowOptions(void);
+    void OpenWeatherTemplate(void);
+
+    void ShowAbout(void);
+
     void UpdateBindings(void);
     void UpdateTitleBar(void);
 
     System::Void OnLoad( System::Object ^ sender, System::EventArgs ^ e );
-    System::Void MenuItemHandler( System::Object^ sender, System::EventArgs^ e );
-
+    System::Void MenuItemHandler( System::Object ^ sender, System::EventArgs ^ e );
     System::Void OnImportWeather( System::Object ^ sender, System::EventArgs ^ e );
-    System::Void OnViewWeather(System::Object^  sender, System::EventArgs^  e);
+    System::Void OnViewWeather( System::Object ^ sender, System::EventArgs ^ e);
     System::Void OnCloneWeather( System::Object ^ sender, System::EventArgs ^ e );
     System::Void OnRemoveWeather( System::Object ^ sender, System::EventArgs ^ e );
-    void OpenWeatherTemplate(void);
-
-    void ShowAbout(void);
+    System::Void OnFormClosing( System::Object ^ sender, System::Windows::Forms::FormClosingEventArgs ^ e );
 
   private:
     CimsimPanel ^ CimsimPanel_;
     DensimPanel ^ DensimPanel_;
 
     DmlFile ^ ActiveDocument;
+    Settings ^ _userSettings;
 
   private: System::Windows::Forms::MenuStrip^  menuStrip;
   private: System::Windows::Forms::ToolStrip^  toolStrip;
@@ -297,6 +305,7 @@ private: System::Windows::Forms::Button^  btnView;
       this->optionsToolStripMenuItem->Name = L"optionsToolStripMenuItem";
       this->optionsToolStripMenuItem->Size = System::Drawing::Size(203, 22);
       this->optionsToolStripMenuItem->Text = L"&Options";
+      this->optionsToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::MenuItemHandler);
       // 
       // openWeatherTemplateToolStripMenuItem
       // 
@@ -555,6 +564,7 @@ private: System::Windows::Forms::Button^  btnView;
       this->Name = L"MainForm";
       this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
       this->Text = L"Dengue Models 3.0";
+      this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &MainForm::OnFormClosing);
       this->Load += gcnew System::EventHandler(this, &MainForm::OnLoad);
       this->menuStrip->ResumeLayout(false);
       this->menuStrip->PerformLayout();
@@ -572,5 +582,5 @@ private: System::Windows::Forms::Button^  btnView;
 
     }
 #pragma endregion
-};
+  };
 }

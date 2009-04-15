@@ -14,7 +14,7 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyTitleAttribute("DengueModels")];
 [assembly:AssemblyDescriptionAttribute("Dengue Models: CIMSiM/DENSiM")];
 [assembly:AssemblyConfigurationAttribute("")];
-[assembly:AssemblyCompanyAttribute("IDAnalysis")];
+[assembly:AssemblyCompanyAttribute("ID-Analysis")];
 [assembly:AssemblyProductAttribute("Dengue Models")];
 [assembly:AssemblyCopyrightAttribute("Copyright (c)  2007")];
 [assembly:AssemblyTrademarkAttribute("")];
@@ -31,7 +31,7 @@ using namespace System::Security::Permissions;
 // You can specify all the value or you can default the Revision and Build Numbers
 // by using the '*' as shown below:
 
-[assembly:AssemblyVersionAttribute("3.20.*")];
+[assembly:AssemblyVersionAttribute("3.21.*")];
 
 [assembly:ComVisible(false)];
 
