@@ -12,6 +12,7 @@ namespace output {
 public enum class ChartIds : int
 {
   CimsimMain = 0,
+  CimsimMainScaled,
   CimsimFemales,
   CimsimAverageFemaleWetWeight,
   CimsimOviposition,
