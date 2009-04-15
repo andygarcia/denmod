@@ -218,19 +218,19 @@ Location::ResetBiology(System::Void)
 
 
 void
-Location::RunCimsim( bool usePop )
+Location::RunCimsim( bool usePop, bool stochasticAdvancement )
 {
   // run cimsim, using all available weather
   DateTime startDate = Weather_->MinDate;
   DateTime stopDate = Weather_->MaxDate;
 
-  RunCimsim( usePop, startDate, stopDate );
+  RunCimsim( usePop, stochasticAdvancement, startDate, stopDate );
 }
 
 
 
 void
-Location::RunCimsim( bool usePop, DateTime startDate, DateTime stopDate )
+Location::RunCimsim( bool usePop, bool stochasticAdvancement, DateTime startDate, DateTime stopDate )
 {
   int startYear = startDate.Year;
   int stopYear = stopDate.Year;
@@ -262,7 +262,7 @@ Location::RunCimsim( bool usePop, DateTime startDate, DateTime stopDate )
 
 
   // run simulation, optionally using equillbrium population
-  cssim = new sim::cs::Simulation( loc, bStartDate, bStopDate, usePop );
+  cssim = new sim::cs::Simulation( loc, bStartDate, bStopDate, usePop, stochasticAdvancement );
   cssim->Start();
   _isCimsimCompleted = true;
 
