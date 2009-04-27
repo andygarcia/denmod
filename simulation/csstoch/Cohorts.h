@@ -7,7 +7,7 @@
 
 
 namespace sim {
-namespace cs {
+namespace csstoch {
 
 
 class EggCohort

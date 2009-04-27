@@ -9,7 +9,7 @@
 
 
 namespace sim {
-namespace cs {
+namespace csstoch {
 
 double DevelopmentRate( double p25, double tempt, double dha, double dh, double th2 );
 

@@ -9,7 +9,7 @@
 
 
 namespace sim {
-namespace cs {
+namespace csstoch {
 
 static const int DAYS_IN_WEEK = 7;
 static const int YrLen = 365;

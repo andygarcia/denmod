@@ -10,7 +10,7 @@
 
 
 namespace sim {
-namespace cs {
+namespace csstoch {
 
 
 class SimLocation
