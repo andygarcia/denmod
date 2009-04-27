@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="cimsim"
+	Name="csstoch"
 	ProjectGUID="{3181D845-C5F4-46CA-9370-E40A376A9DC4}"
 	RootNamespace="cimsim"
 	Keyword="Win32Proj"
@@ -141,11 +141,9 @@
 	<References>
 		<ProjectReference
 			ReferencedProjectIdentifier="{EF97B474-CAB2-4890-ABF6-46C64A56DEF0}"
-			RelativePathToProject=".\simulation\input\input.vcproj"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{D83788CB-CAE8-4537-B69B-65C06CC594E8}"
-			RelativePathToProject=".\simulation\output\output.vcproj"
 		/>
 	</References>
 	<Files>
