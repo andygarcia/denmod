@@ -155,6 +155,18 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\DiscreteSimContainer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DiscreteSimLocation.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DiscreteSimulation.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SimClasses.cpp"
 				>
 			</File>
@@ -198,6 +210,18 @@
 			>
 			<File
 				RelativePath=".\Cohorts.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DiscreteSimContainer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DiscreteSimLocation.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DiscreteSimulation.h"
 				>
 			</File>
 			<File
