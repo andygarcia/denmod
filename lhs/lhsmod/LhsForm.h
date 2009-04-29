@@ -33,6 +33,7 @@ namespace lhsmod {
     {
     public:
       int NumberRuns;
+      bool useDiscrete;
       int CurrentRun;
       TimeSpan RunTime;
     };
@@ -53,6 +54,7 @@ namespace lhsmod {
   private: System::Windows::Forms::ProgressBar^  pbarRuns;
   private: System::Windows::Forms::Label^  lblCompletedRuns;
   private: System::Windows::Forms::Label^  lblEstimatedTime;
+  private: System::Windows::Forms::CheckBox^  chkDiscrete;
 
 
 
@@ -88,6 +90,7 @@ namespace lhsmod {
       this->pbarRuns = (gcnew System::Windows::Forms::ProgressBar());
       this->lblCompletedRuns = (gcnew System::Windows::Forms::Label());
       this->lblEstimatedTime = (gcnew System::Windows::Forms::Label());
+      this->chkDiscrete = (gcnew System::Windows::Forms::CheckBox());
       this->SuspendLayout();
       // 
       // tboxLsp
@@ -151,7 +154,7 @@ namespace lhsmod {
       // btnRun
       // 
       this->btnRun->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
-      this->btnRun->Location = System::Drawing::Point(385, 159);
+      this->btnRun->Location = System::Drawing::Point(385, 201);
       this->btnRun->Name = L"btnRun";
       this->btnRun->Size = System::Drawing::Size(75, 23);
       this->btnRun->TabIndex = 4;
@@ -192,7 +195,7 @@ namespace lhsmod {
       // 
       this->pbarRuns->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left) 
         | System::Windows::Forms::AnchorStyles::Right));
-      this->pbarRuns->Location = System::Drawing::Point(105, 159);
+      this->pbarRuns->Location = System::Drawing::Point(105, 201);
       this->pbarRuns->Name = L"pbarRuns";
       this->pbarRuns->Size = System::Drawing::Size(274, 23);
       this->pbarRuns->TabIndex = 5;
@@ -201,7 +204,7 @@ namespace lhsmod {
       // 
       this->lblCompletedRuns->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
       this->lblCompletedRuns->AutoSize = true;
-      this->lblCompletedRuns->Location = System::Drawing::Point(102, 122);
+      this->lblCompletedRuns->Location = System::Drawing::Point(102, 164);
       this->lblCompletedRuns->Name = L"lblCompletedRuns";
       this->lblCompletedRuns->Size = System::Drawing::Size(108, 13);
       this->lblCompletedRuns->TabIndex = 6;
@@ -211,17 +214,28 @@ namespace lhsmod {
       // 
       this->lblEstimatedTime->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
       this->lblEstimatedTime->AutoSize = true;
-      this->lblEstimatedTime->Location = System::Drawing::Point(102, 139);
+      this->lblEstimatedTime->Location = System::Drawing::Point(102, 181);
       this->lblEstimatedTime->Name = L"lblEstimatedTime";
       this->lblEstimatedTime->Size = System::Drawing::Size(146, 13);
       this->lblEstimatedTime->TabIndex = 7;
       this->lblEstimatedTime->Text = L"Estimated Time Left: 0:00 min";
       // 
+      // chkDiscrete
+      // 
+      this->chkDiscrete->AutoSize = true;
+      this->chkDiscrete->Location = System::Drawing::Point(105, 98);
+      this->chkDiscrete->Name = L"chkDiscrete";
+      this->chkDiscrete->Size = System::Drawing::Size(133, 17);
+      this->chkDiscrete->TabIndex = 8;
+      this->chkDiscrete->Text = L"Discrete cohort counts";
+      this->chkDiscrete->UseVisualStyleBackColor = true;
+      // 
       // LhsForm
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-      this->ClientSize = System::Drawing::Size(472, 194);
+      this->ClientSize = System::Drawing::Size(472, 236);
+      this->Controls->Add(this->chkDiscrete);
       this->Controls->Add(this->lblEstimatedTime);
       this->Controls->Add(this->lblCompletedRuns);
       this->Controls->Add(this->pbarRuns);

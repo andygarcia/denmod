@@ -201,7 +201,7 @@ LhsForm::DoRuns( Object ^ sender, DoWorkEventArgs ^ e )
       return;
     }
 
-    baseLocation->RunCimsim( true );
+    baseLocation->RunCimsim( true, chkDiscrete->Checked );
 
     if( bw->CancellationPending ) {
       e->Cancel = true;
@@ -291,6 +291,7 @@ LhsForm::FinishedRuns( Object ^ sender, RunWorkerCompletedEventArgs ^ e )
   btnBrowseDml->Enabled = true;
   btnBrowseLsp->Enabled = true;
   btnBrowseOutput->Enabled = true;
+  chkDiscrete->Enabled = true;
   tboxDml->Enabled = true;
   tboxLsp->Enabled = true;
   tboxOutput->Enabled = true;
@@ -321,6 +322,7 @@ LhsForm::OnRun(System::Object^  sender, System::EventArgs^  e)
     btnBrowseDml->Enabled = false;
     btnBrowseLsp->Enabled = false;
     btnBrowseOutput->Enabled = false;
+    chkDiscrete->Enabled = false;
     tboxDml->Enabled = false;
     tboxLsp->Enabled = false;
     tboxOutput->Enabled = false;
