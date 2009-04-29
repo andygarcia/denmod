@@ -254,29 +254,50 @@ Location::RunCimsim( bool usePop, bool stochasticAdvancement, DateTime startDate
 
   // get unmanaged simulation object, representing input parameters for simulation
   input::Location * loc = GetSimObject();
-  sim::cs::Simulation * cssim;
 
   // find start and stop dates for simulation
   boost::gregorian::date bStartDate = boost::gregorian::date( startYear, 1, 1 );
   boost::gregorian::date bStopDate = boost::gregorian::date( stopYear, 12, 31 );
 
 
-  // run simulation, optionally using equillbrium population
-  cssim = new sim::cs::Simulation( loc, bStartDate, bStopDate, usePop, stochasticAdvancement );
-  cssim->Start();
-  _isCimsimCompleted = true;
+  // run actual simulation, continuous or discrete
+  if( !stochasticAdvancement ) {
+    // not using discrete numbers or stochastic advancement
+    // run simulation, optionally using equillbrium population
+    sim::cs::Simulation * cssim = new sim::cs::Simulation( loc, bStartDate, bStopDate, usePop );
+    cssim->Start();
+    _isCimsimCompleted = true;
 
-  // simulation complete, process output for use by gui and densim
-  sim::output::CimsimOutput * cd = cssim->GetSimOutput();
-  MosData_ = cd->GetMosData();
+    // simulation complete, process output for use by gui and densim
+    sim::output::CimsimOutput * cso = cssim->GetSimOutput();
+    MosData_ = cso->GetMosData();
 
-  // copy output to managed classes
-  CimsimOutput_ = ProcessCimsimOutput( cd, startDate, stopDate );
+    // copy output to managed classes
+    CimsimOutput_ = ProcessCimsimOutput( cso, startDate, stopDate );
 
-  // delete input object, simulation, and managed output
-  delete loc;
-  delete cssim;
-  delete cd;
+    // delete input object, simulation, and managed output
+    delete loc;
+    delete cssim;
+    delete cso;
+  }
+  else {
+    // using discrete numbers and stochastic advancement
+    sim::cs::DiscreteSimulation * cssim = new sim::cs::DiscreteSimulation( loc, bStartDate, bStopDate, usePop );
+    cssim->Start();
+    _isCimsimCompleted = true;
+
+    // simulation complete, process output for use by gui and densim
+    sim::output::CimsimOutput * cso = cssim->GetSimOutput();
+    MosData_ = cso->GetMosData();
+
+    // copy output to managed classes
+    CimsimOutput_ = ProcessCimsimOutput( cso, startDate, stopDate );
+
+    // delete input object, simulation, and managed output
+    delete loc;
+    delete cssim;
+    delete cso;
+  }
 }
 
 
