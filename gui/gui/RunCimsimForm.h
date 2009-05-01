@@ -17,7 +17,7 @@ namespace gui {
 
   // Constructors
 	public:
-		RunCimsimForm( BindingSource ^ locationBinding );
+		RunCimsimForm( BindingSource ^ locationBinding, bool establishedPopulationDefault );
 	protected:
 		~RunCimsimForm();
 

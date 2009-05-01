@@ -26,8 +26,9 @@ OptionsForm::~OptionsForm()
 System::Void
 OptionsForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
 {
-  chkScaleCimsimMainGraph->DataBindings->Add( "Checked", _settings, "ScaleCimsimMainGraph" );
+  chkEstablishedPopulationDefault->DataBindings->Add( "Checked", _settings, "EstablishedPopulationDefault" );
   chkStochasticAdvancement->DataBindings->Add( "Checked", _settings, "StochasticAdvancement" );
+  chkScaleCimsimMainGraph->DataBindings->Add( "Checked", _settings, "ScaleCimsimMainGraph" );
 }
 
 

@@ -33,9 +33,22 @@ public:
     }
   }
 
+  property bool EstablishedPopulationDefault {
+    bool get(void) {
+      return _establishedPopulationDefault;
+    }
+    void set(bool b) {
+      if( b != _establishedPopulationDefault) {
+        _establishedPopulationDefault= b;
+        NotifyPropertyChanged( "EstablishedPopulationDefault" );
+      }
+    }
+  }
+
 private:
   bool _scaleCimsimMainGraph;
   bool _stochasticAdvancement;
+  bool _establishedPopulationDefault;
 };
 
 };

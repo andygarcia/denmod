@@ -94,7 +94,7 @@ CimsimPanel::OnRunCimsim(System::Object^  sender, System::EventArgs^  e)
 void
 CimsimPanel::RunCimsim(void)
 {
-  RunCimsimForm ^ rcf = gcnew RunCimsimForm(LocationBinding);
+  RunCimsimForm ^ rcf = gcnew RunCimsimForm( LocationBinding, _userSettings->EstablishedPopulationDefault );
   if( rcf->ShowDialog(this) == ::DialogResult::OK ) {
     // run simulation
     gui::Location::RunCimsimOptions ^ rco = rcf->RunCimsimOptions;

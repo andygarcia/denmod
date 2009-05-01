@@ -31,6 +31,7 @@ namespace gui {
   private: System::Windows::Forms::CheckBox^  chkScaleCimsimMainGraph;
   private: System::Windows::Forms::CheckBox^  chkStochasticAdvancement;
   private: System::Windows::Forms::GroupBox^  gboxCimsim;
+  private: System::Windows::Forms::CheckBox^  chkEstablishedPopulationDefault;
 
 	private:
 		/// <summary>
@@ -50,6 +51,7 @@ namespace gui {
       this->chkScaleCimsimMainGraph = (gcnew System::Windows::Forms::CheckBox());
       this->chkStochasticAdvancement = (gcnew System::Windows::Forms::CheckBox());
       this->gboxCimsim = (gcnew System::Windows::Forms::GroupBox());
+      this->chkEstablishedPopulationDefault = (gcnew System::Windows::Forms::CheckBox());
       this->gboxCimsim->SuspendLayout();
       this->SuspendLayout();
       // 
@@ -57,7 +59,7 @@ namespace gui {
       // 
       this->btnOk->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
       this->btnOk->DialogResult = System::Windows::Forms::DialogResult::OK;
-      this->btnOk->Location = System::Drawing::Point(142, 93);
+      this->btnOk->Location = System::Drawing::Point(142, 121);
       this->btnOk->Name = L"btnOk";
       this->btnOk->Size = System::Drawing::Size(75, 23);
       this->btnOk->TabIndex = 0;
@@ -69,7 +71,7 @@ namespace gui {
       // 
       this->btnCancel->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
       this->btnCancel->DialogResult = System::Windows::Forms::DialogResult::Cancel;
-      this->btnCancel->Location = System::Drawing::Point(223, 93);
+      this->btnCancel->Location = System::Drawing::Point(223, 121);
       this->btnCancel->Name = L"btnCancel";
       this->btnCancel->Size = System::Drawing::Size(75, 23);
       this->btnCancel->TabIndex = 0;
@@ -80,7 +82,7 @@ namespace gui {
       // chkScaleCimsimMainGraph
       // 
       this->chkScaleCimsimMainGraph->AutoSize = true;
-      this->chkScaleCimsimMainGraph->Location = System::Drawing::Point(6, 42);
+      this->chkScaleCimsimMainGraph->Location = System::Drawing::Point(6, 68);
       this->chkScaleCimsimMainGraph->Name = L"chkScaleCimsimMainGraph";
       this->chkScaleCimsimMainGraph->Size = System::Drawing::Size(268, 17);
       this->chkScaleCimsimMainGraph->TabIndex = 1;
@@ -90,11 +92,11 @@ namespace gui {
       // chkStochasticAdvancement
       // 
       this->chkStochasticAdvancement->AutoSize = true;
-      this->chkStochasticAdvancement->Location = System::Drawing::Point(6, 19);
+      this->chkStochasticAdvancement->Location = System::Drawing::Point(6, 45);
       this->chkStochasticAdvancement->Name = L"chkStochasticAdvancement";
-      this->chkStochasticAdvancement->Size = System::Drawing::Size(239, 17);
+      this->chkStochasticAdvancement->Size = System::Drawing::Size(240, 17);
       this->chkStochasticAdvancement->TabIndex = 2;
-      this->chkStochasticAdvancement->Text = L"Use stochasticity for all stage advancements.";
+      this->chkStochasticAdvancement->Text = L"Use stochasticity for discrete cohort numbers.";
       this->chkStochasticAdvancement->UseVisualStyleBackColor = true;
       // 
       // gboxCimsim
@@ -102,14 +104,25 @@ namespace gui {
       this->gboxCimsim->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom) 
         | System::Windows::Forms::AnchorStyles::Left) 
         | System::Windows::Forms::AnchorStyles::Right));
+      this->gboxCimsim->Controls->Add(this->chkEstablishedPopulationDefault);
       this->gboxCimsim->Controls->Add(this->chkStochasticAdvancement);
       this->gboxCimsim->Controls->Add(this->chkScaleCimsimMainGraph);
       this->gboxCimsim->Location = System::Drawing::Point(12, 12);
       this->gboxCimsim->Name = L"gboxCimsim";
-      this->gboxCimsim->Size = System::Drawing::Size(286, 68);
+      this->gboxCimsim->Size = System::Drawing::Size(286, 96);
       this->gboxCimsim->TabIndex = 3;
       this->gboxCimsim->TabStop = false;
       this->gboxCimsim->Text = L"CIMSiM";
+      // 
+      // chkEstablishedPopulationDefault
+      // 
+      this->chkEstablishedPopulationDefault->AutoSize = true;
+      this->chkEstablishedPopulationDefault->Location = System::Drawing::Point(6, 22);
+      this->chkEstablishedPopulationDefault->Name = L"chkEstablishedPopulationDefault";
+      this->chkEstablishedPopulationDefault->Size = System::Drawing::Size(203, 17);
+      this->chkEstablishedPopulationDefault->TabIndex = 2;
+      this->chkEstablishedPopulationDefault->Text = L"Run established population by default";
+      this->chkEstablishedPopulationDefault->UseVisualStyleBackColor = true;
       // 
       // OptionsForm
       // 
@@ -117,7 +130,7 @@ namespace gui {
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
       this->CancelButton = this->btnCancel;
-      this->ClientSize = System::Drawing::Size(310, 128);
+      this->ClientSize = System::Drawing::Size(310, 156);
       this->ControlBox = false;
       this->Controls->Add(this->gboxCimsim);
       this->Controls->Add(this->btnCancel);

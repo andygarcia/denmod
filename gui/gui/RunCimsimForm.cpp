@@ -5,7 +5,7 @@ using namespace gui;
 
 
 
-RunCimsimForm::RunCimsimForm(BindingSource ^ locationBinding)
+RunCimsimForm::RunCimsimForm(BindingSource ^ locationBinding, bool establishedPopulationDefault )
 : _locationBinding(locationBinding)
 {
 	InitializeComponent();
@@ -23,6 +23,9 @@ RunCimsimForm::RunCimsimForm(BindingSource ^ locationBinding)
   // set intially to start and stop with all available years
   cboxStartYear->SelectedItem = firstYear;
   cboxStopYear->SelectedItem = lastYear;
+
+  // set established population initial state
+  chkUsePop->Checked = establishedPopulationDefault;
 }
 
 
