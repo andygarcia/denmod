@@ -4,7 +4,7 @@
 	Version="8.00"
 	Name="parsedos"
 	ProjectGUID="{DD4542A3-648F-4282-9B77-4786F6B917A6}"
-	RootNamespace="parsecs1"
+	RootNamespace="parsedos"
 	Keyword="ManagedCProj"
 	>
 	<Platforms>

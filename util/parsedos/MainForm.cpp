@@ -17,8 +17,11 @@ MainForm::MainForm(void)
     cfgXML->Load( configFile );
     XmlNode ^ xmln;
 
-    xmln = cfgXML->DocumentElement->SelectSingleNode( "InputURI" );
+    xmln = cfgXML->DocumentElement->SelectSingleNode( "CimsimInputURI" );
     tboxCimsimInput->Text = xmln->FirstChild->Value;
+
+    xmln = cfgXML->DocumentElement->SelectSingleNode( "DensimInputURI" );
+    tboxDensimInput->Text = xmln->FirstChild->Value;
   }
   catch( FileNotFoundException ^ e ) {
     // no config loaded, destructor will create new config file
@@ -44,8 +47,11 @@ MainForm::~MainForm()
     cfgXml->Load( configFile );
     XmlNode ^ xmln;
 
-    xmln = cfgXml->DocumentElement->SelectSingleNode( "InputURI" );
+    xmln = cfgXml->DocumentElement->SelectSingleNode( "CimsimInputURI" );
     xmln->FirstChild->Value = tboxCimsimInput->Text;
+
+    xmln = cfgXml->DocumentElement->SelectSingleNode( "DensimInputURI" );
+    xmln->FirstChild->Value = tboxDensimInput->Text;
     
     cfgXml->Save( configFile );
   }
@@ -61,9 +67,15 @@ MainForm::~MainForm()
     cfgXml->AppendChild(rootNode);
 
     // create and append InputURI element and value
-    XmlElement ^ inputNode = cfgXml->CreateElement( "InputURI" );
+    XmlElement ^ inputNode = cfgXml->CreateElement( "CimsimInputURI" );
     rootNode->AppendChild( inputNode );
     XmlText ^ inputText = cfgXml->CreateTextNode( tboxCimsimInput->Text );
+    inputNode->AppendChild( inputText );
+
+    // create and append InputURI element and value
+    inputNode = cfgXml->CreateElement( "DensimInputURI" );
+    rootNode->AppendChild( inputNode );
+    inputText = cfgXml->CreateTextNode( tboxDensimInput->Text );
     inputNode->AppendChild( inputText );
 
     // save xml to disk
@@ -108,13 +120,19 @@ MainForm::OnHelp( System::Object ^ sender, System::EventArgs ^ e )
 }
 
 
+
 System::Void
 MainForm::OnBrowseInput(System::Object^  sender, System::EventArgs^  e)
 {
   FolderBrowserDialog ^ fbd = gcnew FolderBrowserDialog();
   fbd->SelectedPath = tboxCimsimInput->Text;
   if( fbd->ShowDialog() == Windows::Forms::DialogResult::OK ) {
-    tboxCimsimInput->Text = fbd->SelectedPath;
+    if( sender == btnCimsimBrowse ) {
+      tboxCimsimInput->Text = fbd->SelectedPath;
+    }
+    if( sender == btnDensimBrowse ) {
+      tboxDensimInput->Text = fbd->SelectedPath;
+    }
   }
 }
 
@@ -134,7 +152,8 @@ MainForm::OnDragDropInput(System::Object^  sender, System::Windows::Forms::DragE
       String ^ firstFile = ao[0]->ToString();
       FileInfo ^ fi = gcnew FileInfo( firstFile );
 
-      tboxCimsimInput->Text = ao[0]->ToString();
+      TextBox ^ tbox = static_cast<TextBox^>(sender);
+      tbox->Text = ao[0]->ToString();
     }
   }
 }

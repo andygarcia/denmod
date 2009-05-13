@@ -102,18 +102,18 @@ namespace parsedos {
       // tboxCimsimInput
       // 
       this->tboxCimsimInput->AllowDrop = true;
-      this->tboxCimsimInput->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
-        | System::Windows::Forms::AnchorStyles::Right));
+      this->tboxCimsimInput->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Left | System::Windows::Forms::AnchorStyles::Right));
       this->tboxCimsimInput->Location = System::Drawing::Point(6, 19);
       this->tboxCimsimInput->Name = L"tboxCimsimInput";
-      this->tboxCimsimInput->Size = System::Drawing::Size(410, 20);
+      this->tboxCimsimInput->Size = System::Drawing::Size(179, 20);
       this->tboxCimsimInput->TabIndex = 1;
       this->tboxCimsimInput->DragDrop += gcnew System::Windows::Forms::DragEventHandler(this, &MainForm::OnDragDropInput);
       this->tboxCimsimInput->DragEnter += gcnew System::Windows::Forms::DragEventHandler(this, &MainForm::OnDragEnter);
       // 
       // btnParse
       // 
-      this->btnParse->Location = System::Drawing::Point(412, 184);
+      this->btnParse->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
+      this->btnParse->Location = System::Drawing::Point(178, 172);
       this->btnParse->Name = L"btnParse";
       this->btnParse->Size = System::Drawing::Size(75, 23);
       this->btnParse->TabIndex = 6;
@@ -123,8 +123,8 @@ namespace parsedos {
       // 
       // btnCimsimBrowse
       // 
-      this->btnCimsimBrowse->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
-      this->btnCimsimBrowse->Location = System::Drawing::Point(422, 19);
+      this->btnCimsimBrowse->Anchor = System::Windows::Forms::AnchorStyles::Right;
+      this->btnCimsimBrowse->Location = System::Drawing::Point(191, 18);
       this->btnCimsimBrowse->Name = L"btnCimsimBrowse";
       this->btnCimsimBrowse->Size = System::Drawing::Size(24, 20);
       this->btnCimsimBrowse->TabIndex = 2;
@@ -134,7 +134,7 @@ namespace parsedos {
       // 
       // btnHelp
       // 
-      this->btnHelp->Location = System::Drawing::Point(13, 184);
+      this->btnHelp->Location = System::Drawing::Point(12, 172);
       this->btnHelp->Name = L"btnHelp";
       this->btnHelp->Size = System::Drawing::Size(75, 23);
       this->btnHelp->TabIndex = 6;
@@ -164,34 +164,40 @@ namespace parsedos {
       // 
       // gboxOutput
       // 
+      this->gboxOutput->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
+        | System::Windows::Forms::AnchorStyles::Right));
       this->gboxOutput->Controls->Add(this->cboxXml);
       this->gboxOutput->Controls->Add(this->cboxTxt);
-      this->gboxOutput->Location = System::Drawing::Point(12, 105);
+      this->gboxOutput->Location = System::Drawing::Point(12, 98);
       this->gboxOutput->Name = L"gboxOutput";
-      this->gboxOutput->Size = System::Drawing::Size(474, 68);
+      this->gboxOutput->Size = System::Drawing::Size(241, 68);
       this->gboxOutput->TabIndex = 8;
       this->gboxOutput->TabStop = false;
       this->gboxOutput->Text = L"Output Formats:";
       // 
       // gboxCimsimInput
       // 
+      this->gboxCimsimInput->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
+        | System::Windows::Forms::AnchorStyles::Right));
       this->gboxCimsimInput->Controls->Add(this->tboxCimsimInput);
       this->gboxCimsimInput->Controls->Add(this->btnCimsimBrowse);
-      this->gboxCimsimInput->Location = System::Drawing::Point(6, 6);
+      this->gboxCimsimInput->Location = System::Drawing::Point(6, 3);
       this->gboxCimsimInput->Name = L"gboxCimsimInput";
-      this->gboxCimsimInput->Size = System::Drawing::Size(452, 50);
+      this->gboxCimsimInput->Size = System::Drawing::Size(221, 45);
       this->gboxCimsimInput->TabIndex = 8;
       this->gboxCimsimInput->TabStop = false;
       this->gboxCimsimInput->Text = L"Input Directory";
       // 
       // tabControl1
       // 
+      this->tabControl1->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
+        | System::Windows::Forms::AnchorStyles::Right));
       this->tabControl1->Controls->Add(this->tabPageCimsim);
       this->tabControl1->Controls->Add(this->tabPageDensim);
       this->tabControl1->Location = System::Drawing::Point(12, 12);
       this->tabControl1->Name = L"tabControl1";
       this->tabControl1->SelectedIndex = 0;
-      this->tabControl1->Size = System::Drawing::Size(474, 87);
+      this->tabControl1->Size = System::Drawing::Size(241, 80);
       this->tabControl1->TabIndex = 9;
       // 
       // tabPageCimsim
@@ -200,7 +206,7 @@ namespace parsedos {
       this->tabPageCimsim->Location = System::Drawing::Point(4, 22);
       this->tabPageCimsim->Name = L"tabPageCimsim";
       this->tabPageCimsim->Padding = System::Windows::Forms::Padding(3);
-      this->tabPageCimsim->Size = System::Drawing::Size(466, 61);
+      this->tabPageCimsim->Size = System::Drawing::Size(233, 54);
       this->tabPageCimsim->TabIndex = 0;
       this->tabPageCimsim->Text = L"CIMSiM";
       this->tabPageCimsim->UseVisualStyleBackColor = true;
@@ -211,18 +217,20 @@ namespace parsedos {
       this->tabPageDensim->Location = System::Drawing::Point(4, 22);
       this->tabPageDensim->Name = L"tabPageDensim";
       this->tabPageDensim->Padding = System::Windows::Forms::Padding(3);
-      this->tabPageDensim->Size = System::Drawing::Size(466, 61);
+      this->tabPageDensim->Size = System::Drawing::Size(233, 54);
       this->tabPageDensim->TabIndex = 1;
       this->tabPageDensim->Text = L"DENSiM";
       this->tabPageDensim->UseVisualStyleBackColor = true;
       // 
       // gboxDensimInput
       // 
+      this->gboxDensimInput->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
+        | System::Windows::Forms::AnchorStyles::Right));
       this->gboxDensimInput->Controls->Add(this->tboxDensimInput);
       this->gboxDensimInput->Controls->Add(this->btnDensimBrowse);
-      this->gboxDensimInput->Location = System::Drawing::Point(6, 6);
+      this->gboxDensimInput->Location = System::Drawing::Point(6, 3);
       this->gboxDensimInput->Name = L"gboxDensimInput";
-      this->gboxDensimInput->Size = System::Drawing::Size(452, 50);
+      this->gboxDensimInput->Size = System::Drawing::Size(221, 45);
       this->gboxDensimInput->TabIndex = 10;
       this->gboxDensimInput->TabStop = false;
       this->gboxDensimInput->Text = L"Input Directory";
@@ -234,29 +242,33 @@ namespace parsedos {
         | System::Windows::Forms::AnchorStyles::Right));
       this->tboxDensimInput->Location = System::Drawing::Point(6, 19);
       this->tboxDensimInput->Name = L"tboxDensimInput";
-      this->tboxDensimInput->Size = System::Drawing::Size(410, 20);
+      this->tboxDensimInput->Size = System::Drawing::Size(179, 20);
       this->tboxDensimInput->TabIndex = 1;
+      this->tboxDensimInput->DragDrop += gcnew System::Windows::Forms::DragEventHandler(this, &MainForm::OnDragDropInput);
+      this->tboxDensimInput->DragEnter += gcnew System::Windows::Forms::DragEventHandler(this, &MainForm::OnDragEnter);
       // 
       // btnDensimBrowse
       // 
       this->btnDensimBrowse->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
-      this->btnDensimBrowse->Location = System::Drawing::Point(422, 19);
+      this->btnDensimBrowse->Location = System::Drawing::Point(191, 18);
       this->btnDensimBrowse->Name = L"btnDensimBrowse";
       this->btnDensimBrowse->Size = System::Drawing::Size(24, 20);
       this->btnDensimBrowse->TabIndex = 2;
       this->btnDensimBrowse->Text = L"...";
       this->btnDensimBrowse->UseVisualStyleBackColor = true;
+      this->btnDensimBrowse->Click += gcnew System::EventHandler(this, &MainForm::OnBrowseInput);
       // 
       // MainForm
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-      this->ClientSize = System::Drawing::Size(503, 227);
+      this->ClientSize = System::Drawing::Size(265, 209);
       this->Controls->Add(this->tabControl1);
       this->Controls->Add(this->gboxOutput);
       this->Controls->Add(this->btnHelp);
       this->Controls->Add(this->btnParse);
-      this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedSingle;
+      this->MaximumSize = System::Drawing::Size(1024, 239);
+      this->MinimumSize = System::Drawing::Size(239, 239);
       this->Name = L"MainForm";
       this->Text = L"DENMOD 1.0 (DOS) Output Parser";
       this->gboxOutput->ResumeLayout(false);

@@ -8,6 +8,7 @@ using namespace parsedos;
 HelpForm::HelpForm(void)
 {
 	InitializeComponent();
+  tabPageCimsim->BackColor = SystemColors::Control;
   tabPageDensim->BackColor = SystemColors::Control;
 }
 
