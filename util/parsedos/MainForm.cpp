@@ -22,6 +22,12 @@ MainForm::MainForm(void)
 
     xmln = cfgXML->DocumentElement->SelectSingleNode( "DensimInputURI" );
     tboxDensimInput->Text = xmln->FirstChild->Value;
+
+    xmln = cfgXML->DocumentElement->SelectSingleNode( "ExcelEnabled" );
+    cboxXml->Checked = Convert::ToBoolean( xmln->FirstChild->Value );
+
+    xmln = cfgXML->DocumentElement->SelectSingleNode( "TextEnabled" );
+    cboxTxt->Checked = Convert::ToBoolean( xmln->FirstChild->Value );
   }
   catch( FileNotFoundException ^ e ) {
     // no config loaded, destructor will create new config file
@@ -52,6 +58,12 @@ MainForm::~MainForm()
 
     xmln = cfgXml->DocumentElement->SelectSingleNode( "DensimInputURI" );
     xmln->FirstChild->Value = tboxDensimInput->Text;
+
+    xmln = cfgXml->DocumentElement->SelectSingleNode( "ExcelEnabled" );
+    xmln->FirstChild->Value = Convert::ToString( cboxXml->Checked );
+
+    xmln = cfgXml->DocumentElement->SelectSingleNode( "TextEnabled" );
+    xmln->FirstChild->Value = Convert::ToString( cboxTxt->Checked );
     
     cfgXml->Save( configFile );
   }
@@ -76,6 +88,18 @@ MainForm::~MainForm()
     inputNode = cfgXml->CreateElement( "DensimInputURI" );
     rootNode->AppendChild( inputNode );
     inputText = cfgXml->CreateTextNode( tboxDensimInput->Text );
+    inputNode->AppendChild( inputText );
+
+    // create and append InputURI element and value
+    inputNode = cfgXml->CreateElement( "ExcelEnabled" );
+    rootNode->AppendChild( inputNode );
+    inputText = cfgXml->CreateTextNode( Convert::ToString(cboxXml->Checked) );
+    inputNode->AppendChild( inputText );
+
+    // create and append InputURI element and value
+    inputNode = cfgXml->CreateElement( "TextEnabled" );
+    rootNode->AppendChild( inputNode );
+    inputText = cfgXml->CreateTextNode( Convert::ToString(cboxTxt->Checked) );
     inputNode->AppendChild( inputText );
 
     // save xml to disk

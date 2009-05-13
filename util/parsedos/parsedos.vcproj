@@ -204,6 +204,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DensimParser.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ExcelOutput.cpp"
 				>
 			</File>
@@ -251,6 +255,10 @@
 			>
 			<File
 				RelativePath=".\CimsimParser.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DensimParser.h"
 				>
 			</File>
 			<File
