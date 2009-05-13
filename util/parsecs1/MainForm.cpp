@@ -3,7 +3,7 @@
 #include "HelpForm.h"
 
 using namespace System::IO;
-using namespace parsecs1;
+using namespace parsedos;
 
 
 
@@ -11,14 +11,14 @@ MainForm::MainForm(void)
 {
 	InitializeComponent();
 
-  String ^ configFile = Application::StartupPath + "\\parsecs1.config";
+  String ^ configFile = Application::StartupPath + "\\parsedos.config";
   XmlDocument ^ cfgXML = gcnew XmlDocument();
   try {
     cfgXML->Load( configFile );
     XmlNode ^ xmln;
 
     xmln = cfgXML->DocumentElement->SelectSingleNode( "InputURI" );
-    tboxInput->Text = xmln->FirstChild->Value;
+    tboxCimsimInput->Text = xmln->FirstChild->Value;
   }
   catch( FileNotFoundException ^ e ) {
     // no config loaded, destructor will create new config file
@@ -38,14 +38,14 @@ MainForm::~MainForm()
 	}
 
   // save config
-  String ^ configFile = Application::StartupPath + "\\parsecs1.config";
+  String ^ configFile = Application::StartupPath + "\\parsedos.config";
   XmlDocument ^ cfgXml = gcnew XmlDocument();
   try {
     cfgXml->Load( configFile );
     XmlNode ^ xmln;
 
     xmln = cfgXml->DocumentElement->SelectSingleNode( "InputURI" );
-    xmln->FirstChild->Value = tboxInput->Text;
+    xmln->FirstChild->Value = tboxCimsimInput->Text;
     
     cfgXml->Save( configFile );
   }
@@ -63,7 +63,7 @@ MainForm::~MainForm()
     // create and append InputURI element and value
     XmlElement ^ inputNode = cfgXml->CreateElement( "InputURI" );
     rootNode->AppendChild( inputNode );
-    XmlText ^ inputText = cfgXml->CreateTextNode( tboxInput->Text );
+    XmlText ^ inputText = cfgXml->CreateTextNode( tboxCimsimInput->Text );
     inputNode->AppendChild( inputText );
 
     // save xml to disk
@@ -79,13 +79,13 @@ MainForm::~MainForm()
 System::Void
 MainForm::OnParse(System::Object^  sender, System::EventArgs^  e)
 {
-  if( !Directory::Exists( tboxInput->Text ) ) {
+  if( !Directory::Exists( tboxCimsimInput->Text ) ) {
     MessageBox::Show( "Unable to find input directory" );
     return;
   }
 
   // parse files
-  DirectoryInfo ^ di = gcnew DirectoryInfo( tboxInput->Text );
+  DirectoryInfo ^ di = gcnew DirectoryInfo( tboxCimsimInput->Text );
   CimsimParser ^ cp = gcnew CimsimParser( di );
   cp->Parse();
 
@@ -112,9 +112,9 @@ System::Void
 MainForm::OnBrowseInput(System::Object^  sender, System::EventArgs^  e)
 {
   FolderBrowserDialog ^ fbd = gcnew FolderBrowserDialog();
-  fbd->SelectedPath = tboxInput->Text;
+  fbd->SelectedPath = tboxCimsimInput->Text;
   if( fbd->ShowDialog() == Windows::Forms::DialogResult::OK ) {
-    tboxInput->Text = fbd->SelectedPath;
+    tboxCimsimInput->Text = fbd->SelectedPath;
   }
 }
 
@@ -134,7 +134,7 @@ MainForm::OnDragDropInput(System::Object^  sender, System::Windows::Forms::DragE
       String ^ firstFile = ao[0]->ToString();
       FileInfo ^ fi = gcnew FileInfo( firstFile );
 
-      tboxInput->Text = ao[0]->ToString();
+      tboxCimsimInput->Text = ao[0]->ToString();
     }
   }
 }

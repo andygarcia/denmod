@@ -69,7 +69,7 @@ ExcelOutput::GetXML( int numDigitsPrecision )
   
   // doc props
   xmlOutput << "<DocumentProperties xmlns=\"urn:schemas-microsoft-com:office:office\">" << endl;
-  xmlOutput << " <Author>parsecs1</Author>" << endl;
+  xmlOutput << " <Author>parsedos</Author>" << endl;
   xmlOutput << "</DocumentProperties>" << endl;
 
   // default style

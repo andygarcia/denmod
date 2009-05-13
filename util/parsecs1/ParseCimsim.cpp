@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "MainForm.h"
 
-using namespace parsecs1;
+using namespace parsedos;
 
 [STAThreadAttribute]
 int main(array<System::String ^> ^args)

@@ -11,11 +11,11 @@ using namespace System::Security::Permissions;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly:AssemblyTitleAttribute("parsecs1")];
+[assembly:AssemblyTitleAttribute("parsedos")];
 [assembly:AssemblyDescriptionAttribute("")];
 [assembly:AssemblyConfigurationAttribute("")];
 [assembly:AssemblyCompanyAttribute("Infectious Disease Analysis")];
-[assembly:AssemblyProductAttribute("parsecs1")];
+[assembly:AssemblyProductAttribute("parsedos")];
 [assembly:AssemblyCopyrightAttribute("Copyright (c) Infectious Disease Analysis 2006")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
