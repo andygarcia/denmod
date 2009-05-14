@@ -47,6 +47,17 @@ public:
 
 
 
+ref class SerotypeFile: public PrnFile
+{
+public:
+  SerotypeFile( String ^ filename );
+
+public:
+  String ^ Header;
+  Dictionary<int,List<String^>^> ^ SerotypeData;
+};
+
+
 ref class SurvivalFile : public PrnFile
 {
 public:

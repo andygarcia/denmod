@@ -1,6 +1,9 @@
 #include "StdAfx.h"
 #include "MainForm.h"
 #include "HelpForm.h"
+#include "CimsimParser.h"
+#include "DensimParser.h"
+
 
 using namespace System::IO;
 using namespace parsedos;
@@ -28,6 +31,9 @@ MainForm::MainForm(void)
 
     xmln = cfgXML->DocumentElement->SelectSingleNode( "TextEnabled" );
     cboxTxt->Checked = Convert::ToBoolean( xmln->FirstChild->Value );
+
+    xmln = cfgXML->DocumentElement->SelectSingleNode( "Width" );
+    this->Size = Drawing::Size( Convert::ToInt32(xmln->FirstChild->Value), this->Size.Height );
   }
   catch( FileNotFoundException ^ e ) {
     // no config loaded, destructor will create new config file
@@ -64,6 +70,9 @@ MainForm::~MainForm()
 
     xmln = cfgXml->DocumentElement->SelectSingleNode( "TextEnabled" );
     xmln->FirstChild->Value = Convert::ToString( cboxTxt->Checked );
+
+    xmln = cfgXml->DocumentElement->SelectSingleNode( "Width" );
+    xmln->FirstChild->Value = Convert::ToString( this->Size.Width );
     
     cfgXml->Save( configFile );
   }
@@ -102,6 +111,12 @@ MainForm::~MainForm()
     inputText = cfgXml->CreateTextNode( Convert::ToString(cboxTxt->Checked) );
     inputNode->AppendChild( inputText );
 
+    // create and append InputURI element and value
+    inputNode = cfgXml->CreateElement( "Width" );
+    rootNode->AppendChild( inputNode );
+    inputText = cfgXml->CreateTextNode( Convert::ToString(this->Size.Width) );
+    inputNode->AppendChild( inputText );
+
     // save xml to disk
     cfgXml->Save( configFile );
   }
@@ -114,6 +129,19 @@ MainForm::~MainForm()
 
 System::Void
 MainForm::OnParse(System::Object^  sender, System::EventArgs^  e)
+{
+  if( tabCimsimDensim->SelectedTab == tabPageCimsim ) {
+    ParseCimsim();
+  }
+  else if( tabCimsimDensim->SelectedTab == tabPageDensim ) {
+    ParseDensim();
+  }
+}
+
+
+
+void
+MainForm::ParseCimsim(void)
 {
   if( !Directory::Exists( tboxCimsimInput->Text ) ) {
     MessageBox::Show( "Unable to find input directory" );
@@ -131,6 +159,30 @@ MainForm::OnParse(System::Object^  sender, System::EventArgs^  e)
   }
   if( cboxTxt->Checked ) {
     cp->SaveToDisk( CimsimParser::OutputType::ASCII );
+  }
+}
+
+
+
+void
+MainForm::ParseDensim(void)
+{
+  if( !Directory::Exists( tboxCimsimInput->Text ) ) {
+    MessageBox::Show( "Unable to find input directory" );
+    return;
+  }
+
+  // parse files
+  DirectoryInfo ^ di = gcnew DirectoryInfo( tboxDensimInput->Text );
+  DensimParser ^ dp = gcnew DensimParser( di );
+  dp->Parse();
+
+  // save output
+  if( cboxXml->Checked ) {
+    dp->SaveToDisk( DensimParser::OutputType::XML );
+  }
+  if( cboxTxt->Checked ) {
+    dp->SaveToDisk( DensimParser::OutputType::ASCII );
   }
 }
 

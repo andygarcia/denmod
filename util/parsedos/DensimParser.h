@@ -25,6 +25,11 @@ public:
 // Methods
 public:
   void Parse(void);
+  void ParseDemographics(void);
+  void ParseSerology(void);
+  void ParseLocation(void);
+  void ParseSerotypes(void);
+
   void SaveToDisk( OutputType outputType );
 
 private:
@@ -38,19 +43,74 @@ private:
   bool _parseCompleted;
   System::IO::DirectoryInfo ^ _inputDirectory;
   
+  static List<String^> ^ _locationFilenames;
   List<LocationFile^> ^ _locationFiles;
 
-  List<String^> ^ _containerNames;
-  List<String^> ^ _containerHeaders;
-  Dictionary<String^,Dictionary<String^,List<String^>^>^> ^ _containerData;
-  Dictionary<String^,List<SurvivalFile^>^> _containerSurvivals;
+  ref class Demographics;
+  Demographics ^ _demographics;
 
-  List<LarvalDataFile^> ^ _larvalDataFiles;
+  ref class Serology;
+  Serology ^ _initialSerology;
+  Serology ^ _finalSerology;
 
-  static List<String^> ^ _locationFilenames;
-  static List<String^> ^ _containerFilters;
-  static List<String^> ^ _survivalFilters;
-  static String ^ _larvalDataFilename;
+  ref class Serotype;
+  Dictionary<int,Serotype^> ^ _serotypes;
+
+
+private:
+  ref class Demographics
+  {
+  public:
+    Demographics(void);
+    ~Demographics(void);
+
+  public:
+    List<String^> ^ ClassIndicies;
+    List<String^> ^ InitialDistribution;
+    List<String^> ^ InitialDistributionPercentages;
+    List<String^> ^ Births;
+    List<String^> ^ BirthPercentages;
+    List<String^> ^ Deaths;
+    List<String^> ^ DeathPercentages;
+    List<String^> ^ FinalDistribution;
+    List<String^> ^ FinalDistributionPercentages;
+  };
+
+  ref class Serology
+  {
+  public:
+    Serology(void);
+    ~Serology(void);
+
+  public:
+    List<String^> ^ ClassIndicies;
+    List<String^> ^ D1Number;
+    List<String^> ^ D1Percent;
+    List<String^> ^ D2Number;
+    List<String^> ^ D2Percent;
+    List<String^> ^ D3Number;
+    List<String^> ^ D3Percent;
+    List<String^> ^ D4Number;
+    List<String^> ^ D4Percent;
+    List<String^> ^ TotalInClass;
+  };
+
+  ref class Serotype
+  {
+  public:
+    Serotype(void);
+    ~Serotype(void);
+
+  public:
+    List<String^> ^ EIP;
+    List<String^> ^ InfectiveMosquitoes;
+    List<String^> ^ PersonsIncubating;
+    List<String^> ^ PersonsViremic;
+    List<String^> ^ PersonsWithVirus;
+
+    List<String^> ^ DetailedSerologyHeaders;
+    List<List<String^>^> ^ DetailedSerologyValues;
+  };
 };
 
 #endif

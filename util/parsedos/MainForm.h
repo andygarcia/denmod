@@ -1,7 +1,5 @@
 #pragma once
 
-#include "CimsimParser.h"
-
 
 namespace parsedos {
 
@@ -27,6 +25,10 @@ namespace parsedos {
     System::Void OnBrowseInput(System::Object^  sender, System::EventArgs^  e);
     System::Void OnDragDropInput(System::Object^  sender, System::Windows::Forms::DragEventArgs^  e);
     System::Void OnDragEnter(System::Object^  sender, System::Windows::Forms::DragEventArgs^  e);
+
+    void ParseCimsim(void);
+    void ParseDensim(void);
+
   private: System::Windows::Forms::TextBox^  tboxCimsimInput;
   private: System::Windows::Forms::Button^  btnCimsimBrowse;
 
@@ -46,8 +48,9 @@ namespace parsedos {
 
   private: System::Windows::Forms::GroupBox^  gboxOutput;
   private: System::Windows::Forms::GroupBox^  gboxCimsimInput;
+  private: System::Windows::Forms::TabControl^  tabCimsimDensim;
 
-  private: System::Windows::Forms::TabControl^  tabControl1;
+
   private: System::Windows::Forms::TabPage^  tabPageCimsim;
   private: System::Windows::Forms::TabPage^  tabPageDensim;
   private: System::Windows::Forms::GroupBox^  gboxDensimInput;
@@ -85,7 +88,7 @@ namespace parsedos {
       this->cboxTxt = (gcnew System::Windows::Forms::CheckBox());
       this->gboxOutput = (gcnew System::Windows::Forms::GroupBox());
       this->gboxCimsimInput = (gcnew System::Windows::Forms::GroupBox());
-      this->tabControl1 = (gcnew System::Windows::Forms::TabControl());
+      this->tabCimsimDensim = (gcnew System::Windows::Forms::TabControl());
       this->tabPageCimsim = (gcnew System::Windows::Forms::TabPage());
       this->tabPageDensim = (gcnew System::Windows::Forms::TabPage());
       this->gboxDensimInput = (gcnew System::Windows::Forms::GroupBox());
@@ -93,7 +96,7 @@ namespace parsedos {
       this->btnDensimBrowse = (gcnew System::Windows::Forms::Button());
       this->gboxOutput->SuspendLayout();
       this->gboxCimsimInput->SuspendLayout();
-      this->tabControl1->SuspendLayout();
+      this->tabCimsimDensim->SuspendLayout();
       this->tabPageCimsim->SuspendLayout();
       this->tabPageDensim->SuspendLayout();
       this->gboxDensimInput->SuspendLayout();
@@ -188,17 +191,17 @@ namespace parsedos {
       this->gboxCimsimInput->TabStop = false;
       this->gboxCimsimInput->Text = L"Input Directory";
       // 
-      // tabControl1
+      // tabCimsimDensim
       // 
-      this->tabControl1->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
+      this->tabCimsimDensim->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
         | System::Windows::Forms::AnchorStyles::Right));
-      this->tabControl1->Controls->Add(this->tabPageCimsim);
-      this->tabControl1->Controls->Add(this->tabPageDensim);
-      this->tabControl1->Location = System::Drawing::Point(12, 12);
-      this->tabControl1->Name = L"tabControl1";
-      this->tabControl1->SelectedIndex = 0;
-      this->tabControl1->Size = System::Drawing::Size(241, 80);
-      this->tabControl1->TabIndex = 9;
+      this->tabCimsimDensim->Controls->Add(this->tabPageCimsim);
+      this->tabCimsimDensim->Controls->Add(this->tabPageDensim);
+      this->tabCimsimDensim->Location = System::Drawing::Point(12, 12);
+      this->tabCimsimDensim->Name = L"tabCimsimDensim";
+      this->tabCimsimDensim->SelectedIndex = 0;
+      this->tabCimsimDensim->Size = System::Drawing::Size(241, 80);
+      this->tabCimsimDensim->TabIndex = 9;
       // 
       // tabPageCimsim
       // 
@@ -263,7 +266,7 @@ namespace parsedos {
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
       this->ClientSize = System::Drawing::Size(265, 209);
-      this->Controls->Add(this->tabControl1);
+      this->Controls->Add(this->tabCimsimDensim);
       this->Controls->Add(this->gboxOutput);
       this->Controls->Add(this->btnHelp);
       this->Controls->Add(this->btnParse);
@@ -275,7 +278,7 @@ namespace parsedos {
       this->gboxOutput->PerformLayout();
       this->gboxCimsimInput->ResumeLayout(false);
       this->gboxCimsimInput->PerformLayout();
-      this->tabControl1->ResumeLayout(false);
+      this->tabCimsimDensim->ResumeLayout(false);
       this->tabPageCimsim->ResumeLayout(false);
       this->tabPageDensim->ResumeLayout(false);
       this->gboxDensimInput->ResumeLayout(false);

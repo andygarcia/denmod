@@ -96,8 +96,17 @@ LocationFile::LocationFile( String ^ filename )
   for( i = 0; i < 365 && !sr->EndOfStream; i++ ) {
     s = sr->ReadLine();
     array<String ^> ^ columnEntries = s->Split( dataDelim->ToCharArray(), StringSplitOptions::RemoveEmptyEntries );
-    for( int j = 0; j < columnEntries->Length-1; j++ ) {
-      _data[i,j] = columnEntries[j+1];
+
+    if( columnEntries->Length - 1 > _headers->Length ) {
+      // more column entries than headers (infective bites), only save what's needed for headers
+      for( int j = 0; j < _headers->Length; j++ ) {
+        _data[i,j] = columnEntries[j+1];
+      }
+    }
+    else {
+      for( int j = 0; j < columnEntries->Length-1; j++ ) {
+        _data[i,j] = columnEntries[j+1];
+      }
     }
   }
 }
@@ -127,6 +136,29 @@ ContainerFile::ContainerFile( String ^ filename )
     // ignore first column (day index)
     for( int i = 1; i < row->Count; ++i ) {
       ContainerData[ContainerNames[i-1]]->Add( row[i] );
+    }
+  }
+}
+
+
+
+SerotypeFile::SerotypeFile( String ^ filename )
+: PrnFile(filename),
+  SerotypeData(gcnew Dictionary<int,List<String^>^>())
+{
+  // first row's (only) header is the header for this container file
+  Header = FirstHeaderRow[0];
+
+  // create columns for each serotype
+  for( int i = 1; i <= 4; ++i ) {
+    SerotypeData[i] = gcnew List<String^>();
+  }
+
+  // process data from rows into individual serotype columns, ignoring first column (day)
+  for each( List<String^> ^ row in DataRows ) {
+    // ignore first column (day index)
+    for( int i = 1; i <= 4; ++i ) {
+      SerotypeData[i]->Add( row[i] );
     }
   }
 }
