@@ -30,28 +30,44 @@ PrnFile::PrnFile( String ^ filename )
   }
 
 
-  // read second row of headers
-  s = sr->ReadLine();
-  entries = s->Split( headerDelim->ToCharArray() );
-  SecondHeaderRow = gcnew List<String^>( entries->Length );
-  for each( String ^ s in entries ) {
-    SecondHeaderRow->Add( s->Trim() );
+  if( FirstHeaderRow[0] == "Day" ) {
+    // no more header rows
+  }
+  else {
+    // second row of header exists (beginning with Day)
+    s = sr->ReadLine();
+    entries = s->Split( headerDelim->ToCharArray() );
+    SecondHeaderRow = gcnew List<String^>( entries->Length );
+    for each( String ^ s in entries ) {
+      SecondHeaderRow->Add( s->Trim() );
+    }
+  }
+
+
+  // determine number of columns
+  int numColumns;
+  if( SecondHeaderRow == nullptr ) {
+    numColumns = FirstHeaderRow->Count;
+  }
+  else {
+    numColumns = SecondHeaderRow->Count;
   }
 
 
   // read data
   DataRows = gcnew List<List<String^>^>();
   for( int i = 0; i < 365; ++i ) {
+    // read line and split into values
     s = sr->ReadLine();
     List<String^> ^ row = gcnew List<String^>();
     entries = s->Split( dataDelim->ToCharArray(), StringSplitOptions::RemoveEmptyEntries );
-    if( entries->Length != SecondHeaderRow->Count ) {
-      // number of columns in this row does not match expected count from second header row
-      throw gcnew InvalidDataException( "Number of entries for day " + (i+1) + " does not match number of headers in second row in " + Filename );
-    }
+
+    // add each trimmed value
     for each( String ^ s in entries ) {
       row->Add( s->Trim() );
     }
+
+    // save row
     DataRows->Add( row );
   }
 }
@@ -62,51 +78,43 @@ PrnFile::~PrnFile(void)
 {}
 
 
+
 LocationFile::LocationFile( String ^ filename )
+: PrnFile(filename)
 {
-  _filename = filename;
-
-  StreamReader ^ sr = gcnew StreamReader( filename );
-  String ^ s;
-  String ^ headerDelim = "-";
-  String ^ dataDelim = " ,";
-
-  // read container name
-  s = sr->ReadLine();
-  array<String ^> ^ strings = s->Split( headerDelim->ToCharArray() );
-  if( strings[0]->Trim(' ') == "Day" ) {
-    // female host density file, only one header line
-    _title = "Density";
-    _headers = gcnew array<String^>(strings->Length - 1);
-    Array::Copy( strings, 1, _headers, 0, strings->Length - 1 );
+  List<String^> ^ headers;
+  if( SecondHeaderRow == nullptr ) {
+    // use filename minus extension as title
+    this->Title = filename;
+    
+    // and first row contains data headers
+    headers = FirstHeaderRow;
   }
   else {
-    _title = strings[0];
-    
-    // save headers
-    s = sr->ReadLine();
-    strings = s->Split(headerDelim->ToCharArray());
-    _headers = gcnew array<String^>(strings->Length - 1);
-    Array::Copy( strings, 1, _headers, 0, strings->Length - 1 );
+    // title is first row
+    this->Title = FirstHeaderRow[0];
+
+    // and second row contains data headers
+    headers = SecondHeaderRow;
   }
 
-  _data = gcnew array<String ^,2>(365, _headers->Length);
+  // except for first entry (day), the second row's entries are all headers
+  this->Headers = gcnew List<String^>( headers->Count - 1 );
+  for( int i = 1; i < headers->Count; ++i ) {
+    Headers->Add( headers[i] );
+  }
 
-  int i;
-  for( i = 0; i < 365 && !sr->EndOfStream; i++ ) {
-    s = sr->ReadLine();
-    array<String ^> ^ columnEntries = s->Split( dataDelim->ToCharArray(), StringSplitOptions::RemoveEmptyEntries );
+  // create header for each headers's column of data
+  Data = gcnew Dictionary<String^,List<String^>^>();
+  for each( String ^ s in Headers ) {
+    Data[s] = gcnew List<String^>();
+  }
 
-    if( columnEntries->Length - 1 > _headers->Length ) {
-      // more column entries than headers (infective bites), only save what's needed for headers
-      for( int j = 0; j < _headers->Length; j++ ) {
-        _data[i,j] = columnEntries[j+1];
-      }
-    }
-    else {
-      for( int j = 0; j < columnEntries->Length-1; j++ ) {
-        _data[i,j] = columnEntries[j+1];
-      }
+  // process data from rows into individual container columns, ignoring first column (day)
+  for each( List<String^> ^ row in DataRows ) {
+    // ignore first column (day index)
+    for( int i = 1; i < (Headers->Count - 1); ++i ) {
+      Data[Headers[i-1]]->Add( row[i] );
     }
   }
 }

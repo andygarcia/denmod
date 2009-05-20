@@ -167,7 +167,7 @@ MainForm::ParseCimsim(void)
 void
 MainForm::ParseDensim(void)
 {
-  if( !Directory::Exists( tboxCimsimInput->Text ) ) {
+  if( !Directory::Exists( tboxDensimInput->Text ) ) {
     MessageBox::Show( "Unable to find input directory" );
     return;
   }

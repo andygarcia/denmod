@@ -5,13 +5,14 @@ using namespace System;
 using namespace System::Collections::Generic;
 
 
+
 ref class PrnFile
 {
 public:
   PrnFile( String ^ filename );
   virtual ~PrnFile(void);
 
-protected:
+public:
   String ^ Filename;
   List<String^> ^ FirstHeaderRow;
   List<String^> ^ SecondHeaderRow;
@@ -20,16 +21,15 @@ protected:
 
 
 
-ref class LocationFile
+ref class LocationFile : PrnFile
 {
 public:
   LocationFile( String ^ fileName );
 
 public:
-  String ^ _filename;
-  String ^ _title;
-  array<String ^> ^ _headers;
-  array<String ^,2> ^ _data;
+  String ^ Title;
+  List<String ^> ^ Headers;
+  Dictionary<String^,List<String^>^> ^ Data;
 };
 
 

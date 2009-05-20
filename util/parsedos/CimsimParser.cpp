@@ -171,20 +171,19 @@ CimsimParser::OutputLocation( OutputType ot )
   // collate all header names
   vector<string> headers;
   for each( LocationFile ^ lf in _locationFiles ) {
-    for each( String ^ s in lf->_headers) {
+    for each( String ^ s in lf->Headers) {
       headers.push_back(toss(s));
     }
   }
 
-
   String ^ title = "Location Output";
-
   ExcelOutput * eo = new ExcelOutput( toss(title), headers, 365 );
-  for( int iRow = 0; iRow < 365; ++iRow ) {
+
+  for( int i = 0; i < 365; ++i ) {
     vector<string> newRow;
     for each( LocationFile ^ lf in _locationFiles ) {
-      for( int iCol = 0; iCol <= lf->_data->GetUpperBound(1); iCol++ ) {
-        newRow.push_back(toss(lf->_data[iRow,iCol]));
+      for each( String ^ s in lf->Headers ) {
+        newRow.push_back( toss(lf->Data[s][i]) );
       }
     }
     eo->AddRow( newRow );
