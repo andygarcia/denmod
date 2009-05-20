@@ -169,7 +169,7 @@ void
 CimsimParser::OutputLocation( OutputType ot )
 {
   // collate all header names
-  vector<string> headers;
+  std::vector<std::string> headers;
   for each( LocationFile ^ lf in _locationFiles ) {
     for each( String ^ s in lf->Headers) {
       headers.push_back(toss(s));
@@ -180,7 +180,7 @@ CimsimParser::OutputLocation( OutputType ot )
   ExcelOutput * eo = new ExcelOutput( toss(title), headers, 365 );
 
   for( int i = 0; i < 365; ++i ) {
-    vector<string> newRow;
+    std::vector<std::string> newRow;
     for each( LocationFile ^ lf in _locationFiles ) {
       for each( String ^ s in lf->Headers ) {
         newRow.push_back( toss(lf->Data[s][i]) );
@@ -215,7 +215,7 @@ CimsimParser::OutputContainer( OutputType ot )
     String ^ containerName = kvp->Key;
     String ^ title = "Container Output - " + containerName;
 
-    vector<string> headers;
+    std::vector<std::string> headers;
     for each( String ^ header in kvp->Value->Keys ) {
       headers.push_back( toss(header) );
     }
@@ -223,7 +223,7 @@ CimsimParser::OutputContainer( OutputType ot )
     ExcelOutput * eo = new ExcelOutput( toss(title), headers, 365 );
 
     for( int i = 0; i < 365; ++i ) {
-      vector<string> newRow;
+      std::vector<std::string> newRow;
       for each( String ^ header in kvp->Value->Keys ) {
         newRow.push_back( toss(kvp->Value[header][i]) );
       }

@@ -356,7 +356,7 @@ void
 DensimParser::OutputDemographics( OutputType ot )
 {
   // collate all header names
-  vector<string> headers;
+  std::vector<std::string> headers;
   headers.push_back( "Initial age distribution" );
   headers.push_back( "Initial percentage" );
   headers.push_back( "Births" );
@@ -370,7 +370,7 @@ DensimParser::OutputDemographics( OutputType ot )
   ExcelOutput * eo = new ExcelOutput( toss(title), headers, 18 );
 
   for( int i = 0; i < 18; ++i ) {
-    vector<string> newRow;
+    std::vector<std::string> newRow;
 
     newRow.push_back( toss(_demographics->InitialDistribution[i]) );
     newRow.push_back( toss(_demographics->InitialDistributionPercentages[i]) );
@@ -408,7 +408,7 @@ void
 DensimParser::OutputSerology( OutputType ot )
 {
   // collate all header names
-  vector<string> headers;
+  std::vector<std::string> headers;
   headers.push_back( "Dengue 1 Initial Distribution" );
   headers.push_back( "Dengue 1 Initial Distribution Percentage" );
   headers.push_back( "Dengue 2 Initial Distribution" );
@@ -431,7 +431,7 @@ DensimParser::OutputSerology( OutputType ot )
   ExcelOutput * eo = new ExcelOutput( toss(title), headers, 18 );
 
   for( int i = 0; i < 18; ++i ) {
-    vector<string> newRow;
+    std::vector<std::string> newRow;
 
     newRow.push_back( toss(_initialSerology->D1Number[i]) );
     newRow.push_back( toss(_initialSerology->D1Percent[i]) );
@@ -478,7 +478,7 @@ void
 DensimParser::OutputLocation( OutputType ot )
 {
   // collate all header names
-  vector<string> headers;
+  std::vector<std::string> headers;
   headers.push_back( "Simulation Area" );
   headers.push_back( "Mosquitoes In Area" );
   headers.push_back( "Mosquitoes Per Hectare" );
@@ -491,7 +491,7 @@ DensimParser::OutputLocation( OutputType ot )
   ExcelOutput * eo = new ExcelOutput( toss(title), headers, 365 );
 
   for( int i = 0; i < 365; ++i ) {
-    vector<string> newRow;
+    std::vector<std::string> newRow;
 
     newRow.push_back( toss(_location->SimulationArea[i]) );
     newRow.push_back( toss(_location->MosquitoesInArea[i]) );

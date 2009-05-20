@@ -212,6 +212,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ExcelWorksheet.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\HelpForm.cpp"
 				>
 			</File>
@@ -259,6 +263,14 @@
 			</File>
 			<File
 				RelativePath=".\DensimParser.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ExcelOutput.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ExcelWorksheet.h"
 				>
 			</File>
 			<File

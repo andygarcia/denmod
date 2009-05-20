@@ -1,13 +1,10 @@
+#ifndef UTIL_PARSEDOS_EXCELOUTPUT_H
+#define UTIL_PARSEDOS_EXCELOUTPUT_H
+
 #include <string>
 #include <vector>
 
-// ================================================== //
-// ExcelOutput                                        //
-// Handles outputting CIMSiM results for verification //
-// use in an excel spreadsheet format                 //
-// ================================================== //
 
-using namespace std;
 
 class ExcelOutput
 {
@@ -24,16 +21,17 @@ public:
     XML = 1
   };
 
-  string GetOutput( OutputType output, int numDigitsPrecision );
-  string GetXML( int numDigitsPrecision );
-  string GetASCII( int numDigitsPrecision );
+  std::string GetOutput( OutputType output, int numDigitsPrecision );
+  std::string GetXML( int numDigitsPrecision );
+  std::string GetASCII( int numDigitsPrecision );
 
 // Members
 private:
-  string Title;
-  vector<string> Headers;
+  std::string Title;
+  std::vector<std::string> Headers;
   unsigned int NumDataColumns;
   unsigned int NumDataRows;
-  vector<vector<string>> Data;
+  std::vector<std::vector<std::string>> Data;
 };
 
+#endif
