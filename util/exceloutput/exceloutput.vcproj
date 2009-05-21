@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="parsedos"
-	ProjectGUID="{DD4542A3-648F-4282-9B77-4786F6B917A6}"
-	RootNamespace="parsedos"
+	Name="exceloutput"
+	ProjectGUID="{89C7804B-5F22-423D-8DD0-AC344ED0ABAD}"
+	RootNamespace="exceloutput"
 	Keyword="ManagedCProj"
 	>
 	<Platforms>
@@ -18,10 +18,10 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(SolutionDir)$(ConfigurationName)\$(ProjectName)"
-			ConfigurationType="1"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
 			CharacterSet="1"
-			ManagedExtensions="2"
+			ManagedExtensions="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -62,8 +62,6 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
-				SubSystem="2"
-				EntryPointSymbol="main"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -94,10 +92,10 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(SolutionDir)$(ConfigurationName)\$(ProjectName)"
-			ConfigurationType="1"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
 			CharacterSet="1"
-			ManagedExtensions="2"
+			ManagedExtensions="1"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -137,8 +135,6 @@
 				AdditionalDependencies="$(NoInherit)"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
-				SubSystem="2"
-				EntryPointSymbol="main"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -177,20 +173,8 @@
 			AssemblyName="System.Data, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=x86"
 		/>
 		<AssemblyReference
-			RelativePath="System.Drawing.dll"
-			AssemblyName="System.Drawing, Version=2.0.0.0, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"
-		/>
-		<AssemblyReference
-			RelativePath="System.Windows.Forms.dll"
-			AssemblyName="System.Windows.Forms, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
-		/>
-		<AssemblyReference
 			RelativePath="System.XML.dll"
 			AssemblyName="System.Xml, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
-		/>
-		<ProjectReference
-			ReferencedProjectIdentifier="{89C7804B-5F22-423D-8DD0-AC344ED0ABAD}"
-			RelativePathToProject=".\util\exceloutput\exceloutput.vcproj"
 		/>
 	</References>
 	<Files>
@@ -204,31 +188,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CimsimParser.cpp"
+				RelativePath=".\ExcelWorkbook.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\DensimParser.cpp"
+				RelativePath=".\ExcelWorksheet.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\HelpForm.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\MainForm.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ParseCimsim.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PrnFiles.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\stdafx.cpp"
+				RelativePath=".\Stdafx.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -254,35 +222,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\CimsimParser.h"
+				RelativePath=".\ExcelWorkbook.h"
 				>
 			</File>
 			<File
-				RelativePath=".\DensimParser.h"
-				>
-			</File>
-			<File
-				RelativePath=".\HelpForm.h"
-				FileType="3"
-				>
-				<File
-					RelativePath=".\HelpForm.resx"
-					SubType="Designer"
-					>
-				</File>
-			</File>
-			<File
-				RelativePath=".\MainForm.h"
-				FileType="3"
-				>
-				<File
-					RelativePath=".\MainForm.resx"
-					SubType="Designer"
-					>
-				</File>
-			</File>
-			<File
-				RelativePath=".\PrnFiles.h"
+				RelativePath=".\ExcelWorksheet.h"
 				>
 			</File>
 			<File
@@ -290,7 +234,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\stdafx.h"
+				RelativePath=".\Stdafx.h"
 				>
 			</File>
 		</Filter>

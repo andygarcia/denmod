@@ -1,7 +1,5 @@
 #include "stdafx.h"
 #include "CimsimParser.h"
-#include "ExcelWorkbook.h"
-#include "ExcelWorksheet.h"
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -11,6 +9,7 @@ using namespace System;
 using namespace System::IO;
 using namespace System::Collections::Generic;
 using namespace System::Windows::Forms;
+using namespace util;
 
 
 

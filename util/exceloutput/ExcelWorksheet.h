@@ -1,7 +1,9 @@
-#ifndef UTIL_PARSEDOS_EXCELWORKSHEET_H
-#define UTIL_PARSEDOS_EXCELWORKSHEET_H
+#ifndef UTIL_EXCELOUTPUT_EXCELWORKSHEET_H
+#define UTIL_EXCELOUTPUT_EXCELWORKSHEET_H
 
 
+
+namespace util {
 
 public ref class ExcelWorksheet
 {
@@ -34,5 +36,6 @@ private:
   System::Collections::Generic::List<Column^> ^ _columns;
 };
 
+};
 
 #endif

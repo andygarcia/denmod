@@ -3,13 +3,15 @@
 
 using namespace System;
 using namespace System::IO;
+using namespace System::Collections::Generic;
+using namespace util;
 
 
 
 ExcelWorkbook::ExcelWorkbook( String ^ author )
 : _author(author),
   _lastAuthor(author),
-  _worksheets(gcnew System::Collections::Generic::List<ExcelWorksheet^>())
+  _worksheets(gcnew List<ExcelWorksheet^>())
 {}
 
 

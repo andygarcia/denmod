@@ -1,9 +1,11 @@
-#ifndef UTIL_PARSEDOS_EXCELWORKBOOK_H
-#define UTIL_PARSEDOS_EXCELWORKBOOK_H
+#ifndef UTIL_EXCELOUTPUT_EXCELWORKBOOK_H
+#define UTIL_EXCELOUTPUT_EXCELWORKBOOK_H
 
 #include "ExcelWorksheet.h"
 
 
+
+namespace util {
 
 ref class ExcelWorkbook
 {
@@ -25,6 +27,8 @@ private:
   System::String ^ _lastAuthor;
 
   System::Collections::Generic::List<ExcelWorksheet^> ^ _worksheets;
+};
+
 };
 
 #endif
