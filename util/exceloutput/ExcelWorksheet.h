@@ -24,7 +24,7 @@ public:
   System::String ^ GetSpreadsheetMl( void );
 
 
-// Member
+// Members
 private:
   static System::Collections::Generic::Dictionary<System::Type^,System::String^> ^ _typeToStyle;
   static System::Collections::Generic::Dictionary<System::Type^,System::String^> ^ _typeToCellType;

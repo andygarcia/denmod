@@ -362,7 +362,7 @@ DensimParser::OutputDemographics( OutputType ot )
   ews->AddColumn( "Final age distribution", Int32::typeid, _demographics->FinalDistribution );
   ews->AddColumn( "Final percentages", Double::typeid, _demographics->FinalDistributionPercentages );
 
-  ExcelWorkbook ^ ewb = gcnew ExcelWorkbook( "DENSIM 1.0" );
+  util::ExcelWorkbook ^ ewb = gcnew ExcelWorkbook( "DENSIM 1.0" );
   ewb->AddWorksheet( ews );
   ewb->SaveToDisk( _inputDirectory, "DS 1.0 - Demographics.xml" );
 

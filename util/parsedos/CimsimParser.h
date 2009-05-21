@@ -28,8 +28,6 @@ public:
 private:
   void OutputLocation( OutputType ot );
   void OutputContainer( OutputType ot );
-  void OutputSurvivals( OutputType ot );
-  void OutputLarvalData( OutputType ot );
 
 // Members
 private:

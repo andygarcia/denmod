@@ -13,17 +13,6 @@ using namespace util;
 
 
 
-std::string toss( String ^ s )
-{
-  using Runtime::InteropServices::Marshal;
-  const char* c_str = (const char*) (Marshal::StringToHGlobalAnsi(s)).ToPointer();
-  std::string sstring = c_str;
-  Marshal::FreeHGlobal(IntPtr((void*)c_str));
-  return sstring;
-}
-
-
-
 static
 CimsimParser::CimsimParser(void)
 {
@@ -146,8 +135,6 @@ CimsimParser::Parse(void)
   for( int i = 0; i < files->Length; i++ ) {
     _larvalDataFiles->Add( gcnew LarvalDataFile(files[i]->Name) );
   }
-
-  _parseCompleted = true;
 }
 
 
@@ -155,18 +142,8 @@ CimsimParser::Parse(void)
 void
 CimsimParser::SaveToDisk( OutputType outputType )
 {
-  if( _parseCompleted != true ) {
-    throw gcnew InvalidOperationException( "SaveToDisk called before parsing completed." );
-  }
-  else {
-    System::String ^ pwd = System::Environment::CurrentDirectory;
-    System::Environment::CurrentDirectory = _inputDirectory->FullName;
-    OutputLocation( outputType );
-    OutputContainer( outputType );
-    OutputSurvivals( outputType );
-    OutputLarvalData( outputType );
-    System::Environment::CurrentDirectory = pwd;
-  }
+  OutputLocation( outputType );
+  OutputContainer( outputType );
 }
 
 
@@ -205,11 +182,4 @@ CimsimParser::OutputContainer( OutputType ot )
     ewb->AddWorksheet( ews );
     ewb->SaveToDisk( _inputDirectory, "CS 1.0 - " + kvp->Key + ".xml" );
   }
-}
-
-
-
-void
-CimsimParser::OutputLarvalData( OutputType ot )
-{
 }

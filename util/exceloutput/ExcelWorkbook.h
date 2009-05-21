@@ -7,7 +7,7 @@
 
 namespace util {
 
-ref class ExcelWorkbook
+public ref class ExcelWorkbook
 {
 // Constructors
 public:
