@@ -16,6 +16,8 @@ public:
   enum class OutputType { ASCII, XML };
 
 // Constructors
+private:
+ static DensimParser(void);
 public:
   DensimParser( System::IO::DirectoryInfo ^ inputDirectory );
   virtual ~DensimParser(void);
@@ -34,10 +36,12 @@ private:
   void OutputDemographics( OutputType ot );
   void OutputSerology( OutputType ot );
   void OutputLocation( OutputType ot );
-  void OutputSerotypes( OutputType ot );
 
 // Members
 private:
+  static System::Collections::Generic::List<int> ^ _classIndices;
+  System::Collections::Generic::List<int> ^ _days;
+
   bool _parseCompleted;
   System::IO::DirectoryInfo ^ _inputDirectory;
   
@@ -123,8 +127,7 @@ private:
     List<String^> ^ PersonsWithVirus;
 
     typedef List<String^> DetailedSerology;
-    typedef List<DetailedSerology^> DetailedSerologies;
-    Dictionary<int,DetailedSerologies^> ^ YearlyDetailedSerologies;
+    List<DetailedSerology^> ^ DetailedSerologies;
   };
 };
 

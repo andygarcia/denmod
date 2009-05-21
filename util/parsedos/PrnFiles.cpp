@@ -30,6 +30,7 @@ PrnFile::PrnFile( String ^ filename )
   }
 
 
+  SecondHeaderRow = gcnew List<String^>( entries->Length );
   if( FirstHeaderRow[0] == "Day" ) {
     // no more header rows
   }
@@ -37,7 +38,6 @@ PrnFile::PrnFile( String ^ filename )
     // second row of header exists (beginning with Day)
     s = sr->ReadLine();
     entries = s->Split( headerDelim->ToCharArray() );
-    SecondHeaderRow = gcnew List<String^>( entries->Length );
     for each( String ^ s in entries ) {
       SecondHeaderRow->Add( s->Trim() );
     }
@@ -46,7 +46,7 @@ PrnFile::PrnFile( String ^ filename )
 
   // determine number of columns
   int numColumns;
-  if( SecondHeaderRow == nullptr ) {
+  if( SecondHeaderRow->Count == 0  ) {
     numColumns = FirstHeaderRow->Count;
   }
   else {
@@ -56,9 +56,7 @@ PrnFile::PrnFile( String ^ filename )
 
   // read data
   DataRows = gcnew List<List<String^>^>();
-  for( int i = 0; i < 365; ++i ) {
-    // read line and split into values
-    s = sr->ReadLine();
+  while( s = sr->ReadLine() ) {
     List<String^> ^ row = gcnew List<String^>();
     entries = s->Split( dataDelim->ToCharArray(), StringSplitOptions::RemoveEmptyEntries );
 
@@ -83,7 +81,7 @@ LocationFile::LocationFile( String ^ filename )
 : PrnFile(filename)
 {
   List<String^> ^ headers;
-  if( SecondHeaderRow == nullptr ) {
+  if( SecondHeaderRow->Count == 0 ) {
     // use filename minus extension as title
     this->Title = filename;
     
@@ -113,7 +111,7 @@ LocationFile::LocationFile( String ^ filename )
   // process data from rows into individual container columns, ignoring first column (day)
   for each( List<String^> ^ row in DataRows ) {
     // ignore first column (day index)
-    for( int i = 1; i < (Headers->Count - 1); ++i ) {
+    for( int i = 1; i <= Headers->Count; ++i ) {
       Data[Headers[i-1]]->Add( row[i] );
     }
   }

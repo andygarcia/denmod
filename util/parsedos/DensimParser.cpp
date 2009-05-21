@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "DensimParser.h"
 #include "ExcelOutput.h"
+#include "ExcelWorkbook.h"
+#include "ExcelWorksheet.h"
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -11,7 +13,16 @@ using namespace System::IO;
 using namespace System::Collections::Generic;
 using namespace System::Windows::Forms;
 
-std::string toss( String ^ s );
+
+
+static
+DensimParser::DensimParser(void)
+{
+  _classIndices = gcnew List<int>();
+  for( int i = 1; i <= 18; ++i ) {
+    _classIndices->Add( i );
+  }
+}
 
 
 
@@ -22,7 +33,8 @@ DensimParser::DensimParser( DirectoryInfo ^ inputDirectory)
   _initialSerology(gcnew Serology()),
   _finalSerology(gcnew Serology()),
   _location(gcnew Location()),
-  _serotypes(gcnew Dictionary<int,Serotype^>(4))
+  _serotypes(gcnew Dictionary<int,Serotype^>(4)),
+  _days(gcnew List<int>(365))
 {
   for( int i = 1; i <= 4; ++i ) {
     _serotypes[i] = gcnew Serotype();
@@ -251,7 +263,7 @@ DensimParser::ParseSerotypes(void)
 
   // EIP
   sf = gcnew SerotypeFile( Path::Combine(_inputDirectory->FullName, "EIP.PRN") );
-  for( int i = 1; i < 4; ++i ) {
+  for( int i = 1; i <= 4; ++i ) {
     for each( String ^ s in sf->SerotypeData[i] ) {
       _serotypes[i]->EIP->Add( s );
     }
@@ -259,7 +271,7 @@ DensimParser::ParseSerotypes(void)
 
   // Infective Mosquitoes
   sf = gcnew SerotypeFile( Path::Combine(_inputDirectory->FullName, "INFVMOSQ.PRN") );
-  for( int i = 1; i < 4; ++i ) {
+  for( int i = 1; i <= 4; ++i ) {
     for each( String ^ s in sf->SerotypeData[i] ) {
       _serotypes[i]->InfectiveMosquitoes->Add( s );
     }
@@ -267,7 +279,7 @@ DensimParser::ParseSerotypes(void)
 
   // Persons Incubating
   sf = gcnew SerotypeFile( Path::Combine(_inputDirectory->FullName, "INCUBAT.PRN") );
-  for( int i = 1; i < 4; ++i ) {
+  for( int i = 1; i <= 4; ++i ) {
     for each( String ^ s in sf->SerotypeData[i] ) {
       _serotypes[i]->PersonsIncubating->Add( s );
     }
@@ -276,7 +288,7 @@ DensimParser::ParseSerotypes(void)
 
   // Persons Viremic
   sf = gcnew SerotypeFile( Path::Combine(_inputDirectory->FullName, "VIREMIC.PRN") );
-  for( int i = 1; i < 4; ++i ) {
+  for( int i = 1; i <= 4; ++i ) {
     for each( String ^ s in sf->SerotypeData[i] ) {
       _serotypes[i]->PersonsViremic->Add( s );
     }
@@ -284,7 +296,7 @@ DensimParser::ParseSerotypes(void)
 
   // Persons With Virus
   sf = gcnew SerotypeFile( Path::Combine(_inputDirectory->FullName, "WITHVIRS.PRN") );
-  for( int i = 1; i < 4; ++i ) {
+  for( int i = 1; i <= 4; ++i ) {
     for each( String ^ s in sf->SerotypeData[i] ) {
       _serotypes[i]->PersonsWithVirus->Add( s );
     }
@@ -293,37 +305,24 @@ DensimParser::ParseSerotypes(void)
 
   // parse detailed serologies by serotype
   for( int i = 1; i <= 4; ++i ) {
-    // parse each set (1-3)
-    for( int j = 1; j <= 3; ++j ) {
-      String ^ filter = "DET" + Convert::ToString(j) + "Y*D" + Convert::ToString(i) + ".PRN";
+    Serotype ^ serotype = _serotypes[i];
+
+    // parse each set (1-3), using a column offset to place in correct order
+    int columnOffset = 0;
+    for( int j = 1; j <= 3; ++j, columnOffset +=8 ) {
+      // find number of years
+      String ^ filter = "DET" + j + "Y*D" + i + ".PRN";
       array<FileInfo^> ^ fis = _inputDirectory->GetFiles( filter );
+      int numYears = fis->Length;
 
-      for each( FileInfo ^ fi in fis ) {
-        // open file, parse year index from file name, and insert year
-        PrnFile ^ pf = gcnew PrnFile( fi->FullName );
-        int year = Convert::ToInt32( fi->Name->Substring(5,1) );
-        Serotype ^ serotype = _serotypes[i];
-        serotype->YearlyDetailedSerologies[year] = gcnew Serotype::DetailedSerologies();
-        for( int k = 1; k <= 23; ++k ) {
-          serotype->YearlyDetailedSerologies[year]->Add( gcnew Serotype::DetailedSerology() );
-        }
+      // parse each year
+      for( int k = 1; k <= numYears; ++k ) {
+        String ^ yearFilename = "DET" + j + "Y" + k + "D" + i + ".PRN";
+        PrnFile ^ pf = gcnew PrnFile( Path::Combine(_inputDirectory->FullName, yearFilename) );
 
-        // column offset based on which set of details
-        int columnOffset;
-        if( j == 1 ) {
-          columnOffset = 0;
-        }
-        else if( j == 2 ) {
-          columnOffset = 8;
-        }
-        else if ( j == 3 ) {
-          columnOffset = 16;
-        }
-
-        // process into serology
         for each( List<String^> ^ row in pf->DataRows ) {
-          for( int k = 1; k < row->Count; ++k ) {
-            serotype->YearlyDetailedSerologies[year][k+columnOffset-1]->Add( row[k] );
+          for( int l = 1; l < row->Count; ++l ) {
+            serotype->DetailedSerologies[l+columnOffset-1]->Add( row[l] );
           }
         }
       }
@@ -337,17 +336,16 @@ void
 DensimParser::SaveToDisk( OutputType outputType )
 {
   // save current working directory and change
-  System::String ^ pwd = System::Environment::CurrentDirectory;
-  System::Environment::CurrentDirectory = _inputDirectory->FullName;
+  String ^ pwd = Environment::CurrentDirectory;
+  Environment::CurrentDirectory = _inputDirectory->FullName;
 
   // save outputs
   OutputDemographics( outputType );
   OutputSerology( outputType );
   OutputLocation( outputType );
-  OutputSerotypes( outputType );
 
   // restore working directory
-  System::Environment::CurrentDirectory = pwd;
+  Environment::CurrentDirectory = pwd;
 }
 
 
@@ -355,51 +353,22 @@ DensimParser::SaveToDisk( OutputType outputType )
 void
 DensimParser::OutputDemographics( OutputType ot )
 {
-  // collate all header names
-  std::vector<std::string> headers;
-  headers.push_back( "Initial age distribution" );
-  headers.push_back( "Initial percentage" );
-  headers.push_back( "Births" );
-  headers.push_back( "Birth percentages" );
-  headers.push_back( "Deaths" );
-  headers.push_back( "Death percentages" );
-  headers.push_back( "Final age distribution" );
-  headers.push_back( "Final percentage" );
+  ExcelWorksheet ^ ews = gcnew ExcelWorksheet( "Demographics" );
+  ews->AddColumn( "Class", Int32::typeid, _classIndices );
+  ews->AddColumn( "Initial age distribution", Int32::typeid, _demographics->InitialDistribution );
+  ews->AddColumn( "Initial percentages", Double::typeid, _demographics->InitialDistributionPercentages );
+  ews->AddColumn( "Births", Int32::typeid, _demographics->Births );
+  ews->AddColumn( "Birth percentages", Double::typeid, _demographics->BirthPercentages );
+  ews->AddColumn( "Deaths", Int32::typeid, _demographics->Deaths );
+  ews->AddColumn( "Death percentages", Double::typeid, _demographics->DeathPercentages );
+  ews->AddColumn( "Final age distribution", Int32::typeid, _demographics->FinalDistribution );
+  ews->AddColumn( "Final percentages", Double::typeid, _demographics->FinalDistributionPercentages );
 
-  String ^ title = "Demographics";
-  ExcelOutput * eo = new ExcelOutput( toss(title), headers, 18 );
+  ExcelWorkbook ^ ewb = gcnew ExcelWorkbook( "DENSIM 1.0" );
+  ewb->AddWorksheet( ews );
+  ewb->SaveToDisk( _inputDirectory, "DS 1.0 - Demographics.xml" );
 
-  for( int i = 0; i < 18; ++i ) {
-    std::vector<std::string> newRow;
-
-    newRow.push_back( toss(_demographics->InitialDistribution[i]) );
-    newRow.push_back( toss(_demographics->InitialDistributionPercentages[i]) );
-    newRow.push_back( toss(_demographics->Births[i]) );
-    newRow.push_back( toss(_demographics->BirthPercentages[i]) );
-    newRow.push_back( toss(_demographics->Deaths[i]) );
-    newRow.push_back( toss(_demographics->DeathPercentages[i]) );
-    newRow.push_back( toss(_demographics->FinalDistribution[i]) );
-    newRow.push_back( toss(_demographics->FinalDistributionPercentages[i]) );
-
-    eo->AddRow( newRow );
-  }
-
-  String ^ filename = "DS 1.0 - Demographics";
-  if( ot == OutputType::XML ) {
-    filename += ".xml";
-    std::ofstream containerXML(toss(filename).c_str());
-    containerXML << eo->GetOutput( ExcelOutput::XML, 7 );
-    containerXML.close();
-  }
-
-  if( ot == OutputType::ASCII ) {
-    filename += ".txt";
-    std:: ofstream containerTXT(toss(filename).c_str());
-    containerTXT << eo->GetOutput( ExcelOutput::ASCII, 7 );
-    containerTXT.close();
-  }
-
-  delete eo;
+  return;
 }
 
 
@@ -407,69 +376,32 @@ DensimParser::OutputDemographics( OutputType ot )
 void
 DensimParser::OutputSerology( OutputType ot )
 {
-  // collate all header names
-  std::vector<std::string> headers;
-  headers.push_back( "Dengue 1 Initial Distribution" );
-  headers.push_back( "Dengue 1 Initial Distribution Percentage" );
-  headers.push_back( "Dengue 2 Initial Distribution" );
-  headers.push_back( "Dengue 2 Initial Distribution Percentage" );
-  headers.push_back( "Dengue 3 Initial Distribution" );
-  headers.push_back( "Dengue 3 Initial Distribution Percentage" );
-  headers.push_back( "Dengue 4 Initial Distribution" );
-  headers.push_back( "Dengue 4 Initial Distribution Percentage" );
+  ExcelWorksheet ^ ews = gcnew ExcelWorksheet( "Serology" );
+  ews->AddColumn( "Class", Int32::typeid, _classIndices );
 
-  headers.push_back( "Dengue 1 Final Distribution" );
-  headers.push_back( "Dengue 1 Final Distribution Percentage" );
-  headers.push_back( "Dengue 2 Final Distribution" );
-  headers.push_back( "Dengue 2 Final Distribution Percentage" );
-  headers.push_back( "Dengue 3 Final Distribution" );
-  headers.push_back( "Dengue 3 Final Distribution Percentage" );
-  headers.push_back( "Dengue 4 Final Distribution" );
-  headers.push_back( "Dengue 4 Final Distribution Percentage" );
+  ews->AddColumn( "Dengue 1 Initial Distribution", Int32::typeid, _initialSerology->D1Number );
+  ews->AddColumn( "Dengue 1 Initial Distribution Percentage", Double::typeid, _initialSerology->D1Percent );
+  ews->AddColumn( "Dengue 2 Initial Distribution", Int32::typeid, _initialSerology->D2Number );
+  ews->AddColumn( "Dengue 2 Initial Distribution Percentage", Double::typeid, _initialSerology->D2Percent );
+  ews->AddColumn( "Dengue 3 Initial Distribution", Int32::typeid, _initialSerology->D3Number );
+  ews->AddColumn( "Dengue 3 Initial Distribution Percentage", Double::typeid, _initialSerology->D3Percent );
+  ews->AddColumn( "Dengue 4 Initial Distribution", Int32::typeid, _initialSerology->D4Number );
+  ews->AddColumn( "Dengue 4 Initial Distribution Percentage", Double::typeid, _initialSerology->D4Percent );
 
-  String ^ title = "Serology";
-  ExcelOutput * eo = new ExcelOutput( toss(title), headers, 18 );
+  ews->AddColumn( "Dengue 1 Final Distribution", Int32::typeid, _finalSerology->D1Number );
+  ews->AddColumn( "Dengue 1 Final Distribution Percentage", Double::typeid, _finalSerology->D1Percent );
+  ews->AddColumn( "Dengue 2 Final Distribution", Int32::typeid, _finalSerology->D2Number );
+  ews->AddColumn( "Dengue 2 Final Distribution Percentage", Double::typeid, _finalSerology->D2Percent );
+  ews->AddColumn( "Dengue 3 Final Distribution", Int32::typeid, _finalSerology->D3Number );
+  ews->AddColumn( "Dengue 3 Final Distribution Percentage", Double::typeid, _finalSerology->D3Percent );
+  ews->AddColumn( "Dengue 4 Final Distribution", Int32::typeid, _finalSerology->D4Number );
+  ews->AddColumn( "Dengue 4 Final Distribution Percentage", Double::typeid, _finalSerology->D4Percent );
 
-  for( int i = 0; i < 18; ++i ) {
-    std::vector<std::string> newRow;
+  ExcelWorkbook ^ ewb = gcnew ExcelWorkbook( "DENSIM 1.0" );
+  ewb->AddWorksheet( ews );
+  ewb->SaveToDisk( _inputDirectory, "DS 1.0 - Serology.xml" );
 
-    newRow.push_back( toss(_initialSerology->D1Number[i]) );
-    newRow.push_back( toss(_initialSerology->D1Percent[i]) );
-    newRow.push_back( toss(_initialSerology->D2Number[i]) );
-    newRow.push_back( toss(_initialSerology->D2Percent[i]) );
-    newRow.push_back( toss(_initialSerology->D3Number[i]) );
-    newRow.push_back( toss(_initialSerology->D3Percent[i]) );
-    newRow.push_back( toss(_initialSerology->D4Number[i]) );
-    newRow.push_back( toss(_initialSerology->D4Percent[i]) );
-
-    newRow.push_back( toss(_finalSerology->D1Number[i]) );
-    newRow.push_back( toss(_finalSerology->D1Percent[i]) );
-    newRow.push_back( toss(_finalSerology->D2Number[i]) );
-    newRow.push_back( toss(_finalSerology->D2Percent[i]) );
-    newRow.push_back( toss(_finalSerology->D3Number[i]) );
-    newRow.push_back( toss(_finalSerology->D3Percent[i]) );
-    newRow.push_back( toss(_finalSerology->D4Number[i]) );
-    newRow.push_back( toss(_finalSerology->D4Percent[i]) );
-
-    eo->AddRow( newRow );
-  }
-
-  String ^ filename = "DS 1.0 - Serology";
-  if( ot == OutputType::XML ) {
-    filename += ".xml";
-    std::ofstream containerXML(toss(filename).c_str());
-    containerXML << eo->GetOutput( ExcelOutput::XML, 7 );
-    containerXML.close();
-  }
-
-  if( ot == OutputType::ASCII ) {
-    filename += ".txt";
-    std:: ofstream containerTXT(toss(filename).c_str());
-    containerTXT << eo->GetOutput( ExcelOutput::ASCII, 7 );
-    containerTXT.close();
-  }
-
-  delete eo;
+  return;
 }
 
 
@@ -477,58 +409,66 @@ DensimParser::OutputSerology( OutputType ot )
 void
 DensimParser::OutputLocation( OutputType ot )
 {
-  // collate all header names
-  std::vector<std::string> headers;
-  headers.push_back( "Simulation Area" );
-  headers.push_back( "Mosquitoes In Area" );
-  headers.push_back( "Mosquitoes Per Hectare" );
-  headers.push_back( "Mosquitoes Per Person" );
-  headers.push_back( "Mosquito Wet Weight" );
-  headers.push_back( "Mosquito Survival" );
-  headers.push_back( "Infective Bites" );
+  // first create date index, similar to DS 1.0 this is a 1's index of the day and does not reset at yearly boundaries
+  // this is easy to reproduce using the length of any of the lists in location data
+  int numDays = _location->SimulationArea->Count;
+  for( int i = 1; i <= numDays; ++i ) {
+    _days->Add( i );
+  }
+  
+  // now use days as first column in output
+  ExcelWorksheet ^ ews = gcnew ExcelWorksheet( "Location" );
+  ews->AddColumn( "Day", Int32::typeid, _days );
+  ews->AddColumn( "Simulation Area", Double::typeid, _location->SimulationArea );
+  ews->AddColumn( "Mosquitoes In Area", Double::typeid, _location->MosquitoesInArea );
+  ews->AddColumn( "Mosquitoes Per Hectare", Double::typeid, _location->MosquitoesPerHectare );
+  ews->AddColumn( "Mosquitoes Per Person", Double::typeid, _location->MosquitoesPerPerson );
+  ews->AddColumn( "Mosquito Wet Weight", Double::typeid, _location->MosquitoWetWeight );
+  ews->AddColumn( "Mosquito Survival", Double::typeid, _location->MosquitoSurvival );
+  ews->AddColumn( "Infective Bites", Double::typeid, _location->InfectiveBites );
 
-  String ^ title = "Location";
-  ExcelOutput * eo = new ExcelOutput( toss(title), headers, 365 );
+  ExcelWorkbook ^ ewb = gcnew ExcelWorkbook( "DENSIM 1.0" );
+  ewb->AddWorksheet( ews );
 
-  for( int i = 0; i < 365; ++i ) {
-    std::vector<std::string> newRow;
+  for( int i = 1; i <= 4; ++i ) {
+    Serotype ^ serotype = _serotypes[i];
 
-    newRow.push_back( toss(_location->SimulationArea[i]) );
-    newRow.push_back( toss(_location->MosquitoesInArea[i]) );
-    newRow.push_back( toss(_location->MosquitoesPerHectare[i]) );
-    newRow.push_back( toss(_location->MosquitoesPerPerson[i]) );
-    newRow.push_back( toss(_location->MosquitoWetWeight[i]) );
-    newRow.push_back( toss(_location->MosquitoSurvival[i]) );
-    newRow.push_back( toss(_location->InfectiveBites[i]) );
+    ExcelWorksheet ^ ews = gcnew ExcelWorksheet( "Dengue " + i );
+    ews->AddColumn( "Day", Int32::typeid, _days );
+    ews->AddColumn( "EIP Development Rate", Double::typeid, serotype->EIP );
+    ews->AddColumn( "Infective Mosquitoes", Double::typeid, serotype->InfectiveMosquitoes );
+    ews->AddColumn( "Persons Incubating", Double::typeid, serotype->PersonsIncubating );
+    ews->AddColumn( "Persons Viremic", Double::typeid, serotype->PersonsViremic );
+    ews->AddColumn( "Persons With Virus", Double::typeid, serotype->PersonsWithVirus );
+    ews->AddColumn( "MANA Infants", Double::typeid, serotype->DetailedSerologies[0] );
+    ews->AddColumn( "MAEA Infants", Double::typeid, serotype->DetailedSerologies[1] );
+    ews->AddColumn( "< 1 year", Double::typeid, serotype->DetailedSerologies[2] );
+    ews->AddColumn( "1-4 years", Double::typeid, serotype->DetailedSerologies[3] );
+    ews->AddColumn( "5-9 years", Double::typeid, serotype->DetailedSerologies[4] );
+    ews->AddColumn( "10-14 years", Double::typeid, serotype->DetailedSerologies[5] );
+    ews->AddColumn( "15-19 years", Double::typeid, serotype->DetailedSerologies[6] );
+    ews->AddColumn( "20-24 years", Double::typeid, serotype->DetailedSerologies[7] );
+    ews->AddColumn( "25-29 years", Double::typeid, serotype->DetailedSerologies[8] );
+    ews->AddColumn( "30-34 years", Double::typeid, serotype->DetailedSerologies[9] );
+    ews->AddColumn( "35-39 years", Double::typeid, serotype->DetailedSerologies[10] );
+    ews->AddColumn( "40-44 years", Double::typeid, serotype->DetailedSerologies[11] );
+    ews->AddColumn( "45-49 years", Double::typeid, serotype->DetailedSerologies[12] );
+    ews->AddColumn( "50-54 years", Double::typeid, serotype->DetailedSerologies[13] );
+    ews->AddColumn( "55-59 years", Double::typeid, serotype->DetailedSerologies[14] );
+    ews->AddColumn( "60-64 years", Double::typeid, serotype->DetailedSerologies[15] );
+    ews->AddColumn( "65-69 years", Double::typeid, serotype->DetailedSerologies[16] );
+    ews->AddColumn( "70-74 years", Double::typeid, serotype->DetailedSerologies[17] );
+    ews->AddColumn( "75-79 years", Double::typeid, serotype->DetailedSerologies[18] );
+    ews->AddColumn( "80+ years", Double::typeid, serotype->DetailedSerologies[19] );
+    ews->AddColumn( "15-44 years", Double::typeid, serotype->DetailedSerologies[20] );
+    ews->AddColumn( "45+ years", Double::typeid, serotype->DetailedSerologies[21] );
+    ews->AddColumn( "All ages", Double::typeid, serotype->DetailedSerologies[22] );
 
-    eo->AddRow( newRow );
+    ewb->AddWorksheet( ews );
   }
 
-  String ^ filename = "DS 1.0 - Location";
-  if( ot == OutputType::XML ) {
-    filename += ".xml";
-    std::ofstream containerXML(toss(filename).c_str());
-    containerXML << eo->GetOutput( ExcelOutput::XML, 7 );
-    containerXML.close();
-  }
-
-  if( ot == OutputType::ASCII ) {
-    filename += ".txt";
-    std:: ofstream containerTXT(toss(filename).c_str());
-    containerTXT << eo->GetOutput( ExcelOutput::ASCII, 7 );
-    containerTXT.close();
-  }
-
-  delete eo;
+  ewb->SaveToDisk( _inputDirectory, "DS 1.0 - Location and Serotypes.xml" );
 }
-
-
-
-void 
-DensimParser::OutputSerotypes( OutputType ot )
-{
-
-  }
 
 
 
@@ -592,8 +532,12 @@ DensimParser::Serotype::Serotype(void)
   PersonsIncubating(gcnew List<String^>()),
   PersonsViremic(gcnew List<String^>()),
   PersonsWithVirus(gcnew List<String^>()),
-  YearlyDetailedSerologies(gcnew Dictionary<int,DetailedSerologies^>())
+  DetailedSerologies(gcnew List<DetailedSerology^>())
 {
+  for( int i = 1; i <=23; ++i ) {
+    // 23 classes for detailed serologies
+    DetailedSerologies->Add( gcnew DetailedSerology() );
+  }
 }
 
 

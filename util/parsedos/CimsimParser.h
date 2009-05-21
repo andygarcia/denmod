@@ -1,5 +1,5 @@
-#ifndef PROCESSPRN_H
-#define PROCESSPRN_H
+#ifndef UTIL_PARSEDOS_CIMSIMPARSER_H
+#define UTIL_PARSEDOS_CIMSIMPARSER_H
 
 #include <string>
 #include <vector>
@@ -33,6 +33,8 @@ private:
 
 // Members
 private:
+  static System::Collections::Generic::List<int> ^ _yearDays;
+
   bool _parseCompleted;
   System::IO::DirectoryInfo ^ _inputDirectory;
   

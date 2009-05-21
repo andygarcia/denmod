@@ -51,7 +51,7 @@ ExcelWorksheet::AddColumn( String ^ header, Type ^ type, Column ^ column )
 
 
 String ^
-ExcelWorksheet::GetExcelXml()
+ExcelWorksheet::GetSpreadsheetMl()
 {
   // column type count must match column count
   int numTypes = _columnTypes->Count;

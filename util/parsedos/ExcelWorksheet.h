@@ -7,7 +7,7 @@ public ref class ExcelWorksheet
 {
 // Typedefs
 public:
-  typedef System::Collections::Generic::List<System::Object^> Column;
+  typedef System::Collections::IList Column;
 
 // Constructors
 private:
@@ -19,8 +19,10 @@ public:
 // Methods
 public:
   void AddColumn( System::String ^ header, System::Type ^ type, Column ^ column );
-  System::String ^ GetExcelXml(void);
+  System::String ^ GetSpreadsheetMl( void );
 
+
+// Member
 private:
   static System::Collections::Generic::Dictionary<System::Type^,System::String^> ^ _typeToStyle;
   static System::Collections::Generic::Dictionary<System::Type^,System::String^> ^ _typeToCellType;
@@ -30,10 +32,7 @@ private:
   System::Collections::Generic::List<System::String^> ^ _columnHeaders;
   System::Collections::Generic::List<System::Type^> ^ _columnTypes;
   System::Collections::Generic::List<Column^> ^ _columns;
-
-private:
 };
 
 
 #endif
-

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CimsimParser.h"
-#include "ExcelOutput.h"
+#include "ExcelWorkbook.h"
+#include "ExcelWorksheet.h"
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -27,6 +28,11 @@ std::string toss( String ^ s )
 static
 CimsimParser::CimsimParser(void)
 {
+  _yearDays = gcnew System::Collections::Generic::List<int>();
+  for( int i = 1; i <= 365; ++i ) {
+    _yearDays->Add( i );
+  }
+
   _locationFilenames = gcnew List<String^>();
   _locationFilenames->Add( "MAIN.PRN" );
   _locationFilenames->Add( "FEMSHA.PRN" );
@@ -54,6 +60,7 @@ CimsimParser::CimsimParser(void)
   _larvalDataFilename = "LARVD*.PRN";
 
 }
+
 
 
 CimsimParser::CimsimParser( DirectoryInfo ^ inputDirectory)
@@ -168,42 +175,18 @@ CimsimParser::SaveToDisk( OutputType outputType )
 void
 CimsimParser::OutputLocation( OutputType ot )
 {
-  // collate all header names
-  std::vector<std::string> headers;
+  ExcelWorksheet ^ ews = gcnew ExcelWorksheet( "Location" );
+  ews->AddColumn( "Day", Int32::typeid, _yearDays );
+
   for each( LocationFile ^ lf in _locationFiles ) {
     for each( String ^ s in lf->Headers) {
-      headers.push_back(toss(s));
+      ews->AddColumn( s, Double::typeid, lf->Data[s] );
     }
   }
 
-  String ^ title = "Location Output";
-  ExcelOutput * eo = new ExcelOutput( toss(title), headers, 365 );
-
-  for( int i = 0; i < 365; ++i ) {
-    std::vector<std::string> newRow;
-    for each( LocationFile ^ lf in _locationFiles ) {
-      for each( String ^ s in lf->Headers ) {
-        newRow.push_back( toss(lf->Data[s][i]) );
-      }
-    }
-    eo->AddRow( newRow );
-  }
-
-  if( ot == OutputType::XML ) {
-    String ^ filename = "CS 1.0 - Location.xml";
-    std::ofstream containerXML(toss(filename).c_str());
-    containerXML << eo->GetOutput( ExcelOutput::XML, 7 );
-    containerXML.close();
-  }
-
-  if( ot == OutputType::ASCII ) {
-    String ^ filename = "CS 1.0 - Location.txt";
-    std:: ofstream containerTXT(toss(filename).c_str());
-    containerTXT << eo->GetOutput( ExcelOutput::ASCII, 7 );
-    containerTXT.close();
-  }
-
-  delete eo;
+  ExcelWorkbook ^ ewb = gcnew ExcelWorkbook( "CIMSiM 1.0" );
+  ewb->AddWorksheet( ews );
+  ewb->SaveToDisk( _inputDirectory, "CS 1.0 - Location.xml" );
 }
 
 
@@ -212,47 +195,17 @@ void
 CimsimParser::OutputContainer( OutputType ot )
 {
   for each( KeyValuePair<String^,Dictionary<String^,List<String^>^>^> ^ kvp in _containerData ) {
-    String ^ containerName = kvp->Key;
-    String ^ title = "Container Output - " + containerName;
+    ExcelWorksheet ^ ews = gcnew ExcelWorksheet( kvp->Key );
+    ews->AddColumn( "Day", Int32::typeid, _yearDays );
 
-    std::vector<std::string> headers;
     for each( String ^ header in kvp->Value->Keys ) {
-      headers.push_back( toss(header) );
+      ews->AddColumn( header, Double::typeid, kvp->Value[header] );
     }
 
-    ExcelOutput * eo = new ExcelOutput( toss(title), headers, 365 );
-
-    for( int i = 0; i < 365; ++i ) {
-      std::vector<std::string> newRow;
-      for each( String ^ header in kvp->Value->Keys ) {
-        newRow.push_back( toss(kvp->Value[header][i]) );
-      }
-      eo->AddRow( newRow );
-    }
-
-
-    if( ot == OutputType::XML ) {
-      String ^ filename = "CS 1.0 - " + containerName + ".xml";
-      std::ofstream containerXML(toss(filename).c_str());
-      containerXML << eo->GetOutput( ExcelOutput::XML, 7 );
-      containerXML.close();
-    }
-
-    if( ot == OutputType::ASCII ) {
-      String ^ filename = "CS 1.0 - " + containerName + ".txt";
-      std:: ofstream containerTXT(toss(filename).c_str());
-      containerTXT << eo->GetOutput( ExcelOutput::ASCII, 7 );
-      containerTXT.close();
-    }
+    ExcelWorkbook ^ ewb = gcnew ExcelWorkbook( "CIMSiM 1.0" );
+    ewb->AddWorksheet( ews );
+    ewb->SaveToDisk( _inputDirectory, "CS 1.0 - " + kvp->Key + ".xml" );
   }
-}
-
-
-
-void
-CimsimParser::OutputSurvivals( OutputType ot )
-{
-
 }
 
 
@@ -260,35 +213,4 @@ CimsimParser::OutputSurvivals( OutputType ot )
 void
 CimsimParser::OutputLarvalData( OutputType ot )
 {
-  //for each( LarvalDataFile ^ ldf in _larvalDataFiles ) {
-  //  vector<string> headers;
-  //  for each( String ^ s in ldf->Headers ) {
-  //    headers.push_back(toss(s));
-  //  }
-
-  //  ExcelOutput * eo = new ExcelOutput( toss(ldf->_title), headers, 365 );
-  //  for( int iRow = 0; iRow < 100; ++iRow ) {
-  //    vector<string> newRow;
-  //    for( int iCol = 0; iCol <= ldf->_data->GetUpperBound(1); iCol++ ) {
-  //      newRow.push_back(toss(ldf->_data[iRow,iCol]));
-  //    }
-  //    eo->AddRow( newRow );
-  //  }
-
-  //  if( ot == OutputType::XML ) {
-  //    String ^ filename = "CS 1.0 - Larval Data - Day " + ldf->_day + ".xml";
-  //    std::ofstream containerXML(toss(filename).c_str());
-  //    containerXML << eo->GetOutput( ExcelOutput::XML, 7 );
-  //    containerXML.close();
-  //  }
-
-  //  if( ot == OutputType::ASCII ) {
-  //    String ^ filename = "CS 1.0 - Larval Data - Day " + ldf->_day + ".txt";
-  //    std:: ofstream containerTXT(toss(filename).c_str());
-  //    containerTXT << eo->GetOutput( ExcelOutput::ASCII, 7 );
-  //    containerTXT.close();
-  //  }
-
-  //  delete eo;
-  //}
 }

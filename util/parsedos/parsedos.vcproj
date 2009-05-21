@@ -208,7 +208,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ExcelOutput.cpp"
+				RelativePath=".\ExcelWorkbook.cpp"
 				>
 			</File>
 			<File
@@ -266,7 +266,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ExcelOutput.h"
+				RelativePath=".\ExcelWorkbook.h"
 				>
 			</File>
 			<File
