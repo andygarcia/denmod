@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "InputForm.h"
+#include "ExcelConverter.h"
 
 using namespace xml2xls;
 
@@ -57,24 +58,18 @@ System::Void
 InputForm::OnConvert(System::Object^  sender, System::EventArgs^  e)
 {
   using namespace Microsoft::Office::Interop;
-  Excel::Application ^ ea = gcnew Excel::Application();
-  ea->DisplayAlerts = false;
+  ExcelConverter ^ ec = gcnew ExcelConverter();
 
   int filesConverted = 0;
 
   for each( ListViewItem ^ lvi in lvFiles->Items ) {
     String ^ xmlFilename = lvi->Text;
     IO::FileInfo ^ fi = gcnew IO::FileInfo( xmlFilename );
+    String xlsFilename;
 
     if( fi->Exists ) {
-      // open and disable compatability check
-      Excel::Workbook ^ xmlFile = ea->Workbooks->Open(xmlFilename, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing );
-      xmlFile->CheckCompatibility = false;
+      ec->Convert( xmlFilename
 
-      // save as excel 97-2003 format, changing extension, close and delete old workbook
-      xmlFile->SaveAs( IO::Path::ChangeExtension( xmlFilename, ".xls" ), Excel::XlFileFormat::xlExcel8, Type::Missing, Type::Missing, Type::Missing, false, Excel::XlSaveAsAccessMode::xlNoChange, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing );
-      ea->Workbooks->Close();
-      //IO::File::Delete( xmlFilename );
       lvi->SubItems[1]->Text = "converted";
       filesConverted++;
     }

@@ -205,6 +205,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ExcelConverter.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\InputForm.cpp"
 				>
 			</File>
@@ -238,6 +242,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\ExcelConverter.h"
+				>
+			</File>
 			<File
 				RelativePath=".\InputForm.h"
 				FileType="3"
