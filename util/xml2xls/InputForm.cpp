@@ -65,10 +65,10 @@ InputForm::OnConvert(System::Object^  sender, System::EventArgs^  e)
   for each( ListViewItem ^ lvi in lvFiles->Items ) {
     String ^ xmlFilename = lvi->Text;
     IO::FileInfo ^ fi = gcnew IO::FileInfo( xmlFilename );
-    String xlsFilename;
+    String ^ xlsFilename = IO::Path::GetFileNameWithoutExtension(fi->Name) + ".xls";
 
     if( fi->Exists ) {
-      ec->Convert( xmlFilename
+      ec->Convert( xmlFilename, Excel::XlFileFormat::xlExcel8, xlsFilename, Excel::XlFileFormat::xlExcel8, true );
 
       lvi->SubItems[1]->Text = "converted";
       filesConverted++;
@@ -77,8 +77,6 @@ InputForm::OnConvert(System::Object^  sender, System::EventArgs^  e)
       lvi->SubItems[1]->Text = "not found";
     }
   }
-
-  MessageBox::Show( "" + filesConverted + " files were converted." );
 }
 
 
