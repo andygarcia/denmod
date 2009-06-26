@@ -454,11 +454,16 @@ SimLocation::DoYear(void)
         double surfaceRatio = rs->GetTreatedInteriorProportion();
         double houseRatio = rs->GetTreatedHousesProportion();
         double survival = rs->GetSurvival(_currentDate);
+        double mortality = 1 - survival;
 
         for( PreOviAdultIterator itAdult = _preOviAdults.begin(); itAdult != _preOviAdults.end(); ) {
-          double IndoorSurviving = itAdult->Number * (1 - _proportionAdultsOutdoor) * surfaceRatio * houseRatio * survival;
-          double OutdoorSurviving = itAdult->Number * _proportionAdultsOutdoor;
-          itAdult->Number = IndoorSurviving + OutdoorSurviving;
+          double indoorCount = itAdult->Number * (1 - _proportionAdultsOutdoor);
+          double indoorMortality = itAdult->Number * (1 - _proportionAdultsOutdoor) * mortality * houseRatio * surfaceRatio;
+          double indoorSurvival = indoorCount - indoorMortality;
+
+          double outdoorCount = itAdult->Number * _proportionAdultsOutdoor;
+
+          itAdult->Number = indoorSurvival + outdoorCount;
           if( itAdult->Number == 0 ) {
             itAdult = _preOviAdults.erase(itAdult);
           }
@@ -519,11 +524,16 @@ SimLocation::DoYear(void)
         double surfaceRatio = rs->GetTreatedInteriorProportion();
         double houseRatio = rs->GetTreatedHousesProportion();
         double survival = rs->GetSurvival(_currentDate);
+        double mortality = 1 - survival;
 
         for( OviAdultIterator itAdult = _oviAdults.begin(); itAdult != _oviAdults.end(); ) {
-          double IndoorSurviving = itAdult->Number * (1 - _proportionAdultsOutdoor) * surfaceRatio * houseRatio * survival;
-          double OutdoorSurviving = itAdult->Number * _proportionAdultsOutdoor;
-          itAdult->Number = IndoorSurviving + OutdoorSurviving;
+          double indoorCount = itAdult->Number * (1 - _proportionAdultsOutdoor);
+          double indoorMortality = itAdult->Number * (1 - _proportionAdultsOutdoor) * mortality * houseRatio * surfaceRatio;
+          double indoorSurvival = indoorCount - indoorMortality;
+
+          double outdoorCount = itAdult->Number * _proportionAdultsOutdoor;
+
+          itAdult->Number = indoorSurvival + outdoorCount;
           if( itAdult->Number == 0 ) {
             itAdult = _oviAdults.erase(itAdult);
           }
@@ -560,6 +570,9 @@ SimLocation::DoYear(void)
         double surfaceRatio = rs->GetTreatedInteriorProportion();
         double houseRatio = rs->GetTreatedHousesProportion();
         double survival = rs->GetSurvival(_currentDate);
+        double mortality = 1 - survival;
+
+        // TODO incorrect, doesn't accumulate outdoor??
         for( int Age = MaxAgeOviAdults; Age >= 1; --Age ) {
           _adultAgeDistribution[Age] = _adultAgeDistribution[Age] * (1 - _proportionAdultsOutdoor) * surfaceRatio * houseRatio * survival;
         }
@@ -628,11 +641,16 @@ SimLocation::DoYear(void)
         double surfaceRatio = rs->GetTreatedInteriorProportion();
         double houseRatio = rs->GetTreatedHousesProportion();
         double survival = rs->GetSurvival(_currentDate);
+        double mortality = 1 - survival;
 
         for( PreOviAdultIterator itAdult = _nulliparousAdults.begin(); itAdult != _nulliparousAdults.end(); ) {
-          double IndoorSurviving = itAdult->Number * (1 - _proportionAdultsOutdoor) * surfaceRatio * houseRatio * survival;
-          double OutdoorSurviving = itAdult->Number * _proportionAdultsOutdoor;
-          itAdult->Number = IndoorSurviving + OutdoorSurviving;
+          double indoorCount = itAdult->Number * (1 - _proportionAdultsOutdoor);
+          double indoorMortality = itAdult->Number * (1 - _proportionAdultsOutdoor) * mortality * houseRatio * surfaceRatio;
+          double indoorSurvival = indoorCount - indoorMortality;
+
+          double outdoorCount = itAdult->Number * _proportionAdultsOutdoor;
+
+          itAdult->Number = indoorSurvival + outdoorCount;
           if( itAdult->Number == 0 ) {
             itAdult = _nulliparousAdults.erase(itAdult);
           }
@@ -704,11 +722,16 @@ SimLocation::DoYear(void)
         double surfaceRatio = rs->GetTreatedInteriorProportion();
         double houseRatio = rs->GetTreatedHousesProportion();
         double survival = rs->GetSurvival(_currentDate);
+        double mortality = 1 - survival;
 
         for( OviAdultIterator itAdult = _parousAdults.begin(); itAdult != _parousAdults.end(); ) {
-          double IndoorSurviving = itAdult->Number * (1 - _proportionAdultsOutdoor) * surfaceRatio * houseRatio * survival;
-          double OutdoorSurviving = itAdult->Number * _proportionAdultsOutdoor;
-          itAdult->Number = IndoorSurviving + OutdoorSurviving;
+          double indoorCount = itAdult->Number * (1 - _proportionAdultsOutdoor);
+          double indoorMortality = itAdult->Number * (1 - _proportionAdultsOutdoor) * mortality * houseRatio * surfaceRatio;
+          double indoorSurvival = indoorCount - indoorMortality;
+
+          double outdoorCount = itAdult->Number * _proportionAdultsOutdoor;
+
+          itAdult->Number = indoorSurvival + outdoorCount;
           if( itAdult->Number == 0 ) {
             itAdult = _parousAdults.erase(itAdult);
           }

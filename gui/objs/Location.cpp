@@ -298,6 +298,9 @@ Location::RunCimsim( bool usePop, bool stochasticAdvancement, DateTime startDate
     delete cssim;
     delete cso;
   }
+
+  // temp output of mst files
+  MosData_->WriteMstFiles();
 }
 
 
