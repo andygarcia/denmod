@@ -29,6 +29,7 @@ public:
   void ParseSerology(void);
   void ParseLocation(void);
   void ParseSerotypes(void);
+  void ParseDebug(void);
 
   void SaveToDisk( OutputType outputType );
 
@@ -57,6 +58,10 @@ private:
 
   ref class Serotype;
   Dictionary<int,Serotype^> ^ _serotypes;
+
+  ref class Debug;
+  Debug ^ _debug;
+  bool _doDebugOutput;
 
 
 private:
@@ -128,6 +133,49 @@ private:
 
     typedef List<String^> DetailedSerology;
     List<DetailedSerology^> ^ DetailedSerologies;
+  };
+
+  ref class SerotypeDebug
+  {
+  public:
+    SerotypeDebug(void);
+
+  public:
+    List<String^> ^ EIPTranNew;
+    List<String^> ^ BitersInfdNewDB;
+    List<String^> ^ EIPTranOld;
+    List<String^> ^ BitersInfdOldDB;
+    List<String^> ^ BitersInfd;
+    List<String^> ^ EggersInfv;
+    List<String^> ^ BitersInfv;
+    List<String^> ^ MosqInfvTotal;
+    List<String^> ^ MosqInocEstimate;
+    List<String^> ^ NewDlyMosqInoc;
+    List<String^> ^ NewInfd;
+    List<String^> ^ OldInfd;
+    List<String^> ^ HumInocEstimate;
+    List<String^> ^ NewDlyHumInoc;
+  };
+
+  ref class Debug
+  {
+  public:
+    Debug(void);
+
+  public:
+    List<String^> ^ CalcDeathsArraySize;
+    List<String^> ^ CalcBirthsArraySize;
+    List<String^> ^ InitInfectivesArraySize;
+    List<String^> ^ DMealProp;
+    List<String^> ^ EggersNew;
+    List<String^> ^ BitersNew;
+    List<String^> ^ EggersOld;
+    List<String^> ^ BitersOld;
+    List<String^> ^ BitersTotal;
+    List<String^> ^ MosqTotal;
+    List<String^> ^ BitesPerPerson;
+
+    Dictionary<int, SerotypeDebug ^> ^ Serotypes;
   };
 };
 

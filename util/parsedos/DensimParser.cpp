@@ -32,7 +32,8 @@ DensimParser::DensimParser( DirectoryInfo ^ inputDirectory)
   _finalSerology(gcnew Serology()),
   _location(gcnew Location()),
   _serotypes(gcnew Dictionary<int,Serotype^>(4)),
-  _days(gcnew List<int>(365))
+  _days(gcnew List<int>(365)),
+  _doDebugOutput(false)
 {
   for( int i = 1; i <= 4; ++i ) {
     _serotypes[i] = gcnew Serotype();
@@ -53,6 +54,114 @@ DensimParser::Parse(void)
   ParseSerology();
   ParseLocation();
   ParseSerotypes();
+
+  if( File::Exists(Path::Combine(_inputDirectory->FullName, "DEBUG.PRN"))
+   && File::Exists(Path::Combine(_inputDirectory->FullName, "DEBUGD1.PRN"))
+   && File::Exists(Path::Combine(_inputDirectory->FullName, "DEBUGD2.PRN"))
+   && File::Exists(Path::Combine(_inputDirectory->FullName, "DEBUGD3.PRN"))
+   && File::Exists(Path::Combine(_inputDirectory->FullName, "DEBUGD4.PRN")) )
+  {
+    ParseDebug();
+  }
+}
+
+
+
+void
+DensimParser::ParseDebug(void)
+{
+  _debug = gcnew Debug();
+
+  // debug output
+  LocationFile ^ lf = gcnew LocationFile( Path::Combine(_inputDirectory->FullName, "DEBUG.PRN") );
+  for each( String ^ s in lf->Data[lf->Headers[0]] ) {
+    _debug->CalcDeathsArraySize->Add( s );
+  }
+  for each( String ^ s in lf->Data[lf->Headers[1]] ) {
+    _debug->CalcBirthsArraySize->Add( s );
+  }
+  for each( String ^ s in lf->Data[lf->Headers[2]] ) {
+    _debug->InitInfectivesArraySize->Add( s );
+  }
+  for each( String ^ s in lf->Data[lf->Headers[3]] ) {
+    _debug->DMealProp->Add( s );
+  }
+  for each( String ^ s in lf->Data[lf->Headers[4]] ) {
+    _debug->EggersNew->Add( s );
+  }
+  for each( String ^ s in lf->Data[lf->Headers[5]] ) {
+    _debug->BitersNew->Add( s );
+  }
+  for each( String ^ s in lf->Data[lf->Headers[6]] ) {
+    _debug->EggersOld->Add( s );
+  }
+  for each( String ^ s in lf->Data[lf->Headers[7]] ) {
+    _debug->BitersOld->Add( s );
+  }
+  for each( String ^ s in lf->Data[lf->Headers[8]] ) {
+    _debug->BitersTotal->Add( s );
+  }
+  for each( String ^ s in lf->Data[lf->Headers[9]] ) {
+    _debug->MosqTotal->Add( s );
+  }
+  for each( String ^ s in lf->Data[lf->Headers[10]] ) {
+    _debug->BitesPerPerson->Add( s );
+  }
+
+
+  for( int i = 1; i <= 4; ++i ) {
+    String ^ serotypeFilename = "DEBUGD" + i + ".PRN";
+    LocationFile ^ lf = gcnew LocationFile( Path::Combine(_inputDirectory->FullName, serotypeFilename) );
+
+    SerotypeDebug ^ serotypeDebug = gcnew SerotypeDebug();
+
+    for each( String ^ s in lf->Data[lf->Headers[0]] ) {
+      serotypeDebug->EIPTranNew->Add( s );
+    }
+    for each( String ^ s in lf->Data[lf->Headers[1]] ) {
+      serotypeDebug->BitersInfdNewDB->Add( s );
+    }
+    for each( String ^ s in lf->Data[lf->Headers[2]] ) {
+      serotypeDebug->EIPTranOld->Add( s );
+    }
+    for each( String ^ s in lf->Data[lf->Headers[3]] ) {
+      serotypeDebug->BitersInfdOldDB->Add( s );
+    }
+    for each( String ^ s in lf->Data[lf->Headers[4]] ) {
+      serotypeDebug->BitersInfd->Add( s );
+    }
+    for each( String ^ s in lf->Data[lf->Headers[5]] ) {
+      serotypeDebug->EggersInfv->Add( s );
+    }
+    for each( String ^ s in lf->Data[lf->Headers[6]] ) {
+      serotypeDebug->BitersInfv->Add( s );
+    }
+    for each( String ^ s in lf->Data[lf->Headers[7]] ) {
+      serotypeDebug->MosqInfvTotal->Add( s );
+    }
+    for each( String ^ s in lf->Data[lf->Headers[8]] ) {
+      serotypeDebug->MosqInocEstimate->Add( s );
+    }
+    for each( String ^ s in lf->Data[lf->Headers[9]] ) {
+      serotypeDebug->NewDlyMosqInoc->Add( s );
+    }
+    for each( String ^ s in lf->Data[lf->Headers[10]] ) {
+      serotypeDebug->NewInfd->Add( s );
+    }
+    for each( String ^ s in lf->Data[lf->Headers[11]] ) {
+      serotypeDebug->OldInfd->Add( s );
+    }
+    for each( String ^ s in lf->Data[lf->Headers[12]] ) {
+      serotypeDebug->HumInocEstimate->Add( s );
+    }
+    for each( String ^ s in lf->Data[lf->Headers[13]] ) {
+      serotypeDebug->NewDlyHumInoc->Add( s );
+    }
+
+    _debug->Serotypes[i] = serotypeDebug;
+  }
+
+  _doDebugOutput = true;
 }
 
 
@@ -424,6 +533,19 @@ DensimParser::OutputLocation( OutputType ot )
   ews->AddColumn( "Mosquito Wet Weight", Double::typeid, _location->MosquitoWetWeight );
   ews->AddColumn( "Mosquito Survival", Double::typeid, _location->MosquitoSurvival );
   ews->AddColumn( "Infective Bites", Double::typeid, _location->InfectiveBites );
+  if( _doDebugOutput ) {
+    ews->AddColumn( "CalcDeathsArraySize", Int32::typeid, _debug->CalcDeathsArraySize );
+    ews->AddColumn( "CalcBirthsArraySize", Int32::typeid, _debug->CalcBirthsArraySize );
+    ews->AddColumn( "InitInfectivesArraySize", Int32::typeid, _debug->InitInfectivesArraySize );
+    ews->AddColumn( "DMealProp", Double::typeid, _debug->DMealProp );
+    ews->AddColumn( "EggersNew", Double::typeid, _debug->EggersNew );
+    ews->AddColumn( "BitersNew", Double::typeid, _debug->BitersNew );
+    ews->AddColumn( "EggersOld", Double::typeid, _debug->EggersOld );
+    ews->AddColumn( "BitersOld", Double::typeid, _debug->BitersOld );
+    ews->AddColumn( "BitersTotal", Double::typeid, _debug->BitersTotal );
+    ews->AddColumn( "MosqTotal", Double::typeid, _debug->MosqTotal );
+    ews->AddColumn( "BitesPerPerson", Double::typeid, _debug->BitesPerPerson );
+  }
 
   ExcelWorkbook ^ ewb = gcnew ExcelWorkbook( "DENSIM 1.0" );
   ewb->AddWorksheet( ews );
@@ -461,6 +583,23 @@ DensimParser::OutputLocation( OutputType ot )
     ews->AddColumn( "15-44 years", Double::typeid, serotype->DetailedSerologies[20] );
     ews->AddColumn( "45+ years", Double::typeid, serotype->DetailedSerologies[21] );
     ews->AddColumn( "All ages", Double::typeid, serotype->DetailedSerologies[22] );
+    if( _doDebugOutput ) {
+      SerotypeDebug ^ serotype = _debug->Serotypes[i];
+      ews->AddColumn( "EIPTranNew", Double::typeid, serotype->EIPTranNew );
+      ews->AddColumn( "BitersInfdNewDB", Double::typeid, serotype->BitersInfdNewDB );
+      ews->AddColumn( "EIPTranOld", Double::typeid, serotype->EIPTranOld );
+      ews->AddColumn( "BitersInfdOldDB", Double::typeid, serotype->BitersInfdOldDB );
+      ews->AddColumn( "BitersInfd", Double::typeid, serotype->BitersInfd );
+      ews->AddColumn( "EggersInfv", Double::typeid, serotype->EggersInfv );
+      ews->AddColumn( "BitersInfv", Double::typeid, serotype->BitersInfv );
+      ews->AddColumn( "MosqInfvTotal", Double::typeid, serotype->MosqInfvTotal );
+      ews->AddColumn( "MosqInocEstimate", Double::typeid, serotype->MosqInocEstimate );
+      ews->AddColumn( "NewDlyMosqInoc", Double::typeid, serotype->NewDlyMosqInoc );
+      ews->AddColumn( "NewInfd", Double::typeid, serotype->NewInfd );
+      ews->AddColumn( "OldInfd", Double::typeid, serotype->OldInfd );
+      ews->AddColumn( "HumInocEstimate", Double::typeid, serotype->HumInocEstimate );
+      ews->AddColumn( "NewDlyHumInoc", Double::typeid, serotype->NewDlyHumInoc );
+    }
 
     ewb->AddWorksheet( ews );
   }
@@ -541,4 +680,40 @@ DensimParser::Serotype::Serotype(void)
 
 
 DensimParser::Serotype::~Serotype(void)
+{}
+
+
+
+DensimParser::Debug::Debug(void)
+: CalcDeathsArraySize(gcnew List<String^>()),
+  CalcBirthsArraySize(gcnew List<String^>()),
+  InitInfectivesArraySize(gcnew List<String^>()),
+  DMealProp(gcnew List<String^>()),
+  EggersNew(gcnew List<String^>()),
+  BitersNew(gcnew List<String^>()),
+  EggersOld(gcnew List<String^>()),
+  BitersOld(gcnew List<String^>()),
+  BitersTotal(gcnew List<String^>()),
+  MosqTotal(gcnew List<String^>()),
+  BitesPerPerson(gcnew List<String^>()),
+  Serotypes(gcnew Dictionary<int,SerotypeDebug^>())
+{}
+
+
+
+DensimParser::SerotypeDebug::SerotypeDebug(void)
+: EIPTranNew(gcnew List<String^>()),
+  BitersInfdNewDB(gcnew List<String^>()),
+  EIPTranOld(gcnew List<String^>()),
+  BitersInfdOldDB(gcnew List<String^>()),
+  BitersInfd(gcnew List<String^>()),
+  EggersInfv(gcnew List<String^>()),
+  BitersInfv(gcnew List<String^>()),
+  MosqInfvTotal(gcnew List<String^>()),
+  MosqInocEstimate(gcnew List<String^>()),
+  NewDlyMosqInoc(gcnew List<String^>()),
+  NewInfd(gcnew List<String^>()),
+  OldInfd(gcnew List<String^>()),
+  HumInocEstimate(gcnew List<String^>()),
+  NewDlyHumInoc(gcnew List<String^>())
 {}
