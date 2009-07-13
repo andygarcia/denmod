@@ -409,6 +409,13 @@ DensimParser::ParseSerotypes(void)
     }
   }
 
+  // New cases
+  sf = gcnew SerotypeFile( Path::Combine(_inputDirectory->FullName, "NEWCASES.PRN") );
+  for( int i = 1; i <= 4; ++i ) {
+    for each( String ^ s in sf->SerotypeData[i] ) {
+      _serotypes[i]->NewCases->Add( s );
+    }
+  }
 
   // parse detailed serologies by serotype
   for( int i = 1; i <= 4; ++i ) {
@@ -560,6 +567,7 @@ DensimParser::OutputLocation( OutputType ot )
     ews->AddColumn( "Persons Incubating", Double::typeid, serotype->PersonsIncubating );
     ews->AddColumn( "Persons Viremic", Double::typeid, serotype->PersonsViremic );
     ews->AddColumn( "Persons With Virus", Double::typeid, serotype->PersonsWithVirus );
+    ews->AddColumn( "New Cases", Double::typeid, serotype->NewCases );
     ews->AddColumn( "MANA Infants", Double::typeid, serotype->DetailedSerologies[0] );
     ews->AddColumn( "MAEA Infants", Double::typeid, serotype->DetailedSerologies[1] );
     ews->AddColumn( "< 1 year", Double::typeid, serotype->DetailedSerologies[2] );
@@ -669,6 +677,7 @@ DensimParser::Serotype::Serotype(void)
   PersonsIncubating(gcnew List<String^>()),
   PersonsViremic(gcnew List<String^>()),
   PersonsWithVirus(gcnew List<String^>()),
+  NewCases(gcnew List<String^>()),
   DetailedSerologies(gcnew List<DetailedSerology^>())
 {
   for( int i = 1; i <=23; ++i ) {

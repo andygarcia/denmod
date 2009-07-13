@@ -130,6 +130,7 @@ private:
     List<String^> ^ PersonsIncubating;
     List<String^> ^ PersonsViremic;
     List<String^> ^ PersonsWithVirus;
+    List<String^> ^ NewCases;
 
     typedef List<String^> DetailedSerology;
     List<DetailedSerology^> ^ DetailedSerologies;
