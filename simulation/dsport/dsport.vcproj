@@ -164,6 +164,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SimLocation.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Simulation.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -207,6 +215,14 @@
 			</File>
 			<File
 				RelativePath=".\SimConstants.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SimLocation.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Simulation.h"
 				>
 			</File>
 			<File
