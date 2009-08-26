@@ -315,17 +315,19 @@ public:
 
   std::vector<CimSimOutDescription> CimSimData;
 
-  float HumToMosLTiter;           // Low titer      Probability that a mosq.
-  float HumToMosLInf;             //  prob.         becomes infected when biting
-  float HumToMosHTiter;           // High titer     an infected host.
+  // probability human to mosquito infection
+  float HumToMosLTiter;           // Low titer
+  float HumToMosLInf;             //  prob.
+  float HumToMosHTiter;           // High titer
   float HumToMosHInf;             //  prob.
 
   float MosqToHumProb;            // Prob of Mosq to human transmission
 
-  float EipLTiter;                // Low titer      Extrinsic incubation factor
-  float EipLFactor;               //  factor
-  float EipHTiter;                // High titer
-  float EipHFactor;               //  factor
+  // extrinsic incubation factor
+  float EipLTiter;                // low titer log
+  float EipLFactor;               // low titer factor
+  float EipHTiter;                // high titer log
+  float EipHFactor;               // high titer factor
   std::vector<float> EIPDevRate;  // calculated EIP for the day
 
   float StochTransNum;            // numbers lower than this are proc. stochastically
