@@ -9,18 +9,21 @@
 #include <string>
 #include <vector>
 #include "PdsRng.h"
-#include "../input/Weather.h"
+#include "../input/Location.h"
+#include "../output/MosData.h"
 
 #define EMULATE_PDS_RAND true
 
 
 
-namespace ds {
-namespace port {  
-
+namespace sim {
+namespace dsport {
 
 class Location;
 class HumanPopulation;
+
+
+
 
 class MAEAInfectionParms
 {
@@ -62,29 +65,6 @@ public:
   float FMT2;
   float FMT3;
   float FMT4;
-};
-
-
-
-// describes the age class structure
-class AgeDesc
-{
-public:
-  int Rank;             // class - a value of 1 to 18
-  int FDay;             // start age of class - in days
-  int LDay;             // end age of class - in days - max. age = 30,000 days
-};
-
-
-
-// describes human demographics
-class HumanDemo
-{
-public:
-  int Rank;               // age class
-  float Prop;             // proportion of population in age class
-  float DRate;            // yearly death rate per 1000 for age class
-  float BRate;            // yearly birth rate per 1000 for age class
 };
 
 
@@ -133,7 +113,7 @@ public:
   // InitInfectives()
   float InitInfectivesArraySize;
 
-  // MosqLifeCycle()
+  // MosquitoLifeCycle()
   float DMealProp;
 
   float EggersNew;
@@ -158,7 +138,7 @@ public:
   float MosqTotal;
   float MosqInfvTotal[4+1];
 
-  // HumToMosqTrans()
+  // HumanToMosquitoTransmission()
   float BitesPerPerson;
 
   // CalcNewInocMosquitoes()
@@ -167,7 +147,7 @@ public:
   float NewInfd[4+1];
   float OldInfd[4+1];
 
-  // MosqToHumTrans()
+  // MosquitoToHumanTransmission()
   // CalcNewInocHumans()
   float HumInocEstimate[4+1];
   float NewDlyHumInoc[4+1];
@@ -230,44 +210,49 @@ class dsport
 {
 // Constructors
 public:
-  dsport( ds::port::Location * location, bool doInfection, bool infectFirstYearOnly, bool useRdsSequences );
+  dsport( const input::Location * location );
   virtual ~dsport(void);
 
 // Methods
 public:
   void Start(void);
+  void Start( boost::gregorian::date startDate, boost::gregorian::date stopDate );
 
-  void ReadWeather( int year );
-  void ReadMos( int year );
-      
   void denmain(void);
 
   static int CINT( float value );
   static int INT( float value );
   float RND( std::string callingMethod );
 
-  void InitializeHumanPopulation(void);
-  void InitializeHumanSeroprevalence(void);
   void CalculateEipFactors(void);
 
   void InitInfectives(void);
   float EIPEnzKin( float temp );
-  void MosqLifeCycle(void);
-  void HumToMosqTrans(void);
+  void MosquitoLifeCycle(void);
+  void HumanToMosquitoTransmission(void);
   void CalcNewInocMosquitoes( int iType );
   float Factorial( int n );
-  void MosqToHumTrans(void);
+  void MosquitoToHumanTransmission(void);
   void CalcNewInocHumans( int iType );
   void SpoolToDisk(void);
-  void MenuPostSim(void);
-
   void WriteOutput(void);
 
 public:
+  input::InfectionIntroduction * _infectionIntroduction;
+  input::Weather * _weather;
+  output::MosData * _mosData;
+
+
   const float GasCoef;
-  LocationOutput LocationOutput_;
-  
+
+  boost::gregorian::date _startDate;
+  boost::gregorian::date _stopDate;
+  boost::gregorian::date _currentDate;
+
   HumanPopulation * _humanPopulation;
+  LocationOutput LocationOutput_;
+
+  float HumHostDensity;     // Humans/ha
 
   std::vector<VirusIntroductionProfile> VirusIntro;
   std::vector<VirusDesc> Virus;       // Virus parameters
@@ -276,23 +261,10 @@ public:
   int MAEADurat;                      // Duration of MAEA in days
   int HetImmunDurat;                  // Duration of heterologous immun. - days
 
-  int Day;                                    // Simulation day
-  int Year;                                   // Simulation year
 
-  std::vector<std::vector<bool>> AddedInfections;             // Bit array for intro. schedule
-  bool AddInfvFlag;                           // Flag for adding infection
-
-  int SimYear;              // Number of simulation years run
-  int EndYear;              // End of simulation
-  float HumHostDensity;     // Humans/ha
-  float ClusterSize;        // Cluster size for humans
-
-  std::vector<float> TemperatureMax;
-  std::vector<float> TemperatureMin;
-  std::vector<float> TemperatureAvg;
-  std::vector<float> Rain;
-  std::vector<float> RelHumid;
-  std::vector<float> SD;
+  float _averageAirTemperature;
+  output::DailyMosData & _dailyMosData;
+  output::DailyMosData & _yesterdayMosData;
 
   std::vector<float> EIPFactor;
 
@@ -351,17 +323,12 @@ public:
   float BitersNew;                            // New susceptible biters
   float BitersOld;                            // Old susceptible biters
   std::vector<float> BitersInfv;              // Infective biters
-  std::vector<float> BitesPerPerson;          // feeds per person
+  float BitesPerPerson;                             // feeds per person
   float MosqTotal;                            // Total daily mosquitoes
   std::vector<float> MosqInfvTotal;           // Total infective mosquitoes by type
   int NewDlyHumInoc;                          // potential no. of new infected humans
   std::vector<float> BitersInfdNewDB;         // Number of new double bloods from yesterday
   std::vector<float> BitersInfdOldDB;         // Number of old double bloods from yesterday
-
-  std::map<int, std::vector<CimSimOutDescription>> CimsimDataByYear_;
-  csinput::Weather * Weather_;
-
-  void OutputMosquitoes(void);
 
   PdsRng _pdsRng;
 
