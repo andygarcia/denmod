@@ -33,15 +33,13 @@ public:
 class WeatherYear
 {
 public:
-  typedef std::map<int, WeatherDay*> WeatherDayCollection;
-
-public:
   WeatherYear(void);
   virtual ~WeatherYear(void);
 
+public:
   void AddDay( WeatherDay * wd );
   WeatherDay * GetDay( int day );
-  int GetNumberOfDays(void);
+  unsigned int GetNumberOfDays(void);
 
 public:
   int Index_;
@@ -54,7 +52,7 @@ public:
   std::string Source_;
 
 private:
-  WeatherDayCollection Days_;
+  std::vector<WeatherDay*> _days;
 };
 
 

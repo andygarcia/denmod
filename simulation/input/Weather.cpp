@@ -72,9 +72,9 @@ WeatherYear::WeatherYear(void)
 
 WeatherYear::~WeatherYear(void)
 {
-  WeatherDayCollection::iterator itWd;
-  for( itWd = Days_.begin(); itWd != Days_.end(); ++itWd ) {
-    delete itWd->second;
+  std::vector<WeatherDay*>::iterator itDay;
+  for( itDay = _days.begin(); itDay != _days.end(); ++itDay ) {
+    delete *itDay;
   }  
 }
 
@@ -83,14 +83,15 @@ WeatherYear::~WeatherYear(void)
 void
 WeatherYear::AddDay( WeatherDay * wd )
 {
-  Days_[wd->Index_] = wd;
+  _days.push_back( wd );
 }
 
 
-int
+
+unsigned int
 WeatherYear::GetNumberOfDays(void)
 {
-  return (int) Days_.size();
+  return static_cast<unsigned int>( _days.size() );
 }
 
 
@@ -98,5 +99,5 @@ WeatherYear::GetNumberOfDays(void)
 WeatherDay *
 WeatherYear::GetDay( int day )
 {
-  return Days_[day];
+  return _days[day - 1];
 }

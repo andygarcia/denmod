@@ -37,3 +37,29 @@ Virology::Virology(void)
 
 Virology::~Virology(void)
 {}
+
+
+VirusSerotype &
+Virology::GetSerotype( unsigned int i )
+{
+  if( i < 1 || i > 4 ) {
+    throw "Bad Index";
+  }
+
+  switch( i ) {
+    case 1:
+      return Dengue1_;
+      break;
+    case 2:
+      return Dengue2_;
+      break;
+    case 3:
+      return Dengue3_;
+      break;
+    case 4:
+      return Dengue4_;
+      break;
+    default:
+      throw;
+  }
+}

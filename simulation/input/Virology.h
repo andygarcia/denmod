@@ -5,7 +5,6 @@
 
 namespace input {
 
-
 class VirusSerotype
 {
 public:
@@ -101,6 +100,9 @@ public:
   virtual ~Virology(void);
 
 public:
+  VirusSerotype & GetSerotype( unsigned int i );
+
+public:
   VirusSerotype Dengue1_;
   VirusSerotype Dengue2_;
   VirusSerotype Dengue3_;
@@ -110,6 +112,8 @@ public:
   double MosquitoToHumanNominalProbabilityOfInfection_;
   double MosquitoCountForStochasticity;
   Eip Eip_;
+
+
 };
 
 };

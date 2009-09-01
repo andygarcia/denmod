@@ -1,5 +1,5 @@
-#ifndef LOCATION_H
-#define LOCATION_H
+#ifndef INPUT_LOCATION_H
+#define INPUT_LOCATION_H
 
 #include "Container.h"
 #include "Weather.h"
@@ -16,7 +16,6 @@
 
 
 namespace input {
-
 
 class Location
 {
