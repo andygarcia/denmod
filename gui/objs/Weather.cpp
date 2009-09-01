@@ -362,7 +362,7 @@ WeatherYear::MaxDate::get(void)
 
 
 WeatherData::WeatherData(void)
-: Years_(gcnew Generic::Dictionary<int,WeatherYear^>())
+: Years_(gcnew BindingList<WeatherYear^>())
 {}
 
 
@@ -377,7 +377,7 @@ WeatherData::GetSimObject(void)
 {
   input::Weather * w = new input::Weather();
 
-  for each( WeatherYear ^ wy in Years_->Values ) {
+  for each( WeatherYear ^ wy in Years_ ) {
     w->AddYear( wy->GetSimObject() );
   }
 
@@ -388,7 +388,13 @@ WeatherData::GetSimObject(void)
 
 bool WeatherData::IsWeatherYearAvailable( int year )
 {
-  return Years->ContainsKey( year );
+  for each( WeatherYear ^ wy in Years_ ) {
+    if( wy->Index == year ) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 
@@ -396,10 +402,9 @@ bool WeatherData::IsWeatherYearAvailable( int year )
 void
 WeatherData::AddWeatherYear( WeatherYear ^ wy )
 {
-  Years_->Add( wy->Index, wy );
+  Years_->Add( wy );
   NotifyPropertyChanged( "IsWeatherAvailable" );
   NotifyPropertyChanged( "Years" );
-  NotifyPropertyChanged( "YearsBindingList" );
   NotifyPropertyChanged( "MinDate" );
   NotifyPropertyChanged( "MaxDate" );
 }
@@ -409,10 +414,15 @@ WeatherData::AddWeatherYear( WeatherYear ^ wy )
 void
 WeatherData::RemoveWeatherYear( int year )
 {
-  Years_->Remove(year);
+  for each( WeatherYear ^ wy in Years_ ) {
+    if( wy->Index == year ) {
+      Years_->Remove( wy );
+      break;
+    }
+  }
+
   NotifyPropertyChanged( "IsWeatherAvailable" );
   NotifyPropertyChanged( "Years" );
-  NotifyPropertyChanged( "YearsBindingList" );
   NotifyPropertyChanged( "MinDate" );
   NotifyPropertyChanged( "MaxDate" );
 }
@@ -426,7 +436,7 @@ WeatherData::IsWeatherDataContiguous(void)
   int lastYear = this->MaxDate.Year;
 
   for( int i = firstYear + 1; i < lastYear; ++i ) {
-    if( Years_->ContainsKey( i ) == false ) {
+    if( IsWeatherYearAvailable( i ) == false ) {
       return false;
     }
   }
@@ -445,7 +455,7 @@ WeatherData::GetMissingWeatherYears(void)
   int lastYear = this->MaxDate.Year;
 
   for( int i = firstYear + 1; i < lastYear; ++i ) {
-    if( Years_->ContainsKey( i ) == false ) {
+    if( IsWeatherYearAvailable( i ) == false ) {
       missingYears->Add( i );
     }
   }
@@ -462,43 +472,6 @@ WeatherData::GetWeather( DateTime dt )
   WeatherDay ^ wd = wy->Days[dt.DayOfYear-1];
 
   return wd;
-}
-
-
-
-void
-WeatherData::WriteXml( XmlWriter ^ xw )
-{
-  XmlSerializer ^ yearSerializer = gcnew XmlSerializer( gui::WeatherYear::typeid );
-
-  for each( WeatherYear ^ wy in Years_->Values ) {
-    yearSerializer->Serialize( xw, wy );
-  }
-}
-
-
-
-void
-WeatherData::ReadXml( XmlReader ^ xr )
-{
-  // use default serialization for years/days
-  XmlSerializer ^ yearSerializer = gcnew XmlSerializer( gui::WeatherYear::typeid );
-
-  // possible to have dml file with no weather, <Weather />
-  if( xr->IsEmptyElement ) {
-    xr->Read();
-    return;
-  }
-
-  // move from <Weather> to first <Year> and read successive years
-  xr->ReadToDescendant("Year");
-  while( xr->NodeType != XmlNodeType::EndElement ) {
-    WeatherYear ^ wy = (WeatherYear^) yearSerializer->Deserialize(xr);
-    this->Years_->Add( wy->Index, wy );
-  }
-
-  // move to </WeatherYear>
-  xr->ReadEndElement();
 }
 
 
@@ -706,15 +679,7 @@ WeatherYear::TryExcelConnection( String ^ filename )
 
 
 
-XmlSchema ^
-WeatherData::GetSchema(void)
-{
-  return nullptr;
-}
-
-
-
-Generic::Dictionary<int,WeatherYear^> ^
+BindingList<WeatherYear^> ^
 WeatherData::Years::get(void)
 {
   return Years_;
@@ -723,26 +688,12 @@ WeatherData::Years::get(void)
 
 
 void
-WeatherData::Years::set( Generic::Dictionary<int,WeatherYear^> ^ d )
+WeatherData::Years::set( BindingList<WeatherYear^> ^ d )
 {
   Years_ = d;
   NotifyPropertyChanged( "Years" );
-  NotifyPropertyChanged( "YearsBindingList" );
   NotifyPropertyChanged( "MinDate" );
   NotifyPropertyChanged( "MaxDate" );
-}
-
-
-
-BindingList<WeatherYear^> ^
-WeatherData::YearsBindingList::get(void)
-{
-  BindingList<WeatherYear^> ^ bl = gcnew BindingList<WeatherYear^>();
-  for each( WeatherYear ^ wy in Years_->Values ) {
-    bl->Add( wy );
-  }
-
-  return bl;
 }
 
 
@@ -755,7 +706,7 @@ DateTime WeatherData::MinDate::get(void)
   else {
     DateTime minDate = DateTime::MaxValue;
 
-    for each( WeatherYear ^ wy in Years->Values ) {
+    for each( WeatherYear ^ wy in Years_ ) {
       if( wy->MinDate < minDate ) {
         minDate = wy->MinDate;
       }
@@ -774,7 +725,7 @@ DateTime WeatherData::MaxDate::get(void)
   else {
     DateTime maxDate = DateTime::MinValue;
 
-    for each( WeatherYear ^ wy in Years->Values ) {
+    for each( WeatherYear ^ wy in Years_ ) {
       if( wy->MaxDate > maxDate ) {
         maxDate = wy->MaxDate;
       }

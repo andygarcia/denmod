@@ -300,7 +300,7 @@ protected:
 
 
 
-public ref class WeatherData : public NotifyValidateEditBase, IXmlSerializable
+public ref class WeatherData : public NotifyValidateEditBase
 {
 // Constructors
 public:
@@ -319,17 +319,12 @@ public:
   bool IsWeatherDataContiguous(void);
   Generic::List<int> ^ GetMissingWeatherYears(void);
 
-  // IXmlSerializable
-  virtual void WriteXml( XmlWriter ^ xw );
-  virtual void ReadXml( XmlReader ^ xr );
-  virtual XmlSchema ^ GetSchema(void);
-
 // Properties
 public:
-  [XmlArrayItem(ElementName="Year",Type=gui::WeatherYear::typeid)]
-  property Generic::Dictionary<int,WeatherYear^> ^ Years {
-    Generic::Dictionary<int,WeatherYear^> ^ get(void);
-    void set( Generic::Dictionary<int,WeatherYear^> ^ d );
+  [XmlElementAttribute(ElementName="Year",Type=gui::WeatherYear::typeid)]
+  property BindingList<WeatherYear^> ^ Years {
+    BindingList<WeatherYear^> ^ get(void);
+    void set( BindingList<WeatherYear^> ^ bl );
   }
 
   [XmlIgnore]
@@ -338,11 +333,6 @@ public:
     WeatherYear ^ get(int yearIndex) {
       return Years_[yearIndex];
     }
-  }
-
-  [XmlIgnore]
-  property BindingList<WeatherYear^> ^ YearsBindingList {
-    BindingList<WeatherYear^> ^ get(void);
   }
 
   [XmlIgnore]
@@ -373,7 +363,7 @@ public:
   }
 
 private:
-  Generic::Dictionary<int,WeatherYear^> ^ Years_;
+  BindingList<WeatherYear^> ^ Years_;
 };
 
 };
