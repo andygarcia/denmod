@@ -181,6 +181,14 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\Workbook.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Worksheet.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -209,6 +217,14 @@
 			</File>
 			<File
 				RelativePath=".\stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Workbook.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Worksheet.h"
 				>
 			</File>
 		</Filter>
