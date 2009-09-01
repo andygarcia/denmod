@@ -63,10 +63,10 @@ namespace gui {
     System::Void OnFormClosing( System::Object ^ sender, System::Windows::Forms::FormClosingEventArgs ^ e );
 
   private:
-    CimsimPanel ^ CimsimPanel_;
-    DensimPanel ^ DensimPanel_;
+    CimsimPanel ^ _cimsimPanel;
+    DensimPanel ^ _densimPanel;
 
-    DmlFile ^ ActiveDocument;
+    DmlFile ^ _activeDocument;
     Settings ^ _userSettings;
 
   private: System::Windows::Forms::MenuStrip^  menuStrip;

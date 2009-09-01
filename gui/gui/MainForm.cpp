@@ -10,7 +10,7 @@ using namespace gui;
 
 
 MainForm::MainForm(void)
-: ActiveDocument(nullptr),
+: _activeDocument(nullptr),
   LocationBinding(gcnew BindingSource())
 {
 	InitializeComponent();
@@ -21,7 +21,7 @@ MainForm::MainForm(void)
 
 
 MainForm::MainForm(String ^ filename)
-: ActiveDocument(nullptr),
+: _activeDocument(nullptr),
   LocationBinding(gcnew BindingSource())
 {
 	InitializeComponent();
@@ -37,16 +37,16 @@ MainForm::Initialize(void)
   ReadSettings();
 
   // create cimsim and densim panels
-  CimsimPanel_ = gcnew CimsimPanel( LocationBinding, _userSettings );
-  DensimPanel_ = gcnew DensimPanel( LocationBinding );
+  _cimsimPanel = gcnew CimsimPanel( LocationBinding, _userSettings );
+  _densimPanel = gcnew DensimPanel( LocationBinding );
 
   // anchor all sides of panels for resizing
   AnchorStyles allAnchors = static_cast<AnchorStyles>((((AnchorStyles::Top | AnchorStyles::Bottom) | AnchorStyles::Left) | AnchorStyles::Right));
-  CimsimPanel_->Anchor = allAnchors;
-  DensimPanel_->Anchor = allAnchors;
+  _cimsimPanel->Anchor = allAnchors;
+  _densimPanel->Anchor = allAnchors;
 
-  tabpgCimsim->Controls->Add(CimsimPanel_);
-  tabpgDensim->Controls->Add(DensimPanel_);
+  tabpgCimsim->Controls->Add(_cimsimPanel);
+  tabpgDensim->Controls->Add(_densimPanel);
 }
 
 
@@ -68,7 +68,7 @@ MainForm::NewDocument(void)
     return false;
 
   // create new file and set active
-  ActiveDocument = DmlFile::CreateNew();
+  _activeDocument = DmlFile::CreateNew();
 
   // set initial document data and state
   UpdateBindings();
@@ -102,7 +102,7 @@ MainForm::OpenDocument( String ^ newFilename)
     return false;
   }
   
-  ActiveDocument = df;
+  _activeDocument = df;
   UpdateBindings();
   UpdateTitleBar();
 
@@ -125,7 +125,7 @@ MainForm::OpenSampleLocation(void)
 
   DmlFile ^ df = gcnew DmlFile( "Sample.dml", stream );
 
-  ActiveDocument = df;
+  _activeDocument = df;
   UpdateBindings();
   UpdateTitleBar();
 }
@@ -136,18 +136,18 @@ bool
 MainForm::SaveDocument( MainForm::SaveType saveType )
 {
   // new or read only files must be saved as
-  if( ActiveDocument->IsNew || ActiveDocument->IsReadOnly ) {
+  if( _activeDocument->IsNew || _activeDocument->IsReadOnly ) {
     saveType = SaveType::SaveAs;
   }
 
   // default to using existing filename
-  String ^ filename = ActiveDocument->Filename;
+  String ^ filename = _activeDocument->Filename;
 
 
   // prompt user with dialog for save as 
   if( saveType == SaveType::SaveAs ) {
     SaveFileDialog ^ sfd = gcnew SaveFileDialog();
-    if( ActiveDocument->IsNew ) {
+    if( _activeDocument->IsNew ) {
       sfd->FileName = filename;
     }
     else {
@@ -173,7 +173,7 @@ MainForm::SaveDocument( MainForm::SaveType saveType )
 
   // save file
   try {
-    ActiveDocument->Save(filename);
+    _activeDocument->Save(filename);
   }
   catch( Exception ^ e ) {
     Diagnostics::Trace::WriteLine(e->ToString());
@@ -191,7 +191,7 @@ bool
 MainForm::CloseDocument(void)
 {
   // no open document, or no changes yet
-  if( ActiveDocument == nullptr ) {
+  if( _activeDocument == nullptr ) {
     return true;
   }
   else if( !IsDocumentDirty() ) {
@@ -199,7 +199,7 @@ MainForm::CloseDocument(void)
   }
 
 
-  System::String ^ shortFilename =  IO::Path::GetFileNameWithoutExtension( ActiveDocument->Filename );
+  System::String ^ shortFilename =  IO::Path::GetFileNameWithoutExtension( _activeDocument->Filename );
 
   // prompt user
   ::DialogResult dr = MessageBox::Show( this, "Do you want to save the changes to " + shortFilename + " ?",
@@ -235,10 +235,10 @@ void
 MainForm::UpdateBindings(void)
 {
   // active document changed, update binding source
-  LocationBinding->DataSource = ActiveDocument->Location;
+  LocationBinding->DataSource = _activeDocument->Location;
 
   // and mark as clean
-  //ActiveDocument->GetLocation()->IsDirty = false;
+  //_activeDocument->GetLocation()->IsDirty = false;
 }
 
 
@@ -260,7 +260,7 @@ MainForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
   Xml::Serialization::XmlSerializer ^ xs = gcnew Xml::Serialization::XmlSerializer( gui::Location::typeid );
   delete xs;
 
-  //ActiveDocument->GetLocation()->IsDirty = false;
+  //_activeDocument->GetLocation()->IsDirty = false;
   SplashForm::Fadeout();
 }
 
@@ -313,7 +313,7 @@ System::Void
 MainForm::OnImportWeather( System::Object ^ sender, System::EventArgs ^ e )
 {
   // add to this location's existing weather
-  WeatherData ^ weather = ActiveDocument->Location->Weather;
+  WeatherData ^ weather = _activeDocument->Location->Weather;
   OpenFileDialog ^ ofd = gcnew OpenFileDialog();
   ofd->Filter = "Excel 97-2003 Spreadsheet (*.xls)|*.xls|CIMSiM/DENSiM 1.0 (*.dly)|*.dly";
   ofd->Multiselect = true;
@@ -379,7 +379,7 @@ MainForm::OnViewWeather(System::Object^  sender, System::EventArgs^  e)
   }
 
   int year = Convert::ToInt32( lboxWeather->SelectedValue );
-  WeatherYear ^ wy = ActiveDocument->Location->Weather[year];
+  WeatherYear ^ wy = _activeDocument->Location->Weather[year];
 
   wy->BeginEdit();
   WeatherForm ^ wf = gcnew WeatherForm( WeatherFormMode::Edit, LocationBinding, wy );
@@ -412,7 +412,7 @@ MainForm::OnRemoveWeather( System::Object ^ sender, System::EventArgs ^ e )
   int newIndex = lboxWeather->SelectedIndex - 1;
   int yearToRemove = Convert::ToInt32( lboxWeather->SelectedValue );
 
-  WeatherData ^ weather = ActiveDocument->Location->Weather;
+  WeatherData ^ weather = _activeDocument->Location->Weather;
   weather->RemoveWeatherYear( yearToRemove );
 }
 
@@ -502,11 +502,11 @@ MainForm::WriteSettings(void)
 void
 MainForm::UpdateTitleBar(void)
 {
-  String ^ filename = ActiveDocument->Filename;
+  String ^ filename = _activeDocument->Filename;
   if( filename != "Untitled.dml" ) {
-    filename = System::IO::Path::GetFileName(ActiveDocument->Filename);
+    filename = System::IO::Path::GetFileName(_activeDocument->Filename);
   }
-  String ^ readOnly = ActiveDocument->IsReadOnly ? "[Read-Only]" : "";
+  String ^ readOnly = _activeDocument->IsReadOnly ? "[Read-Only]" : "";
   String ^ dirty = IsDocumentDirty() ? "*" : "";
   String ^ productName = Application::ProductName;
   String ^ version = DM_VERSION;
