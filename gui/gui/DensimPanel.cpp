@@ -9,11 +9,12 @@ using namespace gui;
 
 
 DensimPanel::DensimPanel( BindingSource ^ locationBinding )
-: LocationBinding(locationBinding)
+: _locationBinding(locationBinding)
 {
 	InitializeComponent();
-  formInfectionIntroduction = gcnew InfectionIntroductionForm(LocationBinding);
-  tabInfections->Controls->Add(formInfectionIntroduction);
+
+  _formInfectionIntroduction = gcnew InfectionIntroductionForm(_locationBinding);
+  tabInfections->Controls->Add(_formInfectionIntroduction);
 }
 
 
@@ -30,7 +31,7 @@ DensimPanel::~DensimPanel()
 gui::Location ^
 DensimPanel::GetLocation(void)
 {
-  return (gui::Location^) LocationBinding->DataSource;
+  return (gui::Location^) _locationBinding->DataSource;
 }
 
 
@@ -45,51 +46,51 @@ DensimPanel::OnLoad(System::Object^  sender, System::EventArgs^  e)
   dgvSequentials->AutoGenerateColumns = false;
 
   // demographics
-  dgvDemographics->DataBindings->Add( "DataSource", LocationBinding, "Demographics.DemoClasses" );
+  dgvDemographics->DataBindings->Add( "DataSource", _locationBinding, "Demographics.DemoClasses" );
 
-  snboxInitialPopulationSize->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Demographics.InitialPopulationSize") );
-  snboxHumHostDensity->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Demographics.HumanHostDensity") );
+  snboxInitialPopulationSize->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Demographics.InitialPopulationSize") );
+  snboxHumHostDensity->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Demographics.HumanHostDensity") );
 
-  errProDemographics->DataSource = LocationBinding;
+  errProDemographics->DataSource = _locationBinding;
   errProDemographics->DataMember = "Demographics";
 
   // serology
-  dgvSerology->DataBindings->Add( "DataSource", LocationBinding, "Serology.SeroClasses" );
+  dgvSerology->DataBindings->Add( "DataSource", _locationBinding, "Serology.SeroClasses" );
 
-  snboxManaDuration->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Serology.MANADuration") );
-  snboxMaeaDuration->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Serology.MAEADuration") );
-  snboxHetDuration->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Serology.HetDuration") );
+  snboxManaDuration->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Serology.MANADuration") );
+  snboxMaeaDuration->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Serology.MAEADuration") );
+  snboxHetDuration->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Serology.HetDuration") );
 
-  errProSerology->DataSource = LocationBinding;
+  errProSerology->DataSource = _locationBinding;
   errProSerology->DataMember = "Serology";
 
   // virology
-  dgvVirology->DataBindings->Add( "DataSource", LocationBinding, "Virology.Serotypes" );
-  snboxVirLowTiterSetPoint->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Virology.HumanToMosquitoInfection.LowTiterSetPoint") );
-  snboxVirLowTiterInfection->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Virology.HumanToMosquitoInfection.LowTiterInfection") );
-  snboxVirHighTiterSetPoint->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Virology.HumanToMosquitoInfection.HighTiterSetPoint") );
-  snboxVirHighTiterInfection->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Virology.HumanToMosquitoInfection.HighTiterInfection") );
-  snboxNomProbInfection->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Virology.MosquitoToHumanNominalProbabilityOfInfection") );
-  snboxMosqCountStochastic->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Virology.MosquitoCountForStochasticity") );
+  dgvVirology->DataBindings->Add( "DataSource", _locationBinding, "Virology.Serotypes" );
+  snboxVirLowTiterSetPoint->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Virology.HumanToMosquitoInfection.LowTiterSetPoint") );
+  snboxVirLowTiterInfection->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Virology.HumanToMosquitoInfection.LowTiterInfection") );
+  snboxVirHighTiterSetPoint->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Virology.HumanToMosquitoInfection.HighTiterSetPoint") );
+  snboxVirHighTiterInfection->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Virology.HumanToMosquitoInfection.HighTiterInfection") );
+  snboxNomProbInfection->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Virology.MosquitoToHumanNominalProbabilityOfInfection") );
+  snboxMosqCountStochastic->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Virology.MosquitoCountForStochasticity") );
 
-  snboxEipRo25->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Virology.EIP.Development.RO25") );
-  snboxEipEnthAct->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Virology.EIP.Development.DHA") );
-  snboxEipEnthInact->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Virology.EIP.Development.DHH") );
-  snboxEipTempInact->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Virology.EIP.Development.THALF") );
+  snboxEipRo25->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Virology.EIP.Development.RO25") );
+  snboxEipEnthAct->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Virology.EIP.Development.DHA") );
+  snboxEipEnthInact->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Virology.EIP.Development.DHH") );
+  snboxEipTempInact->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Virology.EIP.Development.THALF") );
 
-  snboxLowTiterSetPoint->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Virology.EIP.TiterModification.LowSetPoint") );
-  snboxLowTiterFactor->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Virology.EIP.TiterModification.LowFactor") );
-  snboxHighTiterSetPoint->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Virology.EIP.TiterModification.HighSetPoint") );
-  snboxHighTiterFactor->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Virology.EIP.TiterModification.HighFactor") );
+  snboxLowTiterSetPoint->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Virology.EIP.TiterModification.LowSetPoint") );
+  snboxLowTiterFactor->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Virology.EIP.TiterModification.LowFactor") );
+  snboxHighTiterSetPoint->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Virology.EIP.TiterModification.HighSetPoint") );
+  snboxHighTiterFactor->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Virology.EIP.TiterModification.HighFactor") );
 
-  errProHumanToMosquitoInfection->DataSource = LocationBinding;
+  errProHumanToMosquitoInfection->DataSource = _locationBinding;
   errProHumanToMosquitoInfection->DataMember = "Virology.HumanToMosquitoInfection";
 
-  errProTiterModification->DataSource = LocationBinding;
+  errProTiterModification->DataSource = _locationBinding;
   errProTiterModification->DataMember = "Virology.EIP.TiterModification";
 
   // sequentials
-  dgvSequentials->DataBindings->Add( "DataSource", LocationBinding, "SequentialInfections.SequentialInfections" );
+  dgvSequentials->DataBindings->Add( "DataSource", _locationBinding, "SequentialInfections.SequentialInfections" );
 }
 
 
@@ -120,7 +121,7 @@ DensimPanel::OnRunDensim( System::Object ^ sender, System::EventArgs ^ e )
 System::Void
 DensimPanel::RunDensim(System::Void)
 {
-  RunDensimForm ^ rdf = gcnew RunDensimForm(LocationBinding);
+  RunDensimForm ^ rdf = gcnew RunDensimForm(_locationBinding);
   if( rdf->ShowDialog(this) == ::DialogResult::OK ) {
     // run simulation
     gui::Location::RunDensimOptions ^ rdo = rdf->RunDensimOptions;
@@ -139,7 +140,7 @@ DensimPanel::RunDensim(System::Void)
 System::Void
 DensimPanel::OnTabPageSelecting( System::Object ^ sender, System::Windows::Forms::TabControlCancelEventArgs ^ e )
 {
-  gui::Location ^ location = (gui::Location^) this->LocationBinding->DataSource;
+  gui::Location ^ location = GetLocation();
 
   if( e->Action == TabControlAction::Selecting ) {
     if( e->TabPageIndex == 3 ) {

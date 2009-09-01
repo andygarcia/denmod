@@ -31,239 +31,90 @@ namespace gui {
     System::Void OnDemographicsRowValidating( System::Object ^ sender, System::Windows::Forms::DataGridViewCellCancelEventArgs ^ e );
 
   private:
-    BindingSource ^ LocationBinding;
-    bool IsWeatherAvailable_;
+    BindingSource ^ _locationBinding;
+    bool _isWeatherAvailable;
+    gui::InfectionIntroductionForm ^ _formInfectionIntroduction;
+
 
   private: System::Windows::Forms::Button^  btnRunSim;
   private: System::Windows::Forms::TabControl^  tabDensim;
-
   private: System::Windows::Forms::TabPage^  tabDemographics;
   private: System::Windows::Forms::DataGridView^  dgvDemographics;
-
   private: System::Windows::Forms::Label^  lblHumHostDensity;
-
-
-
   private: System::Windows::Forms::TabPage^  tabSerology;
   private: System::Windows::Forms::DataGridView^  dgvSerology;
   private: System::Windows::Forms::Label^  lblManaDuration;
   private: System::Windows::Forms::Label^  lblMaeaDuration;
   private: System::Windows::Forms::Label^  lblHetDuration;
-
-
-
-
   private: System::Windows::Forms::TabPage^  tabVirology;
   private: System::Windows::Forms::TabControl^  tabInfectionEip;
-
   private: System::Windows::Forms::TabPage^  tabHumToMosInfection;
   private: System::Windows::Forms::TabPage^  tabEip;
-
-
   private: System::Windows::Forms::Label^  lblVirLowTiterSetPoint;
-
   private: System::Windows::Forms::Label^  lblVirLowInfection;
-
   private: System::Windows::Forms::Label^  lblVirHighTiterSetPoint;
-
   private: System::Windows::Forms::Label^  lblVirHighInfection;
-
   private: System::Windows::Forms::Label^  lblNomProbInfection;
-
   private: System::Windows::Forms::Label^  lbMosqCountStochastic;
-
-
   private: System::Windows::Forms::DataGridView^  dgvVirology;
-
-
-
-
   private: System::Windows::Forms::Label^  lblEipRo25;
   private: System::Windows::Forms::Label^  lblEipEnthInact;
   private: System::Windows::Forms::Label^  lblEipEnthAct;
   private: System::Windows::Forms::Label^  lblEipTempInact;
-
-
-
-
-
-
-
-
-
-
-
-
-
   private: System::Windows::Forms::TabPage^  tabInfections;
-  private: gui::InfectionIntroductionForm ^ formInfectionIntroduction;
-
   private: System::Windows::Forms::TabPage^  tabDhsDss;
   private: System::Windows::Forms::DataGridView^  dgvSequentials;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-private: System::Windows::Forms::Label^  lblInitialPopulationSize;
-private: ctrl::ScientificNotationTextBox^  snboxEipTempInact;
-private: ctrl::ScientificNotationTextBox^  snboxEipEnthInact;
-private: ctrl::ScientificNotationTextBox^  snboxEipEnthAct;
-private: ctrl::ScientificNotationTextBox^  snboxEipRo25;
-
-private: ctrl::ScientificNotationTextBox^  snboxHumHostDensity;
-private: ctrl::ScientificNotationTextBox^  snboxInitialPopulationSize;
-
-private: ctrl::ScientificNotationTextBox^  snboxHetDuration;
-
-private: ctrl::ScientificNotationTextBox^  snboxVirHighTiterInfection;
-private: ctrl::ScientificNotationTextBox^  snboxVirLowTiterInfection;
-private: ctrl::ScientificNotationTextBox^  snboxVirHighTiterSetPoint;
-private: ctrl::ScientificNotationTextBox^  snboxVirLowTiterSetPoint;
-private: ctrl::ScientificNotationTextBox^  snboxMosqCountStochastic;
-private: ctrl::ScientificNotationTextBox^  snboxNomProbInfection;
-
-
-
-
-private: System::Windows::Forms::GroupBox^  gboxEipDevelopment;
-private: System::Windows::Forms::GroupBox^  groupBox1;
-private: ctrl::ScientificNotationTextBox^  snboxLowTiterSetPoint;
-private: System::Windows::Forms::Label^  lblHighTiterFactor;
-private: ctrl::ScientificNotationTextBox^  snboxLowTiterFactor;
-private: System::Windows::Forms::Label^  lblHighTiterSetPoint;
-private: ctrl::ScientificNotationTextBox^  snboxHighTiterFactor;
-private: System::Windows::Forms::Label^  lblLowTiterFactor;
-private: ctrl::ScientificNotationTextBox^  snboxHighTiterSetPoint;
-private: System::Windows::Forms::Label^  lblLowTiterSetPoint;
-private: System::Windows::Forms::GroupBox^  groupBox2;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcDemoAgeClass;
-private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcDemoProp;
-private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcDemoDeath;
-private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcDemoBirth;
-private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcSeroClass;
-private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcSeroDen1;
-private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcSeroDen2;
-private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcSeroDen3;
-private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcSeroDen4;
-private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcSequence;
-private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcSecondaryMinimum;
-private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgcSecondaryMaximum;
-private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcProbDhfDss;
-private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcAtRiskCutoff;
-private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcMortality;
-private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcSeroType;
-private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcViremia;
-private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcIncubationPeriod;
-private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcViremicPeriod;
-private: ctrl::ScientificNotationTextBox^  snboxMaeaDuration;
-private: ctrl::ScientificNotationTextBox^  snboxManaDuration;
-private: System::Windows::Forms::ErrorProvider^  errProDemographics;
-private: System::Windows::Forms::ErrorProvider^  errProSerology;
-private: System::Windows::Forms::ErrorProvider^  errProHumanToMosquitoInfection;
-private: System::Windows::Forms::ErrorProvider^  errProTiterModification;
-
-
-
-
-private: System::ComponentModel::IContainer^  components;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  private: System::Windows::Forms::Label^  lblInitialPopulationSize;
+  private: ctrl::ScientificNotationTextBox^  snboxEipTempInact;
+  private: ctrl::ScientificNotationTextBox^  snboxEipEnthInact;
+  private: ctrl::ScientificNotationTextBox^  snboxEipEnthAct;
+  private: ctrl::ScientificNotationTextBox^  snboxEipRo25;
+  private: ctrl::ScientificNotationTextBox^  snboxHumHostDensity;
+  private: ctrl::ScientificNotationTextBox^  snboxInitialPopulationSize;
+  private: ctrl::ScientificNotationTextBox^  snboxHetDuration;
+  private: ctrl::ScientificNotationTextBox^  snboxVirHighTiterInfection;
+  private: ctrl::ScientificNotationTextBox^  snboxVirLowTiterInfection;
+  private: ctrl::ScientificNotationTextBox^  snboxVirHighTiterSetPoint;
+  private: ctrl::ScientificNotationTextBox^  snboxVirLowTiterSetPoint;
+  private: ctrl::ScientificNotationTextBox^  snboxMosqCountStochastic;
+  private: ctrl::ScientificNotationTextBox^  snboxNomProbInfection;
+  private: System::Windows::Forms::GroupBox^  gboxEipDevelopment;
+  private: System::Windows::Forms::GroupBox^  groupBox1;
+  private: ctrl::ScientificNotationTextBox^  snboxLowTiterSetPoint;
+  private: System::Windows::Forms::Label^  lblHighTiterFactor;
+  private: ctrl::ScientificNotationTextBox^  snboxLowTiterFactor;
+  private: System::Windows::Forms::Label^  lblHighTiterSetPoint;
+  private: ctrl::ScientificNotationTextBox^  snboxHighTiterFactor;
+  private: System::Windows::Forms::Label^  lblLowTiterFactor;
+  private: ctrl::ScientificNotationTextBox^  snboxHighTiterSetPoint;
+  private: System::Windows::Forms::Label^  lblLowTiterSetPoint;
+  private: System::Windows::Forms::GroupBox^  groupBox2;
+  private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcDemoAgeClass;
+  private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcDemoProp;
+  private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcDemoDeath;
+  private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcDemoBirth;
+  private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcSeroClass;
+  private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcSeroDen1;
+  private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcSeroDen2;
+  private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcSeroDen3;
+  private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcSeroDen4;
+  private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcSequence;
+  private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcSecondaryMinimum;
+  private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgcSecondaryMaximum;
+  private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcProbDhfDss;
+  private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcAtRiskCutoff;
+  private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcMortality;
+  private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcSeroType;
+  private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcViremia;
+  private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcIncubationPeriod;
+  private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcViremicPeriod;
+  private: ctrl::ScientificNotationTextBox^  snboxMaeaDuration;
+  private: ctrl::ScientificNotationTextBox^  snboxManaDuration;
+  private: System::Windows::Forms::ErrorProvider^  errProDemographics;
+  private: System::Windows::Forms::ErrorProvider^  errProSerology;
+  private: System::Windows::Forms::ErrorProvider^  errProHumanToMosquitoInfection;
+  private: System::Windows::Forms::ErrorProvider^  errProTiterModification;
+  private: System::ComponentModel::IContainer^  components;
 	private:
 		/// <summary>
 		/// Required designer variable.
