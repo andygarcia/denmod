@@ -8,9 +8,11 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include "DensimClasses.h"
 #include "PdsRng.h"
 #include "../input/Location.h"
 #include "../output/MosData.h"
+#include "../output/DensimOutput.h"
 
 #define EMULATE_PDS_RAND true
 
@@ -21,134 +23,6 @@ namespace dsport {
 
 class Location;
 class HumanPopulation;
-
-
-
-
-class SequentialInfectionValues
-{
-public:
-  float F1T2;                // first 1 then 2 - number of individuals
-  float F1T3;
-  float F1T4;
-  float F2T1;
-  float F2T3;
-  float F2T4;
-  float F3T1;
-  float F3T2;
-  float F3T4;
-  float F4T1;
-  float F4T2;
-  float F4T3;
-  float FMT1;
-  float FMT2;
-  float FMT3;
-  float FMT4;
-};
-
-
-
-// Virus parameters
-class VirusDesc
-{
-public:
-  float Viremia;          // number of mosquito infectious doses
-  int Incub;              // incubation period in days
-  int Durat;              // duration of viremia in days
-};
-
-
-
-class VirusIntroductionProfile
-{
-public:
-  int Trts;               // Number of infective introductions
-  int SDay;               // Start infectious introductions on this day
-  int Intv;               // Interval for introductions
-  float Hums;             // Number of infective humans to introduce
-  float Mosq;             // Number of infective mosquitoes to introduce
-};
-
-
-
-class MaternalTransmission
-{
-public:
-  int MANA;               // maternally acquired neutralizing antibody
-  int MAEA;               // maternally acquired enhancing antibody
-};
-
-
-
-class DebugOutput
-{
-public:
-  float CalcDeathsArraySize;
-  float CalcBirthsArraySize;
-  float InitInfectivesArraySize;
-  float DMealProp;
-  float EggersNew;
-  float BitersNew;
-  float EggersOld;
-  float BitersOld;
-  float EIPTranNew[4+1];
-  float BitersInfdNewDB[4+1];
-  float EIPTranOld[4+1];
-  float BitersInfdOldDB[4+1];
-  float BitersInfd[4+1];
-  float EggersInfv[4+1];
-  float BitersInfv[4+1];
-  float BitersTotal;
-  float MosqTotal;
-  float MosqInfvTotal[4+1];
-  float BitesPerPerson;
-  float MosqInocEstimate[4+1];
-  float NewDlyMosqInoc[4+1];
-  float NewInfd[4+1];
-  float OldInfd[4+1];
-  float HumInocEstimate[4+1];
-  float NewDlyHumInoc[4+1];
-};
-
-
-
-class DiskSpooler
-{
-public:
-  float Incubate1;                        // Number of humans incubating
-  float Incubate2;                        // Number of humans incubating
-  float Incubate3;                        // Number of humans incubating
-  float Incubate4;                        // Number of humans incubating
-  float Viremic1;                         // Number of humans infective
-  float Viremic2;                         // Number of humans infective
-  float Viremic3;                         // Number of humans infective
-  float Viremic4;                         // Number of humans infective
-  float MosqTotal;                        // Total daily mosquitoes
-  float MosqInfvTotal[4+1];               // Total infective mosquitoes
-  int InfvBites;                          // New potential inoculations
-  float EIPDevRate[4+1];                  // Extrinsic incubation period rate - daily
-  float NumHumans;                        // Number of humans
-  float SerPos[23+1][4+1];                // Percent of indiv. in age class that are seropositive
-  float NewHumCases[4+1];                 // Number of new human cases/day/serotype
-  SequentialInfectionValues SeqInfVals;   // Daily sequential value statistics
-
-  DebugOutput _debugOutput;
-};
-
-
-typedef DiskSpooler DailyLocationOutput;
-typedef std::vector<DailyLocationOutput> LocationOutput;
-
-
-
-enum Serotype
-{
-  D1 = 1,
-  D2,
-  D3,
-  D4,
-  Maternal
-};
 
 
 
@@ -183,11 +57,14 @@ public:
   void SpoolToDisk(void);
   void WriteOutput(void);
 
+  output::DensimOutput * GetDensimOutput(void);
+
 public:
   const input::Location * _location;
-  input::Weather * _weather;
   output::MosData * _mosData;
 
+  output::DensimOutput * _densimOutput;
+  LocationOutput LocationOutput_;
 
   const float GasCoef;
 
@@ -196,17 +73,13 @@ public:
   boost::gregorian::date _currentDate;
 
   HumanPopulation * _humanPopulation;
-  LocationOutput LocationOutput_;
+  float HumHostDensity;
 
-  float HumHostDensity;     // Humans/ha
-
-  std::vector<VirusIntroductionProfile> VirusIntro;
   std::vector<VirusDesc> Virus;       // Virus parameters
 
   int MANADurat;                      // Duration of MANA in days
   int MAEADurat;                      // Duration of MAEA in days
   int HetImmunDurat;                  // Duration of heterologous immun. - days
-
 
   float _averageAirTemperature;
   output::DailyMosData _dailyMosData;

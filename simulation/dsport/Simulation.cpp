@@ -32,3 +32,11 @@ Simulation::Start( boost::gregorian::date startDate, boost::gregorian::date endD
 {
   _dsport->Start( startDate, endDate );
 }
+
+
+
+sim::output::DensimOutput *
+Simulation::GetDensimOutput(void)
+{
+  return _dsport->GetDensimOutput();
+}

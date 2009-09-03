@@ -10,6 +10,7 @@
 #include "Population.h"
 #include "SimConstants.h"
 #include "../output/Workbook.h"
+#include "../output/DensimOutput.h"
 
 using namespace sim::dsport;
 
@@ -109,8 +110,7 @@ dsport::dsport( const input::Location * location, sim::output::MosData * mosData
   }
 
   // weather and default dates
-  _weather = _location->Weather_;
-  boost::gregorian::date_period wxAvailable = _weather->GetWeatherPeriod();
+  boost::gregorian::date_period wxAvailable = _location->Weather_->GetWeatherPeriod();
   _startDate = wxAvailable.begin();
   _stopDate = wxAvailable.end();
 
@@ -147,6 +147,8 @@ dsport::Start( boost::gregorian::date startDate, boost::gregorian::date stopDate
   _startDate = startDate;
   _stopDate = stopDate;
 
+  _densimOutput = new sim::output::DensimOutput( _startDate, _stopDate );
+
   Start();
 }
 
@@ -164,7 +166,7 @@ dsport::denmain(void)
     for( _currentDate = _startDate; _currentDate != _stopDate; _currentDate = _currentDate + boost::gregorian::days(1) ) {
       
       // read today's average air temperature
-      _averageAirTemperature = _weather->GetWeatherForYear(_currentDate.year())->GetDay(_currentDate.day_of_year())->AvgTemp_;
+      _averageAirTemperature = _location->Weather_->GetWeatherForYear(_currentDate.year())->GetDay(_currentDate.day_of_year())->AvgTemp_;
 
       // save yesterday's mosData and read today's
       _yesterdayMosData = _dailyMosData;
@@ -201,7 +203,6 @@ dsport::denmain(void)
 
       // housekeeping
       _humanPopulation->RankPopulation();
-      _dailyDebugOutput.CalcDeathsArraySize = static_cast<float>( _humanPopulation->GetPopulationSize() );
       _humanPopulation->PurgeHfDeaths();
 
       // save daily output
@@ -209,7 +210,7 @@ dsport::denmain(void)
     }
 
     // simulation complete, write output to disk
-    WriteOutput();
+    //WriteOutput();
 
     return;
   } while (true) ;
@@ -834,57 +835,55 @@ dsport::CalcNewInocHumans( int iType )
 void
 dsport::SpoolToDisk(void)
 {
-  DiskSpooler DiskData;
+  output::DensimOutput::DailyLocationOutput dlo;
 
-  DiskData.Incubate1 = _humanPopulation->GetIncubatingBySerotype( 1 );
-  DiskData.Incubate2 = _humanPopulation->GetIncubatingBySerotype( 2 );
-  DiskData.Incubate3 = _humanPopulation->GetIncubatingBySerotype( 3 );
-  DiskData.Incubate4 = _humanPopulation->GetIncubatingBySerotype( 4 );
-      
-  DiskData.Viremic1 = _humanPopulation->GetInfectiveBySerotype( 1 );
-  DiskData.Viremic2 = _humanPopulation->GetInfectiveBySerotype( 2 );
-  DiskData.Viremic3 = _humanPopulation->GetInfectiveBySerotype( 3 );
-  DiskData.Viremic4 = _humanPopulation->GetInfectiveBySerotype( 4 );
+  dlo.Incubate1 = _humanPopulation->GetIncubatingBySerotype( 1 );
+  dlo.Incubate2 = _humanPopulation->GetIncubatingBySerotype( 2 );
+  dlo.Incubate3 = _humanPopulation->GetIncubatingBySerotype( 3 );
+  dlo.Incubate4 = _humanPopulation->GetIncubatingBySerotype( 4 );
 
-  DiskData.MosqTotal = MosqTotal;
+  dlo.Viremic1 = _humanPopulation->GetInfectiveBySerotype( 1 );
+  dlo.Viremic2 = _humanPopulation->GetInfectiveBySerotype( 2 );
+  dlo.Viremic3 = _humanPopulation->GetInfectiveBySerotype( 3 );
+  dlo.Viremic4 = _humanPopulation->GetInfectiveBySerotype( 4 );
+
+  dlo.MosqTotal = MosqTotal;
   for( int i = 1; i <= 4; ++i ) {
-    DiskData.MosqInfvTotal[i] = MosqInfvTotal[i];
-    DiskData.NewHumCases[i] = _humanPopulation->GetNewInfectiveBySerotype( i );
+    dlo.MosqInfvTotal[i] = MosqInfvTotal[i];
+    dlo.NewHumCases[i] = _humanPopulation->GetNewInfectiveBySerotype( i );
   }
-  DiskData.InfvBites = NewDlyHumInoc;
+  dlo.InfvBites = NewDlyHumInoc;
   for( int i = 1; i <= 4; ++i ) {
-    DiskData.EIPDevRate[i] = EIPDevRate[i];
+    dlo.EIPDevRate[i] = EIPDevRate[i];
   }
-  DiskData.NumHumans = _humanPopulation->GetPopulationSize();
+  dlo.NumHumans = _humanPopulation->GetPopulationSize();
 
   HumanPopulation::ClassSpecificSeroprevalence css = _humanPopulation->GetClassSpecificSeroprevalence();
   for( int i = 1; i <= 23; ++i ) {
     for( int j = 1; j <= 4; ++j ) {
-      DiskData.SerPos[i][j] = css[i][j];
+      dlo.SerPos[i][j] = css[i][j];
     }
   }
 
   HumanPopulation::DailySequentialInfections dsi = _humanPopulation->GetDailySequentialInfections();
-  DiskData.SeqInfVals.F1T2 = dsi[D1][D2];
-  DiskData.SeqInfVals.F1T3 = dsi[D1][D3];
-  DiskData.SeqInfVals.F1T4 = dsi[D1][D4];
-  DiskData.SeqInfVals.F2T1 = dsi[D2][D1];
-  DiskData.SeqInfVals.F2T3 = dsi[D2][D3];
-  DiskData.SeqInfVals.F2T4 = dsi[D2][D4];
-  DiskData.SeqInfVals.F3T1 = dsi[D3][D1];
-  DiskData.SeqInfVals.F3T2 = dsi[D3][D2];
-  DiskData.SeqInfVals.F3T4 = dsi[D3][D4];
-  DiskData.SeqInfVals.F4T1 = dsi[D4][D1];
-  DiskData.SeqInfVals.F4T2 = dsi[D4][D2];
-  DiskData.SeqInfVals.F4T3 = dsi[D4][D3];
-  DiskData.SeqInfVals.FMT1 = dsi[Maternal][D1];
-  DiskData.SeqInfVals.FMT2 = dsi[Maternal][D2];
-  DiskData.SeqInfVals.FMT3 = dsi[Maternal][D3];
-  DiskData.SeqInfVals.FMT4 = dsi[Maternal][D4];
+  dlo.SeqInfVals.F1T2 = dsi[D1][D2];
+  dlo.SeqInfVals.F1T3 = dsi[D1][D3];
+  dlo.SeqInfVals.F1T4 = dsi[D1][D4];
+  dlo.SeqInfVals.F2T1 = dsi[D2][D1];
+  dlo.SeqInfVals.F2T3 = dsi[D2][D3];
+  dlo.SeqInfVals.F2T4 = dsi[D2][D4];
+  dlo.SeqInfVals.F3T1 = dsi[D3][D1];
+  dlo.SeqInfVals.F3T2 = dsi[D3][D2];
+  dlo.SeqInfVals.F3T4 = dsi[D3][D4];
+  dlo.SeqInfVals.F4T1 = dsi[D4][D1];
+  dlo.SeqInfVals.F4T2 = dsi[D4][D2];
+  dlo.SeqInfVals.F4T3 = dsi[D4][D3];
+  dlo.SeqInfVals.FMT1 = dsi[Maternal][D1];
+  dlo.SeqInfVals.FMT2 = dsi[Maternal][D2];
+  dlo.SeqInfVals.FMT3 = dsi[Maternal][D3];
+  dlo.SeqInfVals.FMT4 = dsi[Maternal][D4];
 
-  DiskData._debugOutput = _dailyDebugOutput;
-
-  LocationOutput_.push_back( DiskData );
+  _densimOutput->AddDailyLocationOutput( dlo, _currentDate );
 }
 
 
@@ -1171,4 +1170,12 @@ dsport::WriteOutput()
   Workbook serologyWorkbook( "dsport r.237" );
   serologyWorkbook.AddWorksheet( serologyWorksheet );
   serologyWorkbook.SaveToDisk( "DSR 3.0 - Serology.xml" );
+}
+
+
+
+sim::output::DensimOutput *
+dsport::GetDensimOutput(void)
+{
+  return _densimOutput;
 }

@@ -21,11 +21,11 @@ public:
 public:
   void Start(void);
   void Start( boost::gregorian::date startDate, boost::gregorian::date endDate );
+  sim::output::DensimOutput * GetDensimOutput(void);
 
 // Members
 private:
   dsport * _dsport;
-  //SimLocation * _simLocation;
 };
 
 };
