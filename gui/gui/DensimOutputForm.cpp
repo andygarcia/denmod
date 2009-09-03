@@ -29,8 +29,10 @@ DensimOutputForm::DensimOutputForm( gui::Location ^ location )
     chartOutput->Series->Add( s );
   }
 
-  chartOutput->ChartAreas[0]->AxisY->Minimum = 0.0;
-  chartOutput->ChartAreas[0]->AxisY->Maximum = 1.0;
+  ChartArea ^ ca = chartOutput->ChartAreas[0];
+  //ca->AxisY->Minimum = 0.0;
+  //ca->AxisY->Maximum = 1.0;
+  ca->CursorY->Interval = (ca->AxisY->Maximum - ca->AxisY->Minimum) / 100.0;
 
   chartOutput->Title = "Proportion of population with virus";
 }

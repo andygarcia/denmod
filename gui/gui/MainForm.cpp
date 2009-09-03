@@ -424,8 +424,8 @@ MainForm::OnRemoveWeather( System::Object ^ sender, System::EventArgs ^ e )
   }
 
   // remove selected year
-  int yearToRemove = Convert::ToInt32( lboxWeather->SelectedValue );
-  weather->RemoveWeatherYear( yearToRemove );
+  WeatherYear ^ wy = (WeatherYear ^) lboxWeather->SelectedItem;
+  weather->RemoveWeatherYear( wy->Index );
 
   DateTime newMinDate = weather->MinDate;
   DateTime newMaxDate = weather->MaxDate;

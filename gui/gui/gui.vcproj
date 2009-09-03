@@ -149,7 +149,7 @@
 				OutputFile="$(OutDir)\denmod.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
-				SubSystem="1"
+				SubSystem="2"
 				EntryPointSymbol="main"
 				TargetMachine="1"
 			/>
