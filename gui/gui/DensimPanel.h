@@ -20,21 +20,23 @@ namespace gui {
 	protected:
 		~DensimPanel();
 
+  public:
+    void AllWeatherRemoved(void);
+
   private:
     gui::Location ^ GetLocation(void);
-    System::Void RunDensim(System::Void);
+    void RunDensim(void);
 
     System::Void OnLoad( System::Object ^ sender, System::EventArgs ^ e );
     System::Void OnRunDensim( System::Object ^ sender, System::EventArgs ^ e );
     System::Void OnTabPageSelecting( System::Object ^ sender, System::Windows::Forms::TabControlCancelEventArgs ^ e);
 
+
     System::Void OnDemographicsRowValidating( System::Object ^ sender, System::Windows::Forms::DataGridViewCellCancelEventArgs ^ e );
 
   private:
     BindingSource ^ _locationBinding;
-    bool _isWeatherAvailable;
     gui::InfectionIntroductionForm ^ _formInfectionIntroduction;
-
 
   private: System::Windows::Forms::Button^  btnRunSim;
   private: System::Windows::Forms::TabControl^  tabDensim;

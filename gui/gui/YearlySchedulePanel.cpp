@@ -31,7 +31,7 @@ YearlySchedulePanel::OnLoad( System::Object ^ sender, System::EventArgs ^ e)
   // yearly schedule bindings
   cboxYearlyStart->ValueMember = "Index";
   cboxYearlyStart->DisplayMember = "Index";
-  cboxYearlyStart->DataBindings->Add( "DataSource", LocationBinding, "Weather.YearsBindingList" );
+  cboxYearlyStart->DataBindings->Add( "DataSource", LocationBinding, "Weather.Years" );
   cboxYearlyStart->DataBindings->Add( "SelectedValue", Schedule_, "StartYear", false, DataSourceUpdateMode::OnPropertyChanged );
 
   numYearlyInterval->DataBindings->Add( "Text", Schedule_, "YearInterval", false, DataSourceUpdateMode::OnPropertyChanged );

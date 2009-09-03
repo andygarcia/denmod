@@ -149,7 +149,7 @@
 				OutputFile="$(OutDir)\denmod.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
-				SubSystem="2"
+				SubSystem="1"
 				EntryPointSymbol="main"
 				TargetMachine="1"
 			/>
@@ -201,7 +201,7 @@
 			AssemblyName="System.Xml, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 		/>
 		<AssemblyReference
-			RelativePath="c:\Program Files\Dundas Software\Charting\WinControlVS2005\bin\DundasWinChart.dll"
+			RelativePath="..\..\..\..\..\..\..\..\..\Program Files\Dundas Software\Charting\WinControlVS2005\bin\DundasWinChart.dll"
 			AssemblyName="DundasWinChart, Version=5.5.1.1700, PublicKeyToken=a4c03dce5db22406, processorArchitecture=MSIL"
 		/>
 		<AssemblyReference

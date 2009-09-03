@@ -254,7 +254,7 @@ MainForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
   
   lboxWeather->DisplayMember = "Index";
   lboxWeather->ValueMember = "Index";
-  lboxWeather->DataBindings->Add( "DataSource", LocationBinding, "Weather.YearsBindingList" );
+  lboxWeather->DataBindings->Add( "DataSource", LocationBinding, "Weather.Years" );
 
   // TODO - start using a pre compiled assembly, loading it during splash screen
   Xml::Serialization::XmlSerializer ^ xs = gcnew Xml::Serialization::XmlSerializer( gui::Location::typeid );
@@ -321,6 +321,10 @@ MainForm::OnImportWeather( System::Object ^ sender, System::EventArgs ^ e )
     return;
   }
 
+  // ensure proper order of weather years
+  Array::Sort( ofd->FileNames );
+
+  // process each file
   for each( String ^ filename in ofd->FileNames ) {
     // basic checks on file selection
     IO::FileInfo ^ fi = gcnew IO::FileInfo( filename );
@@ -378,8 +382,7 @@ MainForm::OnViewWeather(System::Object^  sender, System::EventArgs^  e)
     return;
   }
 
-  int year = Convert::ToInt32( lboxWeather->SelectedValue );
-  WeatherYear ^ wy = _activeDocument->Location->Weather[year];
+  WeatherYear ^ wy = (WeatherYear ^) lboxWeather->SelectedItem;
 
   wy->BeginEdit();
   WeatherForm ^ wf = gcnew WeatherForm( WeatherFormMode::Edit, LocationBinding, wy );
@@ -409,11 +412,23 @@ MainForm::OnRemoveWeather( System::Object ^ sender, System::EventArgs ^ e )
     return;
   }
 
-  int newIndex = lboxWeather->SelectedIndex - 1;
-  int yearToRemove = Convert::ToInt32( lboxWeather->SelectedValue );
-
+  // save min/max dates for later use
   WeatherData ^ weather = _activeDocument->Location->Weather;
+  DateTime oldMinDate = weather->MinDate;
+  DateTime oldMaxDate = weather->MaxDate;
+
+  // no weather will remain after removal
+  if( weather->Years->Count == 1 ) {
+    // make sure infection introduction is not selected
+    _densimPanel->AllWeatherRemoved();
+  }
+
+  // remove selected year
+  int yearToRemove = Convert::ToInt32( lboxWeather->SelectedValue );
   weather->RemoveWeatherYear( yearToRemove );
+
+  DateTime newMinDate = weather->MinDate;
+  DateTime newMaxDate = weather->MaxDate;
 }
 
 
@@ -445,9 +460,8 @@ MainForm::Exit(void)
     return;
   }
 
-  // save possible changes to user settings
+  // save possible changes to user settings and exit
   WriteSettings();
-
   Application::Exit();
 }
 

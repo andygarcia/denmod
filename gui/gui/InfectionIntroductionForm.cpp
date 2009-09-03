@@ -43,7 +43,7 @@ System::Void
 InfectionIntroductionForm::OnLoad( System::Object ^ sender, System::EventArgs ^ e )
 {
   // only enable infection introduction form when weather is available
-  this->DataBindings->Add( "Enabled", LocationBinding, "Weather.IsWeatherAvailable" );
+  //this->DataBindings->Add( "Enabled", LocationBinding, "Weather.IsWeatherAvailable", false, DataSourceUpdateMode::OnPropertyChanged );
 
   numHumansD1->DataBindings->Add( "Text", LocationBinding, "InfectionIntroduction.Dengue1.Humans", false, DataSourceUpdateMode::OnPropertyChanged );
   numMosquitoesD1->DataBindings->Add( "Text", LocationBinding, "InfectionIntroduction.Dengue1.Mosquitoes", false, DataSourceUpdateMode::OnPropertyChanged );

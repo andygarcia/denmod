@@ -4,7 +4,6 @@
 #include "DensimPanel.h"
 #include "Settings.h"
 
-
 using namespace System;
 using namespace System::ComponentModel;
 using namespace System::Collections;
@@ -13,9 +12,10 @@ using namespace System::Data;
 using namespace System::Drawing;
 
 
+
 namespace gui {
 
-	public ref class MainForm : public System::Windows::Forms::Form
+  public ref class MainForm : public System::Windows::Forms::Form
 	{
   // Enums
   private:

@@ -89,6 +89,9 @@ DensimPanel::OnLoad(System::Object^  sender, System::EventArgs^  e)
   errProTiterModification->DataSource = _locationBinding;
   errProTiterModification->DataMember = "Virology.EIP.TiterModification";
 
+  // infection introduction
+  _formInfectionIntroduction->DataBindings->Add( "Enabled", _locationBinding, "Weather.IsWeatherAvailable", false, DataSourceUpdateMode::OnPropertyChanged );
+
   // sequentials
   dgvSequentials->DataBindings->Add( "DataSource", _locationBinding, "SequentialInfections.SequentialInfections" );
 }
@@ -114,6 +117,18 @@ DensimPanel::OnRunDensim( System::Object ^ sender, System::EventArgs ^ e )
   }
 
   RunDensim();
+}
+
+
+
+void
+DensimPanel::AllWeatherRemoved(void)
+{
+  if( tabDensim->SelectedTab == tabInfections ) {
+    MessageBox::Show( "All weather has been removed, scheduling of infection introduction not possible until weather is added.","DENSiM",
+                      MessageBoxButtons::OK, MessageBoxIcon::Exclamation );
+    tabDensim->SelectedTab = tabDemographics;
+  }
 }
 
 
@@ -145,8 +160,9 @@ DensimPanel::OnTabPageSelecting( System::Object ^ sender, System::Windows::Forms
   if( e->Action == TabControlAction::Selecting ) {
     if( e->TabPageIndex == 3 ) {
       if( !location->Weather->IsWeatherAvailable ) {
-        MessageBox::Show( "Weather data must be added before scheduling infection introductions." );
+        MessageBox::Show( "Weather data must be added before scheduling infection introduction." );
         e->Cancel = true;
+        return;
       }
     }
   }

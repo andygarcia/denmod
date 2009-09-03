@@ -36,7 +36,7 @@ MonthlySchedulePanel::OnLoad( System::Object ^ sender, System::EventArgs ^ e)
 
   cboxMonthlyStartYear->ValueMember = "Index";
   cboxMonthlyStartYear->DisplayMember = "Index";
-  cboxMonthlyStartYear->DataBindings->Add( "DataSource", LocationBinding, "Weather.YearsBindingList", false, DataSourceUpdateMode::OnPropertyChanged );
+  cboxMonthlyStartYear->DataBindings->Add( "DataSource", LocationBinding, "Weather.Years", false, DataSourceUpdateMode::OnPropertyChanged );
 
   cboxMonthlyStartYear->DataBindings->Add( "SelectedValue", Schedule_, "StartYear", false, DataSourceUpdateMode::OnPropertyChanged );
 
