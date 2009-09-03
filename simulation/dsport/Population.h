@@ -113,7 +113,7 @@ public:
   void PurgeMaternalAntibodies(void);
 
   void IntroduceInfectedHuman( unsigned int serotype );
-  void InnoculateRandomHuman( unsigned int serotype );
+  void InoculateRandomHuman( unsigned int serotype );
 
   void RankPopulation(void);
   void RankSerology( HumanCollection::iterator itIndiv, int ageClass );

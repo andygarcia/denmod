@@ -534,7 +534,7 @@ HumanPopulation::IntroduceInfectedHuman( unsigned int serotype )
 
 
 void
-HumanPopulation::InnoculateRandomHuman( unsigned int serotype )
+HumanPopulation::InoculateRandomHuman( unsigned int serotype )
 {
   // randomly select individual for new innoculation
   Human & human = SelectHuman();

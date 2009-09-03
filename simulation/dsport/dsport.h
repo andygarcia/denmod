@@ -43,28 +43,29 @@ public:
   static int CINT( float value );
   static int INT( float value );
   float RND( std::string callingMethod );
+  float Factorial( int n );
 
   void CalculateEipFactors(void);
 
   void InitInfectives(void);
   float EIPEnzKin( float temp );
+  
   void MosquitoLifeCycle(void);
+  
   void HumanToMosquitoTransmission(void);
-  void CalcNewInocMosquitoes( int iType );
-  float Factorial( int n );
+  void InoculateMosquitoes( int serotype );
+
   void MosquitoToHumanTransmission(void);
-  void CalcNewInocHumans( int iType );
-  void SpoolToDisk(void);
-  void WriteOutput(void);
+  void InoculateHumans( int serotype );
+  
+  void SaveDailyOutput(void);
 
   output::DensimOutput * GetDensimOutput(void);
 
 public:
   const input::Location * _location;
   output::MosData * _mosData;
-
   output::DensimOutput * _densimOutput;
-  LocationOutput LocationOutput_;
 
   const float GasCoef;
 
@@ -148,8 +149,6 @@ public:
   std::vector<float> BitersInfdOldDB;         // Number of old double bloods from yesterday
 
   PdsRng _pdsRng;
-
-  DebugOutput _dailyDebugOutput;
 };
 
 };
