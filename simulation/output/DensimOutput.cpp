@@ -8,11 +8,8 @@ using namespace sim::output;
 
 DensimOutput::DensimOutput( date startDate, date stopDate )
 : _startDate(startDate),
-  _stopDate(stopDate),
-  _serotypeOutputs( SerotypeOutputs(4+1, SerotypeOutput()) )
-{
-
-}
+  _stopDate(stopDate)
+{}
 
 
 
@@ -24,11 +21,9 @@ DensimOutput::~DensimOutput(void)
 boost::gregorian::date_period
 DensimOutput::GetDateRange(void)
 {
-  unsigned int numDays = static_cast<unsigned int>( _locationOutput.size() );
-
-  date currentLastDate = _startDate + days(numDays) - days(1);
-
-  return date_period( _startDate, currentLastDate );
+  date firstDate = _locationOutput.begin()->first;
+  date lastDate = _locationOutput.rbegin()->first;
+  return date_period( firstDate, lastDate );
 }
 
 
@@ -36,7 +31,7 @@ DensimOutput::GetDateRange(void)
 void
 DensimOutput::AddDailyLocationOutput( DailyLocationOutput dlo, date d )
 {
-  _locationOutput.push_back( dlo );
+  _locationOutput[d] = dlo;
 
   DailySerotypeOutput dso1;
   dso1.Incubating = dlo.Incubate1;
@@ -44,7 +39,7 @@ DensimOutput::AddDailyLocationOutput( DailyLocationOutput dlo, date d )
   dso1.InfectiveMosquitoes = dlo.MosqInfvTotal[1];
   dso1.EipDevelopmentRate = dlo.EIPDevRate[1];
   dso1.NewCases = dlo.NewHumCases[1];
-  _serotypeOutputs[1].push_back( dso1 );
+  _serotypeOutputs[1][d] = dso1;
 
   DailySerotypeOutput dso2;
   dso2.Incubating = dlo.Incubate2;
@@ -52,7 +47,7 @@ DensimOutput::AddDailyLocationOutput( DailyLocationOutput dlo, date d )
   dso2.InfectiveMosquitoes = dlo.MosqInfvTotal[2];
   dso2.EipDevelopmentRate = dlo.EIPDevRate[2];
   dso2.NewCases = dlo.NewHumCases[2];
-  _serotypeOutputs[2].push_back( dso2 );
+  _serotypeOutputs[2][d] = dso2;
 
   DailySerotypeOutput dso3;
   dso3.Incubating = dlo.Incubate3;
@@ -60,7 +55,7 @@ DensimOutput::AddDailyLocationOutput( DailyLocationOutput dlo, date d )
   dso3.InfectiveMosquitoes = dlo.MosqInfvTotal[3];
   dso3.EipDevelopmentRate = dlo.EIPDevRate[3];
   dso3.NewCases = dlo.NewHumCases[3];
-  _serotypeOutputs[3].push_back( dso3 );
+  _serotypeOutputs[3][d] = dso3;
 
   DailySerotypeOutput dso4;
   dso4.Incubating = dlo.Incubate4;
@@ -68,7 +63,7 @@ DensimOutput::AddDailyLocationOutput( DailyLocationOutput dlo, date d )
   dso4.InfectiveMosquitoes = dlo.MosqInfvTotal[4];
   dso4.EipDevelopmentRate = dlo.EIPDevRate[4];
   dso4.NewCases = dlo.NewHumCases[4];
-  _serotypeOutputs[4].push_back( dso4 );
+  _serotypeOutputs[4][d] = dso4;
 }
 
 
@@ -208,9 +203,9 @@ DensimOutput::GetDetailedSeroprevalence( int seroClass, int serotype )
 
   std::vector<double> values;
 
-  unsigned int numDays = static_cast<unsigned int>( _locationOutput.size() );
-  for( unsigned int i = 0; i < numDays; ++i ) {
-    values.push_back( _locationOutput[i].SerPos[seroClass][serotype] );
+  day_iterator itDate = day_iterator(_startDate);
+  for( ; *itDate <= _stopDate; ++itDate ) {
+    values.push_back( _locationOutput[*itDate].SerPos[seroClass][serotype] );
   }
 
   return values;
@@ -224,9 +219,9 @@ DensimOutput::GetPersonsWithVirus( int serotype )
   std::vector<double> withVirus;
   SerotypeOutput & serotypeOutput = _serotypeOutputs[serotype];
 
-  unsigned int numDays = static_cast<unsigned int>( _locationOutput.size() );
-  for( unsigned int i = 0; i < numDays; ++i ) {
-    withVirus.push_back( serotypeOutput[i].Incubating + serotypeOutput[i].Viremic );
+  day_iterator itDate = day_iterator(_startDate);
+  for( ; *itDate <= _stopDate; ++itDate ) {
+    withVirus.push_back( serotypeOutput[*itDate].Incubating + serotypeOutput[*itDate].Viremic );
   }
 
   return withVirus;
@@ -240,9 +235,9 @@ DensimOutput::GetPersonsIncubating( int serotype )
   std::vector<double> incubating;
   SerotypeOutput & serotypeOutput = _serotypeOutputs[serotype];
 
-  unsigned int numDays = static_cast<unsigned int>( _locationOutput.size() );
-  for( unsigned int i = 0; i < numDays; ++i ) {
-    incubating.push_back( serotypeOutput[i].Incubating );
+  day_iterator itDate = day_iterator(_startDate);
+  for( ; *itDate <= _stopDate; ++itDate ) {
+    incubating.push_back( serotypeOutput[*itDate].Incubating );
   }
 
   return incubating;
@@ -256,9 +251,9 @@ DensimOutput::GetPersonsViremic( int serotype )
   std::vector<double> viremic;
   SerotypeOutput & serotypeOutput = _serotypeOutputs[serotype];
 
-  unsigned int numDays = static_cast<unsigned int>( _locationOutput.size() );
-  for( unsigned int i = 0; i < numDays; ++i ) {
-    viremic.push_back( serotypeOutput[i].Viremic );
+  day_iterator itDate = day_iterator(_startDate);
+  for( ; *itDate <= _stopDate; ++itDate ) {
+    viremic.push_back( serotypeOutput[*itDate].Viremic );
   }
 
   return viremic;
@@ -272,9 +267,9 @@ DensimOutput::GetEipDevelopmentRate( int serotype )
   std::vector<double> eipDevRate;
   SerotypeOutput & serotypeOutput = _serotypeOutputs[serotype];
 
-  unsigned int numDays = static_cast<unsigned int>( _locationOutput.size() );
-  for( unsigned int i = 0; i < numDays; ++i ) {
-    eipDevRate.push_back( serotypeOutput[i].EipDevelopmentRate );
+  day_iterator itDate = day_iterator(_startDate);
+  for( ; *itDate <= _stopDate; ++itDate ) {
+    eipDevRate.push_back( serotypeOutput[*itDate].EipDevelopmentRate );
   }
 
   return eipDevRate;
@@ -289,9 +284,8 @@ DensimOutput::GetInfectiveMosquitoes( int serotype )
   SerotypeOutput & serotypeOutput = _serotypeOutputs[serotype];
 
   day_iterator itDate = day_iterator(_startDate);
-  unsigned int numDays = static_cast<unsigned int>( _locationOutput.size() );
-  for( unsigned int i = 0; i < numDays; ++i ) {
-    infvMosqs.push_back( serotypeOutput[i].InfectiveMosquitoes );
+  for( ; *itDate <= _stopDate; ++itDate ) {
+    infvMosqs.push_back( serotypeOutput[*itDate].InfectiveMosquitoes );
   }
 
   return infvMosqs;
@@ -304,9 +298,9 @@ DensimOutput::GetPopulation(void)
 {
   std::vector<int> humans;
 
-  unsigned int numDays = static_cast<unsigned int>( _locationOutput.size() );
-  for( unsigned int i = 0; i < numDays; ++i ) {
-    humans.push_back( _locationOutput[i].NumHumans );
+  day_iterator itDate = day_iterator(_startDate);
+  for( ; *itDate <= _stopDate; ++itDate ) {
+    humans.push_back( _locationOutput[*itDate].NumHumans );
   }
 
   return humans;
@@ -319,9 +313,9 @@ DensimOutput::GetMosqTotal(void)
 {
   std::vector<double> mosqs;
 
-  unsigned int numDays = static_cast<unsigned int>( _locationOutput.size() );
-  for( unsigned int i = 0; i < numDays; ++i ) {
-    mosqs.push_back( _locationOutput[i].MosqTotal );
+  day_iterator itDate = day_iterator(_startDate);
+  for( ; *itDate <= _stopDate; ++itDate ) {
+    mosqs.push_back( _locationOutput[*itDate].MosqTotal );
   }
 
   return mosqs;
@@ -334,9 +328,9 @@ DensimOutput::GetPotentiallyInfectiveBites(void)
 {
   std::vector<int> bites;
 
-  unsigned int numDays = static_cast<unsigned int>( _locationOutput.size() );
-  for( unsigned int i = 0; i < numDays; ++i ) {
-    bites.push_back( _locationOutput[i].InfvBites );
+  day_iterator itDate = day_iterator(_startDate);
+  for( ; *itDate <= _stopDate; ++itDate ) {
+    bites.push_back( _locationOutput[*itDate].InfvBites );
   }
 
   return bites;
