@@ -9,13 +9,15 @@
 #include "dsport.h"
 #include "Population.h"
 #include "SimConstants.h"
-//#include "../output/Workbook.h"
+#include "../output/Workbook.h"
 
 using namespace sim::dsport;
 
 
-dsport::dsport( const input::Location * location )
-: _pdsRng(0),
+dsport::dsport( const input::Location * location, sim::output::MosData * mosData )
+: _location(location),
+  _mosData(mosData),
+  _pdsRng(0),
   GasCoef(1.987f),
   Virus(std::vector<VirusDesc>( 4+1 )),
   EIPFactor(std::vector<float>( 4+1, 0 )),
@@ -31,90 +33,67 @@ dsport::dsport( const input::Location * location )
   OldMosqInfdEIP(std::vector<std::vector<float>>( (MaxAgeMosq+1) + 1, std::vector<float>( 4+1, 0 ) )),
   MosqInfv(std::vector<std::vector<float>>( (MaxAgeMosq+1) + 1, std::vector<float>( 4+1, 0 ) )),
   MosqInfvCD(std::vector<std::vector<float>>( (MaxAgeMosq+1) + 1, std::vector<float>( 4+1, 0 ) )),
-  //CimSimData(std::vector<CimSimOutDescription>( YrLen+1 )),
-  VirusIntro(std::vector<VirusIntroductionProfile>( 4+1 )),
   BitersInfdNewDB(std::vector<float>( 4+1, 0 )),
   BitersInfdOldDB(std::vector<float>( 4+1, 0 )),
   BitersInfv(std::vector<float>( 4+1, 0 )),
   EIPDevRate(std::vector<float>( 4+1, 0 )),
-  MosqInfvTotal(std::vector<float>( 4+1, 0 )),
-  _dailyMosData(output::DailyMosData()),
-  _yesterdayMosData(output::DailyMosData())
-
+  MosqInfvTotal(std::vector<float>( 4+1, 0 ))
 {
-  //srand( time(NULL) );
-  // DENDYNAM.INC
-
-  _humanPopulation = new HumanPopulation( this, location );
-
-  // initialize from location object
-  //this->VirusIntro = location->VirusIntro;
-  _infectionIntroduction = location->InfectionIntroduction_;
-
-  this->HumHostDensity = location->Demographics_->HumanHostDensity;
-  //this->HumHostDensity = location->HumHostDensity;
-
+  // initialize human population
+  _humanPopulation = new HumanPopulation( this, _location );
+  
+  // demographics
+  this->HumHostDensity = _location->Demographics_->HumanHostDensity;
 
   // virology parameters
-  this->Virus[1].Viremia = location->Virology_->Dengue1_.Viremia_;
-  this->Virus[1].Incub = location->Virology_->Dengue1_.IncubationDuration_;
-  this->Virus[1].Durat = location->Virology_->Dengue1_.ViremicDuration_;
+  this->Virus[1].Viremia = _location->Virology_->Dengue1_.Viremia_;
+  this->Virus[1].Incub = _location->Virology_->Dengue1_.IncubationDuration_;
+  this->Virus[1].Durat = _location->Virology_->Dengue1_.ViremicDuration_;
 
-  this->Virus[2].Viremia = location->Virology_->Dengue2_.Viremia_;
-  this->Virus[2].Incub = location->Virology_->Dengue2_.IncubationDuration_;
-  this->Virus[2].Durat = location->Virology_->Dengue2_.ViremicDuration_;
+  this->Virus[2].Viremia = _location->Virology_->Dengue2_.Viremia_;
+  this->Virus[2].Incub = _location->Virology_->Dengue2_.IncubationDuration_;
+  this->Virus[2].Durat = _location->Virology_->Dengue2_.ViremicDuration_;
 
-  this->Virus[3].Viremia = location->Virology_->Dengue3_.Viremia_;
-  this->Virus[3].Incub = location->Virology_->Dengue3_.IncubationDuration_;
-  this->Virus[3].Durat = location->Virology_->Dengue3_.ViremicDuration_;
+  this->Virus[3].Viremia = _location->Virology_->Dengue3_.Viremia_;
+  this->Virus[3].Incub = _location->Virology_->Dengue3_.IncubationDuration_;
+  this->Virus[3].Durat = _location->Virology_->Dengue3_.ViremicDuration_;
 
-  this->Virus[4].Viremia = location->Virology_->Dengue4_.Viremia_;
-  this->Virus[4].Incub = location->Virology_->Dengue4_.IncubationDuration_;
-  this->Virus[4].Durat = location->Virology_->Dengue4_.ViremicDuration_;
+  this->Virus[4].Viremia = _location->Virology_->Dengue4_.Viremia_;
+  this->Virus[4].Incub = _location->Virology_->Dengue4_.IncubationDuration_;
+  this->Virus[4].Durat = _location->Virology_->Dengue4_.ViremicDuration_;
 
-  this->HumToMosLTiter = location->Virology_->HumanToMosquitoInfection_.LowTiterSetPoint_;
-  this->HumToMosLInf = location->Virology_->HumanToMosquitoInfection_.LowTiterInfection_;
-  this->HumToMosHTiter = location->Virology_->HumanToMosquitoInfection_.HighTiterSetPoint_;
-  this->HumToMosHInf = location->Virology_->HumanToMosquitoInfection_.HighTiterInfection_;
+  this->HumToMosLTiter = _location->Virology_->HumanToMosquitoInfection_.LowTiterSetPoint_;
+  this->HumToMosLInf = _location->Virology_->HumanToMosquitoInfection_.LowTiterInfection_;
+  this->HumToMosHTiter = _location->Virology_->HumanToMosquitoInfection_.HighTiterSetPoint_;
+  this->HumToMosHInf = _location->Virology_->HumanToMosquitoInfection_.HighTiterInfection_;
 
-  this->EipLTiter = location->Virology_->Eip_.EipTiterModification_.LowSetPoint_;
-  this->EipLFactor = location->Virology_->Eip_.EipTiterModification_.LowFactor_;
-  this->EipHTiter = location->Virology_->Eip_.EipTiterModification_.HighSetPoint_;
-  this->EipHFactor = location->Virology_->Eip_.EipTiterModification_.HighFactor_;
+  this->EipLTiter = _location->Virology_->Eip_.EipTiterModification_.LowSetPoint_;
+  this->EipLFactor = _location->Virology_->Eip_.EipTiterModification_.LowFactor_;
+  this->EipHTiter = _location->Virology_->Eip_.EipTiterModification_.HighSetPoint_;
+  this->EipHFactor = _location->Virology_->Eip_.EipTiterModification_.HighFactor_;
 
-  this->StochTransNum = location->Virology_->MosquitoCountForStochasticity;
-  this->MosqToHumProb = location->Virology_->MosquitoToHumanNominalProbabilityOfInfection_;
+  this->StochTransNum = _location->Virology_->MosquitoCountForStochasticity;
+  this->MosqToHumProb = _location->Virology_->MosquitoToHumanNominalProbabilityOfInfection_;
 
-  this->EnzKinDR = location->Virology_->Eip_.Development_.RO25;
-  this->EnzKinEA = location->Virology_->Eip_.Development_.DHA;
-  this->EnzKinEI = location->Virology_->Eip_.Development_.DHH;
-  this->EnzKinTI = location->Virology_->Eip_.Development_.THALF;
+  this->EnzKinDR = _location->Virology_->Eip_.Development_.RO25;
+  this->EnzKinEA = _location->Virology_->Eip_.Development_.DHA;
+  this->EnzKinEI = _location->Virology_->Eip_.Development_.DHH;
+  this->EnzKinTI = _location->Virology_->Eip_.Development_.THALF;
 
-  this->MANADurat = location->Serology_->ManaDuration_;
-  this->MAEADurat = location->Serology_->MaeaDuration_;
-  this->HetImmunDurat = location->Serology_->HetDuration_;
+  this->MANADurat = _location->Serology_->ManaDuration_;
+  this->MAEADurat = _location->Serology_->MaeaDuration_;
+  this->HetImmunDurat = _location->Serology_->HetDuration_;
 
 
   // biology parameters
-  this->PropOnHum = location->Biology_->Adult->ProportionOfFeedsOnHumans;
-  this->FdAttempts = location->Biology_->Adult->InterruptedFeedsPerMeal;
-  this->PropDifHost = location->Biology_->Adult->ProportionOfInterruptedFeedsOnDifferentHost;
+  this->PropOnHum = _location->Biology_->Adult->ProportionOfFeedsOnHumans;
+  this->FdAttempts = _location->Biology_->Adult->InterruptedFeedsPerMeal;
+  this->PropDifHost = _location->Biology_->Adult->ProportionOfInterruptedFeedsOnDifferentHost;
 
-  this->DBloodLWt = location->Biology_->Adult->DoubleBloodMeal->LowWeightLimit;
-  this->DBloodLProp = location->Biology_->Adult->DoubleBloodMeal->LowWeightRatio;
-  this->DBloodUWt = location->Biology_->Adult->DoubleBloodMeal->HighWeightLimit;
-  this->DBloodUProp = location->Biology_->Adult->DoubleBloodMeal->HighWeightRatio;
-
-  //this->CimsimDataByYear_ = location->CimsimDataByYear;
-
-  //this->NewMosqSusc = location->NewMosqSusc;
-  //this->NewMosqSuscCD = location->NewMosqSuscCD;
-  //this->OldMosqSusc = location->OldMosqSusc;
-  //this->OldMosqSuscCD = location->OldMosqSuscCD;
-
-  // use same initial adult population as CIMSiM
-  // the population from CIMSiM is on the spatial scale of a hectare
-  // so we must scale by the current simulation size
+  this->DBloodLWt = _location->Biology_->Adult->DoubleBloodMeal->LowWeightLimit;
+  this->DBloodLProp = _location->Biology_->Adult->DoubleBloodMeal->LowWeightRatio;
+  this->DBloodUWt = _location->Biology_->Adult->DoubleBloodMeal->HighWeightLimit;
+  this->DBloodUProp = _location->Biology_->Adult->DoubleBloodMeal->HighWeightRatio;
 
   // TODO fix initial scale factor from ds 1.0
   //double initialArea = InitialPopSize / HumHostDensity;
@@ -130,31 +109,18 @@ dsport::dsport( const input::Location * location )
   }
 
   // weather and default dates
-  _weather = location->Weather_;
+  _weather = _location->Weather_;
   boost::gregorian::date_period wxAvailable = _weather->GetWeatherPeriod();
   _startDate = wxAvailable.begin();
   _stopDate = wxAvailable.end();
 
-  _infectionIntroduction->Dengue1_->Schedule_->CalculateSchedule( _startDate, _stopDate );
-  _infectionIntroduction->Dengue2_->Schedule_->CalculateSchedule( _startDate, _stopDate );
-  _infectionIntroduction->Dengue3_->Schedule_->CalculateSchedule( _startDate, _stopDate );
-  _infectionIntroduction->Dengue4_->Schedule_->CalculateSchedule( _startDate, _stopDate );
+  // initialize infection schedules
+  _location->InfectionIntroduction_->Dengue1_->Schedule_->CalculateSchedule( _startDate, _stopDate );
+  _location->InfectionIntroduction_->Dengue2_->Schedule_->CalculateSchedule( _startDate, _stopDate );
+  _location->InfectionIntroduction_->Dengue3_->Schedule_->CalculateSchedule( _startDate, _stopDate );
+  _location->InfectionIntroduction_->Dengue4_->Schedule_->CalculateSchedule( _startDate, _stopDate );
 
-  //// initialize infections schedules based on VirusIntro
-  //for( int i = 1; i <= 4; ++i ) {
-  //  if( VirusIntro[i].Trts > 0 ) {
-  //    AddInfvFlag = doInfection;
-  //    int j = VirusIntro[i].SDay;
-  //    for( int ii = 1; ii <= VirusIntro[i].Trts; ++ii ) {
-  //      AddedInfections[i][j] = true;
-  //      j = j + VirusIntro[i].Intv;
-  //      if( j > YrLen ) {
-  //        break;
-  //      }
-  //    }
-  //  }
-  //}
-
+  // set initial capacity for output
   LocationOutput_.reserve( (_stopDate - _startDate).days() + 1 );
 }
 
@@ -194,11 +160,11 @@ dsport::denmain(void)
 
     // todo ds-1.0 uses the last day of current year
     boost::gregorian::date lastDayCurrentYear = boost::gregorian::date( _startDate.year(), 12, 31 );
-    _yesterdayMosData = _mosData->GetMosData( lastDayCurrentYear );
+    _dailyMosData = _mosData->GetMosData( lastDayCurrentYear );
     for( _currentDate = _startDate; _currentDate != _stopDate; _currentDate = _currentDate + boost::gregorian::days(1) ) {
       
       // read today's average air temperature
-      _averageAirTemperature = _weather->GetWeatherForIndex(_currentDate.year())->GetDay(_currentDate.day_of_year())->AvgTemp_;
+      _averageAirTemperature = _weather->GetWeatherForYear(_currentDate.year())->GetDay(_currentDate.day_of_year())->AvgTemp_;
 
       // save yesterday's mosData and read today's
       _yesterdayMosData = _dailyMosData;
@@ -209,12 +175,11 @@ dsport::denmain(void)
       _humanPopulation->DoDailyBirths();
       _humanPopulation->AgePopulation();
 
-
       // possibly introduce infection
-      if( _infectionIntroduction->Dengue1_->Schedule_->IsDateScheduled( _currentDate ) ||
-          _infectionIntroduction->Dengue2_->Schedule_->IsDateScheduled( _currentDate ) ||
-          _infectionIntroduction->Dengue3_->Schedule_->IsDateScheduled( _currentDate ) ||
-          _infectionIntroduction->Dengue4_->Schedule_->IsDateScheduled( _currentDate ) )
+      if( _location->InfectionIntroduction_->Dengue1_->Schedule_->IsDateScheduled( _currentDate ) ||
+          _location->InfectionIntroduction_->Dengue2_->Schedule_->IsDateScheduled( _currentDate ) ||
+          _location->InfectionIntroduction_->Dengue3_->Schedule_->IsDateScheduled( _currentDate ) ||
+          _location->InfectionIntroduction_->Dengue4_->Schedule_->IsDateScheduled( _currentDate ) )
       {
         InitInfectives();
       }
@@ -336,7 +301,7 @@ dsport::InitInfectives(void)
 {
   for( int serotype = 1; serotype <= 4; ++serotype ) {
     // get serotype introduction object for this serotype
-    input::SerotypeIntroduction * serotypeIntro = _infectionIntroduction->GetSerotype(serotype);
+    input::SerotypeIntroduction * serotypeIntro = _location->InfectionIntroduction_->GetSerotype(serotype);
 
     if( serotypeIntro->Schedule_->IsDateScheduled( _currentDate ) && serotypeIntro->Mosquitoes_ > 0 ) {
       // look for empty position in the old infected array and add.  This way the
@@ -346,7 +311,6 @@ dsport::InitInfectives(void)
       bool ifound = false;
       for( int i = 1; i <= MaxAgeMosq; ++i ) {
         if( OldMosqInfd[i][serotype] == 0 ) {
-          //OldMosqInfd[i][serotype] = VirusIntro[serotype].Mosq;
           OldMosqInfd[i][serotype] = serotypeIntro->Mosquitoes_;
           OldMosqInfdCD[i][serotype] = 1.1f;
           OldMosqInfdEIP[i][serotype] = 1.1f;
@@ -365,10 +329,10 @@ dsport::InitInfectives(void)
 
   // initialize infective humans
   for( int serotype = 1; serotype <= 4; ++serotype ) {
-    input::SerotypeIntroduction * serotypeIntro = _infectionIntroduction->GetSerotype(serotype);
+    input::SerotypeIntroduction * serotypeIntro = _location->InfectionIntroduction_->GetSerotype(serotype);
     if( serotypeIntro->Schedule_->IsDateScheduled( _currentDate ) && serotypeIntro->Humans_ > 0 ) {
       for( int i = 1; i <= serotypeIntro->Humans_; ++i ) {
-        _humanPopulation->IntroduceInfectedHuman( i );
+        _humanPopulation->IntroduceInfectedHuman( serotype );
       }
     }
   }
@@ -523,7 +487,7 @@ dsport::MosquitoLifeCycle(void)
       }
       else {
         // calculate CD cutoff
-        float OldAdultDev;
+        float OldAdultDev = _yesterdayMosData.AdultDevelopment;
 
         // superceeded by using _yesterdayMosData & _dailyMosData
         //if( Day == 1 ) {
@@ -660,18 +624,18 @@ dsport::HumanToMosquitoTransmission(void)
 {
   int numberOfHumans = _humanPopulation->GetPopulationSize();
 
+  // handle dead population gracefully
+  if( numberOfHumans == 0 ) {
+    BitesPerPerson = 0;
+    return;
+  }
+
   // number of susceptible probes per individual
   BitesPerPerson = (BitersNew + BitersOld) * PropOnHum;
   BitesPerPerson = BitesPerPerson + (BitesPerPerson * (FdAttempts - 1) * PropDifHost);
   BitesPerPerson = BitesPerPerson / numberOfHumans;
 
-  // handle dead population gracefully
-  if( numberOfHumans == 0 ) {
-    BitesPerPerson[Day] = 0;
-    return;
-  }
-
-  _dailyDebugOutput.BitesPerPerson = BitesPerPerson[Day];
+  _dailyDebugOutput.BitesPerPerson = BitesPerPerson;
 
   // randomly calculate new mosquito infections for four serotypes
   std::vector<int> seroTypesCompleted;
@@ -722,7 +686,7 @@ dsport::CalcNewInocMosquitoes( int iType )
     ProbInf = HumToMosHInf - ((HumToMosHTiter - (log(Virus[iType].Viremia) / log(10.0f))) * Slope);
   }
 
-  InocEstimate = _humanPopulation->GetInfectiveBySerotype(iType) * BitesPerPerson[Day] * ProbInf;
+  InocEstimate = _humanPopulation->GetInfectiveBySerotype(iType) * BitesPerPerson * ProbInf;
   
   _dailyDebugOutput.MosqInocEstimate[iType] = InocEstimate;
 
@@ -940,270 +904,271 @@ dsport::Factorial( int n )
 void
 dsport::WriteOutput()
 {
-  //unsigned int days = static_cast<unsigned int>( LocationOutput_.size() );
+  unsigned int days = static_cast<unsigned int>( LocationOutput_.size() );
 
-  //// create location worksheet
-  //std::vector<std::string> headers;
-  //headers.push_back( "Day" );
-  //headers.push_back( "Simulation Area" );
-  //headers.push_back( "Mosquitoes In Area" );
-  //headers.push_back( "Mosquitoes Per Hectare" );
-  //headers.push_back( "Mosquitoes Per Person" );
-  //headers.push_back( "Mosquito Wet Weight" );
-  //headers.push_back( "Mosquito Survival" );
-  //headers.push_back( "Infective Bites" );
-  //headers.push_back( "CalcDeathsArraySize" );
-  //headers.push_back( "CalcBirthsArraySize" );
-  //headers.push_back( "InitInfectivesArraySize" );
-  //headers.push_back( "DMealProp" );
-  //headers.push_back( "EggersNew" );
-  //headers.push_back( "BitersNew" );
-  //headers.push_back( "EggersOld" );
-  //headers.push_back( "BitersOld" );
-  //headers.push_back( "BitersTotal" );
-  //headers.push_back( "MosqTotal" );
-  //headers.push_back( "BitesPerPerson" );
+  // create location worksheet
+  std::vector<std::string> headers;
+  headers.push_back( "Day" );
+  headers.push_back( "Simulation Area" );
+  headers.push_back( "Mosquitoes In Area" );
+  headers.push_back( "Mosquitoes Per Hectare" );
+  headers.push_back( "Mosquitoes Per Person" );
+  headers.push_back( "Mosquito Wet Weight" );
+  headers.push_back( "Mosquito Survival" );
+  headers.push_back( "Infective Bites" );
+  headers.push_back( "CalcDeathsArraySize" );
+  headers.push_back( "CalcBirthsArraySize" );
+  headers.push_back( "InitInfectivesArraySize" );
+  headers.push_back( "DMealProp" );
+  headers.push_back( "EggersNew" );
+  headers.push_back( "BitersNew" );
+  headers.push_back( "EggersOld" );
+  headers.push_back( "BitersOld" );
+  headers.push_back( "BitersTotal" );
+  headers.push_back( "MosqTotal" );
+  headers.push_back( "BitesPerPerson" );
 
-  //Worksheet * location = new Worksheet( "Location", headers );
+  Worksheet * location = new Worksheet( "Location", headers );
 
-  //// create serotype worksheets
-  //headers.clear();
-  //headers.push_back( "Day" );
-  //headers.push_back( "EIP Development Rate" );
-  //headers.push_back( "Infective Mosquitoes" );
-  //headers.push_back( "Persons Incubating" );
-  //headers.push_back( "Persons Viremic" );
-  //headers.push_back( "Persons With Virus" );
-  //headers.push_back( "New Cases" );
-  //headers.push_back( "MANA Infants" );
-  //headers.push_back( "MAEA Infants" );
-  //headers.push_back( "< 1 year" );
-  //headers.push_back( "1-4 years" );
-  //headers.push_back( "5-9 years" );
-  //headers.push_back( "10-14 years" );
-  //headers.push_back( "15-19 years" );
-  //headers.push_back( "20-24 years" );
-  //headers.push_back( "25-29 years" );
-  //headers.push_back( "30-34 years" );
-  //headers.push_back( "35-39 years" );
-  //headers.push_back( "40-44 years" );
-  //headers.push_back( "45-49 years" );
-  //headers.push_back( "50-54 years" );
-  //headers.push_back( "55-59 years" );
-  //headers.push_back( "60-64 years" );
-  //headers.push_back( "65-69 years" );
-  //headers.push_back( "70-74 years" );
-  //headers.push_back( "75-79 years" );
-  //headers.push_back( "80+ years" );
-  //headers.push_back( "15-44 years" );
-  //headers.push_back( "45+ years" );
-  //headers.push_back( "All ages" );
-  //headers.push_back( "EIPTranNew" );
-  //headers.push_back( "BitersInfdNewDB" );
-  //headers.push_back( "EIPTranOld" );
-  //headers.push_back( "BitersInfdOldDB" );
-  //headers.push_back( "BitersInfd" );
-  //headers.push_back( "EggersInfv" );
-  //headers.push_back( "BitersInfv" );
-  //headers.push_back( "MosqInfvTotal" );
-  //headers.push_back( "MosqInocEstimate" );
-  //headers.push_back( "NewDlyMosqInoc" );
-  //headers.push_back( "NewInfd" );
-  //headers.push_back( "OldInfd" );
-  //headers.push_back( "HumInocEstimate" );
-  //headers.push_back( "NewDlyHumInoc" );
+  // create serotype worksheets
+  headers.clear();
+  headers.push_back( "Day" );
+  headers.push_back( "EIP Development Rate" );
+  headers.push_back( "Infective Mosquitoes" );
+  headers.push_back( "Persons Incubating" );
+  headers.push_back( "Persons Viremic" );
+  headers.push_back( "Persons With Virus" );
+  headers.push_back( "New Cases" );
+  headers.push_back( "MANA Infants" );
+  headers.push_back( "MAEA Infants" );
+  headers.push_back( "< 1 year" );
+  headers.push_back( "1-4 years" );
+  headers.push_back( "5-9 years" );
+  headers.push_back( "10-14 years" );
+  headers.push_back( "15-19 years" );
+  headers.push_back( "20-24 years" );
+  headers.push_back( "25-29 years" );
+  headers.push_back( "30-34 years" );
+  headers.push_back( "35-39 years" );
+  headers.push_back( "40-44 years" );
+  headers.push_back( "45-49 years" );
+  headers.push_back( "50-54 years" );
+  headers.push_back( "55-59 years" );
+  headers.push_back( "60-64 years" );
+  headers.push_back( "65-69 years" );
+  headers.push_back( "70-74 years" );
+  headers.push_back( "75-79 years" );
+  headers.push_back( "80+ years" );
+  headers.push_back( "15-44 years" );
+  headers.push_back( "45+ years" );
+  headers.push_back( "All ages" );
+  headers.push_back( "EIPTranNew" );
+  headers.push_back( "BitersInfdNewDB" );
+  headers.push_back( "EIPTranOld" );
+  headers.push_back( "BitersInfdOldDB" );
+  headers.push_back( "BitersInfd" );
+  headers.push_back( "EggersInfv" );
+  headers.push_back( "BitersInfv" );
+  headers.push_back( "MosqInfvTotal" );
+  headers.push_back( "MosqInocEstimate" );
+  headers.push_back( "NewDlyMosqInoc" );
+  headers.push_back( "NewInfd" );
+  headers.push_back( "OldInfd" );
+  headers.push_back( "HumInocEstimate" );
+  headers.push_back( "NewDlyHumInoc" );
 
-  //std::vector<Worksheet*> serotypes;
-  //for( int i = 1; i <=4; ++i ) {
-  //  std::stringstream ss;
-  //  ss << "Dengue " << i;
-  //  std::string title = ss.str();
-  //  serotypes.push_back( new Worksheet( title, headers ) );
-  //}
+  std::vector<Worksheet*> serotypes;
+  for( int i = 1; i <=4; ++i ) {
+    std::stringstream ss;
+    ss << "Dengue " << i;
+    std::string title = ss.str();
+    serotypes.push_back( new Worksheet( title, headers ) );
+  }
 
-  //for( unsigned int i = 1; i <= days; ++i ) {
-  //  // get output for this day
-  //  DailyLocationOutput & dlo = LocationOutput_[i-1];
-  //  int year = static_cast<int>( ceil(i / 365.0));
-  //  int day = i - ((year - 1) * 365);
+  boost::gregorian::date d;
+  for( d = _startDate; d != _stopDate; d += boost::gregorian::days(1) ) {
+    // get output for this day
+    int index = (d - _startDate).days();
+    DailyLocationOutput & dlo = LocationOutput_[index];
+    output::DailyMosData & dmd = _mosData->GetMosData( d );
 
-  //  float simulationArea = dlo.NumHumans / HumHostDensity;
-  //  float mosquitoesInArea = dlo.MosqTotal;
-  //  float mosquitoesPerHectare = dlo.MosqTotal / simulationArea;
-  //  float mosquitoesPerPerson = dlo.MosqTotal / dlo.NumHumans;
-  //  float mosquitoWetWeight = CimsimDataByYear_[year][day].AvgDlyWeight;
-  //  float mosquitoSurvival = CimsimDataByYear_[year][day].OverallSurv;
-  //  int infectiveBites = dlo.InfvBites;
+    float simulationArea = dlo.NumHumans / HumHostDensity;
+    float mosquitoesInArea = dlo.MosqTotal;
+    float mosquitoesPerHectare = dlo.MosqTotal / simulationArea;
+    float mosquitoesPerPerson = dlo.MosqTotal / dlo.NumHumans;
+    float mosquitoWetWeight = dmd.AverageWeight;
+    float mosquitoSurvival = dmd.OverallSurvival;
+    int infectiveBites = dlo.InfvBites;
 
-  //  float calcDeathsArraySize = dlo._debugOutput.CalcDeathsArraySize;
-  //  float calcBirthsArraySize = dlo._debugOutput.CalcBirthsArraySize;
-  //  float initInfectivesArraySize = dlo._debugOutput.InitInfectivesArraySize;
-  //  float dMealProp = dlo._debugOutput.DMealProp;
-  //  float eggersNew = dlo._debugOutput.EggersNew;
-  //  float bitersNew = dlo._debugOutput.BitersNew;
-  //  float eggersOld = dlo._debugOutput.EggersOld;
-  //  float bitersOld = dlo._debugOutput.BitersOld;
-  //  float bitersTotal = dlo._debugOutput.BitersTotal;
-  //  float mosqTotal = dlo._debugOutput.MosqTotal;
-  //  float bitesPerPerson = dlo._debugOutput.BitesPerPerson;
+    float calcDeathsArraySize = dlo._debugOutput.CalcDeathsArraySize;
+    float calcBirthsArraySize = dlo._debugOutput.CalcBirthsArraySize;
+    float initInfectivesArraySize = dlo._debugOutput.InitInfectivesArraySize;
+    float dMealProp = dlo._debugOutput.DMealProp;
+    float eggersNew = dlo._debugOutput.EggersNew;
+    float bitersNew = dlo._debugOutput.BitersNew;
+    float eggersOld = dlo._debugOutput.EggersOld;
+    float bitersOld = dlo._debugOutput.BitersOld;
+    float bitersTotal = dlo._debugOutput.BitersTotal;
+    float mosqTotal = dlo._debugOutput.MosqTotal;
+    float bitesPerPerson = dlo._debugOutput.BitesPerPerson;
 
-  //  // push to log
-  //  *location << i << simulationArea << mosquitoesInArea << mosquitoesPerHectare << mosquitoesPerPerson
-  //           << mosquitoWetWeight << mosquitoSurvival << infectiveBites
-  //           << calcDeathsArraySize << calcBirthsArraySize << initInfectivesArraySize
-  //           << dMealProp << eggersNew << bitersNew << eggersOld << bitersOld
-  //           << bitersTotal << mosqTotal << bitesPerPerson;
-
-
-  //  // kludges for iteration
-  //  float Incubating[5];
-  //  Incubating[1] = dlo.Incubate1;
-  //  Incubating[2] = dlo.Incubate2;
-  //  Incubating[3] = dlo.Incubate3;
-  //  Incubating[4] = dlo.Incubate4;
-  //  float Viremic[5];
-  //  Viremic[1] = dlo.Viremic1;
-  //  Viremic[2] = dlo.Viremic2;
-  //  Viremic[3] = dlo.Viremic3;
-  //  Viremic[4] = dlo.Viremic4;
-
-  //  // serotype output for this day
-  //  for( int j = 1; j <=4; ++j ) {
-  //    // current serotype's worksheet
-  //    Worksheet & seroWorksheet = *serotypes[j-1];
-
-  //    // get output
-  //    float eipDevRate = dlo.EIPDevRate[j];
-  //    float infectiveMosquitoes = dlo.MosqInfvTotal[j];
-  //    float incubating = Incubating[j];
-  //    float viremic = Viremic[j];
-  //    float withVirus = Incubating[j] + Viremic[j];
-  //    float newCases = dlo.NewHumCases[j];
-  //    float detailedSerologies[24];
-  //    for( int k = 1; k <= 23; ++k ) {
-  //      detailedSerologies[k] =  dlo.SerPos[k][j];
-  //    }
-
-  //    float EIPTranNew = dlo._debugOutput.EIPTranNew[j];
-  //    float BitersInfdNewDB = dlo._debugOutput.BitersInfdNewDB[j];
-  //    float EIPTranOld = dlo._debugOutput.EIPTranOld[j];
-  //    float BitersInfdOldDB = dlo._debugOutput.BitersInfdOldDB[j];
-  //    float BitersInfd = dlo._debugOutput.BitersInfd[j];
-  //    float EggersInfv = dlo._debugOutput.EggersInfv[j];
-  //    float BitersInfv = dlo._debugOutput.BitersInfv[j];
-  //    float MosqInfvTotal = dlo._debugOutput.MosqInfvTotal[j];
-  //    float MosqInocEstimate = dlo._debugOutput.MosqInocEstimate[j];
-  //    float NewDlyMosqInoc = dlo._debugOutput.NewDlyMosqInoc[j];
-  //    float NewInfd = dlo._debugOutput.NewInfd[j];
-  //    float OldInfd = dlo._debugOutput.OldInfd[j];
-  //    float HumInocEstimate = dlo._debugOutput.HumInocEstimate[j];
-  //    float NewDlyHumInoc = dlo._debugOutput.NewDlyHumInoc[j];
+    // push to log
+    *location << index + 1 << simulationArea << mosquitoesInArea << mosquitoesPerHectare << mosquitoesPerPerson
+             << mosquitoWetWeight << mosquitoSurvival << infectiveBites
+             << calcDeathsArraySize << calcBirthsArraySize << initInfectivesArraySize
+             << dMealProp << eggersNew << bitersNew << eggersOld << bitersOld
+             << bitersTotal << mosqTotal << bitesPerPerson;
 
 
-  //    seroWorksheet << i << eipDevRate << infectiveMosquitoes << incubating << viremic << withVirus << newCases;
-  //    for( int k = 1; k <= 23; ++k ) {
-  //      seroWorksheet << detailedSerologies[k];
-  //    }
-  //    seroWorksheet << EIPTranNew << BitersInfdNewDB << EIPTranOld << BitersInfdOldDB << BitersInfd
-  //                  << EggersInfv << BitersInfv << MosqInfvTotal
-  //                  << MosqInocEstimate << NewDlyMosqInoc << NewInfd << OldInfd
-  //                  << HumInocEstimate << NewDlyHumInoc;
+    // kludges for iteration
+    float Incubating[5];
+    Incubating[1] = dlo.Incubate1;
+    Incubating[2] = dlo.Incubate2;
+    Incubating[3] = dlo.Incubate3;
+    Incubating[4] = dlo.Incubate4;
+    float Viremic[5];
+    Viremic[1] = dlo.Viremic1;
+    Viremic[2] = dlo.Viremic2;
+    Viremic[3] = dlo.Viremic3;
+    Viremic[4] = dlo.Viremic4;
 
-  //  }
-  //}
+    // serotype output for this day
+    for( int j = 1; j <=4; ++j ) {
+      // current serotype's worksheet
+      Worksheet & seroWorksheet = *serotypes[j-1];
 
-  //Workbook wb( "dsport r.237" );
-  //wb.AddWorksheet( location );
-  //for( std::vector<Worksheet*>::iterator itWs = serotypes.begin(); itWs != serotypes.end(); ++itWs ) {
-  //  wb.AddWorksheet( *itWs );
-  //}
-  //wb.SaveToDisk( "DSR 3.0 - Location and Serotypes.xml" );
+      // get output
+      float eipDevRate = dlo.EIPDevRate[j];
+      float infectiveMosquitoes = dlo.MosqInfvTotal[j];
+      float incubating = Incubating[j];
+      float viremic = Viremic[j];
+      float withVirus = Incubating[j] + Viremic[j];
+      float newCases = dlo.NewHumCases[j];
+      float detailedSerologies[24];
+      for( int k = 1; k <= 23; ++k ) {
+        detailedSerologies[k] =  dlo.SerPos[k][j];
+      }
 
-
-  //// create demographics worksheet
-  //headers.clear();
-  //headers.push_back( "Class" );
-  //headers.push_back( "Initial age distribution" );
-  //headers.push_back( "Initial percentages" );
-  //headers.push_back( "Births" );
-  //headers.push_back( "Birth percentages" );
-  //headers.push_back( "Deaths" );
-  //headers.push_back( "Death percentages" );
-  //headers.push_back( "Final age distribution" );
-  //headers.push_back( "Final percentages" );
-  //Worksheet * demographics = new Worksheet( "Demographics", headers );
-
-
-  //std::vector<int> initAgeDist = _humanPopulation->GetInitialAgeDistribution();
-  //std::vector<float> initAgeProp = _humanPopulation->GetInitialAgeProportions();
-  //std::vector<int> ageDist = _humanPopulation->GetAgeDistribution();
-  //std::vector<float> ageProp = _humanPopulation->GetAgeProportions();
-
-  //std::vector<int> births = _humanPopulation->GetBirthsByClass();
-  //std::vector<float> birthPercentages = _humanPopulation->GetBirthPercentagesByClass();
-  //std::vector<int> deaths = _humanPopulation->GetDeathsByClass();
-  //std::vector<float> deathPercentages = _humanPopulation->GetDeathPercentagesByClass();
-
-  //for( int i = 1; i <= 18; ++i ) {
-
-  //  Worksheet & ws = *demographics;
-  //  ws << i;
-  //  ws << initAgeDist[i];
-  //  ws << initAgeProp[i];
-  //  ws << births[i];
-  //  ws << birthPercentages[i];
-  //  ws << deaths[i];
-  //  ws << deathPercentages[i];
-  //  ws << ageDist[i];
-  //  ws << ageProp[i];
-  //}
-
-  //Workbook demoWorkbook( "dsport r.237" );
-  //demoWorkbook.AddWorksheet( demographics );
-  //demoWorkbook.SaveToDisk( "DSR 3.0 - Demographics.xml" );
+      float EIPTranNew = dlo._debugOutput.EIPTranNew[j];
+      float BitersInfdNewDB = dlo._debugOutput.BitersInfdNewDB[j];
+      float EIPTranOld = dlo._debugOutput.EIPTranOld[j];
+      float BitersInfdOldDB = dlo._debugOutput.BitersInfdOldDB[j];
+      float BitersInfd = dlo._debugOutput.BitersInfd[j];
+      float EggersInfv = dlo._debugOutput.EggersInfv[j];
+      float BitersInfv = dlo._debugOutput.BitersInfv[j];
+      float MosqInfvTotal = dlo._debugOutput.MosqInfvTotal[j];
+      float MosqInocEstimate = dlo._debugOutput.MosqInocEstimate[j];
+      float NewDlyMosqInoc = dlo._debugOutput.NewDlyMosqInoc[j];
+      float NewInfd = dlo._debugOutput.NewInfd[j];
+      float OldInfd = dlo._debugOutput.OldInfd[j];
+      float HumInocEstimate = dlo._debugOutput.HumInocEstimate[j];
+      float NewDlyHumInoc = dlo._debugOutput.NewDlyHumInoc[j];
 
 
-  //// create serology worksheet
-  //headers.clear();
-  //headers.push_back( "Class" );
-  //std::stringstream ss;
-  //for( int i = 1; i <=4; ++i ) {
-  //  ss.str("");
-  //  ss << "Dengue " << i << " Initial Distribution";
-  //  headers.push_back( ss.str() );
+      seroWorksheet << index + 1 << eipDevRate << infectiveMosquitoes << incubating << viremic << withVirus << newCases;
+      for( int k = 1; k <= 23; ++k ) {
+        seroWorksheet << detailedSerologies[k];
+      }
+      seroWorksheet << EIPTranNew << BitersInfdNewDB << EIPTranOld << BitersInfdOldDB << BitersInfd
+                    << EggersInfv << BitersInfv << MosqInfvTotal
+                    << MosqInocEstimate << NewDlyMosqInoc << NewInfd << OldInfd
+                    << HumInocEstimate << NewDlyHumInoc;
 
-  //  ss.str("");
-  //  ss << "Dengue " << i << " Initial Distribution Percentage";
-  //  headers.push_back( ss.str() );
-  //}
-  //for( int i = 1; i <=4; ++i ) {
-  //  ss.str("");
-  //  ss << "Dengue " << i << " Final Distribution";
-  //  headers.push_back( ss.str() );
+    }
+  }
 
-  //  ss.str("");
-  //  ss << "Dengue " << i << " Final Distribution Percentage";
-  //  headers.push_back( ss.str() );
-  //}
+  Workbook wb( "dsport r.237" );
+  wb.AddWorksheet( location );
+  for( std::vector<Worksheet*>::iterator itWs = serotypes.begin(); itWs != serotypes.end(); ++itWs ) {
+    wb.AddWorksheet( *itWs );
+  }
+  wb.SaveToDisk( "DSR 3.0 - Location and Serotypes.xml" );
 
-  //Worksheet * serologyWorksheet = new Worksheet( "Serology", headers );
 
-  //std::vector<std::vector<int>> initSerDist = _humanPopulation->GetInitialSeroDistribution();
-  //std::vector<std::vector<int>> serDist = _humanPopulation->GetSeroDistribution();
+  // create demographics worksheet
+  headers.clear();
+  headers.push_back( "Class" );
+  headers.push_back( "Initial age distribution" );
+  headers.push_back( "Initial percentages" );
+  headers.push_back( "Births" );
+  headers.push_back( "Birth percentages" );
+  headers.push_back( "Deaths" );
+  headers.push_back( "Death percentages" );
+  headers.push_back( "Final age distribution" );
+  headers.push_back( "Final percentages" );
+  Worksheet * demographics = new Worksheet( "Demographics", headers );
 
-  //for( int i = 1; i <= 18; ++i ) {
-  //  *serologyWorksheet << i;
-  //  for( int j = 1; j <= 4; ++j ) {
-  //    *serologyWorksheet << initSerDist[i][j];
-  //    *serologyWorksheet << static_cast<float>( initSerDist[i][j] ) / static_cast<float>( initAgeDist[i] ) * 100;
-  //  }
-  //  for( int j = 1; j <= 4; ++j ) {
-  //    *serologyWorksheet << serDist[i][j];
-  //    *serologyWorksheet << static_cast<float>( serDist[i][j] ) / static_cast<float>( ageDist[i] ) * 100;
-  //  }
-  //}
 
-  //Workbook serologyWorkbook( "dsport r.237" );
-  //serologyWorkbook.AddWorksheet( serologyWorksheet );
-  //serologyWorkbook.SaveToDisk( "DSR 3.0 - Serology.xml" );
+  std::vector<int> initAgeDist = _humanPopulation->GetInitialAgeDistribution();
+  std::vector<float> initAgeProp = _humanPopulation->GetInitialAgeProportions();
+  std::vector<int> ageDist = _humanPopulation->GetAgeDistribution();
+  std::vector<float> ageProp = _humanPopulation->GetAgeProportions();
+
+  std::vector<int> births = _humanPopulation->GetBirthsByClass();
+  std::vector<float> birthPercentages = _humanPopulation->GetBirthPercentagesByClass();
+  std::vector<int> deaths = _humanPopulation->GetDeathsByClass();
+  std::vector<float> deathPercentages = _humanPopulation->GetDeathPercentagesByClass();
+
+  for( int i = 1; i <= 18; ++i ) {
+
+    Worksheet & ws = *demographics;
+    ws << i;
+    ws << initAgeDist[i];
+    ws << initAgeProp[i];
+    ws << births[i];
+    ws << birthPercentages[i];
+    ws << deaths[i];
+    ws << deathPercentages[i];
+    ws << ageDist[i];
+    ws << ageProp[i];
+  }
+
+  Workbook demoWorkbook( "dsport r.237" );
+  demoWorkbook.AddWorksheet( demographics );
+  demoWorkbook.SaveToDisk( "DSR 3.0 - Demographics.xml" );
+
+
+  // create serology worksheet
+  headers.clear();
+  headers.push_back( "Class" );
+  std::stringstream ss;
+  for( int i = 1; i <=4; ++i ) {
+    ss.str("");
+    ss << "Dengue " << i << " Initial Distribution";
+    headers.push_back( ss.str() );
+
+    ss.str("");
+    ss << "Dengue " << i << " Initial Distribution Percentage";
+    headers.push_back( ss.str() );
+  }
+  for( int i = 1; i <=4; ++i ) {
+    ss.str("");
+    ss << "Dengue " << i << " Final Distribution";
+    headers.push_back( ss.str() );
+
+    ss.str("");
+    ss << "Dengue " << i << " Final Distribution Percentage";
+    headers.push_back( ss.str() );
+  }
+
+  Worksheet * serologyWorksheet = new Worksheet( "Serology", headers );
+
+  std::vector<std::vector<int>> initSerDist = _humanPopulation->GetInitialSeroDistribution();
+  std::vector<std::vector<int>> serDist = _humanPopulation->GetSeroDistribution();
+
+  for( int i = 1; i <= 18; ++i ) {
+    *serologyWorksheet << i;
+    for( int j = 1; j <= 4; ++j ) {
+      *serologyWorksheet << initSerDist[i][j];
+      *serologyWorksheet << static_cast<float>( initSerDist[i][j] ) / static_cast<float>( initAgeDist[i] ) * 100;
+    }
+    for( int j = 1; j <= 4; ++j ) {
+      *serologyWorksheet << serDist[i][j];
+      *serologyWorksheet << static_cast<float>( serDist[i][j] ) / static_cast<float>( ageDist[i] ) * 100;
+    }
+  }
+
+  Workbook serologyWorkbook( "dsport r.237" );
+  serologyWorkbook.AddWorksheet( serologyWorksheet );
+  serologyWorkbook.SaveToDisk( "DSR 3.0 - Serology.xml" );
 }

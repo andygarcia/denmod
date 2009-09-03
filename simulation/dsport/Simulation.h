@@ -3,7 +3,7 @@
 
 #include "../input/Location.h"
 #include "../output/DensimOutput.h"
-#include "SimLocation.h"
+#include "dsport.h"
 
 
 
@@ -22,11 +22,10 @@ public:
   void Start(void);
   void Start( boost::gregorian::date startDate, boost::gregorian::date endDate );
 
-  sim::output::DensimOutput * GetSimOutput(void);
-
 // Members
 private:
-  SimLocation * _simLocation;
+  dsport * _dsport;
+  //SimLocation * _simLocation;
 };
 
 };

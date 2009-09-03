@@ -1,11 +1,9 @@
 #include "StdAfx.h"
-#include "Location.h"
 #include "Population.h"
+#include "dsport.h"
 #include <numeric>
 
-using namespace ds::port;
-
-#define INITIAL_POPULATION_SIZE 250000
+using namespace sim::dsport;
 
 
 
@@ -56,66 +54,56 @@ Human::SetSerotypeStatus( int serotype, int status )
 
 
 
-HumanPopulation::HumanPopulation( dsport * dsp, Location * location )
+HumanPopulation::HumanPopulation( dsport * dsp, const input::Location * location )
 : _ageClasses(std::map<int,AgeClass>()),
   _populationSize(0),
-  _initialPopulationSize(INITIAL_POPULATION_SIZE),
-  _humans(HumansByClass(18+1)),
-
+  _humans(HumansByClass(18+1,HumanCollection())),
   _ageDistribution(std::vector<int>(18+1,0)),
   _initialAgeDistribution(std::vector<int>(18+1,0)),
   _cumulativeDeaths(std::vector<float>(18+1, 0)),
   _cumulativeBirths(std::vector<float>(18+1, 0)),
   _totalDeaths(std::vector<int>(18+1, 0)),
   _totalBirths(std::vector<int>(18+1, 0)),
-
-  _initialSeroprevalence(location->SerProp),
+  _initialSeroprevalence(std::vector<std::vector<float>>(18+1,std::vector<float>(4+1))),
   _classSpecificSeroprevalence(ClassSpecificSeroprevalence()),
   _seroDistribution(std::vector<std::vector<int>>(18+1,std::vector<int>(4+1))),
   _initialSeroDistribution(std::vector<std::vector<int>>(18+1,std::vector<int>(4+1))),
-
   _incubating(std::vector<std::vector<int>>(18+1, std::vector<int>(4+1, 0))),
   _infective(std::vector<std::vector<int>>(18+1, std::vector<int>(4+1, 0))),
   _homologousImmunity(std::vector<std::vector<int>>(18+1, std::vector<int>(4+1, 0) )),
   _heterologousImmunity(std::vector<std::vector<int>>(18+1, std::vector<int>(4+1, 0))),
   _maternalAntibodies(std::vector<MaternalAntibodies>(4+1)),
-
-  _neutralizingDuration(location->MANADurat),
-  _enhancingDuration(location->MAEADurat),
-  _heterologousImmunityDuration(location->HetImmunDurat),
-
-  _virus(location->Virus),
-
   _totalIncubating(std::vector<int>(4+1, 0)),
   _newInfective(std::vector<int>(4+1, 0)),
   _totalInfective(std::vector<int>(4+1, 0)),
   _totalHomologousImmunity(std::vector<int>(4+1, 0)),
   _totalHeterologousImmunity(std::vector<int>(4+1, 0)),
-
-  _maternalSequentialParameters(location->MAEAInfPrms),
-  _sequentialParameters(location->SeqInfPrms),
   _cumulativeHfDeaths(std::vector<float>(15+1, 0)),
   _dsp(dsp)
 {
-  // initialize age classes data
-  InitializeAgeClasses();
-  InitializeDemographics( location->PopProp );
+  // demographics
+  _demographics = location->Demographics_;
 
-  // find threshld age/class for maternal antibodies
-  _thresholdAge = _neutralizingDuration + _enhancingDuration;
-  _thresholdClass = GetAgeClassFromAge( _thresholdAge );
-  if( _thresholdAge == _ageClasses[_thresholdClass].LastDay ) {
-    _thresholdClass++;
-  }
-
-  // create population age class structure
+  // serology
   for( int i = 1; i <= 18; ++i ) {
-    _humans[i] = HumanCollection();
+    _initialSeroprevalence[i][1] = location->Serology_->SerologyData_[i-1].Dengue1_;
+    _initialSeroprevalence[i][2] = location->Serology_->SerologyData_[i-1].Dengue2_;
+    _initialSeroprevalence[i][3] = location->Serology_->SerologyData_[i-1].Dengue3_;
+    _initialSeroprevalence[i][4] = location->Serology_->SerologyData_[i-1].Dengue4_;
   }
+  _neutralizingDuration = location->Serology_->ManaDuration_;
+  _enhancingDuration = location->Serology_->MaeaDuration_;
+  _heterologousImmunityDuration = location->Serology_->HetDuration_;
 
-  // initialize population and seroprevalence
-  InitializePopulation();
-  InitializeSeroprevalence();
+  // virology
+  _virology = location->Virology_;
+
+  // sequential infections
+  _sequentialInfections = location->SequentialInfections_;
+
+
+  // completed processing parameters, now do initialization
+  Initialize();
 }
 
 
@@ -123,6 +111,26 @@ HumanPopulation::HumanPopulation( dsport * dsp, Location * location )
 HumanPopulation::~HumanPopulation(void)
 {}
 
+
+
+void
+HumanPopulation::Initialize(void)
+{
+  // initialize age class data
+  InitializeAgeClasses();
+  InitializeDemographics();
+
+  // find threshold age and class for purging maternal antibodies
+  _thresholdAge = _neutralizingDuration + _enhancingDuration;
+  _thresholdClass = GetAgeClassFromAge( _thresholdAge );
+  if( _thresholdAge == _ageClasses[_thresholdClass].LastDay ) {
+    _thresholdClass++;
+  }
+
+  // initialize population and seroprevalence
+  InitializePopulation();
+  InitializeSeroprevalence();
+}
 
 
 int
@@ -137,7 +145,6 @@ HumanPopulation::GetPopulationSize(void)
 
   return populationSize;
 }
-
 
 
 
@@ -486,18 +493,9 @@ HumanPopulation::GetAgeClassFromAge( int age )
 void
 HumanPopulation::PurgeMaternalAntibodies(void)
 {
-  int thresholdAge = _neutralizingDuration + _enhancingDuration;
-
-  // find what class threshold age lies in
-  static int thresholdClass = GetAgeClassFromAge( thresholdAge );
-  
-  if( thresholdAge == _ageClasses[thresholdClass].LastDay ) {
-    thresholdClass++;
-  }
-
   // search threshold class for individual who have exceeded threshold age
-  for( HumanCollection::iterator itHum = _humans[thresholdClass].begin(); itHum != _humans[thresholdClass].end(); ++itHum ) {
-    if( itHum->Age >= thresholdAge ) {
+  for( HumanCollection::iterator itHum = _humans[_thresholdClass].begin(); itHum != _humans[_thresholdClass].end(); ++itHum ) {
+    if( itHum->Age >= _thresholdAge ) {
       // individual older than threshold age have exceeded nuetralizing + enhancing period
       // clear any existing maternally acquired immunities
       for( int i = 1; i <= 4; ++i ) {
@@ -512,18 +510,21 @@ HumanPopulation::PurgeMaternalAntibodies(void)
 
 
 void
-HumanPopulation::IntroduceInfectedHuman( int serotype )
+HumanPopulation::IntroduceInfectedHuman( unsigned int serotype )
 {
   // increase current population size by one
   _populationSize++;
 
+  // pull data for this serotype
+  input::VirusSerotype & virus = _virology->GetSerotype( serotype );
+
   // randomly select age of new infected human and determine age class
-  int age = _dsp->INT( (_ageClasses[18].LastDay - (_virus[serotype].Incub + 1) + 1) * _dsp->RND("InitInfectives") + (_virus[serotype].Incub + 1) );
+  int age = _dsp->INT( (_ageClasses[18].LastDay - (virus.IncubationDuration_ + 1) + 1) * _dsp->RND("InitInfectives") + (virus.IncubationDuration_ + 1) );
   int ageClass = GetAgeClassFromAge( age );
 
   // create human and mark as infected
   Human newInfected = Human(age);
-  newInfected.Dengue[serotype] = age - _virus[serotype].Incub;
+  newInfected.Dengue[serotype] = age - virus.IncubationDuration_;
 
   // insert into age class
   _humans[ageClass].push_back( newInfected );
@@ -533,7 +534,7 @@ HumanPopulation::IntroduceInfectedHuman( int serotype )
 
 
 void
-HumanPopulation::InnoculateRandomHuman( int serotype )
+HumanPopulation::InnoculateRandomHuman( unsigned int serotype )
 {
   // randomly select individual for new innoculation
   Human & human = SelectHuman();
@@ -638,6 +639,9 @@ HumanPopulation::RankSerology( HumanCollection::iterator itHum, int ageClass )
   //             >0 inoculation day
 
   for( int i = 1; i <= 4; ++i ) {
+    // pull data for this serotype
+    input::VirusSerotype & virus = _virology->GetSerotype( i );
+
     if( itHum->Dengue[i] != 0 ) {
       // show seropositive status
       _seroDistribution[ageClass][i]++;
@@ -667,23 +671,23 @@ HumanPopulation::RankSerology( HumanCollection::iterator itHum, int ageClass )
         int daysSinceInfection = itHum->Age - itHum->Dengue[i];
 
         // incubation phase
-        if( daysSinceInfection < _virus[i].Incub ) {
+        if( daysSinceInfection < virus.IncubationDuration_ ) {
           _incubating[ageClass][i]++;
           _totalIncubating[i]++;
         }
 
         // viremic phase (infective)
-        else if( daysSinceInfection < _virus[i].Durat + _virus[i].Incub ) {
+        else if( daysSinceInfection < virus.ViremicDuration_ + virus.IncubationDuration_ ) {
           _infective[ageClass][i]++;
           _totalInfective[i]++;
           
           // newly infective
-          if( daysSinceInfection == _virus[i].Incub ) {
+          if( daysSinceInfection == virus.IncubationDuration_ ) {
             _newInfective[i]++;
           }
 
           // latter half of viremic phase, check for HF/SS
-          if( daysSinceInfection > _virus[i].Incub + (_virus[i].Durat / 2) ) {
+          if( daysSinceInfection > virus.IncubationDuration_ + (virus.ViremicDuration_ / 2) ) {
             CheckSequentialInfection( i, itHum );
           }
         }
@@ -691,7 +695,7 @@ HumanPopulation::RankSerology( HumanCollection::iterator itHum, int ageClass )
         // past viremic phase
         else {
           // heterologous immunity
-          if( daysSinceInfection < _heterologousImmunityDuration + _virus[i].Durat + _virus[i].Incub ) {
+          if( daysSinceInfection < _heterologousImmunityDuration + virus.ViremicDuration_ + virus.IncubationDuration_ ) {
             _heterologousImmunity[ageClass][i]++;
             _totalHeterologousImmunity[i]++;
           }
@@ -723,18 +727,21 @@ HumanPopulation::CheckSequentialInfection( int serotype, HumanCollection::iterat
     // the MAEA check is skipped
     // this means that a child with enhancing isn't at risk for the second secondary infection
 
-    if( i != serotype ) { // sequential infection needs a different serotype
-      // possible sequential infection
+    if( i != serotype ) {
       if( itHum->Dengue[i] > 0 ) {
         previousSerotypeInoculation = true;
-        if( itHum->Age < (_sequentialParameters[serotype].CutOff * 365) + 365 ) {
+
+        // possible sequential infection first = i, second = serotype
+        input::SequentialInfection * si = _sequentialInfections->GetSequentialInfection( i, serotype );
+
+        if( itHum->Age < (si->AtRiskCutoffAge_ * 365) + 365 ) {
           int elapsedDays = itHum->Dengue[serotype] - itHum->Dengue[i];
-          if( elapsedDays > (_sequentialParameters[serotype].Min * 30) && elapsedDays < (_sequentialParameters[serotype].Max * 30) ) {
+          if( elapsedDays > (si->MinMonths_ * 30) && elapsedDays < (si->MaxMonths_ * 30) ) {
             // sequential infection falls before cutoff and within window
-            _dailySequentialInfections[serotype][i] = _dailySequentialInfections[serotype][i] + (1 * _sequentialParameters[serotype].Prob);
+            _dailySequentialInfections[serotype][i] += (1 * si->Probability_);
             
             // possible death
-            if( _sequentialParameters[serotype].Prob * _sequentialParameters[serotype].Mortality > _dsp->RND("CalcSeqInfs") ) {
+            if( si->Probability_ * si->Mortality_ > _dsp->RND("CalcSeqInfs") ) {
               TabulateHfDeath( itHum->Age );
               itHum->Age = -999;
               return;
@@ -751,11 +758,13 @@ HumanPopulation::CheckSequentialInfection( int serotype, HumanCollection::iterat
     return;
   }
 
-  // possible sequential infection from maternally acquired enhancing antibodies
   if( itHum->Age < _neutralizingDuration + _enhancingDuration ) {
+    // possible sequential infection from maternally acquired enhancing antibodies
+    input::SequentialInfection * msi = _sequentialInfections->GetMaeaSequentialInfection( serotype );
+
     // human is viremic and enhancing
-    _dailySequentialInfections[Maternal][serotype] = _dailySequentialInfections[Maternal][serotype] + (1 * _maternalSequentialParameters[serotype].Prob);
-    if( _maternalSequentialParameters[serotype].Prob * _maternalSequentialParameters[serotype].Mortality > _dsp->RND("CalcSeqInfs") ) {
+    _dailySequentialInfections[Maternal][serotype] += (1 * msi->Probability_);
+    if( msi->Probability_ * msi->Mortality_ > _dsp->RND("CalcSeqInfs") ) {
       // individual dies
       TabulateHfDeath( itHum->Age );
       itHum->Age = -999;
@@ -870,12 +879,12 @@ HumanPopulation::InitializeAgeClasses(void)
 
 
 void
-HumanPopulation::InitializeDemographics( std::vector<HumanDemo> & populationProportions )
+HumanPopulation::InitializeDemographics(void)
 {
   for( int i = 1; i <= 18; ++i ) {
-    _ageClasses[i].Proportion = populationProportions[i].Prop;
-    _ageClasses[i].YearlyBirthRate = populationProportions[i].BRate;
-    _ageClasses[i].YearlyDeathRate = populationProportions[i].DRate;
+    _ageClasses[i].Proportion = _demographics->DemographicData[i-1].Proportion;
+    _ageClasses[i].YearlyBirthRate = _demographics->DemographicData[i-1].BirthRate;
+    _ageClasses[i].YearlyDeathRate = _demographics->DemographicData[i-1].DeathRate;
   }
 }
 
@@ -884,6 +893,7 @@ HumanPopulation::InitializeDemographics( std::vector<HumanDemo> & populationProp
 void
 HumanPopulation::InitializePopulation(void)
 {
+  _initialPopulationSize = _demographics->InitialPopulationSize;
   _populationSize = 0;
 
   for( int i = 18; i >= 1; --i ) {

@@ -1,5 +1,5 @@
-#ifndef POPULATION_H
-#define POPULATION_H
+#ifndef DSPORT_POPULATION_H
+#define DSPORT_POPULATION_H
 
 #include <algorithm>
 #include <deque>
@@ -8,14 +8,18 @@
 #include <string>
 #include <vector>
 #include "SimConstants.h"
+#include "../input/Location.h"
 
 
 
-namespace ds {
-namespace port {
-
+namespace sim {
+namespace dsport {
 
 class dsport;
+class MAEAInfectionParms;
+class SequentialInfectionParms;
+
+
 
 class AgeClass
 {
@@ -80,11 +84,13 @@ public:
 
 // Constructors
 public:
-  HumanPopulation( dsport * dsport, Location * location );
+  HumanPopulation( dsport * dsport, const input::Location * location );
   virtual ~HumanPopulation(void);
 
 // Methods
 public:
+  void Initialize(void);
+
   int GetInitialPopulationSize(void);
   int GetPopulationSize(void);
 
@@ -106,8 +112,8 @@ public:
   void AgePopulation(void);
   void PurgeMaternalAntibodies(void);
 
-  void IntroduceInfectedHuman( int serotype );
-  void InnoculateRandomHuman( int serotype );
+  void IntroduceInfectedHuman( unsigned int serotype );
+  void InnoculateRandomHuman( unsigned int serotype );
 
   void RankPopulation(void);
   void RankSerology( HumanCollection::iterator itIndiv, int ageClass );
@@ -128,18 +134,23 @@ public:
 private:
   dsport * _dsp;
   void InitializeAgeClasses(void);
-  void InitializeDemographics( std::vector<HumanDemo> & populationProportions );
+  void InitializeDemographics(void);
 
   void InitializePopulation(void);
   void InitializeSeroprevalence(void);
 
 // Members
 private:
+  // parameters
+  input::Demographics * _demographics;
+  input::Virology * _virology;
+  input::SequentialInfections * _sequentialInfections;
+
+  // state
   std::map<int,AgeClass> _ageClasses;
 
   unsigned int _initialPopulationSize;
   unsigned int _populationSize;
-  //HumanCollection _humans;
   HumansByClass _humans;
 
   std::vector<int> _initialAgeDistribution;
@@ -163,15 +174,12 @@ private:
 
   std::vector<MaternalAntibodies> _maternalAntibodies;
 
-  int _neutralizingDuration;
-  int _enhancingDuration;
-
-  int _thresholdAge;
-  int _thresholdClass;
-
   int _heterologousImmunityDuration;
 
-  std::vector<VirusDesc> & _virus;
+  int _neutralizingDuration;
+  int _enhancingDuration;
+  int _thresholdAge;
+  int _thresholdClass;
 
   std::vector<int> _totalIncubating;
   std::vector<int> _newInfective;
@@ -179,14 +187,9 @@ private:
   std::vector<int> _totalHomologousImmunity;
   std::vector<int> _totalHeterologousImmunity;
 
-  std::vector<MAEAInfectionParms> _maternalSequentialParameters;
-  std::vector<SequentialInfectionParms> _sequentialParameters;
-
   DailySequentialInfections _dailySequentialInfections;
 
   std::vector<float> _cumulativeHfDeaths;
-
-  DebugOutput _dailyDebugOutput;
 };
 
 };

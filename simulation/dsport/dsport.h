@@ -25,27 +25,6 @@ class HumanPopulation;
 
 
 
-class MAEAInfectionParms
-{
-public:
-  float Prob;                  // probability of HF/SS
-  float Mortality;             // associated mortality
-};
-
-
-
-class SequentialInfectionParms
-{
-public:
-  int Min;                  // infection window - minimum months from primary infection
-  int Max;                  // infection window - maximum months from primary infection
-  float Prob;               // probability of HF
-  float CutOff;             // at-risk cutoff age
-  float Mortality;          // associated mortality
-};
-
-
-
 class SequentialInfectionValues
 {
 public:
@@ -104,51 +83,29 @@ public:
 class DebugOutput
 {
 public:
-  // CalcDeaths()
   float CalcDeathsArraySize;
-
-  // CalcBirths()
   float CalcBirthsArraySize;
-
-  // InitInfectives()
   float InitInfectivesArraySize;
-
-  // MosquitoLifeCycle()
   float DMealProp;
-
   float EggersNew;
   float BitersNew;
-
   float EggersOld;
   float BitersOld;
-
   float EIPTranNew[4+1];
   float BitersInfdNewDB[4+1];
-
   float EIPTranOld[4+1];
   float BitersInfdOldDB[4+1];
-
   float BitersInfd[4+1];
-
   float EggersInfv[4+1];
   float BitersInfv[4+1];
-
   float BitersTotal;
-
   float MosqTotal;
   float MosqInfvTotal[4+1];
-
-  // HumanToMosquitoTransmission()
   float BitesPerPerson;
-
-  // CalcNewInocMosquitoes()
   float MosqInocEstimate[4+1];
   float NewDlyMosqInoc[4+1];
   float NewInfd[4+1];
   float OldInfd[4+1];
-
-  // MosquitoToHumanTransmission()
-  // CalcNewInocHumans()
   float HumInocEstimate[4+1];
   float NewDlyHumInoc[4+1];
 };
@@ -184,17 +141,6 @@ typedef std::vector<DailyLocationOutput> LocationOutput;
 
 
 
-class CimSimOutDescription
-{
-public:
-  float NewDlyFemales;          // New dly adults/ha
-  float AvgDlyWeight;           // moving average of adult weight
-  float OverallSurv;            // survival from environment and controls - don't apply to NewDlyFemales
-  float AdultDev;               // daily adult development
-};
-
-
-
 enum Serotype
 {
   D1 = 1,
@@ -210,7 +156,7 @@ class dsport
 {
 // Constructors
 public:
-  dsport( const input::Location * location );
+  dsport( const input::Location * location, sim::output::MosData * mosData );
   virtual ~dsport(void);
 
 // Methods
@@ -238,7 +184,7 @@ public:
   void WriteOutput(void);
 
 public:
-  input::InfectionIntroduction * _infectionIntroduction;
+  const input::Location * _location;
   input::Weather * _weather;
   output::MosData * _mosData;
 
@@ -263,8 +209,8 @@ public:
 
 
   float _averageAirTemperature;
-  output::DailyMosData & _dailyMosData;
-  output::DailyMosData & _yesterdayMosData;
+  output::DailyMosData _dailyMosData;
+  output::DailyMosData _yesterdayMosData;
 
   std::vector<float> EIPFactor;
 
@@ -284,8 +230,6 @@ public:
 
   std::vector<std::vector<float>> MosqInfv;            // Infective mosquitoes
   std::vector<std::vector<float>> MosqInfvCD;          // Gonotrophic Development
-
-  std::vector<CimSimOutDescription> CimSimData;
 
   // probability human to mosquito infection
   float HumToMosLTiter;           // Low titer
