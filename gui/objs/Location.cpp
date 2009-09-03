@@ -298,9 +298,6 @@ Location::RunCimsim( bool usePop, bool stochasticAdvancement, DateTime startDate
     delete cssim;
     delete cso;
   }
-
-  // temp output of mst files
-  MosData_->WriteMstFiles();
 }
 
 
@@ -503,17 +500,24 @@ Location::RunDensim( DateTime startDate, DateTime stopDate )
   boost::gregorian::date bStartDate = boost::gregorian::date( startYear, 1, 1 );
   boost::gregorian::date bStopDate = boost::gregorian::date( stopYear, 12, 31 );
 
-  sim::ds::Simulation * dssim = new sim::ds::Simulation( loc, MosData_ );
-  dssim->Start( bStartDate, bStopDate );
-  _isDensimCompleted = true;
+  //sim::ds::Simulation * dssim = new sim::ds::Simulation( loc, MosData_ );
+  //dssim->Start( bStartDate, bStopDate );
+  //_isDensimCompleted = true;
 
-  // simulation complete, process output for use by gui
-  sim::output::DensimOutput * dd = dssim->GetSimOutput();
-  DensimOutput_ = ProcessDensimOutput( dd, startDate, stopDate );
+  //// simulation complete, process output for use by gui
+  //sim::output::DensimOutput * dd = dssim->GetSimOutput();
+  //DensimOutput_ = ProcessDensimOutput( dd, startDate, stopDate );
 
-  delete loc;     // delete input object (no longer needed, regenerated on next run)
-  delete dssim;   // delete sim and its output (now processed into managed data)
+  //delete loc;     // delete input object (no longer needed, regenerated on next run)
+  //delete dssim;   // delete sim and its output (now processed into managed data)
+
+  sim::dsport::Simulation * dsp = new sim::dsport::Simulation( loc, MosData_ );
+  dsp->Start( bStartDate, bStopDate );
+
+  delete loc;
+  delete dsp;
 }
+
 
 
 array<double> ^

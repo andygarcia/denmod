@@ -399,12 +399,26 @@ bool WeatherData::IsWeatherYearAvailable( int year )
 
 
 
+WeatherYear ^
+WeatherData::GetWeatherYear( int year )
+{
+  for each( WeatherYear ^ wy in Years_ ) {
+    if( wy->Index == year ) {
+      return wy;
+    }
+  }
+
+  throw gcnew System::ArgumentOutOfRangeException( "year" );
+}
+
+
+
 void
 WeatherData::AddWeatherYear( WeatherYear ^ wy )
 {
   Years_->Add( wy );
+
   NotifyPropertyChanged( "IsWeatherAvailable" );
-  NotifyPropertyChanged( "Years" );
   NotifyPropertyChanged( "MinDate" );
   NotifyPropertyChanged( "MaxDate" );
 }
@@ -422,7 +436,6 @@ WeatherData::RemoveWeatherYear( int year )
   }
 
   NotifyPropertyChanged( "IsWeatherAvailable" );
-  NotifyPropertyChanged( "Years" );
   NotifyPropertyChanged( "MinDate" );
   NotifyPropertyChanged( "MaxDate" );
 }
@@ -436,7 +449,7 @@ WeatherData::IsWeatherDataContiguous(void)
   int lastYear = this->MaxDate.Year;
 
   for( int i = firstYear + 1; i < lastYear; ++i ) {
-    if( IsWeatherYearAvailable( i ) == false ) {
+    if( !IsWeatherYearAvailable(i) ) {
       return false;
     }
   }
@@ -468,7 +481,7 @@ WeatherData::GetMissingWeatherYears(void)
 WeatherDay ^
 WeatherData::GetWeather( DateTime dt )
 {
-  WeatherYear ^ wy = Years_[dt.Year];
+  WeatherYear ^ wy = GetWeatherYear( dt.Year );
   WeatherDay ^ wd = wy->Days[dt.DayOfYear-1];
 
   return wd;
@@ -688,9 +701,9 @@ WeatherData::Years::get(void)
 
 
 void
-WeatherData::Years::set( BindingList<WeatherYear^> ^ d )
+WeatherData::Years::set( BindingList<WeatherYear^> ^ bl )
 {
-  Years_ = d;
+  Years_ = bl;
   NotifyPropertyChanged( "Years" );
   NotifyPropertyChanged( "MinDate" );
   NotifyPropertyChanged( "MaxDate" );
@@ -701,7 +714,7 @@ WeatherData::Years::set( BindingList<WeatherYear^> ^ d )
 DateTime WeatherData::MinDate::get(void)
 {
   if( Years_->Count == 0 ) {
-    return DateTime::MinValue;
+    return Windows::Forms::DateTimePicker::MinimumDateTime;
   }
   else {
     DateTime minDate = DateTime::MaxValue;
@@ -720,7 +733,7 @@ DateTime WeatherData::MinDate::get(void)
 DateTime WeatherData::MaxDate::get(void)
 {
   if( Years_->Count == 0 ) {
-    return DateTime::MaxValue;
+    return Windows::Forms::DateTimePicker::MaximumDateTime;
   }
   else {
     DateTime maxDate = DateTime::MinValue;

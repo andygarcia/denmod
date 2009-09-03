@@ -40,12 +40,14 @@ ref class YearlySchedule;
 ref class PeriodicSchedule;
 
 
+
 [XmlInclude(SingleSchedule::typeid)]
 [XmlInclude(WeeklySchedule::typeid)]
 [XmlInclude(MonthlySchedule::typeid)]
 [XmlInclude(YearlySchedule::typeid)]
 [XmlInclude(PeriodicSchedule::typeid)]
-public ref class Schedule abstract : public NotifyValidateEditBase {
+public ref class Schedule abstract : public NotifyValidateEditBase
+{
 public:
   enum class ScheduleTypes { Single = 0, Weekly, Monthly, Yearly, Periodic };
 

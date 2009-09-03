@@ -177,16 +177,12 @@
 			AssemblyName="System.Xml, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 		/>
 		<AssemblyReference
-			RelativePath="c:\Program Files\Dundas Software\Charting\WinControlVS2005\bin\DundasWinChart.dll"
+			RelativePath="..\..\..\..\..\..\..\..\..\Program Files\Dundas Software\Charting\WinControlVS2005\bin\DundasWinChart.dll"
 			AssemblyName="DundasWinChart, Version=5.5.1.1700, PublicKeyToken=a4c03dce5db22406, processorArchitecture=MSIL"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{3181D845-C5F4-46CA-9370-E40A376A9DC4}"
 			RelativePathToProject=".\simulation\cimsim\cimsim.vcproj"
-		/>
-		<ProjectReference
-			ReferencedProjectIdentifier="{00E7FE9D-5BE6-44C7-AF50-65C84482CEB4}"
-			RelativePathToProject=".\simulation\densim\densim.vcproj"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{D83788CB-CAE8-4537-B69B-65C06CC594E8}"

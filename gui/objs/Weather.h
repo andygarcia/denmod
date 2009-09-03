@@ -313,6 +313,7 @@ public:
 
   void AddWeatherYear( WeatherYear ^ wy );
   bool IsWeatherYearAvailable( int year );
+  WeatherYear ^ GetWeatherYear( int year );
   WeatherDay ^ GetWeather( DateTime dt );
   void RemoveWeatherYear( int year );
 
@@ -325,14 +326,6 @@ public:
   property BindingList<WeatherYear^> ^ Years {
     BindingList<WeatherYear^> ^ get(void);
     void set( BindingList<WeatherYear^> ^ bl );
-  }
-
-  [XmlIgnore]
-  property WeatherYear ^ default[int]
-  {
-    WeatherYear ^ get(int yearIndex) {
-      return Years_[yearIndex];
-    }
   }
 
   [XmlIgnore]
