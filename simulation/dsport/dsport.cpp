@@ -629,12 +629,10 @@ void
 dsport::InoculateMosquitoes( int iType )
 {
   int r;                    // for poisson distribution
-  float InocEstimate;       // Number of mosq to be infected
+  float InocEstimate;       // number of mosquitoes to be infected
   int NewDlyMosqInoc;       // actual number of new infected mosq. (differs due to/if stochastic routines enabled)
-  //int OldInfd;              // new infected from old susceptible
-  int OldInfd = 0;              // new infected from old susceptible
-  //int NewInfd;              // new infected from new susceptible
-  int NewInfd = 0;              // new infected from new susceptible
+  int OldInfd = 0;          // new infected from old susceptible
+  int NewInfd = 0;          // new infected from new susceptible
 
   // calculate probability of infection and  estimate newly inoculated mosquitoes
   // Viremia is in scientific notation and Titers are in logs
