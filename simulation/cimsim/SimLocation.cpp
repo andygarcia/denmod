@@ -23,8 +23,7 @@ SimLocation::SimLocation( const input::Location * location, boost::gregorian::da
   _oviBiters(0)
 {
 #ifdef _DEBUG
-  // leave whatever seed has been in use until now
-  //srand(1);
+  srand( 0 );
 #else
   srand( time(NULL) );
 #endif

@@ -18,7 +18,6 @@ using namespace sim::dsport;
 dsport::dsport( const input::Location * location, sim::output::MosData * mosData )
 : _location(location),
   _mosData(mosData),
-  _pdsRng(0),
   GasCoef(1.987f),
   Virus(std::vector<VirusDesc>( 4+1 )),
   EIPFactor(std::vector<float>( 4+1, 0 )),
@@ -40,6 +39,13 @@ dsport::dsport( const input::Location * location, sim::output::MosData * mosData
   EIPDevRate(std::vector<float>( 4+1, 0 )),
   MosqInfvTotal(std::vector<float>( 4+1, 0 ))
 {
+  // initialize random number generator
+#ifdef _DEBUG
+  _pdsRng = PdsRng(0);
+#else
+  _pdsRng = PdsRng( time(NULL) );
+#endif
+
   // initialize human population
   _humanPopulation = new HumanPopulation( this, _location );
   
@@ -96,16 +102,16 @@ dsport::dsport( const input::Location * location, sim::output::MosData * mosData
   this->DBloodUWt = _location->Biology_->Adult->DoubleBloodMeal->HighWeightLimit;
   this->DBloodUProp = _location->Biology_->Adult->DoubleBloodMeal->HighWeightRatio;
 
-  // TODO fix initial scale factor from ds 1.0
-  //double initialArea = InitialPopSize / HumHostDensity;
+  // initialize mosquito population
+  double initialArea = _humanPopulation->GetInitialPopulationSize() / HumHostDensity;
   for( sim::cs::PreOviAdultCohortCollection::iterator itAdult = _mosData->PreOviAdultCohorts.begin();
        itAdult != _mosData->PreOviAdultCohorts.end(); ++itAdult ) {
-    NewMosqSusc[itAdult->Age] = itAdult->Number;
+    NewMosqSusc[itAdult->Age] = itAdult->Number * initialArea;
     NewMosqSuscCD[itAdult->Age] = itAdult->Development;
   }
   for( sim::cs::OviAdultCohortCollection::iterator itAdult = _mosData->OviAdultCohorts.begin();
        itAdult != _mosData->OviAdultCohorts.end(); ++itAdult ) {
-    OldMosqSusc[itAdult->Age] = itAdult->Number;
+    OldMosqSusc[itAdult->Age] = itAdult->Number * initialArea;
     OldMosqSuscCD[itAdult->Age] = itAdult->Development;
   }
 
@@ -160,7 +166,7 @@ dsport::denmain(void)
   boost::gregorian::date lastDayCurrentYear = boost::gregorian::date( _startDate.year(), 12, 31 );
   _dailyMosData = _mosData->GetMosData( lastDayCurrentYear );
 
-  for( _currentDate = _startDate; _currentDate != _stopDate; _currentDate = _currentDate + boost::gregorian::days(1) ) {
+  for( _currentDate = _startDate; _currentDate <= _stopDate; _currentDate = _currentDate + boost::gregorian::days(1) ) {
     
     // read today's average air temperature
     _averageAirTemperature = _location->Weather_->GetWeatherForYear(_currentDate.year())->GetDay(_currentDate.day_of_year())->AvgTemp_;
