@@ -3,7 +3,7 @@
 
 #include <map>
 #include <boost/date_time/gregorian/gregorian.hpp>
-#include "../densim/SimClasses.h"
+#include "../dsport/dsport.h"
 
 
 
@@ -12,6 +12,7 @@ namespace output {
 
 class DensimOutput
 {
+// Classes
 public:
   class DailyLocationOutput
   {
@@ -31,7 +32,7 @@ public:
     int NumHumans;                                      // number of humans
     double SerPos[23+1][4+1];                           // percent of indiv. in age class that are seropositive
     double NewHumCases[4+1];                            // number of new human cases/day/serotype
-    sim::ds::SequentialInfectionValues SeqInfVals;      // daily sequential value statistics
+    sim::dsport::SequentialInfectionValues SeqInfVals;      // daily sequential value statistics
   };
 
 
@@ -44,15 +45,19 @@ public:
     double EipDevelopmentRate;
     double NewCases;
   };
-public:
-  typedef std::map<boost::gregorian::date, DailyLocationOutput> LocationOutput;
-  typedef std::map<boost::gregorian::date, DailySerotypeOutput> SerotypeOutput;
-  typedef std::map<int, SerotypeOutput> SerotypeOutputs;
 
+// Typedefs
+public:
+  typedef std::vector<DailyLocationOutput> LocationOutput;
+  typedef std::vector<DailySerotypeOutput> SerotypeOutput;
+  typedef std::vector<SerotypeOutput> SerotypeOutputs;
+
+// Constructors
 public:
   DensimOutput( boost::gregorian::date startDate, boost::gregorian::date stopDate );
   ~DensimOutput(void);
 
+// Methods
 public:
   boost::gregorian::date_period GetDateRange(void);
   void AddDailyLocationOutput( DailyLocationOutput dlo, boost::gregorian::date d );
@@ -63,8 +68,6 @@ public:
                      std::vector<int> & deaths,
                      std::vector<std::vector<int>> & finalSeroDistribution );
 
-
-public:
   std::vector<int> GetInitialAgeDistribution(void);
   std::vector<int> GetFinalAgeDistribution(void);
   std::vector<int> GetBirths(void);
@@ -83,6 +86,7 @@ public:
   std::vector<double> GetEipDevelopmentRate( int serotype );
   std::vector<double> GetInfectiveMosquitoes( int serotype );
 
+// Members
 private:
   boost::gregorian::date _startDate;
   boost::gregorian::date _stopDate;
