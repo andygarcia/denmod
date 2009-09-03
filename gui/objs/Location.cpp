@@ -500,19 +500,14 @@ Location::RunDensim( DateTime startDate, DateTime stopDate )
   boost::gregorian::date bStartDate = boost::gregorian::date( startYear, 1, 1 );
   boost::gregorian::date bStopDate = boost::gregorian::date( stopYear, 12, 31 );
 
-  //sim::ds::Simulation * dssim = new sim::ds::Simulation( loc, MosData_ );
-  //dssim->Start( bStartDate, bStopDate );
-  //_isDensimCompleted = true;
-
-  //// simulation complete, process output for use by gui
-  //sim::output::DensimOutput * dd = dssim->GetSimOutput();
-  //DensimOutput_ = ProcessDensimOutput( dd, startDate, stopDate );
-
-  //delete loc;     // delete input object (no longer needed, regenerated on next run)
-  //delete dssim;   // delete sim and its output (now processed into managed data)
-
+  // create and run simulation
   sim::dsport::Simulation * dsp = new sim::dsport::Simulation( loc, MosData_ );
   dsp->Start( bStartDate, bStopDate );
+  _isDensimCompleted = true;
+
+  // simulation complete, process output for use by gui
+  sim::output::DensimOutput * dso = dsp->GetDensimOutput();
+  DensimOutput_ = ProcessDensimOutput( dso, startDate, stopDate );
 
   delete loc;
   delete dsp;
@@ -537,12 +532,8 @@ DoubleArrayFromIntVector( std::vector<int> & vector )
 output::DensimOutput ^
 Location::ProcessDensimOutput( sim::output::DensimOutput * udo, DateTime startDate, DateTime stopDate )
 {
-  // managed cimsim output
+  // create managed densim output
   output::DensimOutput ^ mdo = gcnew output::DensimOutput( Name_, Demographics_->HumanHostDensity, startDate, stopDate );
-
-  // get dates in boost format
-  boost::gregorian::date bStartDate = boost::gregorian::date( startDate.Year, startDate.Month, startDate.Day );
-  boost::gregorian::date bStopDate = boost::gregorian::date( stopDate.Year, stopDate.Month, stopDate.Day );
 
   // copy data
   mdo->InitialAgeDistribution = DoubleArrayFromIntVector( udo->GetInitialAgeDistribution() );
