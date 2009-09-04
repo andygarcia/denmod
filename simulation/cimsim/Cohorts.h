@@ -9,7 +9,6 @@
 namespace sim {
 namespace cs {
 
-
 class EggCohort
 {
 public:

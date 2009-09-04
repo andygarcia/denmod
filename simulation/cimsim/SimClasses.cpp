@@ -35,7 +35,7 @@ int StochasticAdvancement( int number, double advancementFactor )
   if( advancementFactor == 1.0 ) {
     return number;
   }
-    
+
   // create binomial distribution
   boost::math::binomial bindist( number, advancementFactor );
 
