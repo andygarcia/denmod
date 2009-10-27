@@ -138,7 +138,8 @@ private: ctrl::ScientificNotationTextBox^  snboxSunExp;
 
 
 private: ctrl::ScientificNotationTextBox^  snboxInitEggs;
-private: System::Windows::Forms::ErrorProvider^  errproContainer;
+private: System::Windows::Forms::ErrorProvider^  errProContainer;
+
 private: ctrl::ScientificNotationTextBox^  snboxWatershed;
 private: ctrl::ScientificNotationTextBox^  snboxHeight;
 private: ctrl::ScientificNotationTextBox^  snboxWidth;
@@ -270,7 +271,7 @@ private: System::ComponentModel::IContainer^  components;
       this->lblInitFoot = (gcnew System::Windows::Forms::Label());
       this->btnCancel = (gcnew System::Windows::Forms::Button());
       this->btnOk = (gcnew System::Windows::Forms::Button());
-      this->errproContainer = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errProContainer = (gcnew System::Windows::Forms::ErrorProvider(this->components));
       this->snboxDensity = (gcnew ctrl::ScientificNotationTextBox());
       this->chkClone = (gcnew System::Windows::Forms::CheckBox());
       this->snboxNumberOfClones = (gcnew ctrl::ScientificNotationTextBox());
@@ -279,7 +280,7 @@ private: System::ComponentModel::IContainer^  components;
       this->tabConditions->SuspendLayout();
       this->tabWater->SuspendLayout();
       this->tabFood->SuspendLayout();
-      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproContainer))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errProContainer))->BeginInit();
       this->SuspendLayout();
       // 
       // lblName
@@ -1056,10 +1057,10 @@ private: System::ComponentModel::IContainer^  components;
       this->btnOk->UseVisualStyleBackColor = true;
       this->btnOk->Click += gcnew System::EventHandler(this, &ContainerForm::OnOk);
       // 
-      // errproContainer
+      // errProContainer
       // 
-      this->errproContainer->BlinkRate = 100;
-      this->errproContainer->ContainerControl = this;
+      this->errProContainer->BlinkRate = 100;
+      this->errProContainer->ContainerControl = this;
       // 
       // snboxDensity
       // 
@@ -1120,7 +1121,7 @@ private: System::ComponentModel::IContainer^  components;
       this->tabWater->PerformLayout();
       this->tabFood->ResumeLayout(false);
       this->tabFood->PerformLayout();
-      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproContainer))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errProContainer))->EndInit();
       this->ResumeLayout(false);
       this->PerformLayout();
 
