@@ -265,7 +265,7 @@ public:
     double FecundityFactor;
     double MinimumOvipositionTemperature;
     double ProportionOfFeedsOnHumans;
-    double InterruptedFeedsPerMeal;
+    int InterruptedFeedsPerMeal;
     double ProportionOfInterruptedFeedsOnDifferentHost;
     double ProportionOfAdultsRestingOutdoors;
     AgeDependentSurvivalParameters * AgeDependentSurvival;
