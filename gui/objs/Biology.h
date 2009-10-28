@@ -28,7 +28,7 @@ public:
     void set(double d) {
       if( RO25_ != d ) {
         RO25_ = d;
-        NotifyPropertyChanged("RO25");
+        NotifyAndValidate("RO25");
       }
     }
   }
@@ -41,7 +41,7 @@ public:
     void set(double d) {
       if( DHA_ != d ) {
         DHA_ = d;
-        NotifyPropertyChanged("DHA");
+        NotifyAndValidate("DHA");
       }
     }
   }
@@ -54,7 +54,7 @@ public:
     void set(double d) {
       if( DHH_ != d ) {
         DHH_ = d;
-        NotifyPropertyChanged("DHH");
+        NotifyAndValidate("DHH");
       }
     }
   }
@@ -67,7 +67,7 @@ public:
     void set(double d) {
       if( THALF_ != d ) {
         THALF_ = d;
-        NotifyPropertyChanged("THALF");
+        NotifyAndValidate("THALF");
       }
     }
   }
@@ -88,10 +88,16 @@ public:
   TemperatureParameters( const TemperatureParameters ^ tp );
   virtual ~TemperatureParameters(void) {}
 
+private:
+  static void CheckValidLowLethalThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e );
+  static void CheckValidLowThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e );
+  static void CheckValidHighThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e );
+  static void CheckValidHighLethalThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e );
+
 public:
   [XmlElement(Order=0)]
-  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1")]
   [ParameterDisplayAttribute(3, true, ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double LowLethalSurvival {
     double get(void) {
       return LowLethalSurvival_;
@@ -99,12 +105,13 @@ public:
     void set(double d) {
       if( LowLethalSurvival_ != d )  {
         LowLethalSurvival_ = d;
-        NotifyPropertyChanged("LowLethalSurvival");
+        NotifyAndValidate("LowLethalSurvival");
       }
     }
   }
 
   [XmlElement(Order=1)]
+  [CustomRuleAttribute( "gui.TemperatureParameters,objs", "CheckValidLowLethalThreshold", "Low lethal threshold must be less than low threshold." )]
   [ParameterDisplayAttribute(2, true, ScientificNotationOptions::Never)]
   property double LowLethalThreshold {
     double get(void) {
@@ -113,12 +120,14 @@ public:
     void set(double d) {
       if( LowLethalThreshold_ != d ) {
         LowLethalThreshold_ = d;
-        NotifyPropertyChanged("LowLethalThreshold");
+        NotifyAndValidate("LowLethalThreshold");
+        ValidateProperty("LowThreshold");
       }
     }
   }
 
   [XmlElement(Order=2)]
+  [CustomRuleAttribute( "gui.TemperatureParameters,objs", "CheckValidLowThreshold", "Low threshold must be greater than low lethal threshold and less than high threshold." )]
   [ParameterDisplayAttribute(2, true, ScientificNotationOptions::Never)]
   property double LowThreshold {
     double get(void) {
@@ -127,12 +136,15 @@ public:
     void set(double d) {
       if( LowThreshold_ != d ) {
         LowThreshold_ = d;
-        NotifyPropertyChanged("LowThreshold");
+        NotifyAndValidate("LowThreshold");
+        ValidateProperty("LowLethalThreshold");
+        ValidateProperty("HighThreshold");
       }
     }
   }
 
   [XmlElement(Order=3)]
+  [CustomRuleAttribute( "gui.TemperatureParameters,objs", "CheckValidHighThreshold", "High threshold must be greater than low threshold and less than high lethal threshold." )]
   [ParameterDisplayAttribute(2, true, ScientificNotationOptions::Never)]
   property double HighThreshold {
     double get(void) {
@@ -141,14 +153,16 @@ public:
     void set(double d) {
       if( HighThreshold_ != d ) {
         HighThreshold_ = d;
-        NotifyPropertyChanged("HighThreshold");
+        NotifyAndValidate("HighThreshold");
+        ValidateProperty("LowThreshold");
+        ValidateProperty("HighLethalThreshold");
       }
     }
   }
 
   [XmlElement(Order=4)]
   [ParameterDisplayAttribute(2, true, ScientificNotationOptions::Never)]
-  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1")]
+  [CustomRuleAttribute( "gui.TemperatureParameters,objs", "CheckValidHighLethalThreshold", "High lethal threshold must be greater than high threshold." )]
   property double HighLethalThreshold {
     double get(void) {
       return HighLethalThreshold_;
@@ -156,13 +170,15 @@ public:
     void set(double d) {
       if( HighLethalThreshold_ != d ) {
         HighLethalThreshold_ = d;
-        NotifyPropertyChanged("HighLethalThreshold");
+        NotifyAndValidate("HighLethalThreshold");
+        ValidateProperty("HighThreshold");
       }
     }
   }
 
   [XmlElement(Order=5)]
   [ParameterDisplayAttribute(3, true, ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double HighLethalSurvival {
     double get(void) {
       return HighLethalSurvival_;
@@ -170,7 +186,7 @@ public:
     void set(double d) {
       if( HighLethalSurvival_ != d ) {
         HighLethalSurvival_ = d;
-        NotifyPropertyChanged("HighLethalSurvival");
+        NotifyAndValidate("HighLethalSurvival");
       }
     }
   }
@@ -255,11 +271,18 @@ public:
   EggSaturationDeficit(void);
   EggSaturationDeficit( const EggSaturationDeficit ^ esd );
   ~EggSaturationDeficit(void) {}
+
+public:
   input::Biology::EggParameters::SaturationDeficitParameters * GetSimObject(void);
+
+private:
+  static void CheckValidHighThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e );
+  static void CheckValidLowThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e );
 
 public:
   [XmlElement(Order=0)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double WetSurvival {
     double get(void) {
       return WetSurvival_;
@@ -267,13 +290,14 @@ public:
     void set(double d) {
       if( WetSurvival_ != d ) {
         WetSurvival_ = d;
-        NotifyPropertyChanged("WetSurvival");
+        NotifyAndValidate("WetSurvival");
       }
     }
   }
 
   [XmlElement(Order=1)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Sun exposure must be between 0 and 1.")]
   property double HighSunExposureThreshold {
     double get(void) {
       return HighSunExposureThreshold_;
@@ -281,13 +305,14 @@ public:
     void set(double d) {
       if( HighSunExposureThreshold_ != d ) {
         HighSunExposureThreshold_ = d;
-        NotifyPropertyChanged("HighSunExposureThreshold");
+        NotifyAndValidate("HighSunExposureThreshold");
       }
     }
   }
 
   [XmlElement(Order=2)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double HighSunExposureSurvival {
     double get(void) {
       return HighSunExposureSurvival_;
@@ -295,13 +320,14 @@ public:
     void set(double d) {
       if( HighSunExposureSurvival_ != d ) {
         HighSunExposureSurvival_ = d;
-        NotifyPropertyChanged("HighSunExposureSurvival");
+        NotifyAndValidate("HighSunExposureSurvival");
       }
     }
   }
 
   [XmlElement(Order=3)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
+  [CustomRuleAttribute( "gui.EggSaturationDeficit,objs", "CheckValidLowThreshold", "Low threshold must be less than high threshold." )]
   property double LowThreshold {
     double get(void) {
       return LowThreshold_;
@@ -309,13 +335,15 @@ public:
     void set(double d) {
       if( LowThreshold_ != d ) {
         LowThreshold_ = d;
-        NotifyPropertyChanged("LowThreshold");
+        NotifyAndValidate("LowThreshold");
+        ValidateProperty("HighThreshold");
       }
     }
   }
 
   [XmlElement(Order=4)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
+  [CustomRuleAttribute( "gui.EggSaturationDeficit,objs", "CheckValidHighThreshold", "High threshold must be greater than high threshold." )]
   property double HighThreshold {
     double get(void) {
       return HighThreshold_;
@@ -323,13 +351,15 @@ public:
     void set(double d) {
       if( HighThreshold_ != d ) {
         HighThreshold_ = d;
-        NotifyPropertyChanged("HighThreshold");
+        NotifyAndValidate("HighThreshold");
+        ValidateProperty("LowThreshold");
       }
     }
   }
 
   [XmlElement(Order=5)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double LowSurvival {
     double get(void) {
       return LowSurvival_;
@@ -337,13 +367,14 @@ public:
     void set(double d) {
       if( LowSurvival_ != d ) {
         LowSurvival_ = d;
-        NotifyPropertyChanged("LowSurvival");
+        NotifyAndValidate("LowSurvival");
       }
     }
   }
 
   [XmlElement(Order=6)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double HighSurvival {
     double get(void) {
       return HighSurvival_;
@@ -351,7 +382,7 @@ public:
     void set(double d) {
       if( HighSurvival_ != d ) {
         HighSurvival_ = d;
-        NotifyPropertyChanged("HighSurvival");
+        NotifyAndValidate("HighSurvival");
       }
     }
   }
@@ -374,11 +405,14 @@ public:
   EggPredation(void);
   EggPredation( const EggPredation ^ ep );
   ~EggPredation(void) {}
+
+public:
   input::Biology::EggParameters::PredationParameters * GetSimObject(void);
 
 public:
   [XmlElement(Order=0)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double LowSurvival {
     double get(void) {
       return LowSurvival_;
@@ -386,7 +420,7 @@ public:
     void set(double d) {
       if( LowSurvival != d ) {
         LowSurvival_ = d;
-        NotifyPropertyChanged("LowSurvival");
+        NotifyAndValidate("LowSurvival");
       }
     }
   }
@@ -399,7 +433,7 @@ public:
     void set(double d) {
       if( LowThreshold_ != d ) {
         LowThreshold_ = d;
-        NotifyPropertyChanged("LowThreshold");
+        NotifyAndValidate("LowThreshold");
       }
     }
   }
@@ -412,12 +446,13 @@ public:
     void set(double d) {
       if( HighThreshold_ != d ) {
         HighThreshold_ = d;
-        NotifyPropertyChanged("HighThreshold");
+        NotifyAndValidate("HighThreshold");
       }
     }
   }
   [XmlElement(Order=3)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double HighSurvival {
     double get(void) {
       return HighSurvival_;
@@ -425,7 +460,7 @@ public:
     void set(double d) {
       if( HighSurvival_ != d ) {
         HighSurvival_ = d;
-        NotifyPropertyChanged("HighSurvival");
+        NotifyAndValidate("HighSurvival");
       }
     }
   }
@@ -445,6 +480,8 @@ public:
   EggBiology(void);
   EggBiology( const EggBiology ^ eb );
   ~EggBiology(void) {}
+
+public:
   input::Biology::EggParameters * GetSimObject(void);
 
 public:
@@ -457,13 +494,14 @@ public:
     void set(double d) {
       if( MinimumHatchTemperature_ != d ) {
         MinimumHatchTemperature_ = d;
-        NotifyPropertyChanged("MinimumHatchTemperature");
+        NotifyAndValidate("MinimumHatchTemperature");
       }
     }
   }
 
   [XmlElement(Order=1)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute( 0, 1, ErrorMessage = "Flood hatch ratio must be between 0 and 1." )]
   property double FloodHatchRatio {
     double get(void) {
       return FloodHatchRatio_;
@@ -471,13 +509,14 @@ public:
     void set(double d) {
       if( FloodHatchRatio_ != d ) {
         FloodHatchRatio_ = d;
-        NotifyPropertyChanged("FloodHatchRatio");
+        NotifyAndValidate("FloodHatchRatio");
       }
     }
   }
 
   [XmlElement(Order=2)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute( 0, 1, ErrorMessage = "Spontaneous hatch ratio must be between 0 and 1." )]
   property double SpontaneousHatchRatio {
     double get(void) {
       return SpontaneousHatchRatio_;
@@ -485,13 +524,14 @@ public:
     void set(double d) {
       if( SpontaneousHatchRatio_ != d ) {
         SpontaneousHatchRatio_ = d;
-        NotifyPropertyChanged("SpontaneousHatchRatio");
+        NotifyAndValidate("SpontaneousHatchRatio");
       }
     }
   }
 
   [XmlElement(Order=3)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute( 0, 1, ErrorMessage = "Nominal survival must be between 0 and 1." )]
   property double NominalSurvival {
     double get(void) {
       return NominalSurvival_;
@@ -499,7 +539,7 @@ public:
     void set(double ns) {
       if( NominalSurvival_ != ns ) {
         NominalSurvival_ = ns;
-        NotifyPropertyChanged("NominalSurvival");
+        NotifyAndValidate("NominalSurvival");
       }
     }
   }
@@ -513,7 +553,7 @@ public:
     void set(EggDevelopment ^ ed) {
       if( Development_ != ed ) {
         Development_ = ed;
-        NotifyPropertyChanged("Development");
+        NotifyAndValidate("Development");
       }
     }
   }
@@ -526,7 +566,7 @@ public:
     void set(EggTemperature ^ et) {
       if( Temperature_ != et ) {
         Temperature_ = et;
-        NotifyPropertyChanged("Temperature");
+        NotifyAndValidate("Temperature");
       }
     }
   }
@@ -539,7 +579,7 @@ public:
     void set(EggSaturationDeficit ^ esd) {
       if( SaturationDeficit_ != esd ) {
         SaturationDeficit_ = esd;
-        NotifyPropertyChanged("SaturationDeficit");
+        NotifyAndValidate("SaturationDeficit");
       }
     }
   }
@@ -552,7 +592,7 @@ public:
     void set(EggPredation ^ ep) {
       if( Predation_ != ep ) {
         Predation_ = ep;
-        NotifyPropertyChanged("Predation");
+        NotifyAndValidate("Predation");
       }
     }
   }
@@ -577,7 +617,10 @@ public:
   LarvaeDevelopment(void);
   LarvaeDevelopment( const LarvaeDevelopment ^ ld );
   ~LarvaeDevelopment(void) {}
+
+public:
   input::Biology::LarvaeParameters::DevelopmentParameters * GetSimObject(void);
+
 public:
   [ParameterDisplayAttribute(5,true,ScientificNotationOptions::Never)]
   property double RO25 {
@@ -640,7 +683,7 @@ public:
     void set(double d) {
       if( Slope_ != d ) {
         Slope_ = d;
-        NotifyPropertyChanged("Slope");
+        NotifyAndValidate("Slope");
       }
     }
   }
@@ -654,13 +697,14 @@ public:
     void set(double d) {
       if( Intercept_ != d ) {
         Intercept_ = d;
-        NotifyPropertyChanged("Intercept");
+        NotifyAndValidate("Intercept");
       }
     }
   }
 
   [XmlElement(Order=2)]
   [ParameterDisplayAttribute(4,true,ScientificNotationOptions::Never)]
+  [CompareDoubleRule(0,CompareOperator::GreaterThan,ErrorMessage="Weight must be greater than 0.")]
   property double MinimumWeightForPupation {
     double get(void) {
       return MinimumWeightForPupation_;
@@ -668,13 +712,14 @@ public:
     void set(double d) {
       if( MinimumWeightForPupation_ != d ) {
         MinimumWeightForPupation_ = d;
-        NotifyPropertyChanged("MinimumWeightForPupation");
+        NotifyAndValidate("MinimumWeightForPupation");
       }
     }
   }
 
   [XmlElement(Order=3)]
   [ParameterDisplayAttribute(1,true,ScientificNotationOptions::Never)]
+  [CompareDoubleRule(0,CompareOperator::GreaterThan,ErrorMessage="Development must be greater than 0.")]
   property double MaximumDevelopment {
     double get(void) {
       return MaximumDevelopment_;
@@ -682,7 +727,7 @@ public:
     void set(double d) {
       if( MaximumDevelopment_ != d ) {
         MaximumDevelopment_ = d;
-        NotifyPropertyChanged("MaximumDevelopment");
+        NotifyAndValidate("MaximumDevelopment");
       }
     }
   }
@@ -724,10 +769,11 @@ public:
     void set(bool b) {
       if( UseRandomFood_ != b ) {
         UseRandomFood_ = b;
-        NotifyPropertyChanged("UseRandomFood");
+        NotifyAndValidate("UseRandomFood");
       }
     }
   }
+
   [XmlElement(Order=1)]
   [ParameterDisplayAttribute(1,true,ScientificNotationOptions::Never)]
   property double AssimilationRate {
@@ -737,10 +783,11 @@ public:
     void set(double d) {
       if( AssimilationRate_ != d ) {
         AssimilationRate_ = d;
-        NotifyPropertyChanged("AssimilationRate");
+        NotifyAndValidate("AssimilationRate");
       }
     }
   }
+
   [XmlElement(Order=2)]
   [ParameterDisplayAttribute(1,true,ScientificNotationOptions::Never)]
   property double ExploitationRate {
@@ -750,10 +797,11 @@ public:
     void set(double d) {
       if( ExploitationRate_ != d ) {
         ExploitationRate_ = d;
-        NotifyPropertyChanged("ExploitationRate");
+        NotifyAndValidate("ExploitationRate");
       }
     }
   }
+
   [XmlElement(Order=3)]
   [ParameterDisplayAttribute(1,true,ScientificNotationOptions::Never)]
   property double ExploitationRateIndependence {
@@ -763,10 +811,11 @@ public:
     void set(double d) {
       if( ExploitationRateIndependence_ != d ) {
         ExploitationRateIndependence_ = d;
-        NotifyPropertyChanged("ExploitationRateIndependence");
+        NotifyAndValidate("ExploitationRateIndependence");
       }
     }
   }
+
   [XmlElement(Order=4)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double MetabolicWeightLossRate {
@@ -776,10 +825,11 @@ public:
     void set(double d) {
       if( MetabolicWeightLossRate_ != d ) {
         MetabolicWeightLossRate_ = d;
-        NotifyPropertyChanged("MetabolicWeightLossRate");
+        NotifyAndValidate("MetabolicWeightLossRate");
       }
     }
   }
+
   [XmlElement(Order=5)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double MetabolicWeightLossExponent {
@@ -789,7 +839,7 @@ public:
     void set(double d) {
       if( MetabolicWeightLossExponent_ != d ) {
         MetabolicWeightLossExponent_ = d;
-        NotifyPropertyChanged("MetabolicWeightLossExponent");
+        NotifyAndValidate("MetabolicWeightLossExponent");
       }
     }
   }
@@ -816,6 +866,7 @@ public:
 public:
   [XmlElement(Order=0)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double NoFastingSurvival {
     double get(void) {
       return NoFastingSurvival_;
@@ -823,12 +874,14 @@ public:
     void set(double d) {
       if( NoFastingSurvival_ != d ) {
         NoFastingSurvival_ = d;
-        NotifyPropertyChanged("NoFastingSurvival");
+        NotifyAndValidate("NoFastingSurvival");
       }
     }
   }
+
   [XmlElement(Order=1)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double LipidReserveSurvival {
     double get(void) {
       return LipidReserveSurvival_;
@@ -836,12 +889,13 @@ public:
     void set(double d) {
       if( LipidReserveSurvival_ != d ) {
         LipidReserveSurvival_ = d;
-        NotifyPropertyChanged("LipidReserveSurvival");
+        NotifyAndValidate("LipidReserveSurvival");
       }
     }
   }
   [XmlElement(Order=2)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double NoLipidReserveSurvival {
     double get(void) {
       return NoLipidReserveSurvival_;
@@ -849,7 +903,7 @@ public:
     void set(double d) {
       if( NoLipidReserveSurvival_ != d ) {
         NoLipidReserveSurvival_ = d;
-        NotifyPropertyChanged("NoLipidReserveSurvival");
+        NotifyAndValidate("NoLipidReserveSurvival");
       }
     }
   }
@@ -862,7 +916,7 @@ public:
     void set(double d) {
       if( NonDepletableLipidReserve_ != d ) {
         NonDepletableLipidReserve_ = d;
-        NotifyPropertyChanged("NonDepletableLipidReserve");
+        NotifyAndValidate("NonDepletableLipidReserve");
       }
     }
   }
@@ -875,7 +929,7 @@ public:
     void set(double d) {
       if( WeightToLipidSlope_ != d ) {
         WeightToLipidSlope_ = d;
-        NotifyPropertyChanged("WeightToLipidSlope");
+        NotifyAndValidate("WeightToLipidSlope");
       }
     }
   }
@@ -888,7 +942,7 @@ public:
     void set(double d) {
       if( WeightToLipidConstant_ != d ) {
         WeightToLipidConstant_ = d;
-        NotifyPropertyChanged("WeightToLipidConstant");
+        NotifyAndValidate("WeightToLipidConstant");
       }
     }
   }
@@ -914,6 +968,7 @@ public:
 public:
   [XmlElement(Order=0)]
   [ParameterDisplayAttribute(4,true,ScientificNotationOptions::Never)]
+  [CompareDoubleRule(0,CompareOperator::GreaterThan,ErrorMessage="Weight must be greater than 0.")]
   property double WeightAtHatch {
     double get(void) {
       return WeightAtHatch_;
@@ -921,7 +976,7 @@ public:
     void set(double d) {
       if( WeightAtHatch_ != d ) {
         WeightAtHatch_ = d;
-        NotifyPropertyChanged("WeightAtHatch");
+        NotifyAndValidate("WeightAtHatch");
       }
     }
   }
@@ -935,13 +990,14 @@ public:
     void set(double d) {
       if( ChronologicalBasisAt26C_ != d ) {
         ChronologicalBasisAt26C_ = d;
-        NotifyPropertyChanged("ChronologicalBasisAt26C");
+        NotifyAndValidate("ChronologicalBasisAt26C");
       }
     }
   }
 
   [XmlElement(Order=2)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double NominalSurvival {
     double get(void) {
       return NominalSurvival_;
@@ -949,13 +1005,14 @@ public:
     void set(double d) {
       if( NominalSurvival_ != d ) {
         NominalSurvival_ = d;
-        NotifyPropertyChanged("NominalSurvival");
+        NotifyAndValidate("NominalSurvival");
       }
     }
   }
 
   [XmlElement(Order=3)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double PupationSurvival {
     double get(void) {
       return PupationSurvival_;
@@ -963,13 +1020,14 @@ public:
     void set(double d) {
       if( PupationSurvival_ != d ) {
         PupationSurvival_ = d;
-        NotifyPropertyChanged("PupationSurvival");
+        NotifyAndValidate("PupationSurvival");
       }
     }
   }
 
   [XmlElement(Order=4)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double DryContainerSurvival {
     double get(void) {
       return DryContainerSurvival_;
@@ -977,13 +1035,14 @@ public:
     void set(double d) {
       if( DryContainerSurvival_ != d ) {
         DryContainerSurvival_ = d;
-        NotifyPropertyChanged("DryContainerSurvival");
+        NotifyAndValidate("DryContainerSurvival");
       }
     }
   }
 
   [XmlElement(Order=5)]
   [ParameterDisplayAttribute(4,true,ScientificNotationOptions::Never)]
+  [CompareDoubleRule(0,CompareOperator::GreaterThan,ErrorMessage="Weight must be greater than 0.")]
   property double MinimumWeightForSurvival {
     double get(void) {
       return MinimumWeightForSurvival_;
@@ -991,13 +1050,14 @@ public:
     void set(double d) {
       if( MinimumWeightForSurvival_ != d ) {
         MinimumWeightForSurvival_ = d;
-        NotifyPropertyChanged("MinimumWeightForSurvival");
+        NotifyAndValidate("MinimumWeightForSurvival");
       }
     }
   }
 
   [XmlElement(Order=6)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [CompareIntRule(0,CompareOperator::GreaterThan,ErrorMessage="Number of steps must be greater than 0.")]
   property int NumberEulerSteps {
     int get(void) {
       return NumberEulerSteps_;
@@ -1005,7 +1065,7 @@ public:
     void set(int i) {
       if( NumberEulerSteps_ != i ) {
         NumberEulerSteps_ = i;
-        NotifyPropertyChanged("NumberEulerSteps");
+        NotifyAndValidate("NumberEulerSteps");
       }
     }
   }
@@ -1019,7 +1079,7 @@ public:
     void set(double d) {
       if( CadaverFoodRatio_ != d ) {
         CadaverFoodRatio_ = d;
-        NotifyPropertyChanged("CadaverFoodRatio");
+        NotifyAndValidate("CadaverFoodRatio");
       }
     }
   }
@@ -1032,7 +1092,7 @@ public:
     void set(LarvaeDevelopment ^ ld) {
       if( Development_ != ld ) {
         Development_ = ld;
-        NotifyPropertyChanged("Development");
+        NotifyAndValidate("Development");
       }
     }
   }
@@ -1045,7 +1105,7 @@ public:
     void set(LarvaePupationWeight ^ lpw) {
       if( PupationWeight_ != lpw ) {
         PupationWeight_ = lpw;
-        NotifyPropertyChanged("PupationWeight");
+        NotifyAndValidate("PupationWeight");
       }
     }
   }
@@ -1058,7 +1118,7 @@ public:
     void set(LarvaeTemperature ^ lt) {
       if( Temperature_ != lt ) {
         Temperature_ = lt;
-        NotifyPropertyChanged("Temperature");
+        NotifyAndValidate("Temperature");
       }
     }
   }
@@ -1071,7 +1131,7 @@ public:
     void set(LarvaeFood ^ lf) {
       if( Food_ != lf ) {
         Food_ = lf;
-        NotifyPropertyChanged("Food");
+        NotifyAndValidate("Food");
       }
     }
   }
@@ -1084,7 +1144,7 @@ public:
     void set(LarvaeFasting ^ lf) {
       if( Fasting_ != lf ) {
         Fasting_ = lf;
-        NotifyPropertyChanged("Fasting");
+        NotifyAndValidate("Fasting");
       }
     }
   }
@@ -1181,6 +1241,7 @@ public:
 public:
   [XmlElement(Order=0)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double NominalSurvival {
     double get(void) {
       return NominalSurvival_;
@@ -1188,13 +1249,14 @@ public:
     void set(double d) {
       if( NominalSurvival_ != d ) {
         NominalSurvival_ = d;
-        NotifyPropertyChanged("NominalSurvival");
+        NotifyAndValidate("NominalSurvival");
       }
     }
   }
 
   [XmlElement(Order=1)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double EmergenceSurvival {
     double get(void) {
       return EmergenceSurvival_;
@@ -1202,13 +1264,14 @@ public:
     void set(double d) {
       if( EmergenceSurvival_ != d ) {
         EmergenceSurvival_ = d;
-        NotifyPropertyChanged("EmergenceSurvival");
+        NotifyAndValidate("EmergenceSurvival");
       }
     }
   }
 
   [XmlElement(Order=2)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Emergence must be between 0 and 1.")]
   property double FemaleEmergence {
     double get(void) {
       return FemaleEmergence_;
@@ -1216,7 +1279,7 @@ public:
     void set(double d) {
       if( FemaleEmergence_ != d ) {
         FemaleEmergence_ = d;
-        NotifyPropertyChanged("FemaleEmergence");
+        NotifyAndValidate("FemaleEmergence");
       }
     }
   }
@@ -1229,7 +1292,7 @@ public:
     void set(PupaeDevelopment ^ pd) {
       if( Development_ != pd ) {
         Development_ = pd;
-        NotifyPropertyChanged("Development");
+        NotifyAndValidate("Development");
       }
     }
   }
@@ -1242,7 +1305,7 @@ public:
     void set(PupaeTemperature ^ pt) {
       if( Temperature_ != pt ) {
         Temperature_ = pt;
-        NotifyPropertyChanged("Temperature");
+        NotifyAndValidate("Temperature");
       }
     }
   }
@@ -1268,6 +1331,7 @@ public:
 public:
   [XmlElement(Order=0)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double YoungSurvival{
     double get(void) {
       return YoungSurvival_;
@@ -1275,7 +1339,7 @@ public:
     void set(double d) {
       if( YoungSurvival_ != d ) {
         YoungSurvival_ = d;
-        NotifyPropertyChanged("YoungSurvival");
+        NotifyAndValidate("YoungSurvival");
       }
     }
   }
@@ -1289,13 +1353,14 @@ public:
     void set(int i) {
       if( CutoffAge_ != i ) {
         CutoffAge_ = i;
-        NotifyPropertyChanged("CutoffAge");
+        NotifyAndValidate("CutoffAge");
       }
     }
   }
 
   [XmlElement(Order=2)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double OldSurvival {
     double get(void) {
       return OldSurvival_;
@@ -1303,7 +1368,7 @@ public:
     void set(double d) {
       if( OldSurvival != d ) {
         OldSurvival_ = d;
-        NotifyPropertyChanged("OldSurvival");
+        NotifyAndValidate("OldSurvival");
       }
     }
   }
@@ -1390,6 +1455,7 @@ public:
 public:
   [XmlElement(Order=0)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double LowSurvival {
     double get(void) {
       return LowSurvival_;
@@ -1397,7 +1463,7 @@ public:
     void set(double d) {
       if( LowSurvival_ != d ) {
         LowSurvival_ = d;
-        NotifyPropertyChanged("LowSurvival");
+        NotifyAndValidate("LowSurvival");
       }
     }
   }
@@ -1411,7 +1477,7 @@ public:
     void set(double d) {
       if( LowThreshold_ != d ) {
         LowThreshold_ = d;
-        NotifyPropertyChanged("LowThreshold");
+        NotifyAndValidate("LowThreshold");
       }
     }
   }
@@ -1425,13 +1491,14 @@ public:
     void set(double d) {
       if( HighThreshold_ != d ) {
         HighThreshold_ = d;
-        NotifyPropertyChanged("HighThreshold");
+        NotifyAndValidate("HighThreshold");
       }
     }
   }
 
   [XmlElement(Order=3)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double HighSurvival {
     double get(void) {
       return HighSurvival_;
@@ -1439,7 +1506,7 @@ public:
     void set(double d) {
       if( HighSurvival_ != d ) {
         HighSurvival_ = d;
-        NotifyPropertyChanged("HighSurvival");
+        NotifyAndValidate("HighSurvival");
       }
     }
   }
@@ -1464,6 +1531,7 @@ public:
 public:
   [XmlElement(Order=0)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Ratio must be between 0 and 1.")]
   property double LowWeightRatio {
     double get(void) {
       return LowWeightRatio_;
@@ -1471,7 +1539,7 @@ public:
     void set(double d) {
       if( LowWeightRatio_ != d ) {
         LowWeightRatio_ = d;
-        NotifyPropertyChanged("LowWeightRatio");
+        NotifyAndValidate("LowWeightRatio");
       }
     }
   }
@@ -1485,7 +1553,7 @@ public:
     void set(double d) {
       if( LowWeightLimit_ != d ) {
         LowWeightLimit_ = d;
-        NotifyPropertyChanged("LowWeightLimit");
+        NotifyAndValidate("LowWeightLimit");
       }
     }
   }
@@ -1499,13 +1567,14 @@ public:
     void set(double d) {
       if( HighWeightLimit_ != d ) {
         HighWeightLimit_ = d;
-        NotifyPropertyChanged("HighWeightLimit");
+        NotifyAndValidate("HighWeightLimit");
       }
     }
   }
 
   [XmlElement(Order=3)]
   [ParameterDisplayAttribute(4,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Ratio must be between 0 and 1.")]
   property double HighWeightRatio {
     double get(void) {
       return HighWeightRatio_;
@@ -1513,7 +1582,7 @@ public:
     void set(double d) {
       if( HighWeightRatio_ != d ) {
         HighWeightRatio_ = d;
-        NotifyPropertyChanged("HighWeightRatio");
+        NotifyAndValidate("HighWeightRatio");
       }
     }
   }
@@ -1538,6 +1607,7 @@ public:
 public:
   [XmlElement(Order=0)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [CompareDoubleRule(0,CompareOperator::GreaterThan,ErrorMessage="Development threshold must be greater than 0.")]
   property double SecondDevelopmentThreshold {
     double get(void) {
       return SecondDevelopmentThreshold_;
@@ -1545,13 +1615,14 @@ public:
     void set(double d) {
       if( SecondDevelopmentThreshold_ != d ) {
         SecondDevelopmentThreshold_ = d;
-        NotifyPropertyChanged("SecondDevelopmentThreshold");
+        NotifyAndValidate("SecondDevelopmentThreshold");
       }
     }
   }
 
   [XmlElement(Order=1)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
   property double NominalSurvival {
     double get(void) {
       return NominalSurvival_;
@@ -1559,7 +1630,7 @@ public:
     void set(double d) {
       if( NominalSurvival_ != d ) {
         NominalSurvival_ = d;
-        NotifyPropertyChanged("NominalSurvival");
+        NotifyAndValidate("NominalSurvival");
       }
     }
   }
@@ -1573,7 +1644,7 @@ public:
     void set(double d) {
       if( DryToWetWeightFactor_ != d ) {
         DryToWetWeightFactor_ = d;
-        NotifyPropertyChanged("DryToWetWeightFactor");
+        NotifyAndValidate("DryToWetWeightFactor");
       }
     }
   }
@@ -1587,7 +1658,7 @@ public:
     void set(double d) {
       if( FecundityFactor_ != d ) {
         FecundityFactor_ = d;
-        NotifyPropertyChanged("FecundityFactor");
+        NotifyAndValidate("FecundityFactor");
       }
     }
   }
@@ -1601,13 +1672,14 @@ public:
     void set(double d) {
       if( MinimumOvipositionTemperature_ != d ) {
         MinimumOvipositionTemperature_ = d;
-        NotifyPropertyChanged("MinimumOvipositionTemperature");
+        NotifyAndValidate("MinimumOvipositionTemperature");
       }
     }
   }
 
   [XmlElement(Order=5)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Proportion must be between 0 and 1.")]
   property double ProportionOfFeedsOnHumans {
     double get(void) {
       return ProportionOfFeedsOnHumans_;
@@ -1615,27 +1687,29 @@ public:
     void set(double d) {
       if( ProportionOfFeedsOnHumans_ != d ) {
         ProportionOfFeedsOnHumans_ = d;
-        NotifyPropertyChanged("ProportionOfFeedsOnHumans");
+        NotifyAndValidate("ProportionOfFeedsOnHumans");
       }
     }
   }
 
   [XmlElement(Order=6)]
   [ParameterDisplayAttribute(0,true,ScientificNotationOptions::Never)]
-  property double InterruptedFeedsPerMeal {
-    double get(void) {
+  [CompareIntRuleAttribute(0,CompareOperator::GreaterThan,ErrorMessage="Feeds per meal must be greater than 0.")]
+  property int InterruptedFeedsPerMeal {
+    int get(void) {
       return InterruptedFeedsPerMeal_;
     }
-    void set(double d) {
-      if( InterruptedFeedsPerMeal_ != d ) {
-        InterruptedFeedsPerMeal_ = d;
-        NotifyPropertyChanged("InterruptedFeedsPerMeal");
+    void set(int i) {
+      if( InterruptedFeedsPerMeal_ != i ) {
+        InterruptedFeedsPerMeal_ = i;
+        NotifyAndValidate("InterruptedFeedsPerMeal");
       }
     }
   }
 
   [XmlElement(Order=7)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Proportion must be between 0 and 1.")]
   property double ProportionOfInterruptedFeedsOnDifferentHost {
     double get(void) {
       return ProportionOfInterruptedFeedsOnDifferentHost_;
@@ -1643,13 +1717,14 @@ public:
     void set(double d) {
       if( ProportionOfInterruptedFeedsOnDifferentHost_ != d ) {
         ProportionOfInterruptedFeedsOnDifferentHost_ = d;
-        NotifyPropertyChanged("ProportionOfInterruptedFeedsOnDifferentHost");
+        NotifyAndValidate("ProportionOfInterruptedFeedsOnDifferentHost");
       }
     }
   }
 
   [XmlElement(Order=8)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Proportion must be between 0 and 1.")]
   property double ProportionOfAdultsRestingOutdoors {
     double get(void) {
       return ProportionOfAdultsRestingOutdoors_;
@@ -1657,7 +1732,7 @@ public:
     void set(double d) {
       if( ProportionOfAdultsRestingOutdoors_ != d ) {
         ProportionOfAdultsRestingOutdoors_ = d;
-        NotifyPropertyChanged("ProportionOfAdultsRestingOutdoors");
+        NotifyAndValidate("ProportionOfAdultsRestingOutdoors");
       }
     }
   }
@@ -1670,10 +1745,11 @@ public:
     void set(AdultAgeDependentSurvival ^ aads) {
       if( AgeDependentSurvival_ != aads ) {
         AgeDependentSurvival_ = aads;
-        NotifyPropertyChanged("AgeDependentSurvival");
+        NotifyAndValidate("AgeDependentSurvival");
       }
     }
   }
+
   [XmlElement(Order=10)]
   property AdultDevelopment ^ Development {
     AdultDevelopment ^ get(void) {
@@ -1682,7 +1758,7 @@ public:
     void set(AdultDevelopment ^ ad) {
       if( Development_ != ad ) {
         Development_ = ad;
-        NotifyPropertyChanged("Development");
+        NotifyAndValidate("Development");
       }
     }
   }
@@ -1695,7 +1771,7 @@ public:
     void set(AdultTemperature ^ at) {
       if( Temperature_ != at ) {
         Temperature_ = at;
-        NotifyPropertyChanged("Temperature");
+        NotifyAndValidate("Temperature");
       }
     }
   }
@@ -1708,7 +1784,7 @@ public:
     void set(AdultSaturationDeficit ^ asd) {
       if( SaturationDeficit_ != asd ) {
         SaturationDeficit_ = asd;
-        NotifyPropertyChanged("SaturationDeficit");
+        NotifyAndValidate("SaturationDeficit");
       }
     }
   }
@@ -1721,7 +1797,7 @@ public:
     void set(AdultDoubleBloodMeal ^ adbm) {
       if( DoubleBloodMeal_ != adbm ) {
         DoubleBloodMeal_ = adbm;
-        NotifyPropertyChanged("DoubleBloodMeal");
+        NotifyAndValidate("DoubleBloodMeal");
       }
     }
   }
@@ -1734,7 +1810,7 @@ private:
   double FecundityFactor_;
   double MinimumOvipositionTemperature_;
   double ProportionOfFeedsOnHumans_;
-  double InterruptedFeedsPerMeal_;
+  int InterruptedFeedsPerMeal_;
   double ProportionOfInterruptedFeedsOnDifferentHost_;
   double ProportionOfAdultsRestingOutdoors_;
   AdultAgeDependentSurvival ^ AgeDependentSurvival_;
@@ -1764,7 +1840,7 @@ public:
     void set(EggBiology ^ eb) {
       if( Egg_ != eb ) {
         Egg_ = eb;
-        NotifyPropertyChanged("Egg");
+        NotifyAndValidate("Egg");
       }
     }
   }
@@ -1777,7 +1853,7 @@ public:
     void set(LarvaeBiology ^ lb) {
       if( Larvae_ != lb ) {
         Larvae_ = lb;
-        NotifyPropertyChanged("Larvae");
+        NotifyAndValidate("Larvae");
       }
     }
   }
@@ -1790,7 +1866,7 @@ public:
     void set(PupaeBiology ^ pb) {
       if( Pupae_ != pb ) {
         Pupae_ = pb;
-        NotifyPropertyChanged("Pupae");
+        NotifyAndValidate("Pupae");
       }
     }
   }
@@ -1803,7 +1879,7 @@ public:
     void set(gui::AdultBiology ^ ab) {
       if( Adult_ != ab ) {
         Adult_ = ab;
-        NotifyPropertyChanged( "Adult" );
+        NotifyAndValidate("Adult");
       }
     }      
   }

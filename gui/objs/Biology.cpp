@@ -27,6 +27,82 @@ TemperatureParameters::TemperatureParameters( const TemperatureParameters ^ tp )
 
 
 
+void
+TemperatureParameters::CheckValidLowLethalThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e )
+{
+  TemperatureParameters ^ tp = static_cast<TemperatureParameters^>( e->TargetObjectValue );
+  double lowLethalThreshold = System::Convert::ToDouble( e->TargetMemberValue );
+
+  if( lowLethalThreshold < tp->LowThreshold_ ) {
+    e->IsValid = true;
+  }
+  else {
+    e->IsValid = false;
+    e->ErrorMessage = "Low lethal threshold must be less than low threshold.";
+  }
+}
+
+
+
+void
+TemperatureParameters::CheckValidLowThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e )
+{
+  TemperatureParameters ^ tp = static_cast<TemperatureParameters^>( e->TargetObjectValue );
+  double lowThreshold = System::Convert::ToDouble( e->TargetMemberValue );
+
+  if( lowThreshold <= tp->LowLethalThreshold_ ) {
+    e->IsValid = false;
+    e->ErrorMessage = "Low threshold must be greater than low lethal threshold.";
+  }
+  else if( lowThreshold > tp->HighThreshold_ ) {
+    e->IsValid = false;
+    e->ErrorMessage = "Low threshold must be less than high threshold.";
+  }
+  else {
+    e->IsValid = true;
+  }
+}
+
+
+
+void
+TemperatureParameters::CheckValidHighThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e )
+{
+  TemperatureParameters ^ tp = static_cast<TemperatureParameters^>( e->TargetObjectValue );
+  double highThreshold = System::Convert::ToDouble( e->TargetMemberValue);
+
+  if( highThreshold <= tp->LowThreshold_ ) {
+    e->IsValid = false;
+    e->ErrorMessage = "High threshold must be greater than low threshold.";
+  }
+  else if( highThreshold > tp->HighLethalThreshold_ ) {
+    e->IsValid = false;
+    e->ErrorMessage = "High threshold must be less than high lethal threshold.";
+  }
+  else {
+    e->IsValid = true;
+  }
+}
+
+
+
+void
+TemperatureParameters::CheckValidHighLethalThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e )
+{
+  TemperatureParameters ^ tp = static_cast<TemperatureParameters^>( e->TargetObjectValue );
+  double highLethalThreshold = System::Convert::ToDouble( e->TargetMemberValue );
+
+  if( highLethalThreshold > tp->HighThreshold_ ) {
+    e->IsValid = true;
+  }
+  else {
+    e->IsValid = false;
+    e->ErrorMessage = "High lethal threshold must be greather than high threshold.";
+  }
+}
+
+
+
 EggDevelopment::EggDevelopment(void)
 {
   input::Biology::EggParameters::DevelopmentParameters defVals;
@@ -136,6 +212,40 @@ EggSaturationDeficit::GetSimObject(void)
   sdp->HighSurvival = this->HighSurvival_;
 
   return sdp;
+}
+
+
+
+void
+EggSaturationDeficit::CheckValidLowThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e )
+{
+  EggSaturationDeficit ^ esd = static_cast<EggSaturationDeficit^>( e->TargetObjectValue );
+  double lowThreshold = System::Convert::ToDouble( e->TargetMemberValue );
+
+  if( lowThreshold < esd->HighThreshold_ ) {
+    e->IsValid = true;
+  }
+  else {
+    e->IsValid = false;
+    e->ErrorMessage = "Low threshold must be less than high threshold.";
+  }
+}
+
+
+
+void
+EggSaturationDeficit::CheckValidHighThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e )
+{
+  EggSaturationDeficit ^ esd = static_cast<EggSaturationDeficit^>( e->TargetObjectValue );
+  double highThreshold = System::Convert::ToDouble( e->TargetMemberValue );
+
+  if( highThreshold > esd->LowThreshold_ ) {
+    e->IsValid = true;
+  }
+  else {
+    e->IsValid = false;
+    e->ErrorMessage = "High threshold must be greather than low threshold.";
+  }
 }
 
 
