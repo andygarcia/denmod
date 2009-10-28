@@ -1076,7 +1076,7 @@ public:
   }
 
   [XmlElement(Order=6)]
-  [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [ParameterDisplayAttribute(0,true,ScientificNotationOptions::Never)]
   [CompareIntRule(0,CompareOperator::GreaterThan,ErrorMessage="Number of steps must be greater than 0.")]
   property int NumberEulerSteps {
     int get(void) {
