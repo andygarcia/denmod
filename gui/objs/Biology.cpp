@@ -286,6 +286,40 @@ EggPredation::GetSimObject(void)
 
 
 
+void
+EggPredation::CheckValidLowThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e )
+{
+  EggPredation ^ ep = static_cast<EggPredation^>( e->TargetObjectValue );
+  double lowThreshold = System::Convert::ToDouble( e->TargetMemberValue );
+
+  if( lowThreshold < ep->HighThreshold_ ) {
+    e->IsValid = true;
+  }
+  else {
+    e->IsValid = false;
+    e->ErrorMessage = "Low threshold must be less than high threshold.";
+  }
+}
+
+
+
+void
+EggPredation::CheckValidHighThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e )
+{
+  EggPredation ^ ep = static_cast<EggPredation^>( e->TargetObjectValue );
+  double highThreshold = System::Convert::ToDouble( e->TargetMemberValue );
+
+  if( highThreshold > ep->LowThreshold_ ) {
+    e->IsValid = true;
+  }
+  else {
+    e->IsValid = false;
+    e->ErrorMessage = "High threshold must be greather than low threshold.";
+  }
+}
+
+
+
 EggBiology::EggBiology(void)
 : Development_(gcnew EggDevelopment()),
   Temperature_(gcnew EggTemperature()),
@@ -814,6 +848,40 @@ AdultSaturationDeficit::AdultSaturationDeficit( const AdultSaturationDeficit ^ a
 
 
 
+void
+AdultSaturationDeficit::CheckValidLowThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e )
+{
+  AdultSaturationDeficit ^ asd = static_cast<AdultSaturationDeficit^>( e->TargetObjectValue );
+  double lowThreshold = System::Convert::ToDouble( e->TargetMemberValue );
+
+  if( lowThreshold < asd->HighThreshold_ ) {
+    e->IsValid = true;
+  }
+  else {
+    e->IsValid = false;
+    e->ErrorMessage = "Low threshold must be less than high threshold.";
+  }
+}
+
+
+
+void
+AdultSaturationDeficit::CheckValidHighThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e )
+{
+  AdultSaturationDeficit ^ asd = static_cast<AdultSaturationDeficit^>( e->TargetObjectValue );
+  double highThreshold = System::Convert::ToDouble( e->TargetMemberValue );
+
+  if( highThreshold > asd->LowThreshold_ ) {
+    e->IsValid = true;
+  }
+  else {
+    e->IsValid = false;
+    e->ErrorMessage = "High threshold must be greather than low threshold.";
+  }
+}
+
+
+
 input::Biology::AdultParameters::SaturationDeficitParameters *
 AdultSaturationDeficit::GetSimObject(void)
 {
@@ -861,6 +929,40 @@ AdultDoubleBloodMeal::GetSimObject(void)
   dbmp->HighWeightRatio = this->HighWeightRatio_;
 
   return dbmp;
+}
+
+
+
+void
+AdultDoubleBloodMeal::CheckValidLowThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e )
+{
+  AdultDoubleBloodMeal ^ adbm = static_cast<AdultDoubleBloodMeal^>( e->TargetObjectValue );
+  double lowWeight = System::Convert::ToDouble( e->TargetMemberValue );
+
+  if( lowWeight < adbm->HighWeightLimit_ ) {
+    e->IsValid = true;
+  }
+  else {
+    e->IsValid = false;
+    e->ErrorMessage = "Low weight must be less than high weight.";
+  }
+}
+
+
+
+void
+AdultDoubleBloodMeal::CheckValidHighThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e )
+{
+  AdultDoubleBloodMeal ^ adbm = static_cast<AdultDoubleBloodMeal^>( e->TargetObjectValue );
+  double highWeight = System::Convert::ToDouble( e->TargetMemberValue );
+
+  if( highWeight > adbm->LowWeightLimit_ ) {
+    e->IsValid = true;
+  }
+  else {
+    e->IsValid = false;
+    e->ErrorMessage = "High weight must be greather than low weight.";
+  }
 }
 
 

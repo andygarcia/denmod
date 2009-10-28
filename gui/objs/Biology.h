@@ -343,7 +343,7 @@ public:
 
   [XmlElement(Order=4)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
-  [CustomRuleAttribute( "gui.EggSaturationDeficit,objs", "CheckValidHighThreshold", "High threshold must be greater than high threshold." )]
+  [CustomRuleAttribute( "gui.EggSaturationDeficit,objs", "CheckValidHighThreshold", "High threshold must be greater than low threshold." )]
   property double HighThreshold {
     double get(void) {
       return HighThreshold_;
@@ -409,6 +409,10 @@ public:
 public:
   input::Biology::EggParameters::PredationParameters * GetSimObject(void);
 
+private:
+  static void CheckValidHighThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e );
+  static void CheckValidLowThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e );
+
 public:
   [XmlElement(Order=0)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
@@ -424,8 +428,10 @@ public:
       }
     }
   }
+
   [XmlElement(Order=1)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
+  [CustomRuleAttribute( "gui.EggPredation,objs", "CheckValidLowThreshold", "Low threshold must be less than high threshold." )]
   property double LowThreshold {
     double get(void) {
       return LowThreshold_;
@@ -434,11 +440,14 @@ public:
       if( LowThreshold_ != d ) {
         LowThreshold_ = d;
         NotifyAndValidate("LowThreshold");
+        ValidateProperty("HighThreshold");
       }
     }
   }
+
   [XmlElement(Order=2)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
+  [CustomRuleAttribute( "gui.EggPredation,objs", "CheckValidHighThreshold", "High threshold must be greater than high threshold." )]
   property double HighThreshold {
     double get(void) {
       return HighThreshold_;
@@ -447,9 +456,11 @@ public:
       if( HighThreshold_ != d ) {
         HighThreshold_ = d;
         NotifyAndValidate("HighThreshold");
+        ValidateProperty("LowThreshold");
       }
     }
   }
+
   [XmlElement(Order=3)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
@@ -893,6 +904,7 @@ public:
       }
     }
   }
+
   [XmlElement(Order=2)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   [RangeDoubleRuleAttribute(0,1,ErrorMessage="Survival must be between 0 and 1.")]
@@ -907,6 +919,7 @@ public:
       }
     }
   }
+
   [XmlElement(Order=3)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
   property double NonDepletableLipidReserve {
@@ -920,6 +933,7 @@ public:
       }
     }
   }
+
   [XmlElement(Order=4)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
   property double WeightToLipidSlope {
@@ -933,6 +947,7 @@ public:
       }
     }
   }
+
   [XmlElement(Order=5)]
   [ParameterDisplayAttribute(1,true,ScientificNotationOptions::Never)]
   property double WeightToLipidConstant {
@@ -955,6 +970,7 @@ private:
   double WeightToLipidSlope_;
   double WeightToLipidConstant_;
 };
+
 
 
 public ref class LarvaeBiology : public NotifyValidateEditBase
@@ -1072,6 +1088,7 @@ public:
 
   [XmlElement(Order=7)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [RangeDoubleRuleAttribute(0,1,ErrorMessage="Ratio must be between 0 and 1.")]
   property double CadaverFoodRatio {
     double get(void) {
       return CadaverFoodRatio_;
@@ -1236,6 +1253,8 @@ public:
   PupaeBiology(void);
   PupaeBiology( const PupaeBiology ^ pb );
   ~PupaeBiology(void) {}
+
+public:
   input::Biology::PupaeParameters * GetSimObject(void);
 
 public:
@@ -1346,6 +1365,7 @@ public:
 
   [XmlElement(Order=1)]
   [ParameterDisplayAttribute(0,true,ScientificNotationOptions::Never)]
+  [CompareIntRule(1,CompareOperator::GreaterThanEqual,ErrorMessage="Cutoff age must be 1 or greater.")]
   property int CutoffAge {
     int get(void) {
       return CutoffAge_;
@@ -1450,7 +1470,13 @@ public:
   AdultSaturationDeficit(void);
   AdultSaturationDeficit( const AdultSaturationDeficit ^ asd );
   ~AdultSaturationDeficit(void) {}
+
+public:
   input::Biology::AdultParameters::SaturationDeficitParameters * GetSimObject(void);
+
+private:
+  static void CheckValidHighThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e );
+  static void CheckValidLowThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e );
 
 public:
   [XmlElement(Order=0)]
@@ -1470,6 +1496,7 @@ public:
 
   [XmlElement(Order=1)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
+  [CustomRuleAttribute( "gui.AdultSaturationDeficit,objs", "CheckValidLowThreshold", "Low threshold must be less than high threshold." )]
   property double LowThreshold {
     double get(void) {
       return LowThreshold_;
@@ -1478,12 +1505,14 @@ public:
       if( LowThreshold_ != d ) {
         LowThreshold_ = d;
         NotifyAndValidate("LowThreshold");
+        ValidateProperty("HighThreshold");
       }
     }
   }
 
   [XmlElement(Order=2)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [CustomRuleAttribute( "gui.AdultSaturationDeficit,objs", "CheckValidHighThreshold", "High threshold must be greater than high threshold." )]
   property double HighThreshold {
     double get(void) {
       return HighThreshold_;
@@ -1492,6 +1521,7 @@ public:
       if( HighThreshold_ != d ) {
         HighThreshold_ = d;
         NotifyAndValidate("HighThreshold");
+        ValidateProperty("LowThreshold");
       }
     }
   }
@@ -1526,7 +1556,13 @@ public:
   AdultDoubleBloodMeal(void);
   AdultDoubleBloodMeal( const AdultDoubleBloodMeal ^ adbm );
   ~AdultDoubleBloodMeal(void) {}
+
+public:
   input::Biology::AdultParameters::DoubleBloodMealParameters * GetSimObject(void);
+
+private:
+  static void CheckValidHighThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e );
+  static void CheckValidLowThreshold( System::Object ^ sender, CustomValidationEventArgs ^ e );
 
 public:
   [XmlElement(Order=0)]
@@ -1546,6 +1582,7 @@ public:
 
   [XmlElement(Order=1)]
   [ParameterDisplayAttribute(4,true,ScientificNotationOptions::Never)]
+  [CustomRuleAttribute( "gui.AdultDoubleBloodMeal,objs", "CheckValidLowThreshold", "Low threshold must be less than high threshold." )]
   property double LowWeightLimit {
     double get(void) {
       return LowWeightLimit_;
@@ -1554,12 +1591,14 @@ public:
       if( LowWeightLimit_ != d ) {
         LowWeightLimit_ = d;
         NotifyAndValidate("LowWeightLimit");
+        ValidateProperty("HighWeightLimit");
       }
     }
   }
 
   [XmlElement(Order=2)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
+  [CustomRuleAttribute( "gui.AdultDoubleBloodMeal,objs", "CheckValidHighThreshold", "High threshold must be greater than low threshold." )]
   property double HighWeightLimit {
     double get(void) {
       return HighWeightLimit_;
@@ -1568,6 +1607,7 @@ public:
       if( HighWeightLimit_ != d ) {
         HighWeightLimit_ = d;
         NotifyAndValidate("HighWeightLimit");
+        ValidateProperty("LowWeightLimit");
       }
     }
   }
