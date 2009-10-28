@@ -557,6 +557,7 @@ public:
 
 
   [XmlElement(Order=4)]
+  [ValidatableRuleAttribute(UseMemberErrorMessages=false,ErrorMessage="Errors exists in egg development parameters.")]
   property EggDevelopment ^ Development {
     EggDevelopment ^ get(void) {
       return Development_;
@@ -570,6 +571,7 @@ public:
   }
 
   [XmlElement(Order=5)]
+  [ValidatableRuleAttribute(UseMemberErrorMessages=false,ErrorMessage="Errors exists in egg temperature parameters.")]
   property EggTemperature ^ Temperature {
     EggTemperature ^ get(void) {
       return Temperature_;
@@ -583,6 +585,7 @@ public:
   }
 
   [XmlElement(Order=6)]
+  [ValidatableRuleAttribute(UseMemberErrorMessages=false,ErrorMessage="Errors exists in egg saturation deficit parameters.")]
   property EggSaturationDeficit ^ SaturationDeficit {
     EggSaturationDeficit ^ get(void) {
       return SaturationDeficit_;
@@ -596,6 +599,7 @@ public:
   }
 
   [XmlElement(Order=7)]
+  [ValidatableRuleAttribute(UseMemberErrorMessages=false,ErrorMessage="Errors exists in egg predation parameters.")]
   property EggPredation ^ Predation {
     EggPredation ^ get(void) {
       return Predation_;
@@ -1102,6 +1106,7 @@ public:
   }
 
   [XmlElement(Order=8)]
+  [ValidatableRuleAttribute(UseMemberErrorMessages=false,ErrorMessage="Errors exists in larvae development parameters.")]
   property LarvaeDevelopment ^ Development {
     LarvaeDevelopment ^ get(void) {
       return Development_;
@@ -1115,6 +1120,7 @@ public:
   }
 
   [XmlElement(Order=9)]
+  [ValidatableRuleAttribute(UseMemberErrorMessages=false,ErrorMessage="Errors exists in larvae pupation weight parameters.")]
   property LarvaePupationWeight ^ PupationWeight {
     LarvaePupationWeight ^ get(void) {
       return PupationWeight_;
@@ -1128,6 +1134,7 @@ public:
   }
 
   [XmlElement(Order=10)]
+  [ValidatableRuleAttribute(UseMemberErrorMessages=false,ErrorMessage="Errors exists in larvae temperature parameters.")]
   property LarvaeTemperature ^ Temperature {
     LarvaeTemperature ^ get(void) {
       return Temperature_;
@@ -1141,6 +1148,7 @@ public:
   }
 
   [XmlElement(Order=11)]
+  [ValidatableRuleAttribute(UseMemberErrorMessages=false,ErrorMessage="Errors exists in larvae food parameters.")]
   property LarvaeFood ^ Food {
     LarvaeFood ^ get(void) {
       return Food_;
@@ -1154,6 +1162,7 @@ public:
   }
 
   [XmlElement(Order=12)]
+  [ValidatableRuleAttribute(UseMemberErrorMessages=false,ErrorMessage="Errors exists in larvae fasting parameters.")]
   property LarvaeFasting ^ Fasting {
     LarvaeFasting ^ get(void) {
       return Fasting_;
@@ -1304,6 +1313,7 @@ public:
   }
 
   [XmlElement(Order=3)]
+  [ValidatableRuleAttribute(UseMemberErrorMessages=false,ErrorMessage="Errors exists in pupae development parameters.")]
   property PupaeDevelopment ^ Development {
    PupaeDevelopment ^ get(void) {
       return Development_;
@@ -1317,6 +1327,7 @@ public:
   }
 
   [XmlElement(Order=4)]
+  [ValidatableRuleAttribute(UseMemberErrorMessages=false,ErrorMessage="Errors exists in pupae temperature parameters.")]
   property PupaeTemperature ^ Temperature {
    PupaeTemperature ^ get(void) {
       return Temperature_;
@@ -1778,6 +1789,7 @@ public:
   }
 
   [XmlElement(Order=9)]
+  [ValidatableRuleAttribute(UseMemberErrorMessages=false,ErrorMessage="Errors exists in adult age dependence parameters.")]
   property AdultAgeDependentSurvival ^ AgeDependentSurvival {
     AdultAgeDependentSurvival ^ get(void) {
       return AgeDependentSurvival_;
@@ -1791,6 +1803,7 @@ public:
   }
 
   [XmlElement(Order=10)]
+  [ValidatableRuleAttribute(UseMemberErrorMessages=false,ErrorMessage="Errors exists in adult development parameters.")]
   property AdultDevelopment ^ Development {
     AdultDevelopment ^ get(void) {
       return Development_;
@@ -1804,6 +1817,7 @@ public:
   }
 
   [XmlElement(Order=11)]
+  [ValidatableRuleAttribute(UseMemberErrorMessages=false,ErrorMessage="Errors exists in adult temperature parameters.")]
   property AdultTemperature ^ Temperature {
     AdultTemperature ^ get(void) {
       return Temperature_;
@@ -1817,6 +1831,7 @@ public:
   }
 
   [XmlElement(Order=12)]
+  [ValidatableRuleAttribute(UseMemberErrorMessages=false,ErrorMessage="Errors exists in adult saturation deficit parameters.")]
   property AdultSaturationDeficit ^ SaturationDeficit {
     AdultSaturationDeficit ^ get(void) {
       return SaturationDeficit_;
@@ -1830,6 +1845,7 @@ public:
   }
 
   [XmlElement(Order=13)]
+  [ValidatableRuleAttribute(UseMemberErrorMessages=false,ErrorMessage="Errors exists in adult double blood meal parameters.")]
   property AdultDoubleBloodMeal ^ DoubleBloodMeal {
    AdultDoubleBloodMeal ^ get(void) {
       return DoubleBloodMeal_;
@@ -1869,10 +1885,13 @@ public:
   BiologyParameters( const BiologyParameters ^ bp );
   ~BiologyParameters(void) {}
   input::Biology * GetSimObject(void);
+
+public:
   void LoadDefaultValues(void);
 
 public:
   [XmlElement(Order=0)]
+  [ValidatableRuleAttribute(UseMemberErrorMessages=false,ErrorMessage="Errors exists in egg parameters.")]
   property EggBiology ^ Egg {
     EggBiology ^ get(void) {
       return Egg_;
@@ -1886,6 +1905,7 @@ public:
   }
 
   [XmlElement(Order=1)]
+  [ValidatableRuleAttribute(UseMemberErrorMessages=false,ErrorMessage="Errors exists in larvae parameters.")]
   property LarvaeBiology ^ Larvae {
     LarvaeBiology ^ get(void) {
       return Larvae_;
@@ -1899,6 +1919,7 @@ public:
   }
 
   [XmlElement(Order=2)]
+  [ValidatableRuleAttribute(UseMemberErrorMessages=false,ErrorMessage="Errors exists in pupae parameters.")]
   property PupaeBiology ^ Pupae {
     PupaeBiology ^ get(void) {
       return Pupae_;
@@ -1912,6 +1933,7 @@ public:
   }
 
   [XmlElement(ElementName="Adult",Order=3)]
+  [ValidatableRuleAttribute(UseMemberErrorMessages=false,ErrorMessage="Errors exists in adult parameters.")]
   property AdultBiology ^ Adult {
     gui::AdultBiology ^ get(void) {
       return Adult_;
