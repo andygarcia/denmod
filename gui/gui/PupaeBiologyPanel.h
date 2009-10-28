@@ -71,13 +71,16 @@ namespace gui {
   private: ctrl::ScientificNotationTextBox^  snboxTempHighLethalThreshold;
   private: ctrl::ScientificNotationTextBox^  snboxTempLowThreshold;
   private: ctrl::ScientificNotationTextBox^  snboxTempLowLethalThreshold;
+  private: System::Windows::Forms::ErrorProvider^  errproPupae;
+  private: System::Windows::Forms::ErrorProvider^  errproTemperature;
+  private: System::ComponentModel::IContainer^  components;
 
 
 	private:
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		System::ComponentModel::Container ^components;
+
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -86,6 +89,7 @@ namespace gui {
 		/// </summary>
 		void InitializeComponent(void)
 		{
+      this->components = (gcnew System::ComponentModel::Container());
       this->gboxDev = (gcnew System::Windows::Forms::GroupBox());
       this->snboxTHALF = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxRO25 = (gcnew ctrl::ScientificNotationTextBox());
@@ -114,8 +118,12 @@ namespace gui {
       this->snboxNominalSurvival = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxEmergenceSurvival = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxFemaleEmergence = (gcnew ctrl::ScientificNotationTextBox());
+      this->errproPupae = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errproTemperature = (gcnew System::Windows::Forms::ErrorProvider(this->components));
       this->gboxDev->SuspendLayout();
       this->gboxTemp->SuspendLayout();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproPupae))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproTemperature))->BeginInit();
       this->SuspendLayout();
       // 
       // gboxDev
@@ -141,7 +149,7 @@ namespace gui {
       this->snboxTHALF->Name = L"snboxTHALF";
       this->snboxTHALF->Size = System::Drawing::Size(80, 20);
       this->snboxTHALF->TabIndex = 7;
-      this->snboxTHALF->Text = L"0.00000";
+      this->snboxTHALF->Text = L"0";
       this->snboxTHALF->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxTHALF->Value = L"0";
       // 
@@ -151,7 +159,7 @@ namespace gui {
       this->snboxRO25->Name = L"snboxRO25";
       this->snboxRO25->Size = System::Drawing::Size(80, 20);
       this->snboxRO25->TabIndex = 1;
-      this->snboxRO25->Text = L"0.00000";
+      this->snboxRO25->Text = L"0";
       this->snboxRO25->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxRO25->Value = L"0";
       // 
@@ -161,7 +169,7 @@ namespace gui {
       this->snboxDHH->Name = L"snboxDHH";
       this->snboxDHH->Size = System::Drawing::Size(80, 20);
       this->snboxDHH->TabIndex = 5;
-      this->snboxDHH->Text = L"0.00000";
+      this->snboxDHH->Text = L"0";
       this->snboxDHH->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxDHH->Value = L"0";
       // 
@@ -171,7 +179,7 @@ namespace gui {
       this->snboxDHA->Name = L"snboxDHA";
       this->snboxDHA->Size = System::Drawing::Size(80, 20);
       this->snboxDHA->TabIndex = 3;
-      this->snboxDHA->Text = L"0.00000";
+      this->snboxDHA->Text = L"0";
       this->snboxDHA->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxDHA->Value = L"0";
       // 
@@ -265,7 +273,7 @@ namespace gui {
       this->snboxTempHighLethalSurvival->Name = L"snboxTempHighLethalSurvival";
       this->snboxTempHighLethalSurvival->Size = System::Drawing::Size(80, 20);
       this->snboxTempHighLethalSurvival->TabIndex = 11;
-      this->snboxTempHighLethalSurvival->Text = L"0.00";
+      this->snboxTempHighLethalSurvival->Text = L"0";
       this->snboxTempHighLethalSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxTempHighLethalSurvival->Value = L"0";
       // 
@@ -275,7 +283,7 @@ namespace gui {
       this->snboxTempHighThreshold->Name = L"snboxTempHighThreshold";
       this->snboxTempHighThreshold->Size = System::Drawing::Size(80, 20);
       this->snboxTempHighThreshold->TabIndex = 7;
-      this->snboxTempHighThreshold->Text = L"0.00";
+      this->snboxTempHighThreshold->Text = L"0";
       this->snboxTempHighThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxTempHighThreshold->Value = L"0";
       // 
@@ -285,7 +293,7 @@ namespace gui {
       this->snboxTempLowLethalSurvival->Name = L"snboxTempLowLethalSurvival";
       this->snboxTempLowLethalSurvival->Size = System::Drawing::Size(80, 20);
       this->snboxTempLowLethalSurvival->TabIndex = 3;
-      this->snboxTempLowLethalSurvival->Text = L"0.00";
+      this->snboxTempLowLethalSurvival->Text = L"0";
       this->snboxTempLowLethalSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxTempLowLethalSurvival->Value = L"0";
       // 
@@ -295,7 +303,7 @@ namespace gui {
       this->snboxTempHighLethalThreshold->Name = L"snboxTempHighLethalThreshold";
       this->snboxTempHighLethalThreshold->Size = System::Drawing::Size(80, 20);
       this->snboxTempHighLethalThreshold->TabIndex = 9;
-      this->snboxTempHighLethalThreshold->Text = L"0.00";
+      this->snboxTempHighLethalThreshold->Text = L"0";
       this->snboxTempHighLethalThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxTempHighLethalThreshold->Value = L"0";
       // 
@@ -305,7 +313,7 @@ namespace gui {
       this->snboxTempLowThreshold->Name = L"snboxTempLowThreshold";
       this->snboxTempLowThreshold->Size = System::Drawing::Size(80, 20);
       this->snboxTempLowThreshold->TabIndex = 5;
-      this->snboxTempLowThreshold->Text = L"0.00";
+      this->snboxTempLowThreshold->Text = L"0";
       this->snboxTempLowThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxTempLowThreshold->Value = L"0";
       // 
@@ -315,7 +323,7 @@ namespace gui {
       this->snboxTempLowLethalThreshold->Name = L"snboxTempLowLethalThreshold";
       this->snboxTempLowLethalThreshold->Size = System::Drawing::Size(80, 20);
       this->snboxTempLowLethalThreshold->TabIndex = 1;
-      this->snboxTempLowLethalThreshold->Text = L"0.00";
+      this->snboxTempLowLethalThreshold->Text = L"0";
       this->snboxTempLowLethalThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxTempLowLethalThreshold->Value = L"0";
       // 
@@ -379,7 +387,7 @@ namespace gui {
       this->snboxNominalSurvival->Name = L"snboxNominalSurvival";
       this->snboxNominalSurvival->Size = System::Drawing::Size(80, 20);
       this->snboxNominalSurvival->TabIndex = 3;
-      this->snboxNominalSurvival->Text = L"0.00";
+      this->snboxNominalSurvival->Text = L"0";
       this->snboxNominalSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxNominalSurvival->Value = L"0";
       // 
@@ -389,7 +397,7 @@ namespace gui {
       this->snboxEmergenceSurvival->Name = L"snboxEmergenceSurvival";
       this->snboxEmergenceSurvival->Size = System::Drawing::Size(80, 20);
       this->snboxEmergenceSurvival->TabIndex = 5;
-      this->snboxEmergenceSurvival->Text = L"0.00";
+      this->snboxEmergenceSurvival->Text = L"0";
       this->snboxEmergenceSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxEmergenceSurvival->Value = L"0";
       // 
@@ -399,9 +407,19 @@ namespace gui {
       this->snboxFemaleEmergence->Name = L"snboxFemaleEmergence";
       this->snboxFemaleEmergence->Size = System::Drawing::Size(80, 20);
       this->snboxFemaleEmergence->TabIndex = 7;
-      this->snboxFemaleEmergence->Text = L"0.00";
+      this->snboxFemaleEmergence->Text = L"0";
       this->snboxFemaleEmergence->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxFemaleEmergence->Value = L"0";
+      // 
+      // errproPupae
+      // 
+      this->errproPupae->BlinkRate = 100;
+      this->errproPupae->ContainerControl = this;
+      // 
+      // errproTemperature
+      // 
+      this->errproTemperature->BlinkRate = 100;
+      this->errproTemperature->ContainerControl = this;
       // 
       // PupaeBiologyPanel
       // 
@@ -422,6 +440,8 @@ namespace gui {
       this->gboxDev->PerformLayout();
       this->gboxTemp->ResumeLayout(false);
       this->gboxTemp->PerformLayout();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproPupae))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproTemperature))->EndInit();
       this->ResumeLayout(false);
       this->PerformLayout();
 

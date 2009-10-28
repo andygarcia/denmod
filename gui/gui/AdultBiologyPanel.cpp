@@ -61,4 +61,19 @@ AdultBiologyPanel::OnLoad( System::Object ^ sender, System::EventArgs ^ e )
   snboxFeedingHumanProportion->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.ProportionOfFeedsOnHumans") );
   snboxInterruptedFeedsPerMeal->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.InterruptedFeedsPerMeal") );
   snboxFeedingProportionInterrupedDifferentHost->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.ProportionOfInterruptedFeedsOnDifferentHost") );
+
+  errproAdult->DataSource = LocationBinding;
+  errproAdult->DataMember = "Biology.Adult";
+
+  errproAge->DataSource = LocationBinding;
+  errproAge->DataMember = "Biology.Adult.AgeDependentSurvival";
+
+  errproTemperature->DataSource = LocationBinding;
+  errproTemperature->DataMember = "Biology.Adult.Temperature";
+
+  errproSaturationDeficit->DataSource = LocationBinding;
+  errproSaturationDeficit->DataMember = "Biology.Adult.SaturationDeficit";
+
+  errproDoubleBloodMeal->DataSource = LocationBinding;
+  errproDoubleBloodMeal->DataMember = "Biology.Adult.DoubleBloodMeal";
 }

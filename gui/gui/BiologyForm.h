@@ -26,14 +26,17 @@ namespace gui {
 
   private:
     System::Void OnDefault( System::Object ^ sender, System::EventArgs ^ e );
+    System::Void OnOk( System::Object ^ sender, System::EventArgs ^ e );
+    System::Void OnCancel( System::Object ^ sender, System::EventArgs ^ e );
 
   private:
     BindingSource ^ LocationBinding;
+    gui::Location ^ _location;
 
-    EggBiologyPanel ^ EggBiologyPanel_;
-    LarvaeBiologyPanel ^ LarvaeBiologyPanel_ ;
-    PupaeBiologyPanel ^ PupaeBiologyPanel_;
-    AdultBiologyPanel ^ AdultBiologyPanel_;
+    EggBiologyPanel ^ _eggPanel;
+    LarvaeBiologyPanel ^ _larvaePanel ;
+    PupaeBiologyPanel ^ _pupaePanel;
+    AdultBiologyPanel ^ _adultPanel;
 
   private: System::Windows::Forms::TabControl^  tabControl1;
   private: System::Windows::Forms::TabPage^  tabPageEgg;
@@ -84,10 +87,10 @@ namespace gui {
       // tabPageEgg
       // 
       this->tabPageEgg->AutoScroll = true;
-      this->tabPageEgg->Location = System::Drawing::Point(4, 24);
+      this->tabPageEgg->Location = System::Drawing::Point(4, 22);
       this->tabPageEgg->Name = L"tabPageEgg";
       this->tabPageEgg->Padding = System::Windows::Forms::Padding(3);
-      this->tabPageEgg->Size = System::Drawing::Size(398, 417);
+      this->tabPageEgg->Size = System::Drawing::Size(398, 419);
       this->tabPageEgg->TabIndex = 0;
       this->tabPageEgg->Text = L"Eggs";
       this->tabPageEgg->UseVisualStyleBackColor = true;
@@ -95,10 +98,10 @@ namespace gui {
       // tabPageLarvae
       // 
       this->tabPageLarvae->AutoScroll = true;
-      this->tabPageLarvae->Location = System::Drawing::Point(4, 24);
+      this->tabPageLarvae->Location = System::Drawing::Point(4, 22);
       this->tabPageLarvae->Name = L"tabPageLarvae";
       this->tabPageLarvae->Padding = System::Windows::Forms::Padding(3);
-      this->tabPageLarvae->Size = System::Drawing::Size(398, 417);
+      this->tabPageLarvae->Size = System::Drawing::Size(398, 419);
       this->tabPageLarvae->TabIndex = 1;
       this->tabPageLarvae->Text = L"Larvae";
       this->tabPageLarvae->UseVisualStyleBackColor = true;
@@ -106,9 +109,9 @@ namespace gui {
       // tabPagePupae
       // 
       this->tabPagePupae->AutoScroll = true;
-      this->tabPagePupae->Location = System::Drawing::Point(4, 24);
+      this->tabPagePupae->Location = System::Drawing::Point(4, 22);
       this->tabPagePupae->Name = L"tabPagePupae";
-      this->tabPagePupae->Size = System::Drawing::Size(398, 417);
+      this->tabPagePupae->Size = System::Drawing::Size(398, 419);
       this->tabPagePupae->TabIndex = 2;
       this->tabPagePupae->Text = L"Pupae";
       this->tabPagePupae->UseVisualStyleBackColor = true;
@@ -116,9 +119,9 @@ namespace gui {
       // tabPageAdult
       // 
       this->tabPageAdult->AutoScroll = true;
-      this->tabPageAdult->Location = System::Drawing::Point(4, 24);
+      this->tabPageAdult->Location = System::Drawing::Point(4, 22);
       this->tabPageAdult->Name = L"tabPageAdult";
-      this->tabPageAdult->Size = System::Drawing::Size(398, 417);
+      this->tabPageAdult->Size = System::Drawing::Size(398, 419);
       this->tabPageAdult->TabIndex = 3;
       this->tabPageAdult->Text = L"Adults";
       this->tabPageAdult->UseVisualStyleBackColor = true;
@@ -132,6 +135,7 @@ namespace gui {
       this->btnOk->TabIndex = 1;
       this->btnOk->Text = L"OK";
       this->btnOk->UseVisualStyleBackColor = true;
+      this->btnOk->Click += gcnew System::EventHandler(this, &BiologyForm::OnOk);
       // 
       // btnDefault
       // 
@@ -152,6 +156,7 @@ namespace gui {
       this->btnCancel->TabIndex = 2;
       this->btnCancel->Text = L"Cancel";
       this->btnCancel->UseVisualStyleBackColor = true;
+      this->btnCancel->Click += gcnew System::EventHandler(this, &BiologyForm::OnCancel);
       // 
       // BiologyForm
       // 

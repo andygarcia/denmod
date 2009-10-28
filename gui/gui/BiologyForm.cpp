@@ -10,17 +10,20 @@ BiologyForm::BiologyForm( BindingSource ^ locationBinding)
 {
 	InitializeComponent();
 
-  EggBiologyPanel_ = gcnew EggBiologyPanel( LocationBinding );
-  this->tabPageEgg->Controls->Add( EggBiologyPanel_ );
+  _location = static_cast<gui::Location^>( locationBinding->DataSource );
+  _location->Biology->BeginEdit();
 
-  LarvaeBiologyPanel_ = gcnew LarvaeBiologyPanel( LocationBinding );
-  this->tabPageLarvae->Controls->Add( LarvaeBiologyPanel_ );
+  _eggPanel = gcnew EggBiologyPanel( LocationBinding );
+  this->tabPageEgg->Controls->Add( _eggPanel );
 
-  PupaeBiologyPanel_ = gcnew PupaeBiologyPanel( LocationBinding );
-  this->tabPagePupae->Controls->Add( PupaeBiologyPanel_ );
+  _larvaePanel = gcnew LarvaeBiologyPanel( LocationBinding );
+  this->tabPageLarvae->Controls->Add( _larvaePanel );
 
-  AdultBiologyPanel_ = gcnew AdultBiologyPanel( LocationBinding );
-  this->tabPageAdult->Controls->Add( AdultBiologyPanel_ );
+  _pupaePanel = gcnew PupaeBiologyPanel( LocationBinding );
+  this->tabPagePupae->Controls->Add( _pupaePanel );
+
+  _adultPanel = gcnew AdultBiologyPanel( LocationBinding );
+  this->tabPageAdult->Controls->Add( _adultPanel );
 }
 
 
@@ -44,4 +47,34 @@ BiologyForm::OnDefault( System::Object ^ sender, System::EventArgs ^ e )
   if( dr == ::DialogResult::OK ) {
     ((gui::Location ^) LocationBinding->Current)->ResetBiology();
   }
+}
+
+
+
+System::Void
+BiologyForm::OnOk( System::Object ^ sender, System::EventArgs ^ e )
+{
+  using namespace ValidationFramework;
+  
+  BiologyParameters ^ biology = _location->Biology;
+
+  // validate entire object
+  biology->PropertyValidationManager->ValidateAllProperties();
+  if( !biology->IsValid ) {
+    String ^ errorMessages = ValidationFramework::ResultFormatter::GetConcatenatedErrorMessages( "\n", biology->PropertyValidationManager->ValidatorResultsInError );
+    MessageBox::Show( this, errorMessages, "Errors in biology parameters." );
+    this->DialogResult = ::DialogResult::None;
+    return;
+  }
+  else {
+    _location->Biology->EndEdit();
+  }
+}
+
+
+
+System::Void
+BiologyForm::OnCancel(System::Object^  sender, System::EventArgs^  e)
+{
+  _location->Biology->CancelEdit();
 }

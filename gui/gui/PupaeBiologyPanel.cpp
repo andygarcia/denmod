@@ -41,4 +41,10 @@ PupaeBiologyPanel::OnLoad( System::Object ^ sender, System::EventArgs ^ e )
   snboxTempHighThreshold->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Pupae.Temperature.HighThreshold") );
   snboxTempHighLethalThreshold->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Pupae.Temperature.HighLethalThreshold") );
   snboxTempHighLethalSurvival->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Pupae.Temperature.HighLethalSurvival") );
+
+  errproPupae->DataSource = LocationBinding;
+  errproPupae->DataMember = "Biology.Pupae";
+
+  errproTemperature->DataSource = LocationBinding;
+  errproPupae->DataMember = "Biology.Pupae.Temperature";
 }

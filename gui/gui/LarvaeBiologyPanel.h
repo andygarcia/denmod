@@ -160,6 +160,12 @@ private: ctrl::ScientificNotationTextBox^  snboxWeightToLipidSlope;
 private: ctrl::ScientificNotationTextBox^  snboxNoLipidReserveSurvival;
 private: ctrl::ScientificNotationTextBox^  snboxNonDepletableLipidReserve;
 private: ctrl::ScientificNotationTextBox^  snboxLipidReserveSurvival;
+private: System::Windows::Forms::ErrorProvider^  errproLarvae;
+private: System::Windows::Forms::ErrorProvider^  errproTemperature;
+private: System::Windows::Forms::ErrorProvider^  errproPupationWeight;
+private: System::Windows::Forms::ErrorProvider^  errproFood;
+private: System::Windows::Forms::ErrorProvider^  errproFasting;
+private: System::ComponentModel::IContainer^  components;
 
 
 
@@ -180,7 +186,7 @@ private: ctrl::ScientificNotationTextBox^  snboxLipidReserveSurvival;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		System::ComponentModel::Container ^components;
+
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -189,6 +195,7 @@ private: ctrl::ScientificNotationTextBox^  snboxLipidReserveSurvival;
 		/// </summary>
 		void InitializeComponent(void)
 		{
+      this->components = (gcnew System::ComponentModel::Container());
       this->gboxDev = (gcnew System::Windows::Forms::GroupBox());
       this->snboxTHALF = (gcnew ctrl::ScientificNotationTextBox());
       this->lblTHALF = (gcnew System::Windows::Forms::Label());
@@ -257,11 +264,21 @@ private: ctrl::ScientificNotationTextBox^  snboxLipidReserveSurvival;
       this->snboxDryContainerSurvival = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxWeightAtHatch = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxMinimumWeightForSurvival = (gcnew ctrl::ScientificNotationTextBox());
+      this->errproLarvae = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errproTemperature = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errproPupationWeight = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errproFood = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errproFasting = (gcnew System::Windows::Forms::ErrorProvider(this->components));
       this->gboxDev->SuspendLayout();
       this->gboxPupWt->SuspendLayout();
       this->gboxTemp->SuspendLayout();
       this->gboxFood->SuspendLayout();
       this->gboxFasting->SuspendLayout();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproLarvae))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproTemperature))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproPupationWeight))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproFood))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproFasting))->BeginInit();
       this->SuspendLayout();
       // 
       // gboxDev
@@ -961,6 +978,26 @@ private: ctrl::ScientificNotationTextBox^  snboxLipidReserveSurvival;
       this->snboxMinimumWeightForSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxMinimumWeightForSurvival->Value = L"0";
       // 
+      // errproLarvae
+      // 
+      this->errproLarvae->ContainerControl = this;
+      // 
+      // errproTemperature
+      // 
+      this->errproTemperature->ContainerControl = this;
+      // 
+      // errproPupationWeight
+      // 
+      this->errproPupationWeight->ContainerControl = this;
+      // 
+      // errproFood
+      // 
+      this->errproFood->ContainerControl = this;
+      // 
+      // errproFasting
+      // 
+      this->errproFasting->ContainerControl = this;
+      // 
       // LarvaeBiologyPanel
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -993,6 +1030,11 @@ private: ctrl::ScientificNotationTextBox^  snboxLipidReserveSurvival;
       this->gboxFood->PerformLayout();
       this->gboxFasting->ResumeLayout(false);
       this->gboxFasting->PerformLayout();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproLarvae))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproTemperature))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproPupationWeight))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproFood))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproFasting))->EndInit();
       this->ResumeLayout(false);
       this->PerformLayout();
 

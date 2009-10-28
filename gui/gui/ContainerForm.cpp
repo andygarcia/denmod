@@ -111,7 +111,7 @@ ContainerForm::OnLoad( System::Object^ sender, System::EventArgs^ e)
   snboxFoodNov->DataBindings->Add( gcnew ParameterDisplayBinding("Value", Container_, "FoodGainNov", DataSourceUpdateMode::OnPropertyChanged) );
   snboxFoodDec->DataBindings->Add( gcnew ParameterDisplayBinding("Value", Container_, "FoodGainDec", DataSourceUpdateMode::OnPropertyChanged) );
 
-  errProContainer->DataSource = Container_;
+  errproContainer->DataSource = Container_;
   Container_->PropertyValidationManager->ValidateAllProperties();
 }
 

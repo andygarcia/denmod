@@ -16,9 +16,17 @@ namespace gui {
 		EggBiologyPanel( BindingSource ^ locationBinding );
 	protected:
 		~EggBiologyPanel();
-  private: ctrl::ScientificNotationTextBox^  snboxNominalSurvival;
-  protected: 
 
+  private:
+    BindingSource ^ _locationBinding;
+
+  private:
+    System::Void OnLoad( System::Object ^ sender, System::EventArgs ^ e );
+
+  private: System::Windows::Forms::ErrorProvider^  errproTemperature;
+  private: System::Windows::Forms::ErrorProvider^  errproSaturationDeficit;
+  private: System::Windows::Forms::ErrorProvider^  errproPredation;
+  private: ctrl::ScientificNotationTextBox^  snboxNominalSurvival;
   private: ctrl::ScientificNotationTextBox^  snboxTHALF;
   private: ctrl::ScientificNotationTextBox^  snboxDHA;
   private: ctrl::ScientificNotationTextBox^  snboxDHH;
@@ -42,59 +50,17 @@ namespace gui {
   private: ctrl::ScientificNotationTextBox^  snboxPredHighThreshold;
   private: ctrl::ScientificNotationTextBox^  snboxPredLowSurvival;
   private: ctrl::ScientificNotationTextBox^  snboxPredLowThreshold;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  protected: 
-
-  protected: 
-
-  protected: 
-
-  protected: 
-
-  private:
-    BindingSource ^ LocationBinding;
-
-  private:
-    System::Void OnLoad( System::Object ^ sender, System::EventArgs ^ e );
-
-  private:
-
-
+  private: System::Windows::Forms::ErrorProvider^  errproEgg;
   private: System::Windows::Forms::Label^  lblNominalSurvival;
-
-
-
   private: System::Windows::Forms::GroupBox^  gboxDev;
   private: System::Windows::Forms::Label^  lblRO25;
   private: System::Windows::Forms::Label^  lblDHA;
   private: System::Windows::Forms::Label^  lblDHH;
   private: System::Windows::Forms::Label^  lblTHALF;
-
-
-
-
-
   private: System::Windows::Forms::GroupBox^  gboxHatch;
   private: System::Windows::Forms::Label^  lblMinimumHatchTemperature;
   private: System::Windows::Forms::Label^  lblFloodHatchRatio;
   private: System::Windows::Forms::Label^  lblSpontaneousHatchRatio;
-
-
-
-
   private: System::Windows::Forms::GroupBox^  gboxTemp;
   private: System::Windows::Forms::Label^  lblTempLowLethalThreshold;
   private: System::Windows::Forms::Label^  lblTempLowLethalSurvival;
@@ -102,13 +68,6 @@ namespace gui {
   private: System::Windows::Forms::Label^  lblTempHighThreshold;
   private: System::Windows::Forms::Label^  lblTempHighLethalThreshold;
   private: System::Windows::Forms::Label^  lblTempHighLethalSurvival;
-
-
-
-
-
-
-
   private: System::Windows::Forms::GroupBox^  gboxSatDef;
   private: System::Windows::Forms::Label^  lblHighSunExposureThrehsold;
   private: System::Windows::Forms::Label^  lblHighSunExposureSurvival;
@@ -116,28 +75,17 @@ namespace gui {
   private: System::Windows::Forms::Label^  lblSatDefLowSurvival;
   private: System::Windows::Forms::Label^  lblSatDefHighThreshold;
   private: System::Windows::Forms::Label^  lblSatDefHighSurvival;
-
-
-
-
-
-
-
   private: System::Windows::Forms::GroupBox^  gboxPredation;
   private: System::Windows::Forms::Label^  lblPredLowThreshold;
   private: System::Windows::Forms::Label^  lblPredLowSurvival;
   private: System::Windows::Forms::Label^  lblPredHighThreshold;
   private: System::Windows::Forms::Label^  lblPredHighSurvival;
 
-
-
-
-
+  private: System::ComponentModel::IContainer^  components;
   private:
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		System::ComponentModel::Container ^components;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -146,6 +94,7 @@ namespace gui {
 		/// </summary>
 		void InitializeComponent(void)
 		{
+      this->components = (gcnew System::ComponentModel::Container());
       this->gboxHatch = (gcnew System::Windows::Forms::GroupBox());
       this->snboxSpontaneousHatchRatio = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxFloodHatchRatio = (gcnew ctrl::ScientificNotationTextBox());
@@ -199,11 +148,19 @@ namespace gui {
       this->snboxPredLowSurvival = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxPredLowThreshold = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxNominalSurvival = (gcnew ctrl::ScientificNotationTextBox());
+      this->errproEgg = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errproTemperature = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errproSaturationDeficit = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errproPredation = (gcnew System::Windows::Forms::ErrorProvider(this->components));
       this->gboxHatch->SuspendLayout();
       this->gboxDev->SuspendLayout();
       this->gboxTemp->SuspendLayout();
       this->gboxSatDef->SuspendLayout();
       this->gboxPredation->SuspendLayout();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproEgg))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproTemperature))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproSaturationDeficit))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproPredation))->BeginInit();
       this->SuspendLayout();
       // 
       // gboxHatch
@@ -729,6 +686,23 @@ namespace gui {
       this->snboxNominalSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxNominalSurvival->Value = L"";
       // 
+      // errproEgg
+      // 
+      this->errproEgg->BlinkRate = 100;
+      this->errproEgg->ContainerControl = this;
+      // 
+      // errproTemperature
+      // 
+      this->errproTemperature->ContainerControl = this;
+      // 
+      // errproSaturationDeficit
+      // 
+      this->errproSaturationDeficit->ContainerControl = this;
+      // 
+      // errproPredation
+      // 
+      this->errproPredation->ContainerControl = this;
+      // 
       // EggBiologyPanel
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -754,6 +728,10 @@ namespace gui {
       this->gboxSatDef->PerformLayout();
       this->gboxPredation->ResumeLayout(false);
       this->gboxPredation->PerformLayout();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproEgg))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproTemperature))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproSaturationDeficit))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproPredation))->EndInit();
       this->ResumeLayout(false);
       this->PerformLayout();
 

@@ -112,10 +112,10 @@ namespace gui {
   private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcViremicPeriod;
   private: ctrl::ScientificNotationTextBox^  snboxMaeaDuration;
   private: ctrl::ScientificNotationTextBox^  snboxManaDuration;
-  private: System::Windows::Forms::ErrorProvider^  errProDemographics;
-  private: System::Windows::Forms::ErrorProvider^  errProSerology;
-  private: System::Windows::Forms::ErrorProvider^  errProHumanToMosquitoInfection;
-  private: System::Windows::Forms::ErrorProvider^  errProTiterModification;
+  private: System::Windows::Forms::ErrorProvider^  errproDemographics;
+  private: System::Windows::Forms::ErrorProvider^  errproSerology;
+  private: System::Windows::Forms::ErrorProvider^  errproHumanToMosquitoInfection;
+  private: System::Windows::Forms::ErrorProvider^  errproTiterModification;
   private: System::ComponentModel::IContainer^  components;
 	private:
 		/// <summary>
@@ -219,10 +219,10 @@ namespace gui {
       this->dgvcProbDhfDss = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
       this->dgvcAtRiskCutoff = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
       this->dgvcMortality = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-      this->errProDemographics = (gcnew System::Windows::Forms::ErrorProvider(this->components));
-      this->errProSerology = (gcnew System::Windows::Forms::ErrorProvider(this->components));
-      this->errProHumanToMosquitoInfection = (gcnew System::Windows::Forms::ErrorProvider(this->components));
-      this->errProTiterModification = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errproDemographics = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errproSerology = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errproHumanToMosquitoInfection = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errproTiterModification = (gcnew System::Windows::Forms::ErrorProvider(this->components));
       this->tabDensim->SuspendLayout();
       this->tabDemographics->SuspendLayout();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->dgvDemographics))->BeginInit();
@@ -238,10 +238,10 @@ namespace gui {
       this->gboxEipDevelopment->SuspendLayout();
       this->tabDhsDss->SuspendLayout();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->dgvSequentials))->BeginInit();
-      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errProDemographics))->BeginInit();
-      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errProSerology))->BeginInit();
-      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errProHumanToMosquitoInfection))->BeginInit();
-      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errProTiterModification))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproDemographics))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproSerology))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproHumanToMosquitoInfection))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproTiterModification))->BeginInit();
       this->SuspendLayout();
       // 
       // btnRunSim
@@ -830,7 +830,7 @@ namespace gui {
       // 
       // snboxLowTiterSetPoint
       // 
-      this->errProTiterModification->SetIconAlignment(this->snboxLowTiterSetPoint, System::Windows::Forms::ErrorIconAlignment::MiddleLeft);
+      this->errproTiterModification->SetIconAlignment(this->snboxLowTiterSetPoint, System::Windows::Forms::ErrorIconAlignment::MiddleLeft);
       this->snboxLowTiterSetPoint->Location = System::Drawing::Point(281, 13);
       this->snboxLowTiterSetPoint->Name = L"snboxLowTiterSetPoint";
       this->snboxLowTiterSetPoint->Size = System::Drawing::Size(80, 20);
@@ -850,7 +850,7 @@ namespace gui {
       // 
       // snboxLowTiterFactor
       // 
-      this->errProTiterModification->SetIconAlignment(this->snboxLowTiterFactor, System::Windows::Forms::ErrorIconAlignment::MiddleLeft);
+      this->errproTiterModification->SetIconAlignment(this->snboxLowTiterFactor, System::Windows::Forms::ErrorIconAlignment::MiddleLeft);
       this->snboxLowTiterFactor->Location = System::Drawing::Point(281, 39);
       this->snboxLowTiterFactor->Name = L"snboxLowTiterFactor";
       this->snboxLowTiterFactor->Size = System::Drawing::Size(80, 20);
@@ -870,7 +870,7 @@ namespace gui {
       // 
       // snboxHighTiterFactor
       // 
-      this->errProTiterModification->SetIconAlignment(this->snboxHighTiterFactor, System::Windows::Forms::ErrorIconAlignment::MiddleLeft);
+      this->errproTiterModification->SetIconAlignment(this->snboxHighTiterFactor, System::Windows::Forms::ErrorIconAlignment::MiddleLeft);
       this->snboxHighTiterFactor->Location = System::Drawing::Point(281, 91);
       this->snboxHighTiterFactor->Name = L"snboxHighTiterFactor";
       this->snboxHighTiterFactor->Size = System::Drawing::Size(80, 20);
@@ -890,7 +890,7 @@ namespace gui {
       // 
       // snboxHighTiterSetPoint
       // 
-      this->errProTiterModification->SetIconAlignment(this->snboxHighTiterSetPoint, System::Windows::Forms::ErrorIconAlignment::MiddleLeft);
+      this->errproTiterModification->SetIconAlignment(this->snboxHighTiterSetPoint, System::Windows::Forms::ErrorIconAlignment::MiddleLeft);
       this->snboxHighTiterSetPoint->Location = System::Drawing::Point(281, 65);
       this->snboxHighTiterSetPoint->Name = L"snboxHighTiterSetPoint";
       this->snboxHighTiterSetPoint->Size = System::Drawing::Size(80, 20);
@@ -1082,21 +1082,21 @@ namespace gui {
       this->dgvcMortality->HeaderText = L"Mortality";
       this->dgvcMortality->Name = L"dgvcMortality";
       // 
-      // errProDemographics
+      // errproDemographics
       // 
-      this->errProDemographics->ContainerControl = this;
+      this->errproDemographics->ContainerControl = this;
       // 
-      // errProSerology
+      // errproSerology
       // 
-      this->errProSerology->ContainerControl = this;
+      this->errproSerology->ContainerControl = this;
       // 
-      // errProHumanToMosquitoInfection
+      // errproHumanToMosquitoInfection
       // 
-      this->errProHumanToMosquitoInfection->ContainerControl = this;
+      this->errproHumanToMosquitoInfection->ContainerControl = this;
       // 
-      // errProTiterModification
+      // errproTiterModification
       // 
-      this->errProTiterModification->ContainerControl = this;
+      this->errproTiterModification->ContainerControl = this;
       // 
       // DensimPanel
       // 
@@ -1131,10 +1131,10 @@ namespace gui {
       this->gboxEipDevelopment->PerformLayout();
       this->tabDhsDss->ResumeLayout(false);
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->dgvSequentials))->EndInit();
-      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errProDemographics))->EndInit();
-      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errProSerology))->EndInit();
-      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errProHumanToMosquitoInfection))->EndInit();
-      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errProTiterModification))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproDemographics))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproSerology))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproHumanToMosquitoInfection))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproTiterModification))->EndInit();
       this->ResumeLayout(false);
 
     }

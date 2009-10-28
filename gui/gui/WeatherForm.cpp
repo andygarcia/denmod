@@ -27,7 +27,7 @@ WeatherForm::~WeatherForm()
 System::Void
 WeatherForm::OnLoad( System::Object ^ sender, System::EventArgs ^ e )
 {
-  errPro->DataSource = _weatherYear;
+  errpro->DataSource = _weatherYear;
 
   tboxYear->DataBindings->Add( "Text", _weatherYear, "Index" );
   tboxCity->DataBindings->Add( "Text", _weatherYear, "City" );

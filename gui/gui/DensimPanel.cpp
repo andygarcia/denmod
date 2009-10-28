@@ -51,8 +51,8 @@ DensimPanel::OnLoad(System::Object^  sender, System::EventArgs^  e)
   snboxInitialPopulationSize->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Demographics.InitialPopulationSize") );
   snboxHumHostDensity->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Demographics.HumanHostDensity") );
 
-  errProDemographics->DataSource = _locationBinding;
-  errProDemographics->DataMember = "Demographics";
+  errproDemographics->DataSource = _locationBinding;
+  errproDemographics->DataMember = "Demographics";
 
   // serology
   dgvSerology->DataBindings->Add( "DataSource", _locationBinding, "Serology.SeroClasses" );
@@ -61,8 +61,8 @@ DensimPanel::OnLoad(System::Object^  sender, System::EventArgs^  e)
   snboxMaeaDuration->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Serology.MAEADuration") );
   snboxHetDuration->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Serology.HetDuration") );
 
-  errProSerology->DataSource = _locationBinding;
-  errProSerology->DataMember = "Serology";
+  errproSerology->DataSource = _locationBinding;
+  errproSerology->DataMember = "Serology";
 
   // virology
   dgvVirology->DataBindings->Add( "DataSource", _locationBinding, "Virology.Serotypes" );
@@ -83,11 +83,11 @@ DensimPanel::OnLoad(System::Object^  sender, System::EventArgs^  e)
   snboxHighTiterSetPoint->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Virology.EIP.TiterModification.HighSetPoint") );
   snboxHighTiterFactor->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Virology.EIP.TiterModification.HighFactor") );
 
-  errProHumanToMosquitoInfection->DataSource = _locationBinding;
-  errProHumanToMosquitoInfection->DataMember = "Virology.HumanToMosquitoInfection";
+  errproHumanToMosquitoInfection->DataSource = _locationBinding;
+  errproHumanToMosquitoInfection->DataMember = "Virology.HumanToMosquitoInfection";
 
-  errProTiterModification->DataSource = _locationBinding;
-  errProTiterModification->DataMember = "Virology.EIP.TiterModification";
+  errproTiterModification->DataSource = _locationBinding;
+  errproTiterModification->DataMember = "Virology.EIP.TiterModification";
 
   // infection introduction
   _formInfectionIntroduction->DataBindings->Add( "Enabled", _locationBinding, "Weather.IsWeatherAvailable", false, DataSourceUpdateMode::OnPropertyChanged );

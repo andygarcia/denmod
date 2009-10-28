@@ -152,6 +152,14 @@ private: ctrl::ScientificNotationTextBox^  snboxFeedingHumanProportion;
 
 private: System::Windows::Forms::Label^  lblFeedingHumanProportion;
 private: System::Windows::Forms::Label^  lblFeedingProportionInterrupedDifferentHost;
+private: System::Windows::Forms::ErrorProvider^  errproAdult;
+private: System::Windows::Forms::ErrorProvider^  errproAge;
+private: System::Windows::Forms::ErrorProvider^  errproSaturationDeficit;
+private: System::Windows::Forms::ErrorProvider^  errproDoubleBloodMeal;
+
+private: System::Windows::Forms::ErrorProvider^  errproTemperature;
+
+private: System::ComponentModel::IContainer^  components;
 
 
 
@@ -171,7 +179,7 @@ private: System::Windows::Forms::Label^  lblFeedingProportionInterrupedDifferent
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		System::ComponentModel::Container ^components;
+
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -180,6 +188,7 @@ private: System::Windows::Forms::Label^  lblFeedingProportionInterrupedDifferent
 		/// </summary>
 		void InitializeComponent(void)
 		{
+      this->components = (gcnew System::ComponentModel::Container());
       this->gboxDev = (gcnew System::Windows::Forms::GroupBox());
       this->snboxTHALF = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxRO25 = (gcnew ctrl::ScientificNotationTextBox());
@@ -244,12 +253,22 @@ private: System::Windows::Forms::Label^  lblFeedingProportionInterrupedDifferent
       this->snboxFeedingHumanProportion = (gcnew ctrl::ScientificNotationTextBox());
       this->lblFeedingHumanProportion = (gcnew System::Windows::Forms::Label());
       this->lblFeedingProportionInterrupedDifferentHost = (gcnew System::Windows::Forms::Label());
+      this->errproAdult = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errproAge = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errproSaturationDeficit = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errproDoubleBloodMeal = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errproTemperature = (gcnew System::Windows::Forms::ErrorProvider(this->components));
       this->gboxDev->SuspendLayout();
       this->gboxSatDef->SuspendLayout();
       this->gboxTemp->SuspendLayout();
       this->gboxDBM->SuspendLayout();
       this->gboxAgeSurvival->SuspendLayout();
       this->groupBox1->SuspendLayout();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproAdult))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproAge))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproSaturationDeficit))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproDoubleBloodMeal))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproTemperature))->BeginInit();
       this->SuspendLayout();
       // 
       // gboxDev
@@ -905,6 +924,26 @@ private: System::Windows::Forms::Label^  lblFeedingProportionInterrupedDifferent
       this->lblFeedingProportionInterrupedDifferentHost->TabIndex = 4;
       this->lblFeedingProportionInterrupedDifferentHost->Text = L"Proportion of interrupted feeds on a different host:";
       // 
+      // errproAdult
+      // 
+      this->errproAdult->ContainerControl = this;
+      // 
+      // errproAge
+      // 
+      this->errproAge->ContainerControl = this;
+      // 
+      // errproSaturationDeficit
+      // 
+      this->errproSaturationDeficit->ContainerControl = this;
+      // 
+      // errproDoubleBloodMeal
+      // 
+      this->errproDoubleBloodMeal->ContainerControl = this;
+      // 
+      // errproTemperature
+      // 
+      this->errproTemperature->ContainerControl = this;
+      // 
       // AdultBiologyPanel
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -940,6 +979,11 @@ private: System::Windows::Forms::Label^  lblFeedingProportionInterrupedDifferent
       this->gboxAgeSurvival->PerformLayout();
       this->groupBox1->ResumeLayout(false);
       this->groupBox1->PerformLayout();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproAdult))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproAge))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproSaturationDeficit))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproDoubleBloodMeal))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errproTemperature))->EndInit();
       this->ResumeLayout(false);
       this->PerformLayout();
 

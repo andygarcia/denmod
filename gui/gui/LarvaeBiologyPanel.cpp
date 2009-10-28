@@ -63,4 +63,19 @@ LarvaeBiologyPanel::OnLoad( System::Object ^ sender, System::EventArgs ^ e )
   snboxNonDepletableLipidReserve->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Larvae.Fasting.NonDepletableLipidReserve") );
   snboxWeightToLipidSlope->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Larvae.Fasting.WeightToLipidSlope") );
   snboxWeightToLipidConstant->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Larvae.Fasting.WeightToLipidConstant") );
+
+  errproLarvae->DataSource = LocationBinding;
+  errproLarvae->DataMember = "Biology.Larvae";
+
+  errproTemperature->DataSource = LocationBinding;
+  errproTemperature->DataMember = "Biology.Larvae.Temperature";
+
+  errproPupationWeight->DataSource = LocationBinding;
+  errproPupationWeight->DataMember = "Biology.Larvae.PupationWeight";
+
+  errproFood->DataSource = LocationBinding;
+  errproFood->DataMember = "Biology.Larvae.Food";
+
+  errproFasting->DataSource = LocationBinding;
+  errproFasting->DataMember = "Biology.Larvae.Fasting";
 }

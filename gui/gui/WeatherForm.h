@@ -65,7 +65,7 @@ namespace gui {
   private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcRain;
   private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcRelHum;
   private: System::Windows::Forms::DataGridViewTextBoxColumn^  dgvcSatDef;
-  private: System::Windows::Forms::ErrorProvider^  errPro;
+  private: System::Windows::Forms::ErrorProvider^  errpro;
   private: System::ComponentModel::IContainer^  components;
 
 
@@ -127,11 +127,11 @@ namespace gui {
       this->dgvcRain = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
       this->dgvcRelHum = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
       this->dgvcSatDef = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-      this->errPro = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->errpro = (gcnew System::Windows::Forms::ErrorProvider(this->components));
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->dgvWeather))->BeginInit();
       this->gboxDescription->SuspendLayout();
       this->gboxPreview->SuspendLayout();
-      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errPro))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errpro))->BeginInit();
       this->SuspendLayout();
       // 
       // dgvWeather
@@ -430,9 +430,9 @@ namespace gui {
       this->dgvcSatDef->ReadOnly = true;
       this->dgvcSatDef->Width = 107;
       // 
-      // errPro
+      // errpro
       // 
-      this->errPro->ContainerControl = this;
+      this->errpro->ContainerControl = this;
       // 
       // WeatherForm
       // 
@@ -458,7 +458,7 @@ namespace gui {
       this->gboxDescription->ResumeLayout(false);
       this->gboxDescription->PerformLayout();
       this->gboxPreview->ResumeLayout(false);
-      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errPro))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->errpro))->EndInit();
       this->ResumeLayout(false);
       this->PerformLayout();
 
