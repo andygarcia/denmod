@@ -1745,7 +1745,7 @@ public:
 
   [XmlElement(Order=6)]
   [ParameterDisplayAttribute(0,true,ScientificNotationOptions::Never)]
-  [CompareIntRuleAttribute(0,CompareOperator::GreaterThan,ErrorMessage="Feeds per meal must be greater than 0.")]
+  [CompareIntRuleAttribute(0,CompareOperator::GreaterThanEqual,ErrorMessage="Interrupted feeds per meal must be 0 or greater.")]
   property int InterruptedFeedsPerMeal {
     int get(void) {
       return InterruptedFeedsPerMeal_;
