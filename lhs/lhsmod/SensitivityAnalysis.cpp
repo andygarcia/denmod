@@ -1,10 +1,15 @@
 #include "StdAfx.h"
 #include "SensitivityAnalysis.h"
 
+using namespace System::IO;
+using namespace System::Collections;
+using namespace System::Text;
+using namespace System::Text::RegularExpressions;
+
 
 
 static
-SensitivityAnalysis::SensitivityAnalysis(void)
+SensitivityAnalysisStudy::SensitivityAnalysisStudy(void)
 {
   _saNamesToDmlNames = gcnew Generic::Dictionary<String^,String^>(StringComparer::InvariantCultureIgnoreCase);
   _saNamesToDmlNames->Add( "E.min.htch.temp", "Biology.Egg.MinimumHatchTemperature" );
@@ -100,20 +105,247 @@ SensitivityAnalysis::SensitivityAnalysis(void)
 
 
 
-SensitivityAnalysis::SensitivityAnalysis(void)
+SensitivityAnalysisStudy::SensitivityAnalysisStudy( BackgroundWorker ^ backgroundWorker, String ^ dmlFilename, String ^ lspFilename, String ^ outputDir, bool useDiscrete, bool processOnly )
+: _dmlFilename(dmlFilename),
+  _lspFilename(lspFilename),
+  _outputDirectory(outputDir),
+  _useDiscrete(useDiscrete),
+  _processOnly(processOnly),
+  _numberOfRuns(0),
+  _numberOfCompletedRuns(0),
+  _newResults(gcnew List<String^>()),
+  _runResults(gcnew Dictionary<int,String^>())
 {
+  ParseStudy();
 }
 
 
 
-SensitivityAnalysis::~SensitivityAnalysis(void)
+SensitivityAnalysisStudy::~SensitivityAnalysisStudy(void)
+{}
+
+
+
+void
+SensitivityAnalysisStudy::ParseStudy(void)
 {
+  // read dml file for base location object
+  gui::DmlFile ^ dmlFile = gcnew gui::DmlFile( _dmlFilename );
+  _baseLocation = dmlFile->Location;
+
+  // read lsp file
+  System::IO::StreamReader ^ sr = gcnew System::IO::StreamReader( _lspFilename );
+  String ^ s;
+
+  // advance to UNCERTAINTY block
+  while( true ) {
+    String ^ s = sr->ReadLine();
+    if( s == "@UNCERTAINTY" ) {
+      break;
+    }
+  }
+
+  // read number of params and runs for this file
+  Regex ^ r = gcnew Regex( "\\d+" );
+  Match ^ m;
+
+  // read number of runs
+  s = sr->ReadLine();
+  m = r->Match( s );
+  _numberOfRuns = Convert::ToInt32( m->Value );
+
+  // read number of parameters
+  s = sr->ReadLine();
+  m = r->Match( s );
+  int numParams = Convert::ToInt32( m->Value );
+
+  // parameter names in ordered parsed
+  Generic::List<String^> ^ sampledParameterNamesInOrder = gcnew Generic::List<String^>();
+
+  for( int i = 1; i <= numParams; ++i ) {
+    s = sr->ReadLine();
+    s = s->Trim( gcnew array<wchar_t>{' ',':'} );
+    sampledParameterNamesInOrder->Add( s );
+  }
+
+  // advance to SAMPLEDATA block
+  while( true ) {
+    String ^ s = sr->ReadLine();
+    if( s == "@SAMPLEDATA" ) {
+      break;
+    }
+  }
+
+
+  // create list of files for each thread
+  int procCount = Environment::ProcessorCount;
+  _filesByThread = gcnew List<Dictionary<int,String^>^>(procCount);
+  for( int i = 0; i < procCount; ++i ) {
+    _filesByThread->Add( gcnew Dictionary<int,String^>() );
+  }
+
+
+  // read parameters for each run
+  for( int i = 0; i < _numberOfRuns; ++i ) {
+
+    // sampled parameters for current run
+    Generic::List<double> ^ thisRun = gcnew Generic::List<double>();
+
+    while( true ) {
+      // parse line into separate values
+      s = sr->ReadLine();
+      Regex ^ rr = gcnew Regex( "\\-?\\d+(\\.\\d+)?([E|D]\\-?\\d+)?" );
+      MatchCollection ^ mc = rr->Matches( s );
+      for each( Match ^ m in mc ) {
+        thisRun->Add( Convert::ToDouble(m->Value) );
+      }
+
+      // check if all params have been read and then cleanup
+      if( thisRun->Count >= numParams + 2 ) {
+        // remove first two values (index and param count)
+        thisRun->RemoveAt(0);
+        thisRun->RemoveAt(0);
+        break;
+      }
+    }
+
+    // create directory for this run
+    DirectoryInfo ^ baseDir = gcnew DirectoryInfo( _outputDirectory );
+    DirectoryInfo ^ runDir = gcnew DirectoryInfo( baseDir->FullName + "\\run " + i );
+    if( !runDir->Exists ) {
+      runDir->Create();
+    }
+
+    // modify base location with this run's parameters values
+    ModifyBaseLocation( sampledParameterNamesInOrder, thisRun );
+
+    // create file for this run
+    String ^ runFilename = String::Format( runDir + "\\run{0}.dml", i+1 );
+    gui::DmlFile ^ runFile = gcnew gui::DmlFile( runFilename, _baseLocation );
+    runFile->Save();
+
+    // allocate file to a thread
+    int threadId = i % procCount;
+    _filesByThread[threadId]->Add( i, runFile->Filename );
+  }
 }
 
 
 
 void
-SensitivityAnalysis::ModifyLocation( gui::Location ^ location, Generic::List<String^> ^ paramNames, Generic::List<double> ^ paramValues )
+SensitivityAnalysisStudy::StartStudy( BackgroundWorker ^ bw )
+{
+  _backgroundWorker = bw;
+
+  // start each separate thread
+  int numThreads = _filesByThread->Count;
+  _simulationThreads = gcnew List<Thread^>(numThreads);
+  for( int i = 0; i < numThreads; ++i ) {
+    // create and start thread
+    StudyThread ^ st = gcnew StudyThread( this, _filesByThread[i], _processOnly, _useDiscrete );
+    ThreadStart ^ ts = gcnew ThreadStart( st, &StudyThread::Start );
+    Thread ^ t = gcnew Thread( ts );
+    t->Name = Convert::ToString( i );
+    _simulationThreads->Add( t );
+    t->Start();
+  }
+
+  while( true ) {
+    // ensure no simulation threads are updating results
+    Monitor::Enter( _runResults );
+
+    // check for new results
+    try {
+      if( _newResults->Count > 0 ) {
+        // create update object
+        StudyState ^ ss = gcnew StudyState();
+        ss->NumberOfRuns = _numberOfRuns;
+        ss->PercentCompleted = static_cast<double>(_runResults->Count) / static_cast<double>(_numberOfRuns);
+        ss->Messages = gcnew List<String^>();
+        for each( String ^ s in _newResults ) {
+          ss->Messages->Add( s );
+        }
+
+        // clear results
+        _newResults->Clear();
+
+        // report progress to ui
+        _backgroundWorker->ReportProgress( static_cast<int>(ss->PercentCompleted), ss );
+
+        if( _runResults->Count == _numberOfRuns ) {
+          break;
+        }
+      }
+    }
+    finally {
+      Monitor::Exit( _runResults );
+    }
+
+
+  }
+}
+
+
+
+void
+SensitivityAnalysisStudy::ReportRunResult( int runId, bool runDiscarded )
+{
+  // ensure only one simulation thread at a time is reporting results
+  Monitor::Enter( _runResults );
+  
+  try {
+    // create message
+    String ^ message;
+    if( runDiscarded) {
+      message = String::Format( "Thread #{0} discarded run #{1}. See errors.txt.", Thread::CurrentThread->Name, runId );
+    }
+    else {
+      message = String::Format( "Thread #{0} completed run #{1}.", Thread::CurrentThread->Name, runId );
+    }
+
+    // save temporary and final results
+    _newResults->Add( message );
+    _runResults[runId] = message;
+  }
+  finally {
+    Monitor::Exit( _runResults );
+  }
+    
+}
+
+
+void
+SensitivityAnalysisStudy::SuspendStudy(void)
+{
+  for each( Thread ^ t in _simulationThreads ) {
+    t->Suspend();
+  }
+}
+
+
+
+void
+SensitivityAnalysisStudy::ResumeStudy(void)
+{
+  for each( Thread ^ t in _simulationThreads ) {
+    t->Resume();
+  }
+}
+
+
+
+void
+SensitivityAnalysisStudy::StopStudy(void)
+{
+  for each( Thread ^ t in _simulationThreads ) {
+    t->Abort();
+  }  
+}
+
+
+
+void
+SensitivityAnalysisStudy::ModifyBaseLocation( Generic::List<String^> ^ paramNames, Generic::List<double> ^ paramValues )
 {
   // for location, modify specified parameters to have specified values
   int numParams = paramNames->Count;
@@ -123,9 +355,10 @@ SensitivityAnalysis::ModifyLocation( gui::Location ^ location, Generic::List<Str
     String ^ dmlName = GetDmlNameFromSa( paramNames[i] );
     double value = paramValues[i];
 
-    SetDmlParameter( location, dmlName, value );
+    SetDmlParameter( dmlName, value );
   }
 }
+
 
 
 Reflection::PropertyInfo ^
@@ -165,16 +398,16 @@ FindNestedProperty( Object ^ rootObject, String ^ propName )
 
 
 void
-SensitivityAnalysis::SetDmlParameter( gui::Location ^ location, String ^ dmlName, Object ^ value )
+SensitivityAnalysisStudy::SetDmlParameter( String ^ dmlName, Object ^ value )
 {
-  Object ^ parentObj = location;
+  Object ^ parentObj = _baseLocation;
   String ^ propName = dmlName;
 
   if( dmlName->Contains(".") ) {
     // nested property, find parent property
     int lastPeriod = dmlName->LastIndexOf(".");
     String ^ parentName = dmlName->Substring( 0, lastPeriod );
-    parentObj = FindNestedProperty( location, parentName );
+    parentObj = FindNestedProperty( _baseLocation, parentName );
     propName = dmlName->Substring( lastPeriod + 1 );
   }
 
@@ -192,7 +425,96 @@ SensitivityAnalysis::SetDmlParameter( gui::Location ^ location, String ^ dmlName
 
 
 String ^
-SensitivityAnalysis::GetDmlNameFromSa( String ^ saName )
+SensitivityAnalysisStudy::GetDmlNameFromSa( String ^ saName )
 {
   return _saNamesToDmlNames[saName];
+}
+
+
+
+StudyThread::StudyThread( SensitivityAnalysisStudy ^ study, Dictionary<int,String^> ^ filenames, bool processOnly, bool useDiscrete )
+: _study(study),
+  _dmlFilenames(filenames),
+  _processOnly(processOnly),
+  _useDiscrete(useDiscrete),
+  _excelApplication(gcnew Excel::Application())
+{
+  // disable error/warning dialogs in Excel for clean automation
+  _excelApplication->DisplayAlerts = false;
+}
+
+
+
+void
+StudyThread::Start(void)
+{
+  for each( KeyValuePair<int,String^> ^ kvp in _dmlFilenames ) {
+    // pull kvp
+    String ^ filename = kvp->Value;
+    int runId = kvp->Key;
+
+    // open this file and location
+    gui::DmlFile ^ dmlFile = gcnew gui::DmlFile( filename );
+    gui::Location ^ location = dmlFile->Location;
+    DirectoryInfo ^ runDir = gcnew DirectoryInfo( Path::GetDirectoryName(filename) );
+    
+    // check for errors in location's parameters
+    location->Biology->PropertyValidationManager->ValidateAllProperties();
+    if( !location->Biology->IsValid ) {
+      // delete error log if already present
+      String ^ logFilename = Path::Combine( runDir->FullName, "errors.txt" );
+      if( File::Exists( logFilename ) ) {
+        File::Delete( logFilename );
+      }
+
+      // create log file with error message
+      StreamWriter ^ sw = gcnew StreamWriter( Path::Combine(runDir->FullName, "errorLog.txt") );
+      sw->Write( ValidationFramework::ResultFormatter::GetConcatenatedErrorMessages("\n", location->Biology->PropertyValidationManager->ValidatorResultsInError) );
+      sw->Close();
+
+      // abort this run (errors), continue with next run
+      _study->ReportRunResult( runId, true );
+      continue;
+    }
+
+    // if processing files only, skip simulation and continue to next file
+    if( _processOnly ) {
+      _study->ReportRunResult( runId, true );
+      continue;
+    }
+
+    // do simulation and save output
+    location->RunCimsim( true, _useDiscrete );
+    location->CimsimOutput->SaveToDisk( runDir );
+
+    // first time generate list of filenames that will be converted post simulation for each subsequent run
+    if( _outputFilenames == nullptr ) {
+      // first look for all excel .xml files in current run directory
+      array<FileInfo^> ^ xmlFiles = runDir->GetFiles( "*.xml", SearchOption::TopDirectoryOnly );
+      
+      // we only want the filename, not path (changes each time)
+      _outputFilenames = gcnew array<String^>(xmlFiles->Length);
+      for( int i = 0; i < xmlFiles->Length; ++i ) {
+        _outputFilenames[i] = xmlFiles[i]->Name;
+      }
+    }
+
+    // convert output files from Excel's xml format to binary format
+    for each( String ^ filename in _outputFilenames ) {
+      // open from this directory
+      String ^ xmlFilename = Path::Combine( runDir->FullName, filename );
+
+      // open and disable compatability check
+      Excel::Workbook ^ xmlFile = _excelApplication->Workbooks->Open(xmlFilename, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing );
+      xmlFile->CheckCompatibility = false;
+
+      // save as excel 97-2003 format, changing extension, close and delete old workbook
+      xmlFile->SaveAs( Path::ChangeExtension( xmlFilename, ".xls" ), Excel::XlFileFormat::xlExcel8, Type::Missing, Type::Missing, Type::Missing, false, Excel::XlSaveAsAccessMode::xlNoChange, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing );
+      _excelApplication->Workbooks->Close();
+      File::Delete( xmlFilename );
+    }
+
+    // completed run and saved output
+    _study->ReportRunResult( runId, true );
+  }
 }
