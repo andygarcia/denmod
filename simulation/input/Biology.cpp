@@ -300,9 +300,9 @@ Biology::AdultParameters::~AdultParameters(void)
 
 
 Biology::AdultParameters::AgeDependentSurvivalParameters::AgeDependentSurvivalParameters(void)
-: CutoffAge( 4 ),
-  YoungSurvival( 0.91 ),
-  OldSurvival( 0.87 )
+: CutoffAge( 10 ),
+  YoungSurvival( 0.99 ),
+  OldSurvival( 0.85 )
 {}
 
 

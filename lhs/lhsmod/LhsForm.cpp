@@ -34,7 +34,7 @@ LhsForm::~LhsForm()
 
 
 System::Void
-LhsForm::OnBrowseDml(System::Object^  sender, System::EventArgs^  e)
+LhsForm::OnBrowseDml( System::Object ^ sender, System::EventArgs ^ e )
 {
   OpenFileDialog ^ ofd = gcnew OpenFileDialog();
   ofd->Filter = "Dengue Model Locations (*.dml)|*.dml";
