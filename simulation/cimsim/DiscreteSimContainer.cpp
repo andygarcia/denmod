@@ -859,6 +859,7 @@ DiscreteSimContainer::AdvanceEggs( int day )
 
             // stochastic advancement
             int hatchedEggs = StochasticAdvancement( itEgg->Number, _eggSurvival * _eggSpontaneousHatchRatio );
+            _newlyHatched += hatchedEggs;
             eggBand->MatureEggs += itEgg->Number - hatchedEggs;
           }
         }

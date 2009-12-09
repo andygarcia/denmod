@@ -301,6 +301,7 @@ Location::RunCimsim( bool usePop, bool stochasticAdvancement, DateTime startDate
 }
 
 
+
 array<double> ^
 ArrayFromDoubleVector( std::vector<double> & vector )
 {
