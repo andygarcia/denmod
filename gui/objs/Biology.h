@@ -111,7 +111,7 @@ public:
   }
 
   [XmlElement(Order=1)]
-  [CustomRuleAttribute( "gui.TemperatureParameters,objs", "CheckValidLowLethalThreshold", "Low lethal threshold must be less than low threshold." )]
+  [CustomRuleAttribute( "gui.TemperatureParameters,denmod.ui.objs", "CheckValidLowLethalThreshold", "Low lethal threshold must be less than low threshold." )]
   [ParameterDisplayAttribute(2, true, ScientificNotationOptions::Never)]
   property double LowLethalThreshold {
     double get(void) {
@@ -127,7 +127,7 @@ public:
   }
 
   [XmlElement(Order=2)]
-  [CustomRuleAttribute( "gui.TemperatureParameters,objs", "CheckValidLowThreshold", "Low threshold must be greater than low lethal threshold and less than high threshold." )]
+  [CustomRuleAttribute( "gui.TemperatureParameters,denmod.ui.objs", "CheckValidLowThreshold", "Low threshold must be greater than low lethal threshold and less than high threshold." )]
   [ParameterDisplayAttribute(2, true, ScientificNotationOptions::Never)]
   property double LowThreshold {
     double get(void) {
@@ -144,7 +144,7 @@ public:
   }
 
   [XmlElement(Order=3)]
-  [CustomRuleAttribute( "gui.TemperatureParameters,objs", "CheckValidHighThreshold", "High threshold must be greater than low threshold and less than high lethal threshold." )]
+  [CustomRuleAttribute( "gui.TemperatureParameters,denmod.ui.objs", "CheckValidHighThreshold", "High threshold must be greater than low threshold and less than high lethal threshold." )]
   [ParameterDisplayAttribute(2, true, ScientificNotationOptions::Never)]
   property double HighThreshold {
     double get(void) {
@@ -162,7 +162,7 @@ public:
 
   [XmlElement(Order=4)]
   [ParameterDisplayAttribute(2, true, ScientificNotationOptions::Never)]
-  [CustomRuleAttribute( "gui.TemperatureParameters,objs", "CheckValidHighLethalThreshold", "High lethal threshold must be greater than high threshold." )]
+  [CustomRuleAttribute( "gui.TemperatureParameters,denmod.ui.objs", "CheckValidHighLethalThreshold", "High lethal threshold must be greater than high threshold." )]
   property double HighLethalThreshold {
     double get(void) {
       return HighLethalThreshold_;
@@ -327,7 +327,7 @@ public:
 
   [XmlElement(Order=3)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
-  [CustomRuleAttribute( "gui.EggSaturationDeficit,objs", "CheckValidLowThreshold", "Low threshold must be less than high threshold." )]
+  [CustomRuleAttribute( "gui.EggSaturationDeficit,denmod.ui.objs", "CheckValidLowThreshold", "Low threshold must be less than high threshold." )]
   property double LowThreshold {
     double get(void) {
       return LowThreshold_;
@@ -343,7 +343,7 @@ public:
 
   [XmlElement(Order=4)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
-  [CustomRuleAttribute( "gui.EggSaturationDeficit,objs", "CheckValidHighThreshold", "High threshold must be greater than low threshold." )]
+  [CustomRuleAttribute( "gui.EggSaturationDeficit,denmod.ui.objs", "CheckValidHighThreshold", "High threshold must be greater than low threshold." )]
   property double HighThreshold {
     double get(void) {
       return HighThreshold_;
@@ -431,7 +431,7 @@ public:
 
   [XmlElement(Order=1)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
-  [CustomRuleAttribute( "gui.EggPredation,objs", "CheckValidLowThreshold", "Low threshold must be less than high threshold." )]
+  [CustomRuleAttribute( "gui.EggPredation,denmod.ui.objs", "CheckValidLowThreshold", "Low threshold must be less than high threshold." )]
   property double LowThreshold {
     double get(void) {
       return LowThreshold_;
@@ -447,7 +447,7 @@ public:
 
   [XmlElement(Order=2)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
-  [CustomRuleAttribute( "gui.EggPredation,objs", "CheckValidHighThreshold", "High threshold must be greater than high threshold." )]
+  [CustomRuleAttribute( "gui.EggPredation,denmod.ui.objs", "CheckValidHighThreshold", "High threshold must be greater than high threshold." )]
   property double HighThreshold {
     double get(void) {
       return HighThreshold_;
@@ -1507,7 +1507,7 @@ public:
 
   [XmlElement(Order=1)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
-  [CustomRuleAttribute( "gui.AdultSaturationDeficit,objs", "CheckValidLowThreshold", "Low threshold must be less than high threshold." )]
+  [CustomRuleAttribute( "gui.AdultSaturationDeficit,denmod.ui.objs", "CheckValidLowThreshold", "Low threshold must be less than high threshold." )]
   property double LowThreshold {
     double get(void) {
       return LowThreshold_;
@@ -1523,7 +1523,7 @@ public:
 
   [XmlElement(Order=2)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
-  [CustomRuleAttribute( "gui.AdultSaturationDeficit,objs", "CheckValidHighThreshold", "High threshold must be greater than high threshold." )]
+  [CustomRuleAttribute( "gui.AdultSaturationDeficit,denmod.ui.objs", "CheckValidHighThreshold", "High threshold must be greater than high threshold." )]
   property double HighThreshold {
     double get(void) {
       return HighThreshold_;
@@ -1593,7 +1593,7 @@ public:
 
   [XmlElement(Order=1)]
   [ParameterDisplayAttribute(4,true,ScientificNotationOptions::Never)]
-  [CustomRuleAttribute( "gui.AdultDoubleBloodMeal,objs", "CheckValidLowThreshold", "Low threshold must be less than high threshold." )]
+  [CustomRuleAttribute( "gui.AdultDoubleBloodMeal,denmod.ui.objs", "CheckValidLowThreshold", "Low threshold must be less than high threshold." )]
   property double LowWeightLimit {
     double get(void) {
       return LowWeightLimit_;
@@ -1609,7 +1609,7 @@ public:
 
   [XmlElement(Order=2)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
-  [CustomRuleAttribute( "gui.AdultDoubleBloodMeal,objs", "CheckValidHighThreshold", "High threshold must be greater than low threshold." )]
+  [CustomRuleAttribute( "gui.AdultDoubleBloodMeal,denmod.ui.objs", "CheckValidHighThreshold", "High threshold must be greater than low threshold." )]
   property double HighWeightLimit {
     double get(void) {
       return HighWeightLimit_;

@@ -138,7 +138,7 @@ private:
 #pragma region Properties
 public:
   [XmlElement(ElementName="DemoClass",Order=0)]
-  [CustomRuleAttribute( "gui.DemographicParameters,objs", "CheckValidProportions", "Validate proportions add to 1.0." )]
+  [CustomRuleAttribute( "gui.DemographicParameters,denmod.ui.objs", "CheckValidProportions", "Validate proportions add to 1.0." )]
   property BindingList<DemographicClass^> ^ DemoClasses {
     BindingList<DemographicClass^> ^ get(void) {
       return DemoClasses_;

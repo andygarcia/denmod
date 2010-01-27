@@ -127,7 +127,7 @@ public:
 
   [XmlElementAttribute(Order=2)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
-  [CustomRuleAttribute( "gui.Container,objs", "CheckValidLength", "Validate container dimensions." )]
+  [CustomRuleAttribute( "gui.Container,denmod.ui.objs", "CheckValidLength", "Validate container dimensions." )]
   property double Length {
     double get(void) {
       return Length_;
@@ -142,7 +142,7 @@ public:
 
   [XmlElementAttribute(Order=3)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
-  [CustomRuleAttribute( "gui.Container,objs", "CheckValidWidth", "Validate container dimensions." )]
+  [CustomRuleAttribute( "gui.Container,denmod.ui.objs", "CheckValidWidth", "Validate container dimensions." )]
   property double Width {
     double get(void) {
       return Width_;
@@ -157,7 +157,7 @@ public:
 
   [XmlElementAttribute(Order=4)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
-  [CustomRuleAttribute( "gui.Container,objs", "CheckValidHeight", "Validate container dimensions." )]
+  [CustomRuleAttribute( "gui.Container,denmod.ui.objs", "CheckValidHeight", "Validate container dimensions." )]
   property double Height {
     double get(void) {
       return Height_;
@@ -172,7 +172,7 @@ public:
 
   [XmlElementAttribute(Order=5)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
-  [CustomRuleAttribute( "gui.Container,objs", "CheckValidDiameter", "Validate container dimensions." )]
+  [CustomRuleAttribute( "gui.Container,denmod.ui.objs", "CheckValidDiameter", "Validate container dimensions." )]
   property double Diameter {
     double get(void) {
       return Diameter_;
@@ -231,7 +231,7 @@ public:
 
   [XmlElementAttribute(Order=9)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
-  [CustomRuleAttribute( "gui.Container,objs", "CheckValidCoverReduction", "Validate based on cover status")]
+  [CustomRuleAttribute( "gui.Container,denmod.ui.objs", "CheckValidCoverReduction", "Validate based on cover status")]
   property double CoverReduction {
     double get(void) {
       return CoverReduction_;
@@ -290,7 +290,7 @@ public:
 
   [XmlElementAttribute(Order=13)]
   [ParameterDisplayAttribute(2,true,ScientificNotationOptions::Never)]
-  [CustomRuleAttribute( "gui.Container,objs", "CheckValidDrawdown", "Validate container's drawdown." )]
+  [CustomRuleAttribute( "gui.Container,denmod.ui.objs", "CheckValidDrawdown", "Validate container's drawdown." )]
   property double Drawdown {
     double get(void) {
       return Drawdown_;
@@ -350,7 +350,7 @@ public:
 
   [XmlElementAttribute(Order=16)]
   [ParameterDisplayAttribute(3,true,ScientificNotationOptions::Never)]
-  [CustomRuleAttribute( "gui.Container,objs", "CheckValidWatershedRatio", "Validate container's watershed ratio." )]
+  [CustomRuleAttribute( "gui.Container,denmod.ui.objs", "CheckValidWatershedRatio", "Validate container's watershed ratio." )]
   property double WatershedRatio {
     double get(void) {
       return WatershedRatio_;
