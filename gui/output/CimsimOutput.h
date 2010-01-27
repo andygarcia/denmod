@@ -283,8 +283,9 @@ public:
   output::Chart ^ CreateContainerChart( output::ChartIds chartId, int containerId );
 
 private:
-  String ^ GetLocationExcelXml(void);
-  String ^ GetContainerExcelXml(void);
+  void WriteLocationWorkbook( IO::StreamWriter ^ sw );
+  void WriteContainerWorkbook( IO::StreamWriter ^ sw );
+  void WriteContainerWorksheets( IO::StreamWriter ^ sw );
 
 public:
   property DateTime StartDate {

@@ -106,15 +106,16 @@ public:
 public:
   virtual void SaveToDisk( IO::DirectoryInfo ^ di ) abstract;
 
-  static String ^ GenerateExcelDateXml( List<String^> ^ headers, List<DateTime> ^ dates, List<array<double>^> ^ columns );
-  static String ^ GenerateExcelClassXml( List<String^> ^ headers, List<String^> ^ indices, List<array<double>^> ^ columns );
+  void WriteDailyWorksheet( IO::StreamWriter ^ sw, String ^ worksheetName, List<String^> ^ headers, List<DateTime> ^ dates, List<array<double>^> ^ columns );
+  void WriteClassWorksheet( IO::StreamWriter ^ sw, String ^ worksheetName, List<String^> ^ headers, List<String^> ^ indices, List<array<double>^> ^ columns );
 
-  String ^ GenerateWorkbook( List<String^> ^ worksheetXmls );
-  String ^ GenerateWorksheet( String ^ worksheetName, List<Type^> ^ columnTypes, List<String^> ^ headers, List<List<String^>^> ^ columns );
-
-private:
+protected:
   void GenerateWeeks(void);
   void GenerateMonths(void);
+
+  void WriteWorkbookOpen( IO::StreamWriter ^ sw );
+  void WriteWorkbookStyles( IO::StreamWriter ^ sw );
+  void WriteWorkbookClose( IO::StreamWriter ^ sw );
 
 public:
   property String ^ Name {
