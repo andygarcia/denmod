@@ -202,8 +202,9 @@ namespace gui {
       this->Controls->Add(this->btnCancel);
       this->Controls->Add(this->btnRun);
       this->Controls->Add(this->gboxYears);
-      this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;
+      this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedToolWindow;
       this->Name = L"RunDensimForm";
+      this->ShowInTaskbar = false;
       this->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;
       this->Text = L"Run Densim";
       this->Load += gcnew System::EventHandler(this, &RunDensimForm::OnLoad);

@@ -218,8 +218,9 @@ namespace gui {
       this->Controls->Add(this->btnRun);
       this->Controls->Add(this->chkUsePop);
       this->Controls->Add(this->gboxYears);
-      this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;
+      this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedToolWindow;
       this->Name = L"RunCimsimForm";
+      this->ShowInTaskbar = false;
       this->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;
       this->Text = L"Run CIMSiM";
       this->Load += gcnew System::EventHandler(this, &RunCimsimForm::OnLoad);
