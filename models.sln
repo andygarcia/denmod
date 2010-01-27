@@ -1,42 +1,36 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "input", "simulation\input\input.vcproj", "{EF97B474-CAB2-4890-ABF6-46C64A56DEF0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.simulation.input", "simulation\input\input.vcproj", "{EF97B474-CAB2-4890-ABF6-46C64A56DEF0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "simulation", "simulation", "{C4A02ADC-2C54-4640-906D-1EC6FECDEC0C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.ui.gui", "gui\gui\gui.vcproj", "{FBC66F86-08B6-453A-BE3C-92472596833D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gui", "gui\gui\gui.vcproj", "{FBC66F86-08B6-453A-BE3C-92472596833D}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "denmod.deployment", "deploy\install\install.vdproj", "{02DDC5D5-6590-407A-89CD-168F85A7CB01}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deployment", "deployment", "{AB848DAF-7BE5-44E4-8115-4675A88F74E9}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.simulation.cimsim", "simulation\cimsim\cimsim.vcproj", "{3181D845-C5F4-46CA-9370-E40A376A9DC4}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "denmod", "deploy\install\install.vdproj", "{02DDC5D5-6590-407A-89CD-168F85A7CB01}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.ui.ctrls", "gui\ctrl\ctrl.vcproj", "{92B00CE3-2DD3-4FF3-90B8-406836D45EC6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cimsim", "simulation\cimsim\cimsim.vcproj", "{3181D845-C5F4-46CA-9370-E40A376A9DC4}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ctrls", "gui\ctrl\ctrl.vcproj", "{92B00CE3-2DD3-4FF3-90B8-406836D45EC6}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "objs", "gui\objs\objs.vcproj", "{C2329981-C757-474F-A90A-E11DBDA868BE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.ui.objs", "gui\objs\objs.vcproj", "{C2329981-C757-474F-A90A-E11DBDA868BE}"
 	ProjectSection(ProjectDependencies) = postProject
 		{54E8551C-CB5B-48F7-A5ED-C6DCA877E842} = {54E8551C-CB5B-48F7-A5ED-C6DCA877E842}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "output1", "simulation\output\output.vcproj", "{D83788CB-CAE8-4537-B69B-65C06CC594E8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.simulation.output", "simulation\output\output.vcproj", "{D83788CB-CAE8-4537-B69B-65C06CC594E8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testgui", "gui\testgui\testgui.vcproj", "{7C77FDB7-9559-4488-BA99-B4DC7411DABC}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.ui.testgui", "gui\testgui\testgui.vcproj", "{7C77FDB7-9559-4488-BA99-B4DC7411DABC}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "util", "util", "{9BE02C8B-9DA4-4680-ACC8-7C0CF9B4AE46}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.ui.output", "gui\output\output.vcproj", "{BDA9AE2A-9845-4511-9E46-0E7AC284147B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "output", "gui\output\output.vcproj", "{BDA9AE2A-9845-4511-9E46-0E7AC284147B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.ui.lhsmod", "lhs\lhsmod\lhsmod.vcproj", "{397D8A84-12D0-4BB5-B0C5-F6DDC633B545}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lhsmod", "lhs\lhsmod\lhsmod.vcproj", "{397D8A84-12D0-4BB5-B0C5-F6DDC633B545}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.util.xml2xls", "util\xml2xls\xml2xls.vcproj", "{9CE07BE8-D000-4536-A34E-09797DF753CE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xml2xls", "util\xml2xls\xml2xls.vcproj", "{9CE07BE8-D000-4536-A34E-09797DF753CE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.util.parsedos", "util\parsedos\parsedos.vcproj", "{DD4542A3-648F-4282-9B77-4786F6B917A6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "parsedos", "util\parsedos\parsedos.vcproj", "{DD4542A3-648F-4282-9B77-4786F6B917A6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.util.exceloutput", "util\exceloutput\exceloutput.vcproj", "{89C7804B-5F22-423D-8DD0-AC344ED0ABAD}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exceloutput", "util\exceloutput\exceloutput.vcproj", "{89C7804B-5F22-423D-8DD0-AC344ED0ABAD}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dsport", "simulation\dsport\dsport.vcproj", "{54E8551C-CB5B-48F7-A5ED-C6DCA877E842}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.simulation.dsport", "simulation\dsport\dsport.vcproj", "{54E8551C-CB5B-48F7-A5ED-C6DCA877E842}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D83788CB-CAE8-4537-B69B-65C06CC594E8} = {D83788CB-CAE8-4537-B69B-65C06CC594E8}
 		{EF97B474-CAB2-4890-ABF6-46C64A56DEF0} = {EF97B474-CAB2-4890-ABF6-46C64A56DEF0}
@@ -107,15 +101,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{EF97B474-CAB2-4890-ABF6-46C64A56DEF0} = {C4A02ADC-2C54-4640-906D-1EC6FECDEC0C}
-		{3181D845-C5F4-46CA-9370-E40A376A9DC4} = {C4A02ADC-2C54-4640-906D-1EC6FECDEC0C}
-		{D83788CB-CAE8-4537-B69B-65C06CC594E8} = {C4A02ADC-2C54-4640-906D-1EC6FECDEC0C}
-		{54E8551C-CB5B-48F7-A5ED-C6DCA877E842} = {C4A02ADC-2C54-4640-906D-1EC6FECDEC0C}
-		{02DDC5D5-6590-407A-89CD-168F85A7CB01} = {AB848DAF-7BE5-44E4-8115-4675A88F74E9}
-		{9CE07BE8-D000-4536-A34E-09797DF753CE} = {9BE02C8B-9DA4-4680-ACC8-7C0CF9B4AE46}
-		{DD4542A3-648F-4282-9B77-4786F6B917A6} = {9BE02C8B-9DA4-4680-ACC8-7C0CF9B4AE46}
-		{89C7804B-5F22-423D-8DD0-AC344ED0ABAD} = {9BE02C8B-9DA4-4680-ACC8-7C0CF9B4AE46}
 	EndGlobalSection
 EndGlobal

@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="objs"
+	Name="denmod.ui.objs"
 	ProjectGUID="{C2329981-C757-474F-A90A-E11DBDA868BE}"
 	RootNamespace="objs"
 	Keyword="ManagedCProj"
@@ -177,8 +177,8 @@
 			AssemblyName="System.Xml, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 		/>
 		<AssemblyReference
-			RelativePath="..\..\..\..\..\..\..\..\..\Program Files\Dundas Software\Charting\WinControlVS2005\bin\DundasWinChart.dll"
-			AssemblyName="DundasWinChart, Version=5.5.1.1700, PublicKeyToken=a4c03dce5db22406, processorArchitecture=MSIL"
+			RelativePath="..\..\..\..\..\..\..\..\..\Program Files (x86)\Dundas Software\Charting\WinControlVS2005\bin\DundasWinChart.dll"
+			AssemblyName="DundasWinChart, Version=5.5.1.1711, PublicKeyToken=a4c03dce5db22406, processorArchitecture=MSIL"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{3181D845-C5F4-46CA-9370-E40A376A9DC4}"

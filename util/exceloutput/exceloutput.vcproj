@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="exceloutput"
+	Name="denmod.util.exceloutput"
 	ProjectGUID="{89C7804B-5F22-423D-8DD0-AC344ED0ABAD}"
 	RootNamespace="exceloutput"
 	Keyword="ManagedCProj"

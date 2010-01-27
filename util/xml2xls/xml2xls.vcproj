@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="xml2xls"
+	Name="denmod.util.xml2xls"
 	ProjectGUID="{9CE07BE8-D000-4536-A34E-09797DF753CE}"
 	RootNamespace="xml2xls"
 	Keyword="ManagedCProj"

@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="cimsim"
+	Name="denmod.simulation.cimsim"
 	ProjectGUID="{3181D845-C5F4-46CA-9370-E40A376A9DC4}"
 	RootNamespace="cimsim"
 	Keyword="Win32Proj"

@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="output"
+	Name="denmod.ui.output"
 	ProjectGUID="{BDA9AE2A-9845-4511-9E46-0E7AC284147B}"
 	RootNamespace="output"
 	Keyword="ManagedCProj"

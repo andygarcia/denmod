@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="parsedos"
+	Name="denmod.util.parsedos"
 	ProjectGUID="{DD4542A3-648F-4282-9B77-4786F6B917A6}"
 	RootNamespace="parsedos"
 	Keyword="ManagedCProj"

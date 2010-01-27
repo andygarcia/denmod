@@ -853,14 +853,13 @@ DiscreteSimContainer::AdvanceEggs( int day )
             _newlyHatched += StochasticAdvancement( itEgg->Number, _eggSurvival );
           }
           else {
-            // band not flooded, some proportion hatch spontaneously, rest become mature eggs
-            //eggBand->MatureEggs += ((1 - _eggSpontaneousHatchRatio) * itEgg->Number * _eggSurvival);
-            //_newlyHatched += (_eggSpontaneousHatchRatio * itEgg->Number * _eggSurvival);
+            // apply survival and then hatch ratio
+            int survivingEggs = StochasticAdvancement( itEgg->Number, _eggSurvival );
+            int hatchedEggs = StochasticAdvancement( survivingEggs, _eggSpontaneousHatchRatio ); 
 
-            // stochastic advancement
-            int hatchedEggs = StochasticAdvancement( itEgg->Number, _eggSurvival * _eggSpontaneousHatchRatio );
+            // some eggs hatch spontaneuously and the remainder are retained as mature
             _newlyHatched += hatchedEggs;
-            eggBand->MatureEggs += itEgg->Number - hatchedEggs;
+            eggBand->MatureEggs += survivingEggs - hatchedEggs;
           }
         }
 
@@ -1188,7 +1187,8 @@ DiscreteSimContainer::AdvanceLarvae( int day )
         itLarvae->Number = survivingLarvae;
         totalCadaverWeight += deadLarvae * initWeight;
 
-        if( itLarvae->Age > MaxAgeLarv ) {
+        if( itLarvae->Age > MaxAgeLarv || itLarvae->Number == 0 ) {
+          // in discrete simulations, potential for cohort count to go to 0
           itLarvae = LarvaeCohorts.erase( itLarvae );
         }
         else {

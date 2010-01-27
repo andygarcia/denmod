@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="gui"
+	Name="denmod.ui.gui"
 	ProjectGUID="{FBC66F86-08B6-453A-BE3C-92472596833D}"
 	RootNamespace="gui"
 	Keyword="ManagedCProj"
@@ -201,8 +201,8 @@
 			AssemblyName="System.Xml, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 		/>
 		<AssemblyReference
-			RelativePath="c:\Program Files\Dundas Software\Charting\WinControlVS2005\bin\DundasWinChart.dll"
-			AssemblyName="DundasWinChart, Version=5.5.1.1700, PublicKeyToken=a4c03dce5db22406, processorArchitecture=MSIL"
+			RelativePath="..\..\..\..\..\..\..\..\..\Program Files (x86)\Dundas Software\Charting\WinControlVS2005\bin\DundasWinChart.dll"
+			AssemblyName="DundasWinChart, Version=5.5.1.1711, PublicKeyToken=a4c03dce5db22406, processorArchitecture=MSIL"
 		/>
 		<AssemblyReference
 			RelativePath="System.Design.dll"

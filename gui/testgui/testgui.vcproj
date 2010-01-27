@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="testgui"
+	Name="denmod.ui.testgui"
 	ProjectGUID="{7C77FDB7-9559-4488-BA99-B4DC7411DABC}"
 	RootNamespace="testgui"
 	Keyword="ManagedCProj"

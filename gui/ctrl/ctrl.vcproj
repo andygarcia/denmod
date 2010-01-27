@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="ctrls"
+	Name="denmod.ui.ctrls"
 	ProjectGUID="{92B00CE3-2DD3-4FF3-90B8-406836D45EC6}"
 	RootNamespace="ctrls"
 	Keyword="ManagedCProj"

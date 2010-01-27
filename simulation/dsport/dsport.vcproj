@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="dsport"
+	Name="denmod.simulation.dsport"
 	ProjectGUID="{54E8551C-CB5B-48F7-A5ED-C6DCA877E842}"
 	RootNamespace="dsport"
 	Keyword="Win32Proj"
