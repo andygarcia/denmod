@@ -99,7 +99,7 @@ LhsForm::OnRun(System::Object^  sender, System::EventArgs^  e)
     //btnRun->Text = "Pause";
 
     // create and run study
-    _study = gcnew SensitivityAnalysisStudy( _backgroundWorker, tboxDml->Text, tboxLsp->Text, tboxOutput->Text, chkDiscrete->Enabled, chkProcessOnly->Enabled );
+    _study = gcnew SensitivityAnalysisStudy( _backgroundWorker, tboxDml->Text, tboxLsp->Text, tboxOutput->Text, chkDiscrete->Checked, chkProcessOnly->Checked );
     _backgroundWorker->RunWorkerAsync();
   }
 

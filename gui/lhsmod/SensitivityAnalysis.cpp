@@ -105,12 +105,12 @@ SensitivityAnalysisStudy::SensitivityAnalysisStudy(void)
 
 
 
-SensitivityAnalysisStudy::SensitivityAnalysisStudy( BackgroundWorker ^ backgroundWorker, String ^ dmlFilename, String ^ lspFilename, String ^ outputDir, bool useDiscrete, bool processOnly )
+SensitivityAnalysisStudy::SensitivityAnalysisStudy( BackgroundWorker ^ backgroundWorker, String ^ dmlFilename, String ^ lspFilename, String ^ outputDir, bool processOnly, bool useDiscrete )
 : _dmlFilename(dmlFilename),
   _lspFilename(lspFilename),
   _outputDirectory(outputDir),
-  _useDiscrete(useDiscrete),
   _processOnly(processOnly),
+  _useDiscrete(useDiscrete),
   _numberOfRuns(0),
   _numberOfCompletedRuns(0),
   _newResults(gcnew List<String^>()),
@@ -211,7 +211,7 @@ SensitivityAnalysisStudy::ParseStudy(void)
 
     // create directory for this run
     DirectoryInfo ^ baseDir = gcnew DirectoryInfo( _outputDirectory );
-    DirectoryInfo ^ runDir = gcnew DirectoryInfo( baseDir->FullName + "\\run " + i );
+    DirectoryInfo ^ runDir = gcnew DirectoryInfo( baseDir->FullName + "\\run " + (i+1) );
     if( !runDir->Exists ) {
       runDir->Create();
     }
@@ -280,8 +280,6 @@ SensitivityAnalysisStudy::StartStudy( BackgroundWorker ^ bw )
     finally {
       Monitor::Exit( _runResults );
     }
-
-
   }
 }
 
@@ -292,15 +290,16 @@ SensitivityAnalysisStudy::ReportRunResult( int runId, bool runDiscarded )
 {
   // ensure only one simulation thread at a time is reporting results
   Monitor::Enter( _runResults );
-  
+
+  // todo fix run indexing kludge
   try {
     // create message
     String ^ message;
     if( runDiscarded) {
-      message = String::Format( "Thread #{0} discarded run #{1}. See errors.txt.", Thread::CurrentThread->Name, runId );
+      message = String::Format( "Thread #{0} discarded run #{1}. See errors.txt.", Thread::CurrentThread->Name, runId+1 );
     }
     else {
-      message = String::Format( "Thread #{0} completed run #{1}.", Thread::CurrentThread->Name, runId );
+      message = String::Format( "Thread #{0} completed run #{1}.", Thread::CurrentThread->Name, runId+1 );
     }
 
     // save temporary and final results
@@ -479,7 +478,7 @@ StudyThread::Start(void)
 
     // if processing files only, skip simulation and continue to next file
     if( _processOnly ) {
-      _study->ReportRunResult( runId, true );
+      _study->ReportRunResult( runId, false );
       continue;
     }
 
@@ -515,6 +514,6 @@ StudyThread::Start(void)
     }
 
     // completed run and saved output
-    _study->ReportRunResult( runId, true );
+    _study->ReportRunResult( runId, false );
   }
 }
