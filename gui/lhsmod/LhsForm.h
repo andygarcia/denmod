@@ -43,7 +43,6 @@ namespace lhsmod {
     };
 
     BackgroundWorker ^ _backgroundWorker;
-    Generic::Dictionary<String^,String^> ^ _saToDmlMap;
 
   private: System::Windows::Forms::TextBox^  tboxLsp;
   private: System::Windows::Forms::TextBox^  tboxOutput;
