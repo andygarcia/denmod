@@ -126,7 +126,7 @@ private:
   void WriteLocationWorkbook( IO::StreamWriter ^ sw );
   void WriteSerologyWorkbook( IO::StreamWriter ^ sw );
   void WriteDemographicsWorkbook( IO::StreamWriter ^ sw );
-  void WriteSerotypeWorkbook( IO::StreamWriter ^ sw, int serotype );
+  void WriteVirusWorkbook( IO::StreamWriter ^ sw );
 
 public:
   property array<double> ^ InitialAgeDistribution {
