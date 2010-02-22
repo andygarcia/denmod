@@ -29,9 +29,8 @@ namespace gui {
 
     System::Void OnLoad( System::Object ^ sender, System::EventArgs ^ e );
     System::Void OnRunDensim( System::Object ^ sender, System::EventArgs ^ e );
-    System::Void OnTabPageSelecting( System::Object ^ sender, System::Windows::Forms::TabControlCancelEventArgs ^ e);
-
-
+    System::Void OnTabPageSelecting( System::Object ^ sender, System::Windows::Forms::TabControlCancelEventArgs ^ e );
+    System::Void OnSerologyAutoFill( System::Object ^ sender, System::EventArgs ^ e );
     System::Void OnDemographicsRowValidating( System::Object ^ sender, System::Windows::Forms::DataGridViewCellCancelEventArgs ^ e );
 
   private:
@@ -116,6 +115,7 @@ namespace gui {
   private: System::Windows::Forms::ErrorProvider^  errproSerology;
   private: System::Windows::Forms::ErrorProvider^  errproHumanToMosquitoInfection;
   private: System::Windows::Forms::ErrorProvider^  errproTiterModification;
+private: System::Windows::Forms::Button^  btnSeroAutoFill;
   private: System::ComponentModel::IContainer^  components;
 	private:
 		/// <summary>
@@ -131,20 +131,20 @@ namespace gui {
 		void InitializeComponent(void)
 		{
       this->components = (gcnew System::ComponentModel::Container());
-      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle1 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle3 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle4 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle2 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle5 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle7 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle8 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle6 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle9 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle12 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle13 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle10 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle11 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle14 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle19 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle21 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle22 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle20 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle15 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle17 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle18 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle16 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle23 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle26 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle27 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle24 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle25 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+      System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle28 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
       this->btnRunSim = (gcnew System::Windows::Forms::Button());
       this->tabDensim = (gcnew System::Windows::Forms::TabControl());
       this->tabDemographics = (gcnew System::Windows::Forms::TabPage());
@@ -223,6 +223,7 @@ namespace gui {
       this->errproSerology = (gcnew System::Windows::Forms::ErrorProvider(this->components));
       this->errproHumanToMosquitoInfection = (gcnew System::Windows::Forms::ErrorProvider(this->components));
       this->errproTiterModification = (gcnew System::Windows::Forms::ErrorProvider(this->components));
+      this->btnSeroAutoFill = (gcnew System::Windows::Forms::Button());
       this->tabDensim->SuspendLayout();
       this->tabDemographics->SuspendLayout();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->dgvDemographics))->BeginInit();
@@ -335,38 +336,38 @@ namespace gui {
         | System::Windows::Forms::AnchorStyles::Left) 
         | System::Windows::Forms::AnchorStyles::Right));
       this->dgvDemographics->AutoSizeColumnsMode = System::Windows::Forms::DataGridViewAutoSizeColumnsMode::Fill;
-      dataGridViewCellStyle1->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-      dataGridViewCellStyle1->BackColor = System::Drawing::SystemColors::Control;
-      dataGridViewCellStyle1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, 
+      dataGridViewCellStyle19->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+      dataGridViewCellStyle19->BackColor = System::Drawing::SystemColors::Control;
+      dataGridViewCellStyle19->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, 
         System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      dataGridViewCellStyle1->ForeColor = System::Drawing::SystemColors::WindowText;
-      dataGridViewCellStyle1->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-      dataGridViewCellStyle1->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-      dataGridViewCellStyle1->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-      this->dgvDemographics->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+      dataGridViewCellStyle19->ForeColor = System::Drawing::SystemColors::WindowText;
+      dataGridViewCellStyle19->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+      dataGridViewCellStyle19->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+      dataGridViewCellStyle19->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+      this->dgvDemographics->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle19;
       this->dgvDemographics->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
       this->dgvDemographics->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(4) {this->dgvcDemoAgeClass, 
         this->dgvcDemoProp, this->dgvcDemoDeath, this->dgvcDemoBirth});
-      dataGridViewCellStyle3->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-      dataGridViewCellStyle3->BackColor = System::Drawing::SystemColors::Window;
-      dataGridViewCellStyle3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, 
+      dataGridViewCellStyle21->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+      dataGridViewCellStyle21->BackColor = System::Drawing::SystemColors::Window;
+      dataGridViewCellStyle21->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, 
         System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      dataGridViewCellStyle3->ForeColor = System::Drawing::SystemColors::ControlText;
-      dataGridViewCellStyle3->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-      dataGridViewCellStyle3->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-      dataGridViewCellStyle3->WrapMode = System::Windows::Forms::DataGridViewTriState::False;
-      this->dgvDemographics->DefaultCellStyle = dataGridViewCellStyle3;
+      dataGridViewCellStyle21->ForeColor = System::Drawing::SystemColors::ControlText;
+      dataGridViewCellStyle21->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+      dataGridViewCellStyle21->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+      dataGridViewCellStyle21->WrapMode = System::Windows::Forms::DataGridViewTriState::False;
+      this->dgvDemographics->DefaultCellStyle = dataGridViewCellStyle21;
       this->dgvDemographics->Location = System::Drawing::Point(6, 58);
       this->dgvDemographics->Name = L"dgvDemographics";
-      dataGridViewCellStyle4->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-      dataGridViewCellStyle4->BackColor = System::Drawing::SystemColors::Control;
-      dataGridViewCellStyle4->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, 
+      dataGridViewCellStyle22->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+      dataGridViewCellStyle22->BackColor = System::Drawing::SystemColors::Control;
+      dataGridViewCellStyle22->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, 
         System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      dataGridViewCellStyle4->ForeColor = System::Drawing::SystemColors::WindowText;
-      dataGridViewCellStyle4->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-      dataGridViewCellStyle4->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-      dataGridViewCellStyle4->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-      this->dgvDemographics->RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
+      dataGridViewCellStyle22->ForeColor = System::Drawing::SystemColors::WindowText;
+      dataGridViewCellStyle22->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+      dataGridViewCellStyle22->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+      dataGridViewCellStyle22->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+      this->dgvDemographics->RowHeadersDefaultCellStyle = dataGridViewCellStyle22;
       this->dgvDemographics->RowHeadersVisible = false;
       this->dgvDemographics->Size = System::Drawing::Size(754, 208);
       this->dgvDemographics->TabIndex = 6;
@@ -375,8 +376,8 @@ namespace gui {
       // dgvcDemoAgeClass
       // 
       this->dgvcDemoAgeClass->DataPropertyName = L"AgeClass";
-      dataGridViewCellStyle2->BackColor = System::Drawing::SystemColors::Control;
-      this->dgvcDemoAgeClass->DefaultCellStyle = dataGridViewCellStyle2;
+      dataGridViewCellStyle20->BackColor = System::Drawing::SystemColors::Control;
+      this->dgvcDemoAgeClass->DefaultCellStyle = dataGridViewCellStyle20;
       this->dgvcDemoAgeClass->HeaderText = L"Age Class";
       this->dgvcDemoAgeClass->Name = L"dgvcDemoAgeClass";
       this->dgvcDemoAgeClass->ReadOnly = true;
@@ -401,6 +402,7 @@ namespace gui {
       // 
       // tabSerology
       // 
+      this->tabSerology->Controls->Add(this->btnSeroAutoFill);
       this->tabSerology->Controls->Add(this->snboxMaeaDuration);
       this->tabSerology->Controls->Add(this->snboxManaDuration);
       this->tabSerology->Controls->Add(this->snboxHetDuration);
@@ -432,6 +434,7 @@ namespace gui {
       this->snboxManaDuration->Name = L"snboxManaDuration";
       this->snboxManaDuration->Size = System::Drawing::Size(80, 20);
       this->snboxManaDuration->TabIndex = 1;
+      this->snboxManaDuration->Text = L"0.00000";
       this->snboxManaDuration->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxManaDuration->Value = L"0.00000";
       // 
@@ -454,38 +457,38 @@ namespace gui {
         | System::Windows::Forms::AnchorStyles::Left) 
         | System::Windows::Forms::AnchorStyles::Right));
       this->dgvSerology->AutoSizeColumnsMode = System::Windows::Forms::DataGridViewAutoSizeColumnsMode::Fill;
-      dataGridViewCellStyle5->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-      dataGridViewCellStyle5->BackColor = System::Drawing::SystemColors::Control;
-      dataGridViewCellStyle5->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, 
+      dataGridViewCellStyle15->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+      dataGridViewCellStyle15->BackColor = System::Drawing::SystemColors::Control;
+      dataGridViewCellStyle15->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, 
         System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      dataGridViewCellStyle5->ForeColor = System::Drawing::SystemColors::WindowText;
-      dataGridViewCellStyle5->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-      dataGridViewCellStyle5->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-      dataGridViewCellStyle5->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-      this->dgvSerology->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+      dataGridViewCellStyle15->ForeColor = System::Drawing::SystemColors::WindowText;
+      dataGridViewCellStyle15->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+      dataGridViewCellStyle15->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+      dataGridViewCellStyle15->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+      this->dgvSerology->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle15;
       this->dgvSerology->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
       this->dgvSerology->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(5) {this->dgvcSeroClass, 
         this->dgvcSeroDen1, this->dgvcSeroDen2, this->dgvcSeroDen3, this->dgvcSeroDen4});
-      dataGridViewCellStyle7->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-      dataGridViewCellStyle7->BackColor = System::Drawing::SystemColors::Window;
-      dataGridViewCellStyle7->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, 
+      dataGridViewCellStyle17->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+      dataGridViewCellStyle17->BackColor = System::Drawing::SystemColors::Window;
+      dataGridViewCellStyle17->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, 
         System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      dataGridViewCellStyle7->ForeColor = System::Drawing::SystemColors::ControlText;
-      dataGridViewCellStyle7->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-      dataGridViewCellStyle7->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-      dataGridViewCellStyle7->WrapMode = System::Windows::Forms::DataGridViewTriState::False;
-      this->dgvSerology->DefaultCellStyle = dataGridViewCellStyle7;
+      dataGridViewCellStyle17->ForeColor = System::Drawing::SystemColors::ControlText;
+      dataGridViewCellStyle17->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+      dataGridViewCellStyle17->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+      dataGridViewCellStyle17->WrapMode = System::Windows::Forms::DataGridViewTriState::False;
+      this->dgvSerology->DefaultCellStyle = dataGridViewCellStyle17;
       this->dgvSerology->Location = System::Drawing::Point(6, 84);
       this->dgvSerology->Name = L"dgvSerology";
-      dataGridViewCellStyle8->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-      dataGridViewCellStyle8->BackColor = System::Drawing::SystemColors::Control;
-      dataGridViewCellStyle8->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, 
+      dataGridViewCellStyle18->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+      dataGridViewCellStyle18->BackColor = System::Drawing::SystemColors::Control;
+      dataGridViewCellStyle18->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, 
         System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      dataGridViewCellStyle8->ForeColor = System::Drawing::SystemColors::WindowText;
-      dataGridViewCellStyle8->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-      dataGridViewCellStyle8->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-      dataGridViewCellStyle8->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-      this->dgvSerology->RowHeadersDefaultCellStyle = dataGridViewCellStyle8;
+      dataGridViewCellStyle18->ForeColor = System::Drawing::SystemColors::WindowText;
+      dataGridViewCellStyle18->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+      dataGridViewCellStyle18->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+      dataGridViewCellStyle18->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+      this->dgvSerology->RowHeadersDefaultCellStyle = dataGridViewCellStyle18;
       this->dgvSerology->RowHeadersVisible = false;
       this->dgvSerology->Size = System::Drawing::Size(754, 182);
       this->dgvSerology->TabIndex = 6;
@@ -493,8 +496,8 @@ namespace gui {
       // dgvcSeroClass
       // 
       this->dgvcSeroClass->DataPropertyName = L"AgeClass";
-      dataGridViewCellStyle6->BackColor = System::Drawing::SystemColors::Control;
-      this->dgvcSeroClass->DefaultCellStyle = dataGridViewCellStyle6;
+      dataGridViewCellStyle16->BackColor = System::Drawing::SystemColors::Control;
+      this->dgvcSeroClass->DefaultCellStyle = dataGridViewCellStyle16;
       this->dgvcSeroClass->HeaderText = L"Age Class";
       this->dgvcSeroClass->Name = L"dgvcSeroClass";
       this->dgvcSeroClass->ReadOnly = true;
@@ -571,38 +574,38 @@ namespace gui {
         | System::Windows::Forms::AnchorStyles::Right));
       this->dgvVirology->AutoSizeColumnsMode = System::Windows::Forms::DataGridViewAutoSizeColumnsMode::Fill;
       this->dgvVirology->AutoSizeRowsMode = System::Windows::Forms::DataGridViewAutoSizeRowsMode::DisplayedCells;
-      dataGridViewCellStyle9->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-      dataGridViewCellStyle9->BackColor = System::Drawing::SystemColors::Control;
-      dataGridViewCellStyle9->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, 
+      dataGridViewCellStyle23->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+      dataGridViewCellStyle23->BackColor = System::Drawing::SystemColors::Control;
+      dataGridViewCellStyle23->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, 
         System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      dataGridViewCellStyle9->ForeColor = System::Drawing::SystemColors::WindowText;
-      dataGridViewCellStyle9->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-      dataGridViewCellStyle9->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-      dataGridViewCellStyle9->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-      this->dgvVirology->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle9;
+      dataGridViewCellStyle23->ForeColor = System::Drawing::SystemColors::WindowText;
+      dataGridViewCellStyle23->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+      dataGridViewCellStyle23->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+      dataGridViewCellStyle23->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+      this->dgvVirology->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle23;
       this->dgvVirology->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
       this->dgvVirology->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(4) {this->dgvcSeroType, 
         this->dgvcViremia, this->dgvcIncubationPeriod, this->dgvcViremicPeriod});
-      dataGridViewCellStyle12->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-      dataGridViewCellStyle12->BackColor = System::Drawing::SystemColors::Window;
-      dataGridViewCellStyle12->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, 
+      dataGridViewCellStyle26->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+      dataGridViewCellStyle26->BackColor = System::Drawing::SystemColors::Window;
+      dataGridViewCellStyle26->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, 
         System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      dataGridViewCellStyle12->ForeColor = System::Drawing::SystemColors::ControlText;
-      dataGridViewCellStyle12->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-      dataGridViewCellStyle12->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-      dataGridViewCellStyle12->WrapMode = System::Windows::Forms::DataGridViewTriState::False;
-      this->dgvVirology->DefaultCellStyle = dataGridViewCellStyle12;
+      dataGridViewCellStyle26->ForeColor = System::Drawing::SystemColors::ControlText;
+      dataGridViewCellStyle26->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+      dataGridViewCellStyle26->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+      dataGridViewCellStyle26->WrapMode = System::Windows::Forms::DataGridViewTriState::False;
+      this->dgvVirology->DefaultCellStyle = dataGridViewCellStyle26;
       this->dgvVirology->Location = System::Drawing::Point(3, 3);
       this->dgvVirology->Name = L"dgvVirology";
-      dataGridViewCellStyle13->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-      dataGridViewCellStyle13->BackColor = System::Drawing::SystemColors::Control;
-      dataGridViewCellStyle13->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, 
+      dataGridViewCellStyle27->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+      dataGridViewCellStyle27->BackColor = System::Drawing::SystemColors::Control;
+      dataGridViewCellStyle27->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, 
         System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      dataGridViewCellStyle13->ForeColor = System::Drawing::SystemColors::WindowText;
-      dataGridViewCellStyle13->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-      dataGridViewCellStyle13->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-      dataGridViewCellStyle13->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-      this->dgvVirology->RowHeadersDefaultCellStyle = dataGridViewCellStyle13;
+      dataGridViewCellStyle27->ForeColor = System::Drawing::SystemColors::WindowText;
+      dataGridViewCellStyle27->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+      dataGridViewCellStyle27->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+      dataGridViewCellStyle27->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+      this->dgvVirology->RowHeadersDefaultCellStyle = dataGridViewCellStyle27;
       this->dgvVirology->RowHeadersVisible = false;
       this->dgvVirology->Size = System::Drawing::Size(760, 107);
       this->dgvVirology->TabIndex = 0;
@@ -610,8 +613,8 @@ namespace gui {
       // dgvcSeroType
       // 
       this->dgvcSeroType->DataPropertyName = L"SeroTypeString";
-      dataGridViewCellStyle10->BackColor = System::Drawing::SystemColors::Control;
-      this->dgvcSeroType->DefaultCellStyle = dataGridViewCellStyle10;
+      dataGridViewCellStyle24->BackColor = System::Drawing::SystemColors::Control;
+      this->dgvcSeroType->DefaultCellStyle = dataGridViewCellStyle24;
       this->dgvcSeroType->HeaderText = L"Serotype";
       this->dgvcSeroType->Name = L"dgvcSeroType";
       this->dgvcSeroType->ReadOnly = true;
@@ -619,9 +622,9 @@ namespace gui {
       // dgvcViremia
       // 
       this->dgvcViremia->DataPropertyName = L"Viremia";
-      dataGridViewCellStyle11->Format = L"N0";
-      dataGridViewCellStyle11->NullValue = nullptr;
-      this->dgvcViremia->DefaultCellStyle = dataGridViewCellStyle11;
+      dataGridViewCellStyle25->Format = L"N0";
+      dataGridViewCellStyle25->NullValue = nullptr;
+      this->dgvcViremia->DefaultCellStyle = dataGridViewCellStyle25;
       this->dgvcViremia->HeaderText = L"Viremia (MID-50)";
       this->dgvcViremia->Name = L"dgvcViremia";
       // 
@@ -1046,8 +1049,8 @@ namespace gui {
       // dgvcSequence
       // 
       this->dgvcSequence->DataPropertyName = L"Sequence";
-      dataGridViewCellStyle14->BackColor = System::Drawing::SystemColors::Control;
-      this->dgvcSequence->DefaultCellStyle = dataGridViewCellStyle14;
+      dataGridViewCellStyle28->BackColor = System::Drawing::SystemColors::Control;
+      this->dgvcSequence->DefaultCellStyle = dataGridViewCellStyle28;
       this->dgvcSequence->HeaderText = L"Sequence of Infection";
       this->dgvcSequence->Name = L"dgvcSequence";
       this->dgvcSequence->ReadOnly = true;
@@ -1097,6 +1100,16 @@ namespace gui {
       // errproTiterModification
       // 
       this->errproTiterModification->ContainerControl = this;
+      // 
+      // btnSeroAutoFill
+      // 
+      this->btnSeroAutoFill->Location = System::Drawing::Point(685, 55);
+      this->btnSeroAutoFill->Name = L"btnSeroAutoFill";
+      this->btnSeroAutoFill->Size = System::Drawing::Size(75, 23);
+      this->btnSeroAutoFill->TabIndex = 7;
+      this->btnSeroAutoFill->Text = L"Auto Fill";
+      this->btnSeroAutoFill->UseVisualStyleBackColor = true;
+      this->btnSeroAutoFill->Click += gcnew System::EventHandler(this, &DensimPanel::OnSerologyAutoFill);
       // 
       // DensimPanel
       // 

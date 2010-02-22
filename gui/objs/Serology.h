@@ -108,6 +108,8 @@ public:
 
   input::Serology * GetSimObject(void);
 
+  void AutoFillSerology( double proportion );
+
 public:
   [XmlElement(ElementName="SeroClass",Order=0)]
   property BindingList<SerologyClass^> ^ SeroClasses {

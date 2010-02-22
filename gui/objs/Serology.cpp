@@ -89,3 +89,15 @@ SerologyParameters::GetSimObject(void)
 
   return s;
 }
+
+
+void
+SerologyParameters::AutoFillSerology( double proportion )
+{
+  for each( SerologyClass ^ sc in SeroClasses_ ) {
+    sc->Dengue1 = proportion;
+    sc->Dengue2 = proportion;
+    sc->Dengue3 = proportion;
+    sc->Dengue4 = proportion;
+  }
+}

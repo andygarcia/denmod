@@ -171,6 +171,47 @@ DensimPanel::OnTabPageSelecting( System::Object ^ sender, System::Windows::Forms
 
 
 System::Void
+DensimPanel::OnSerologyAutoFill( System::Object ^ sender, System::EventArgs ^ e )
+{
+  Form ^ f = gcnew Form();
+
+  f->FormBorderStyle = Windows::Forms::FormBorderStyle::FixedToolWindow;
+  f->ShowInTaskbar = false;
+  f->Text = "Auto Fill Serology";
+  f->Size = Drawing::Size( 290, 70 );
+
+  TextBox ^ tb = gcnew TextBox();
+  tb->TextAlign = HorizontalAlignment::Right;
+  tb->Location = Drawing::Point( 12, 12 );
+  f->Controls->Add( tb );
+
+  Button ^ ok = gcnew Button();
+  ok->Text = "OK";
+  ok->Location = Drawing::Point( 118, 10 );
+  ok->DialogResult = ::DialogResult::OK;
+  f->Controls->Add( ok );
+
+  Button ^ cancel = gcnew Button();
+  cancel->Text = "Cancel";
+  cancel->DialogResult = ::DialogResult::Cancel;
+  cancel->Location = Drawing::Point( 199, 10 );
+  f->Controls->Add( cancel );
+
+  f->AcceptButton = ok;
+  f->CancelButton = cancel;
+  f->StartPosition = FormStartPosition::CenterParent;
+
+  if( f->ShowDialog() == ::DialogResult::OK ) {
+    // do something with the number
+    String ^ input = tb->Text;
+    double proportion = Convert::ToDouble( input );
+    GetLocation()->Serology->AutoFillSerology( proportion );
+  }
+}
+
+
+
+System::Void
 DensimPanel::OnDemographicsRowValidating( System::Object ^ sender, System::Windows::Forms::DataGridViewCellCancelEventArgs ^ e )
 {
   GetLocation()->Demographics->PropertyValidationManager->ValidateProperty( "DemoClasses" );
