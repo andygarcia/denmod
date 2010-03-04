@@ -9,6 +9,19 @@ public:
   Settings(void);
 
 public:
+  property bool DoSimulationDiskOutput {
+    bool get(void) {
+      return _doSimulationDiskOutput;
+    }
+    void set(bool b) {
+      if( b != _doSimulationDiskOutput ) {
+        _doSimulationDiskOutput = b;
+        NotifyPropertyChanged( "DoSimulationDiskOutput" );
+      }
+    }
+  }
+
+
   property bool ScaleCimsimMainGraph {
     bool get(void) {
       return _scaleCimsimMainGraph;
@@ -46,6 +59,7 @@ public:
   }
 
 private:
+  bool _doSimulationDiskOutput;
   bool _scaleCimsimMainGraph;
   bool _stochasticAdvancement;
   bool _establishedPopulationDefault;

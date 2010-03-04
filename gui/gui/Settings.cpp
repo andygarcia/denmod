@@ -5,8 +5,10 @@ using namespace gui;
 
 
 Settings::Settings(void)
-: _scaleCimsimMainGraph(false),
-  _stochasticAdvancement(false)
+: _doSimulationDiskOutput(false),
+  _scaleCimsimMainGraph(false),
+  _stochasticAdvancement(false),
+  _establishedPopulationDefault(true)
 {}
 
 
