@@ -6,8 +6,9 @@ using namespace sim::dsport;
 
 
 
-Simulation::Simulation( const input::Location * location, sim::output::MosData * mosData )
-: _dsport(new dsport(location, mosData))
+Simulation::Simulation( const input::Location * location, sim::output::MosData * mosData, bool doDiskOutput )
+: _dsport(new dsport(location, mosData, doDiskOutput)),
+  _doDiskOutput(doDiskOutput)
 {}
 
 

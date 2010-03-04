@@ -30,7 +30,7 @@ class dsport
 {
 // Constructors
 public:
-  dsport( const input::Location * location, sim::output::MosData * mosData );
+  dsport( const input::Location * location, sim::output::MosData * mosData, bool doDiskOutput = false );
   virtual ~dsport(void);
 
 // Methods
@@ -66,6 +66,8 @@ public:
   const input::Location * _location;
   output::MosData * _mosData;
   output::DensimOutput * _densimOutput;
+
+  bool _doDiskOutput;
 
   const float GasCoef;
 

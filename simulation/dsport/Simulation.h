@@ -14,7 +14,7 @@ class Simulation
 {
 // Constructors
 public:
-  Simulation( const input::Location * location, sim::output::MosData * mosData );
+  Simulation( const input::Location * location, sim::output::MosData * mosData, bool doDiskOutput = false );
   ~Simulation(void);
 
 // Methods
@@ -26,6 +26,8 @@ public:
 // Members
 private:
   dsport * _dsport;
+
+  bool _doDiskOutput;
 };
 
 };

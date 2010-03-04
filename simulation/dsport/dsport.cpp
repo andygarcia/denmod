@@ -9,15 +9,15 @@
 #include "dsport.h"
 #include "Population.h"
 #include "SimConstants.h"
-#include "../output/Workbook.h"
 #include "../output/DensimOutput.h"
 
 using namespace sim::dsport;
 
 
-dsport::dsport( const input::Location * location, sim::output::MosData * mosData )
+dsport::dsport( const input::Location * location, sim::output::MosData * mosData, bool doDiskOutput )
 : _location(location),
   _mosData(mosData),
+  _doDiskOutput(doDiskOutput),
   GasCoef(1.987f),
   Virus(std::vector<VirusDesc>( 4+1 )),
   EIPFactor(std::vector<float>( 4+1, 0 )),
