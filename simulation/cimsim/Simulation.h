@@ -13,7 +13,7 @@ namespace cs  {
 class Simulation
 {
 public:
-  Simulation( input::Location * location, boost::gregorian::date startDate, boost::gregorian::date stopDate, bool usePop = false );
+  Simulation( input::Location * location, boost::gregorian::date startDate, boost::gregorian::date stopDate, bool usePop = false, bool doDiskOutput = false );
 public:
   virtual ~Simulation(void);
 
@@ -29,6 +29,8 @@ private:
   output::PopData * _popData;
 
   SimLocation * SimLocation_;
+
+  bool _doDiskOutput;
 };
 
 

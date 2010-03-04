@@ -11,11 +11,12 @@ extern double DevelopmentRate( double p25, double tempt, double dha, double dh, 
 
 
 
-SimLocation::SimLocation( const input::Location * location, boost::gregorian::date startDate, boost::gregorian::date stopDate, const sim::output::PopData * popData )
+SimLocation::SimLocation( const input::Location * location, boost::gregorian::date startDate, boost::gregorian::date stopDate, const sim::output::PopData * popData, bool doDiskOutput )
 : _location(location),
   _startDate(startDate),
   _stopDate(stopDate),
   _output(new output::CimsimOutput()),
+  _doDiskOutput(doDiskOutput),
   _outputReleased(false),
   TotalSterileMalesYesterday(0),
   _adultAgeDistribution(std::vector<double>( MaxAgeOviAdults+1, 0 )),

@@ -6,11 +6,12 @@ using namespace sim::cs;
 
 
 
-Simulation::Simulation( input::Location * location, boost::gregorian::date startDate, boost::gregorian::date stopDate, bool usePop )
+Simulation::Simulation( input::Location * location, boost::gregorian::date startDate, boost::gregorian::date stopDate, bool usePop, bool doDiskOutput )
 : _startDate(startDate),
   _stopDate(stopDate),
   _popData(NULL),
-  _usePop(usePop)
+  _usePop(usePop),
+  _doDiskOutput(doDiskOutput)
 {
   if( _usePop ) {
     // run for first year of simulation
