@@ -32,6 +32,9 @@ namespace gui {
   private: System::Windows::Forms::CheckBox^  chkEstablishedPopulationDefault;
   private: System::Windows::Forms::Button^  btnOk;
   private: System::Windows::Forms::Button^  btnCancel;
+  private: System::Windows::Forms::CheckBox^  chkSplashScreen;
+
+
 
 	private:
 		/// <summary>
@@ -53,6 +56,7 @@ namespace gui {
       this->gboxCimsim = (gcnew System::Windows::Forms::GroupBox());
       this->chkEstablishedPopulationDefault = (gcnew System::Windows::Forms::CheckBox());
       this->chkDoSimulationDiskOutput = (gcnew System::Windows::Forms::CheckBox());
+      this->chkSplashScreen = (gcnew System::Windows::Forms::CheckBox());
       this->gboxCimsim->SuspendLayout();
       this->SuspendLayout();
       // 
@@ -60,7 +64,7 @@ namespace gui {
       // 
       this->btnOk->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
       this->btnOk->DialogResult = System::Windows::Forms::DialogResult::OK;
-      this->btnOk->Location = System::Drawing::Point(158, 132);
+      this->btnOk->Location = System::Drawing::Point(158, 155);
       this->btnOk->Name = L"btnOk";
       this->btnOk->Size = System::Drawing::Size(75, 23);
       this->btnOk->TabIndex = 0;
@@ -72,7 +76,7 @@ namespace gui {
       // 
       this->btnCancel->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
       this->btnCancel->DialogResult = System::Windows::Forms::DialogResult::Cancel;
-      this->btnCancel->Location = System::Drawing::Point(239, 132);
+      this->btnCancel->Location = System::Drawing::Point(239, 155);
       this->btnCancel->Name = L"btnCancel";
       this->btnCancel->Size = System::Drawing::Size(75, 23);
       this->btnCancel->TabIndex = 0;
@@ -107,7 +111,7 @@ namespace gui {
       this->gboxCimsim->Controls->Add(this->chkEstablishedPopulationDefault);
       this->gboxCimsim->Controls->Add(this->chkStochasticAdvancement);
       this->gboxCimsim->Controls->Add(this->chkScaleCimsimMainGraph);
-      this->gboxCimsim->Location = System::Drawing::Point(12, 35);
+      this->gboxCimsim->Location = System::Drawing::Point(12, 58);
       this->gboxCimsim->Name = L"gboxCimsim";
       this->gboxCimsim->Size = System::Drawing::Size(302, 91);
       this->gboxCimsim->TabIndex = 3;
@@ -127,12 +131,22 @@ namespace gui {
       // chkDoSimulationDiskOutput
       // 
       this->chkDoSimulationDiskOutput->AutoSize = true;
-      this->chkDoSimulationDiskOutput->Location = System::Drawing::Point(18, 12);
+      this->chkDoSimulationDiskOutput->Location = System::Drawing::Point(12, 35);
       this->chkDoSimulationDiskOutput->Name = L"chkDoSimulationDiskOutput";
       this->chkDoSimulationDiskOutput->Size = System::Drawing::Size(290, 17);
       this->chkDoSimulationDiskOutput->TabIndex = 4;
       this->chkDoSimulationDiskOutput->Text = L"Write extended output to disk from within simulation runs";
       this->chkDoSimulationDiskOutput->UseVisualStyleBackColor = true;
+      // 
+      // chkSplashScreen
+      // 
+      this->chkSplashScreen->AutoSize = true;
+      this->chkSplashScreen->Location = System::Drawing::Point(12, 12);
+      this->chkSplashScreen->Name = L"chkSplashScreen";
+      this->chkSplashScreen->Size = System::Drawing::Size(171, 17);
+      this->chkSplashScreen->TabIndex = 4;
+      this->chkSplashScreen->Text = L"Show splash screen on startup";
+      this->chkSplashScreen->UseVisualStyleBackColor = true;
       // 
       // OptionsForm
       // 
@@ -140,8 +154,9 @@ namespace gui {
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
       this->CancelButton = this->btnCancel;
-      this->ClientSize = System::Drawing::Size(326, 167);
+      this->ClientSize = System::Drawing::Size(326, 190);
       this->ControlBox = false;
+      this->Controls->Add(this->chkSplashScreen);
       this->Controls->Add(this->chkDoSimulationDiskOutput);
       this->Controls->Add(this->gboxCimsim);
       this->Controls->Add(this->btnCancel);

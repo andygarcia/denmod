@@ -247,7 +247,9 @@ MainForm::UpdateBindings(void)
 System::Void
 MainForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
 {
-  SplashForm::ShowSplash( 50, "" );
+  if( _userSettings->ShowSplashScreen ) {
+    SplashForm::ShowSplash( 50, "" );
+  }
 
   tboxLocName->DataBindings->Add( "Text", LocationBinding, "Name", false, DataSourceUpdateMode::OnPropertyChanged );
   //rboxNotes->DataBindings->Add( "Text", LocationBinding, "Notes", false, DataSourceUpdateMode::OnPropertyChanged );
@@ -262,7 +264,10 @@ MainForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
   delete xs;
 
   //_activeDocument->GetLocation()->IsDirty = false;
-  SplashForm::Fadeout();
+
+  if( _userSettings->ShowSplashScreen ) {
+    SplashForm::Fadeout();
+  }
 }
 
 
@@ -500,15 +505,16 @@ MainForm::WriteUserSettings(void)
   using namespace IO;
   using namespace Xml::Serialization;
 
+  // ensure directory exists
+  String ^ path = Path::Combine( Environment::GetFolderPath(Environment::SpecialFolder::ApplicationData), Application::CompanyName );
+  path = Path::Combine( path, Application::ProductName );
+  if( !Directory::Exists(path) ) {
+    Directory::CreateDirectory( path );
+  }
+
   // write user settings
-  String ^ filename;
-  filename = Path::Combine( Environment::GetFolderPath(Environment::SpecialFolder::ApplicationData), Application::CompanyName );
-  filename = Path::Combine( filename, Application::ProductName );
-  filename = Path::Combine( filename, "denmod.cfg" );
-
-  // TODO - ensure all the paths above are
+  String ^ filename = Path::Combine( path, "denmod.cfg" );
   FileStream ^ fs = gcnew FileStream( filename, FileMode::OpenOrCreate );
-
   XmlSerializer ^ xs = gcnew XmlSerializer( UserSettings::typeid );
   xs->Serialize( fs, _userSettings );
 }

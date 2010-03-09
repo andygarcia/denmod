@@ -7,13 +7,26 @@ public ref class UserSettings : gui::NotifyValidateEditBase
 {
 public:
   UserSettings(void)
-  : _doSimulationDiskOutput(false),
+  : _showSplashScreen(true),
+    _doSimulationDiskOutput(false),
     _scaleCimsimMainGraph(false),
     _stochasticAdvancement(false),
     _establishedPopulationDefault(true)
   {}
 
 public:
+  property bool ShowSplashScreen {
+    bool get(void) {
+      return _showSplashScreen;
+    }
+    void set(bool b) {
+      if( b != _showSplashScreen ) {
+        _showSplashScreen = b;
+        NotifyPropertyChanged( "ShowSplashScreen" );
+      }
+    }
+  }
+
   property bool DoSimulationDiskOutput {
     bool get(void) {
       return _doSimulationDiskOutput;
@@ -64,6 +77,7 @@ public:
   }
 
 private:
+  bool _showSplashScreen;
   bool _doSimulationDiskOutput;
   bool _scaleCimsimMainGraph;
   bool _stochasticAdvancement;
