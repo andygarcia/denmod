@@ -444,6 +444,13 @@ StudyThread::StudyThread( SensitivityAnalysisStudy ^ study, Dictionary<int,Strin
 
 
 
+StudyThread::~StudyThread( void )
+{
+  delete _excelApplication;
+}
+
+
+
 void
 StudyThread::Start(void)
 {
@@ -484,7 +491,13 @@ StudyThread::Start(void)
 
     // do simulation and save output
     location->RunCimsim( true, _useDiscrete );
-    location->CimsimOutput->SaveToDisk( runDir );
+    //location->CimsimOutput->SaveToDisk( runDir );
+
+    // dummy code to chew cycles for testing, thread will consume cpu for 2 seconds
+    //int taskTime = 2000;
+    //int startTime = Environment::TickCount;
+    //while( Environment::TickCount - startTime < taskTime ) {}
+
 
     // first time generate list of filenames that will be converted post simulation for each subsequent run
     if( _outputFilenames == nullptr ) {

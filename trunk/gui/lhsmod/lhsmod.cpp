@@ -1,9 +1,9 @@
-// lhsmod.cpp : main project file.
-
 #include "stdafx.h"
 #include "LhsForm.h"
 
 using namespace lhsmod;
+
+
 
 [STAThreadAttribute]
 int main(array<System::String ^> ^args)
