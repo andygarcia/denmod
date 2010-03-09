@@ -3,3 +3,5 @@ glob:*.suo
 glob:*.ncb
 glob:*.Andres.user
 glob:[Dd]ebug/
+glob:[Rr]elease/
+glob:*.vcproj.*.user

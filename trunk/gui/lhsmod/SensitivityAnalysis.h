@@ -15,6 +15,8 @@ public ref class StudyThread
 {
 public:
   StudyThread( SensitivityAnalysisStudy ^ study, Dictionary<int,String^> ^ dmlFilenames, bool processOnly, bool useDiscrete );
+protected:
+  virtual ~StudyThread(void);
 
 public:
   void Start(void);
