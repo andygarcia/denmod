@@ -13,6 +13,7 @@
 #include "../input/Location.h"
 #include "../output/MosData.h"
 #include "../output/DensimOutput.h"
+#include "../output/Log.h"
 
 #define EMULATE_PDS_RAND true
 
@@ -35,8 +36,11 @@ public:
 
 // Methods
 public:
+  void InitializeDiskLogs(void);
+
   void Start(void);
   void Start( boost::gregorian::date startDate, boost::gregorian::date stopDate );
+
 
   void denmain(void);
 
@@ -68,6 +72,7 @@ public:
   output::DensimOutput * _densimOutput;
 
   bool _doDiskOutput;
+  output::Log * _locationLog;
 
   const float GasCoef;
 

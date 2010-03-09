@@ -4,6 +4,8 @@
 #include <fstream>
 #include <sstream>
 
+using namespace sim::output;
+
 
 
 Log::Log( std::string filename, std::vector<std::string> headers )

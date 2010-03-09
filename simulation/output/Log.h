@@ -6,6 +6,9 @@
 
 
 
+namespace sim {
+namespace output {
+
 class Log
 {
 // Constructors
@@ -27,6 +30,9 @@ private:
   std::vector<std::string> _headers;
   size_t _headerCount;
   std::vector<std::vector<std::string>> _data;
+};
+
+};
 };
 
 #endif

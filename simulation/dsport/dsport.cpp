@@ -9,9 +9,9 @@
 #include "dsport.h"
 #include "Population.h"
 #include "SimConstants.h"
-#include "../output/DensimOutput.h"
 
 using namespace sim::dsport;
+
 
 
 dsport::dsport( const input::Location * location, sim::output::MosData * mosData, bool doDiskOutput )
@@ -43,7 +43,7 @@ dsport::dsport( const input::Location * location, sim::output::MosData * mosData
 #ifdef _DEBUG
   _pdsRng = PdsRng(0);
 #else
-  _pdsRng = PdsRng( time(NULL) );
+  _pdsRng = PdsRng( static_cast<unsigned int>(time(NULL)) );
 #endif
 
   // initialize human population
@@ -125,13 +125,33 @@ dsport::dsport( const input::Location * location, sim::output::MosData * mosData
   _location->InfectionIntroduction_->Dengue2_->Schedule_->CalculateSchedule( _startDate, _stopDate );
   _location->InfectionIntroduction_->Dengue3_->Schedule_->CalculateSchedule( _startDate, _stopDate );
   _location->InfectionIntroduction_->Dengue4_->Schedule_->CalculateSchedule( _startDate, _stopDate );
+
+  if( _doDiskOutput ) {
+    InitializeDiskLogs();
+  }
 }
 
 
 
 dsport::~dsport(void)
 {
+  _locationLog->Write();
+  delete _locationLog;
+
   delete _humanPopulation;  
+}
+
+
+
+void
+dsport::InitializeDiskLogs(void)
+{
+  std::vector<std::string> headers = std::vector<std::string>();
+  headers.push_back( "Population Size" );
+  headers.push_back( "Female Mosquitoes in Area" );
+  headers.push_back( "Potentially Infective Bites" );
+
+  _locationLog = new output::Log( "DENSiM Location Data.csv", headers );
 }
 
 
@@ -848,6 +868,12 @@ dsport::SaveDailyOutput(void)
   dlo.SeqInfVals.FMT4 = dsi[Maternal][D4];
 
   _densimOutput->AddDailyLocationOutput( dlo, _currentDate );
+
+  if( _doDiskOutput ) {
+    _locationLog->AddData( _humanPopulation->GetPopulationSize() );
+    _locationLog->AddData( MosqTotal );
+    _locationLog->AddData( NewDlyHumInoc );
+  }
 }
 
 
