@@ -14,7 +14,7 @@ namespace gui {
 	{
   // Constructors
 	public:
-		RunDensimForm( BindingSource ^ locationBinding );
+    RunDensimForm( BindingSource ^ locationBinding );
 	protected:
 		~RunDensimForm();
 

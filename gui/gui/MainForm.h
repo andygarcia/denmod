@@ -2,7 +2,6 @@
 
 #include "CimsimPanel.h"
 #include "DensimPanel.h"
-#include "Settings.h"
 
 using namespace System;
 using namespace System::ComponentModel;
@@ -43,8 +42,8 @@ namespace gui {
     bool IsDocumentDirty(void);
     void Exit(void);
 
-    void ReadSettings(void);
-    void WriteSettings(void);
+    void ReadUserSettings(void);
+    void WriteUserSettings(void);
 
     void ShowOptions(void);
     void OpenWeatherTemplate(void);
@@ -67,7 +66,7 @@ namespace gui {
     DensimPanel ^ _densimPanel;
 
     DmlFile ^ _activeDocument;
-    Settings ^ _userSettings;
+    UserSettings ^ _userSettings;
 
   private: System::Windows::Forms::MenuStrip^  menuStrip;
   private: System::Windows::Forms::ToolStrip^  toolStrip;

@@ -1,5 +1,4 @@
 #pragma once
-#include "Settings.h"
 
 using namespace System;
 using namespace System::ComponentModel;
@@ -15,14 +14,14 @@ namespace gui {
 	public ref class CimsimPanel : public System::Windows::Forms::UserControl
 	{
 	public:
-    CimsimPanel( BindingSource ^ locationBinding, Settings ^ userSettings );
+    CimsimPanel( BindingSource ^ locationBinding );
 	protected:
 		~CimsimPanel();
   private: System::Windows::Forms::SplitContainer^  splitCimsim;
 
   private:
     Collections::Generic::Dictionary<System::Type^, System::Type^> ^ ControlFormMapping;
-    Settings ^ _userSettings;
+    UserSettings ^ _userSettings;
 
   private:
     void RunCimsim(void);

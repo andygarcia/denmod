@@ -12,15 +12,16 @@ using namespace Dundas::Charting::WinControl;
 
 
 
-CimsimOutputForm::CimsimOutputForm( gui::Location ^ location, Settings ^ _userSettings )
+CimsimOutputForm::CimsimOutputForm( gui::Location ^ location )
 : _location(location)
 {
 	InitializeComponent();
-  gui::output::CimsimOutput ^ co = _location->CimsimOutput;
-
+  output::CimsimOutput ^ co = _location->CimsimOutput;
+  UserSettings ^ userSettings = _location->UserSettings;
+  
   // create chart depending on scale setting
   output::Chart ^ chart;
-  if( _userSettings->ScaleCimsimMainGraph ) {
+  if( userSettings->ScaleCimsimMainGraph ) {
     chart = co->CreateLocationChart( output::ChartIds::CimsimMainScaled );
   }
   else {

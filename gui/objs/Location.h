@@ -11,6 +11,7 @@
 #include "InfectionIntroduction.h"
 #include "SequentialInfections.h"
 #include "Util.h"
+#include "UserSettings.h"
 
 #pragma managed(push, off)
 #include "../../simulation/input/Location.h"
@@ -29,6 +30,8 @@ using System::ComponentModel::BindingList;
 
 
 namespace gui {
+
+ref class Settings;
 
 public ref class Location  : public NotifyValidateEditBase
 {
@@ -84,7 +87,7 @@ public:
   FoodFitTotals ^ GetFoodFitTotals(void);
   void EndFoodFit(bool saveFitData);
 
-  void RunDensim(void);
+  void RunDensim( void );
   void RunDensim( DateTime startDate, DateTime stopDate );
   output::DensimOutput ^ ProcessDensimOutput( sim::output::DensimOutput * udo, DateTime startDate, DateTime stopDate );
 
@@ -293,10 +296,19 @@ public:
     }
   }
 
+  [XmlIgnore]
+  property gui::UserSettings ^ UserSettings {
+    gui::UserSettings ^ get(void) {
+      return _userSettings;
+    }
+    void set( gui::UserSettings ^ us ) {
+      _userSettings = us;
+    }
+  }
 
-// Fields
+
+// Members
 private:
-  // Parameters
   System::String ^ Name_;
   System::String ^ Notes_;
   DateTime SurveyStartDate_;
@@ -311,12 +323,13 @@ private:
   InfectionIntroductionParameters ^ InfectionIntroduction_;
   SequentialInfectionParameters ^ SequentialInfections_;
 
-  // Output status and data
   bool _isCimsimCompleted;
   bool _isDensimCompleted;
   gui::output::CimsimOutput ^ CimsimOutput_;
   sim::output::MosData * MosData_;
   gui::output::DensimOutput ^ DensimOutput_;
+
+  gui::UserSettings ^ _userSettings;
 };
 
 };

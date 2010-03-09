@@ -47,7 +47,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG"
+				PreprocessorDefinitions="WIN32;_DEBUG;BOOST_ALL_NO_LIB=1"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -128,7 +128,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				WholeProgramOptimization="false"
-				PreprocessorDefinitions="WIN32;NDEBUG"
+				PreprocessorDefinitions="WIN32;NDEBUG; BOOST_ALL_NO_LIB=1"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -201,7 +201,7 @@
 			AssemblyName="System.Xml, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 		/>
 		<AssemblyReference
-			RelativePath="..\..\..\..\..\..\..\..\..\Program Files (x86)\Dundas Software\Charting\WinControlVS2005\bin\DundasWinChart.dll"
+			RelativePath="..\..\..\..\..\..\..\..\Program Files (x86)\Dundas Software\Charting\WinControlVS2005\bin\DundasWinChart.dll"
 			AssemblyName="DundasWinChart, Version=5.5.1.1711, PublicKeyToken=a4c03dce5db22406, processorArchitecture=MSIL"
 		/>
 		<AssemblyReference
@@ -341,10 +341,6 @@
 			</File>
 			<File
 				RelativePath=".\ScheduleControl.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Settings.cpp"
 				>
 			</File>
 			<File
@@ -686,10 +682,6 @@
 					SubType="Designer"
 					>
 				</File>
-			</File>
-			<File
-				RelativePath=".\Settings.h"
-				>
 			</File>
 			<File
 				RelativePath=".\SingleSchedulePanel.h"

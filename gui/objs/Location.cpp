@@ -220,10 +220,9 @@ Location::ResetBiology(System::Void)
 void
 Location::RunCimsim( bool usePop, bool stochasticAdvancement )
 {
-  // run cimsim, using all available weather
+  // default to using all available weather
   DateTime startDate = Weather_->MinDate;
   DateTime stopDate = Weather_->MaxDate;
-
   RunCimsim( usePop, stochasticAdvancement, startDate, stopDate );
 }
 
@@ -264,7 +263,7 @@ Location::RunCimsim( bool usePop, bool stochasticAdvancement, DateTime startDate
   if( !stochasticAdvancement ) {
     // not using discrete numbers or stochastic advancement
     // run simulation, optionally using equillbrium population
-    sim::cs::Simulation * cssim = new sim::cs::Simulation( loc, bStartDate, bStopDate, usePop );
+    sim::cs::Simulation * cssim = new sim::cs::Simulation( loc, bStartDate, bStopDate, usePop, _userSettings->DoSimulationDiskOutput );
     cssim->Start();
     _isCimsimCompleted = true;
 
@@ -461,7 +460,7 @@ Location::GetFoodFitTotals(void)
 
 
 void
-Location::RunDensim(void)
+Location::RunDensim( void )
 {
   // run densim using all available cimsim data
   DateTime startDate;
@@ -502,7 +501,7 @@ Location::RunDensim( DateTime startDate, DateTime stopDate )
   boost::gregorian::date bStopDate = boost::gregorian::date( stopYear, 12, 31 );
 
   // create and run simulation
-  sim::dsport::Simulation * dsp = new sim::dsport::Simulation( loc, MosData_ );
+  sim::dsport::Simulation * dsp = new sim::dsport::Simulation( loc, MosData_, _userSettings->DoSimulationDiskOutput );
   dsp->Start( bStartDate, bStopDate );
   _isDensimCompleted = true;
 

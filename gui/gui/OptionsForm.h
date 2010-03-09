@@ -1,5 +1,4 @@
 #pragma once
-#include "Settings.h"
 
 using namespace System;
 using namespace System::ComponentModel;
@@ -14,7 +13,7 @@ namespace gui {
 	public ref class OptionsForm : public System::Windows::Forms::Form
 	{
 	public:
-		OptionsForm( Settings ^ userSettings );
+		OptionsForm( UserSettings ^ userSettings );
 	protected:
 		~OptionsForm();
 
@@ -24,7 +23,7 @@ namespace gui {
     System::Void OnCancel(System::Object^  sender, System::EventArgs^  e);
 
   private:
-    Settings ^ _settings;
+    UserSettings ^ _userSettings;
 
   private: System::Windows::Forms::CheckBox^  chkDoSimulationDiskOutput;
   private: System::Windows::Forms::GroupBox^  gboxCimsim;

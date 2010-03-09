@@ -5,7 +5,7 @@ using namespace gui;
 
 
 
-RunDensimForm::RunDensimForm(BindingSource ^ locationBinding)
+RunDensimForm::RunDensimForm( BindingSource ^ locationBinding )
 : _locationBinding(locationBinding)
 {
 	InitializeComponent();

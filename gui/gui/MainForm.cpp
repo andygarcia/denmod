@@ -34,10 +34,10 @@ MainForm::MainForm(String ^ filename)
 void
 MainForm::Initialize(void)
 {
-  ReadSettings();
+  ReadUserSettings();
 
   // create cimsim and densim panels
-  _cimsimPanel = gcnew CimsimPanel( LocationBinding, _userSettings );
+  _cimsimPanel = gcnew CimsimPanel( LocationBinding );
   _densimPanel = gcnew DensimPanel( LocationBinding );
 
   // anchor all sides of panels for resizing
@@ -103,6 +103,7 @@ MainForm::OpenDocument( String ^ newFilename)
   }
   
   _activeDocument = df;
+  _activeDocument->Location->UserSettings = _userSettings;
   UpdateBindings();
   UpdateTitleBar();
 
@@ -461,14 +462,14 @@ MainForm::Exit(void)
   }
 
   // save possible changes to user settings and exit
-  WriteSettings();
+  WriteUserSettings();
   Application::Exit();
 }
 
 
 
 void
-MainForm::ReadSettings(void)
+MainForm::ReadUserSettings(void)
 {
   using namespace IO;
   using namespace Xml::Serialization;
@@ -481,20 +482,20 @@ MainForm::ReadSettings(void)
 
   try {
     FileStream ^ fs = gcnew FileStream( filename, FileMode::Open );
-    XmlSerializer ^ xs = gcnew XmlSerializer( gui::Settings::typeid );
-    _userSettings = dynamic_cast<gui::Settings^>( xs->Deserialize(fs) );
+    XmlSerializer ^ xs = gcnew XmlSerializer( gui::UserSettings::typeid );
+    _userSettings = dynamic_cast<UserSettings^>( xs->Deserialize(fs) );
   }
   catch( Exception ^ e ) {
     // unable to open/deserialize file, WriteSettings will create
     Diagnostics::Trace::WriteLine(e->ToString());
-    _userSettings = gcnew Settings();
+    _userSettings = gcnew UserSettings();
   }
 }
 
 
 
 void
-MainForm::WriteSettings(void)
+MainForm::WriteUserSettings(void)
 {
   using namespace IO;
   using namespace Xml::Serialization;
@@ -505,9 +506,10 @@ MainForm::WriteSettings(void)
   filename = Path::Combine( filename, Application::ProductName );
   filename = Path::Combine( filename, "denmod.cfg" );
 
+  // TODO - ensure all the paths above are
   FileStream ^ fs = gcnew FileStream( filename, FileMode::OpenOrCreate );
 
-  XmlSerializer ^ xs = gcnew XmlSerializer( gui::Settings::typeid );
+  XmlSerializer ^ xs = gcnew XmlSerializer( UserSettings::typeid );
   xs->Serialize( fs, _userSettings );
 }
 

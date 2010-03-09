@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG"
+				PreprocessorDefinitions="WIN32;_DEBUG;BOOST_ALL_NO_LIB=1"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="1"
 				WarningLevel="3"
@@ -115,7 +115,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG"
+				PreprocessorDefinitions="WIN32;NDEBUG;BOOST_ALL_NO_LIB=1"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -177,7 +177,7 @@
 			AssemblyName="System.Xml, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 		/>
 		<AssemblyReference
-			RelativePath="..\..\..\..\..\..\..\..\..\Program Files (x86)\Dundas Software\Charting\WinControlVS2005\bin\DundasWinChart.dll"
+			RelativePath="..\..\..\..\..\..\..\..\Program Files (x86)\Dundas Software\Charting\WinControlVS2005\bin\DundasWinChart.dll"
 			AssemblyName="DundasWinChart, Version=5.5.1.1711, PublicKeyToken=a4c03dce5db22406, processorArchitecture=MSIL"
 		/>
 		<ProjectReference
@@ -202,7 +202,7 @@
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{BDA9AE2A-9845-4511-9E46-0E7AC284147B}"
-			RelativePathToProject=".\gui\output\output.vcproj"
+			RelativePathToProject=".\gui\output\gui.output.vcproj"
 		/>
 	</References>
 	<Files>
@@ -371,6 +371,10 @@
 			</File>
 			<File
 				RelativePath=".\Targets.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UserSettings.h"
 				>
 			</File>
 			<File
