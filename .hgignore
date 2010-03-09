@@ -1,0 +1,5 @@
+glob:*.ncb
+glob:*.suo
+glob:*.ncb
+glob:*.Andres.user
+glob:[Dd]ebug/
