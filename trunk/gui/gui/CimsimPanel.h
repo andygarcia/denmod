@@ -17,11 +17,9 @@ namespace gui {
     CimsimPanel( BindingSource ^ locationBinding );
 	protected:
 		~CimsimPanel();
-  private: System::Windows::Forms::SplitContainer^  splitCimsim;
 
   private:
     Collections::Generic::Dictionary<System::Type^, System::Type^> ^ ControlFormMapping;
-    UserSettings ^ _userSettings;
 
   private:
     void RunCimsim(void);
@@ -53,6 +51,7 @@ namespace gui {
     DateTime dtContainerLastShown;
     int PreviousContainerHoverIndex;
 
+  private: System::Windows::Forms::SplitContainer^  splitCimsim;
   private: System::Windows::Forms::ToolTip^  ttContainers;
   private: System::Windows::Forms::Button^  btnRunSim;
   private: System::Windows::Forms::Button^  btnBiology;

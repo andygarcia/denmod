@@ -93,11 +93,12 @@ CimsimPanel::OnRunCimsim(System::Object^  sender, System::EventArgs^  e)
 void
 CimsimPanel::RunCimsim(void)
 {
-  RunCimsimForm ^ rcf = gcnew RunCimsimForm( LocationBinding, _userSettings->EstablishedPopulationDefault );
+  UserSettings ^ userSettings = GetLocation()->UserSettings;
+  RunCimsimForm ^ rcf = gcnew RunCimsimForm( LocationBinding, userSettings->EstablishedPopulationDefault );
   if( rcf->ShowDialog(this) == ::DialogResult::OK ) {
     // run simulation
     gui::Location::RunCimsimOptions ^ rco = rcf->RunCimsimOptions;
-    GetLocation()->RunCimsim( rco->UsePop, _userSettings->StochasticAdvancement, rco->StartDate, rco->StopDate );
+    GetLocation()->RunCimsim( rco->UsePop, userSettings->StochasticAdvancement, rco->StartDate, rco->StopDate );
     rcf->Close();
 
     // process output

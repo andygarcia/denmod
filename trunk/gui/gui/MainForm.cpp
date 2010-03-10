@@ -20,7 +20,7 @@ MainForm::MainForm(void)
 
 
 
-MainForm::MainForm(String ^ filename)
+MainForm::MainForm( String ^ filename )
 : _activeDocument(nullptr),
   LocationBinding(gcnew BindingSource())
 {
@@ -80,7 +80,7 @@ MainForm::NewDocument(void)
 
 
 bool
-MainForm::OpenDocument( String ^ newFilename)
+MainForm::OpenDocument( String ^ newFilename )
 {
   // check if active document can be closed
   if( !CloseDocument() )
@@ -514,7 +514,14 @@ MainForm::WriteUserSettings(void)
 
   // write user settings
   String ^ filename = Path::Combine( path, "denmod.cfg" );
-  FileStream ^ fs = gcnew FileStream( filename, FileMode::OpenOrCreate );
+  FileStream ^ fs;
+  try {
+    fs = gcnew FileStream( filename, FileMode::OpenOrCreate );
+  }
+  catch( Exception ^ ex ) {
+    Diagnostics::Trace::WriteLine( ex->ToString() );
+  }
+
   XmlSerializer ^ xs = gcnew XmlSerializer( UserSettings::typeid );
   xs->Serialize( fs, _userSettings );
 }
