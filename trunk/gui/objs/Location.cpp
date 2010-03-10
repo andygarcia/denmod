@@ -231,6 +231,11 @@ Location::RunCimsim( bool usePop, bool stochasticAdvancement )
 void
 Location::RunCimsim( bool usePop, bool stochasticAdvancement, DateTime startDate, DateTime stopDate )
 {
+  if( _userSettings == nullptr ) {
+    // invoked via batch or lhsmod, use defaults
+    _userSettings = gcnew gui::UserSettings();
+  }
+
   int startYear = startDate.Year;
   int stopYear = stopDate.Year;
 

@@ -1,6 +1,7 @@
 #pragma once
 
 
+
 namespace gui {
 
 public ref class UserSettings : gui::NotifyValidateEditBase
