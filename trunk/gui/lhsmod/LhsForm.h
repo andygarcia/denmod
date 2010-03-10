@@ -42,6 +42,7 @@ namespace lhsmod {
       TimeSpan RunTime;
     };
 
+    BackgroundWorker ^ _fileReader;
     BackgroundWorker ^ _backgroundWorker;
 
   private: System::Windows::Forms::TextBox^  tboxLsp;

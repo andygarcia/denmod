@@ -11,22 +11,21 @@ ref class SensitivityAnalysisStudy;
 
 
 
-public ref class StudyThread
+public ref class SensitivityAnalysisSimulation
 {
 public:
-  StudyThread( SensitivityAnalysisStudy ^ study, Dictionary<int,String^> ^ dmlFilenames, bool processOnly, bool useDiscrete );
+  SensitivityAnalysisSimulation( SensitivityAnalysisStudy ^ study, String ^ filename, int runId, ManualResetEvent ^ manualResetEvent );
 protected:
-  virtual ~StudyThread(void);
+  virtual ~SensitivityAnalysisSimulation(void);
 
 public:
-  void Start(void);
+  void ThreadPoolCallback( Object ^ stateInfo );
 
 private:
   SensitivityAnalysisStudy ^ _study;
-
-  Dictionary<int,String^> ^ _dmlFilenames;
-  bool _processOnly;
-  bool _useDiscrete;
+  String ^ filename;
+  int _runId;
+  ManualResetEvent ^ _manualResetEvent;
 
   Excel::Application ^ _excelApplication;
   array<String^> ^ _outputFilenames;
@@ -63,9 +62,6 @@ public:
 public:
   void StartStudy( BackgroundWorker ^ bw );
   void ReportRunResult( int runId, bool runDiscarded );
-  void SuspendStudy(void);
-  void ResumeStudy(void);
-  void StopStudy(void);
 
 private:
   void ParseStudy(void);
@@ -90,7 +86,8 @@ private:
   List<String^> ^ _newResults;
   Dictionary<int,String^> ^ _runResults;
 
-  List<Thread^> ^ _simulationThreads;
+  List<SensitivityAnalysisSimulation^> ^ _simulations;
+
   List<Dictionary<int,String^>^> ^ _filesByThread;
 
   static Dictionary<String^,String^> ^ _saNamesToDmlNames;

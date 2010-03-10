@@ -14,6 +14,9 @@ LhsForm::LhsForm(void)
 {
 	InitializeComponent();
 
+  _fileReader;
+
+
   _backgroundWorker = gcnew BackgroundWorker();
   _backgroundWorker->WorkerReportsProgress = true;
   _backgroundWorker->WorkerSupportsCancellation = true;
@@ -159,3 +162,47 @@ LhsForm::StudyCompleted( Object ^ sender, RunWorkerCompletedEventArgs ^ e )
   tboxOutput->Enabled = true;
   btnRun->Enabled = true;
 }
+
+
+
+// This method is executed in a separate thread created by the background worker.
+// so don't try to access any UI controls here!! (unless you use a delegate to do it)
+// this attribute will prevent the debugger to stop here if any exception is raised.
+//[System.Diagnostics.DebuggerNonUserCodeAttribute()]
+System::Void
+LhsForm::ReadFiles( Object ^ sender, DoWorkEventArgs ^ e )
+{
+  // get reference to the BackgroundWorker
+  BackgroundWorker ^ bw = static_cast<BackgroundWorker^>( sender );
+  List<String^> ^ filenames = gcnew List<String^> ^ filenames;
+
+  for( int i = 0; i < threadOptions->TaskCount; ++i ) {
+    // loop for some amount of time between 20 and 30 seconds
+    Random ^ r = gcnew Random();
+    int taskTime = r->Next( minTime, maxTime );
+    //int startTime = Environment::TickCount;
+    //while( Environment::TickCount - startTime < taskTime ) {}
+
+    managed_library::Simulation ^ simulation = gcnew managed_library::Simulation();
+    simulation->Start( taskTime );
+
+    // notify progress to main thread showing UserState property
+    double progress = (i+1) * 100.0 / threadOptions->TaskCount;
+    bw->ReportProgress( static_cast<int>( progress ), DateTime::Now );
+
+    // Error handling: uncomment this code if you want to test how an exception is
+    // handled by the background worker.  Also uncomment the mentioned attribute above
+    // so it doesn't stop in the debugger.  
+    //if( i == 34 ) {
+    //  throw gcnew Exception( "something wrong here!!" );
+    //}
+
+    // if cancellation is pending, cancel work.
+    if( bw->CancellationPending) {  
+      e->Cancel = true;
+      return;
+    }
+  }  
+
+  e->Result = filenames;
+}  
