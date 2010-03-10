@@ -25,25 +25,24 @@ namespace lhsmod {
     System::Void OnBrowseOutput(System::Object^  sender, System::EventArgs^  e);
     System::Void OnRun(System::Object^  sender, System::EventArgs^  e);
 
-    void StartStudy( Object ^ sender, DoWorkEventArgs ^ e );
-    void StudyProgressChanged( Object ^ sender, ProgressChangedEventArgs ^ e );
-    void StudyCompleted( Object ^ sender, RunWorkerCompletedEventArgs ^ e );
+    System::Void ReadFiles( Object ^ sender, DoWorkEventArgs ^ e );
+    System::Void ReadFilesProgressChanged( Object ^ sender, ProgressChangedEventArgs ^ e );
+    System::Void ReadFilesCompleted( Object ^ sender, RunWorkerCompletedEventArgs ^ e );
+
+    System::Void StartSimulations( Object ^ sender, DoWorkEventArgs ^ e );
+    System::Void SimulationsProgressChanged( Object ^ sender, ProgressChangedEventArgs ^ e );
+    System::Void SimulationsCompleted( Object ^ sender, RunWorkerCompletedEventArgs ^ e );
 
   private:
-    SensitivityAnalysisStudy ^ _study;
-
-    ref class StudyState
-    {
-    public:
-      int NumberRuns;
-      bool useDiscrete;
-      bool doProcessOnly;
-      int CurrentRun;
-      TimeSpan RunTime;
-    };
+    SensitivityAnalysisParser ^ _parser;
+    int _numberOfRuns;
 
     BackgroundWorker ^ _fileReader;
-    BackgroundWorker ^ _backgroundWorker;
+    List<BackgroundWorker^> ^ _simulationThreads;
+    List<String^> ^ _simulationFiles;
+    List<List<String^>^> ^ _simulationFilesByThread;
+
+    int _simulationThreadsCompleted;
 
   private: System::Windows::Forms::TextBox^  tboxLsp;
   private: System::Windows::Forms::TextBox^  tboxOutput;
@@ -105,7 +104,7 @@ namespace lhsmod {
         | System::Windows::Forms::AnchorStyles::Right));
       this->tboxLsp->Location = System::Drawing::Point(105, 43);
       this->tboxLsp->Name = L"tboxLsp";
-      this->tboxLsp->Size = System::Drawing::Size(387, 20);
+      this->tboxLsp->Size = System::Drawing::Size(426, 20);
       this->tboxLsp->TabIndex = 0;
       // 
       // tboxOutput
@@ -114,7 +113,7 @@ namespace lhsmod {
         | System::Windows::Forms::AnchorStyles::Right));
       this->tboxOutput->Location = System::Drawing::Point(105, 72);
       this->tboxOutput->Name = L"tboxOutput";
-      this->tboxOutput->Size = System::Drawing::Size(387, 20);
+      this->tboxOutput->Size = System::Drawing::Size(426, 20);
       this->tboxOutput->TabIndex = 1;
       // 
       // lblLsp
@@ -138,7 +137,7 @@ namespace lhsmod {
       // btnBrowseLsp
       // 
       this->btnBrowseLsp->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
-      this->btnBrowseLsp->Location = System::Drawing::Point(498, 41);
+      this->btnBrowseLsp->Location = System::Drawing::Point(537, 41);
       this->btnBrowseLsp->Name = L"btnBrowseLsp";
       this->btnBrowseLsp->Size = System::Drawing::Size(75, 23);
       this->btnBrowseLsp->TabIndex = 3;
@@ -149,7 +148,7 @@ namespace lhsmod {
       // btnBrowseOutput
       // 
       this->btnBrowseOutput->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
-      this->btnBrowseOutput->Location = System::Drawing::Point(498, 70);
+      this->btnBrowseOutput->Location = System::Drawing::Point(537, 70);
       this->btnBrowseOutput->Name = L"btnBrowseOutput";
       this->btnBrowseOutput->Size = System::Drawing::Size(75, 23);
       this->btnBrowseOutput->TabIndex = 3;
@@ -173,7 +172,7 @@ namespace lhsmod {
         | System::Windows::Forms::AnchorStyles::Right));
       this->tboxDml->Location = System::Drawing::Point(105, 14);
       this->tboxDml->Name = L"tboxDml";
-      this->tboxDml->Size = System::Drawing::Size(387, 20);
+      this->tboxDml->Size = System::Drawing::Size(426, 20);
       this->tboxDml->TabIndex = 0;
       // 
       // lblDml
@@ -188,7 +187,7 @@ namespace lhsmod {
       // btnBrowseDml
       // 
       this->btnBrowseDml->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
-      this->btnBrowseDml->Location = System::Drawing::Point(498, 12);
+      this->btnBrowseDml->Location = System::Drawing::Point(537, 12);
       this->btnBrowseDml->Name = L"btnBrowseDml";
       this->btnBrowseDml->Size = System::Drawing::Size(75, 23);
       this->btnBrowseDml->TabIndex = 3;
@@ -202,7 +201,7 @@ namespace lhsmod {
         | System::Windows::Forms::AnchorStyles::Right));
       this->pbarRuns->Location = System::Drawing::Point(105, 144);
       this->pbarRuns->Name = L"pbarRuns";
-      this->pbarRuns->Size = System::Drawing::Size(468, 23);
+      this->pbarRuns->Size = System::Drawing::Size(507, 23);
       this->pbarRuns->TabIndex = 5;
       // 
       // chkDiscrete
@@ -227,9 +226,13 @@ namespace lhsmod {
       // 
       // rboxOutput
       // 
+      this->rboxOutput->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom) 
+        | System::Windows::Forms::AnchorStyles::Left) 
+        | System::Windows::Forms::AnchorStyles::Right));
+      this->rboxOutput->HideSelection = false;
       this->rboxOutput->Location = System::Drawing::Point(105, 173);
       this->rboxOutput->Name = L"rboxOutput";
-      this->rboxOutput->Size = System::Drawing::Size(468, 248);
+      this->rboxOutput->Size = System::Drawing::Size(507, 261);
       this->rboxOutput->TabIndex = 9;
       this->rboxOutput->Text = L"";
       // 
@@ -237,7 +240,7 @@ namespace lhsmod {
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-      this->ClientSize = System::Drawing::Size(585, 433);
+      this->ClientSize = System::Drawing::Size(624, 446);
       this->Controls->Add(this->rboxOutput);
       this->Controls->Add(this->chkProcessOnly);
       this->Controls->Add(this->chkDiscrete);
@@ -253,7 +256,7 @@ namespace lhsmod {
       this->Controls->Add(this->tboxOutput);
       this->Controls->Add(this->tboxLsp);
       this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::SizableToolWindow;
-      this->MinimumSize = System::Drawing::Size(480, 220);
+      this->MinimumSize = System::Drawing::Size(640, 480);
       this->Name = L"LhsForm";
       this->Text = L"LHSWIN -CIMSiM Sensitivity Analysis Study";
       this->ResumeLayout(false);

@@ -9,7 +9,7 @@ using namespace System::Text::RegularExpressions;
 
 
 static
-SensitivityAnalysisStudy::SensitivityAnalysisStudy(void)
+SensitivityAnalysisParser::SensitivityAnalysisParser(void)
 {
   _saNamesToDmlNames = gcnew Generic::Dictionary<String^,String^>(StringComparer::InvariantCultureIgnoreCase);
   _saNamesToDmlNames->Add( "E.min.htch.temp", "Biology.Egg.MinimumHatchTemperature" );
@@ -105,34 +105,26 @@ SensitivityAnalysisStudy::SensitivityAnalysisStudy(void)
 
 
 
-SensitivityAnalysisStudy::SensitivityAnalysisStudy( BackgroundWorker ^ backgroundWorker, String ^ dmlFilename, String ^ lspFilename, String ^ outputDir, bool processOnly, bool useDiscrete )
+SensitivityAnalysisParser::SensitivityAnalysisParser( String ^ dmlFilename, String ^ lspFilename, String ^ outputDir )
 : _dmlFilename(dmlFilename),
   _lspFilename(lspFilename),
   _outputDirectory(outputDir),
-  _processOnly(processOnly),
-  _useDiscrete(useDiscrete),
+  _simulationFiles(gcnew List<String ^>()),
   _simulations(gcnew List<SensitivityAnalysisSimulation^>()),
   _numberOfRuns(0),
-  _numberOfCompletedRuns(0),
-  _newResults(gcnew List<String^>()),
-  _runResults(gcnew Dictionary<int,String^>())
-{
-  ParseStudy();
-}
-
-
-
-SensitivityAnalysisStudy::~SensitivityAnalysisStudy(void)
+  _numberOfCompletedRuns(0)
 {}
 
 
 
-void
-SensitivityAnalysisStudy::ParseStudy(void)
-{
-  // set max threads in threadpool
-  Threading::ThreadPool::SetMaxThreads( 5, 25 );
+SensitivityAnalysisParser::~SensitivityAnalysisParser(void)
+{}
 
+
+
+List<String^> ^
+SensitivityAnalysisParser::ParseStudy( BackgroundWorker ^ bw )
+{
   // read dml file for base location object
   gui::DmlFile ^ dmlFile = gcnew gui::DmlFile( _dmlFilename );
   _baseLocation = dmlFile->Location;
@@ -180,17 +172,7 @@ SensitivityAnalysisStudy::ParseStudy(void)
     }
   }
 
-
-  // create list of files for each thread
-  int procCount = Environment::ProcessorCount;
-  _filesByThread = gcnew List<Dictionary<int,String^>^>(procCount);
-  for( int i = 0; i < procCount; ++i ) {
-    _filesByThread->Add( gcnew Dictionary<int,String^>() );
-  }
-
-
-  // read parameters for each run and queue work item, using reset events
-  array<ManualResetEvent^> ^ events = gcnew array<ManualResetEvent^>(_numberOfRuns);
+  // read parameters for each run and write file
   for( int i = 0; i < _numberOfRuns; ++i ) {
 
     // sampled parameters for current run
@@ -229,103 +211,23 @@ SensitivityAnalysisStudy::ParseStudy(void)
     gui::DmlFile ^ runFile = gcnew gui::DmlFile( runFilename, _baseLocation );
     runFile->Save();
 
-    // create simulation for this run
-    ManualResetEvent ^ mre = gcnew ManualResetEvent( false );
-    SensitivityAnalysisSimulation ^ sas = gcnew SensitivityAnalysisSimulation( this, runFilename, i, mre );
-    _simulations->Add( sas );
-    events[i] = mre;
-    ThreadPool::QueueUserWorkItem( gcnew WaitCallback( sas, &SensitivityAnalysisSimulation::ThreadPoolCallback ), i );
+    _simulationFiles->Add( runFilename );
+
+    FileReadProgress ^ frp = gcnew FileReadProgress();
+    frp->TotalFileCount = _numberOfRuns;
+    frp->CurrentFileCount = i+1;
+    frp->Messages->Add( "Created " + runFilename );
+
+    bw->ReportProgress( 0, frp );
   }
 
-  // wait for all simulations to finish
-  WaitHandle::WaitAll( events );
+  return _simulationFiles;
 }
 
 
 
 void
-SensitivityAnalysisStudy::StartStudy( BackgroundWorker ^ bw )
-{
-  //_backgroundWorker = bw;
-
-  //// start each separate thread
-  //int numThreads = _filesByThread->Count;
-  //_simulationThreads = gcnew List<Thread^>(numThreads);
-  //for( int i = 0; i < numThreads; ++i ) {
-  //  // create and start thread
-  //  SensitivityAnalysisSimulation ^ st = gcnew SensitivityAnalysisSimulation( this, _filesByThread[i], _processOnly, _useDiscrete );
-  //  ThreadStart ^ ts = gcnew ThreadStart( st, &SensitivityAnalysisSimulation::Start );
-  //  Thread ^ t = gcnew Thread( ts );
-  //  t->Name = Convert::ToString( i );
-  //  _simulationThreads->Add( t );
-  //  t->Start();
-  //}
-
-  //while( true ) {
-  //  // ensure no simulation threads are updating results
-  //  Monitor::Enter( _runResults );
-
-  //  // check for new results
-  //  try {
-  //    if( _newResults->Count > 0 ) {
-  //      // create update object
-  //      StudyState ^ ss = gcnew StudyState();
-  //      ss->NumberOfRuns = _numberOfRuns;
-  //      ss->PercentCompleted = static_cast<double>(_runResults->Count) / static_cast<double>(_numberOfRuns);
-  //      ss->Messages = gcnew List<String^>();
-  //      for each( String ^ s in _newResults ) {
-  //        ss->Messages->Add( s );
-  //      }
-
-  //      // clear results
-  //      _newResults->Clear();
-
-  //      // report progress to ui
-  //      _backgroundWorker->ReportProgress( static_cast<int>(ss->PercentCompleted), ss );
-
-  //      if( _runResults->Count == _numberOfRuns ) {
-  //        break;
-  //      }
-  //    }
-  //  }
-  //  finally {
-  //    Monitor::Exit( _runResults );
-  //  }
-  //}
-}
-
-
-
-void
-SensitivityAnalysisStudy::ReportRunResult( int runId, bool runDiscarded )
-{
-  // ensure only one simulation thread at a time is reporting results
-  Monitor::Enter( _runResults );
-
-  // todo fix run indexing kludge
-  try {
-    // create message
-    String ^ message;
-    if( runDiscarded) {
-      message = String::Format( "Thread #{0} discarded run #{1}. See errors.txt.", Thread::CurrentThread->Name, runId+1 );
-    }
-    else {
-      message = String::Format( "Thread #{0} completed run #{1}.", Thread::CurrentThread->Name, runId+1 );
-    }
-
-    // save temporary and final results
-    _newResults->Add( message );
-    _runResults[runId] = message;
-  }
-  finally {
-    Monitor::Exit( _runResults );
-  }
-}
-
-
-
-void
-SensitivityAnalysisStudy::ModifyBaseLocation( Generic::List<String^> ^ paramNames, Generic::List<double> ^ paramValues )
+SensitivityAnalysisParser::ModifyBaseLocation( Generic::List<String^> ^ paramNames, Generic::List<double> ^ paramValues )
 {
   // for location, modify specified parameters to have specified values
   int numParams = paramNames->Count;
@@ -378,7 +280,7 @@ FindNestedProperty( Object ^ rootObject, String ^ propName )
 
 
 void
-SensitivityAnalysisStudy::SetDmlParameter( String ^ dmlName, Object ^ value )
+SensitivityAnalysisParser::SetDmlParameter( String ^ dmlName, Object ^ value )
 {
   Object ^ parentObj = _baseLocation;
   String ^ propName = dmlName;
@@ -405,14 +307,14 @@ SensitivityAnalysisStudy::SetDmlParameter( String ^ dmlName, Object ^ value )
 
 
 String ^
-SensitivityAnalysisStudy::GetDmlNameFromSa( String ^ saName )
+SensitivityAnalysisParser::GetDmlNameFromSa( String ^ saName )
 {
   return _saNamesToDmlNames[saName];
 }
 
 
 
-SensitivityAnalysisSimulation::SensitivityAnalysisSimulation( SensitivityAnalysisStudy ^ study, String ^ filename, int runId, ManualResetEvent ^ manualResetEvent )
+SensitivityAnalysisSimulation::SensitivityAnalysisSimulation( SensitivityAnalysisParser ^ study, String ^ filename, int runId, ManualResetEvent ^ manualResetEvent )
 : _study(study),
   _runId(runId),
   _manualResetEvent(manualResetEvent)
@@ -448,7 +350,7 @@ void SensitivityAnalysisSimulation::ThreadPoolCallback( Object ^ stateInfo )
     sw->Close();
 
     // abort this run (errors), continue with next run
-    _study->ReportRunResult( _runId, true );
+    //_study->ReportRunResult( _runId, true );
     return;
   }
 
@@ -494,5 +396,5 @@ void SensitivityAnalysisSimulation::ThreadPoolCallback( Object ^ stateInfo )
   //}
 
   // completed run and saved output
-  _study->ReportRunResult( _runId, false );
+  //_study->ReportRunResult( _runId, false );
 }

@@ -7,14 +7,14 @@ using namespace System::ComponentModel;
 using namespace System::Threading;
 using namespace Microsoft::Office::Interop;
 
-ref class SensitivityAnalysisStudy;
+ref class SensitivityAnalysisParser;
 
 
 
 public ref class SensitivityAnalysisSimulation
 {
 public:
-  SensitivityAnalysisSimulation( SensitivityAnalysisStudy ^ study, String ^ filename, int runId, ManualResetEvent ^ manualResetEvent );
+  SensitivityAnalysisSimulation( SensitivityAnalysisParser ^ study, String ^ filename, int runId, ManualResetEvent ^ manualResetEvent );
 protected:
   virtual ~SensitivityAnalysisSimulation(void);
 
@@ -22,7 +22,7 @@ public:
   void ThreadPoolCallback( Object ^ stateInfo );
 
 private:
-  SensitivityAnalysisStudy ^ _study;
+  SensitivityAnalysisParser ^ _study;
   String ^ filename;
   int _runId;
   ManualResetEvent ^ _manualResetEvent;
@@ -33,62 +33,69 @@ private:
 
 
 
-public ref class SensitivityAnalysisStudy
+
+public ref class SensitivityAnalysisParser
 {
 public:
-  ref class StudyState {
-  public:
-    int NumberOfRuns;
-    double PercentCompleted;
-    List<String^> ^ Messages;
-  };
-
 // Constructors
 private:
-  static SensitivityAnalysisStudy(void);
+  static SensitivityAnalysisParser(void);
 public:
-  SensitivityAnalysisStudy( BackgroundWorker ^ backgroundWorker, String ^ dmlFile, String ^ lspFile, String ^ outputDir, bool useDiscrete, bool processOnly );
-  virtual ~SensitivityAnalysisStudy(void);
-
-// Properties
-public:
-  property int NumberOfRuns {
-    int get(void) {
-      return _numberOfRuns;
-    }
-  }
+  SensitivityAnalysisParser( String ^ dmlFile, String ^ lspFile, String ^ outputDir );
+  virtual ~SensitivityAnalysisParser(void);
 
 // Methods
 public:
-  void StartStudy( BackgroundWorker ^ bw );
-  void ReportRunResult( int runId, bool runDiscarded );
+  List<String^> ^ ParseStudy( BackgroundWorker ^ bw );
 
 private:
-  void ParseStudy(void);
   void ModifyBaseLocation( Generic::List<String^> ^ paramNames, Generic::List<double> ^ paramValues );
   void SetDmlParameter( String ^ dmlName, Object ^ value );
   static String ^ GetDmlNameFromSa( String ^ saName );
 
 // Fields
 private:
-  BackgroundWorker ^ _backgroundWorker;
-
   gui::Location ^ _baseLocation;
 
   String ^ _dmlFilename;
   String ^ _lspFilename;
   String ^ _outputDirectory;
-  bool _useDiscrete;
-  bool _processOnly;
 
   int _numberOfRuns;
   int _numberOfCompletedRuns;
-  List<String^> ^ _newResults;
-  Dictionary<int,String^> ^ _runResults;
 
+  List<String ^> ^ _simulationFiles;
   List<SensitivityAnalysisSimulation^> ^ _simulations;
 
-  List<Dictionary<int,String^>^> ^ _filesByThread;
-
   static Dictionary<String^,String^> ^ _saNamesToDmlNames;
+};
+
+
+
+public ref class StudyProgress
+{
+public:
+  StudyProgress(void)
+  : Messages(gcnew List<String^>())
+  {}
+
+public:
+  int NumberOfRunsCompleted;
+  int NumberOfRunsDiscarded;
+  List<String^> ^ Messages;
+};
+
+
+
+public ref class FileReadProgress
+{
+public:
+  FileReadProgress(void)
+  : Messages(gcnew List<String^>())
+  {}
+
+public:
+  int TotalFileCount;
+  int CurrentFileCount;
+  List<String^> ^ Messages;
 };

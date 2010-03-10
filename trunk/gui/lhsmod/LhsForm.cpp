@@ -11,18 +11,35 @@ using namespace System::Text::RegularExpressions;
 
 
 LhsForm::LhsForm(void)
+: _simulationThreads(gcnew List<BackgroundWorker^>()),
+  _simulationFiles(gcnew List<String^>()),
+  _simulationFilesByThread(gcnew List<List<String^>^>()),
+  _simulationThreadsCompleted(0)
 {
 	InitializeComponent();
 
-  _fileReader;
+  _fileReader = gcnew BackgroundWorker();
+  _fileReader->WorkerReportsProgress = true;
+  _fileReader->WorkerSupportsCancellation = true;
+  _fileReader->DoWork += gcnew DoWorkEventHandler( this, &LhsForm::ReadFiles );
+  _fileReader->ProgressChanged += gcnew ProgressChangedEventHandler( this, &LhsForm::ReadFilesProgressChanged );
+  _fileReader->RunWorkerCompleted += gcnew RunWorkerCompletedEventHandler( this, &LhsForm::ReadFilesCompleted );
 
+  // create a background worker thread
+  for( int i = 0; i < Environment::ProcessorCount * 1.5; ++i ) {
+    BackgroundWorker ^ worker = gcnew BackgroundWorker();
+    worker->WorkerReportsProgress = true;
+    worker->WorkerSupportsCancellation = true;
+    worker->DoWork += gcnew DoWorkEventHandler( this, &LhsForm::StartSimulations );
+    worker->ProgressChanged += gcnew ProgressChangedEventHandler( this, &LhsForm::SimulationsProgressChanged );
+    worker->RunWorkerCompleted += gcnew RunWorkerCompletedEventHandler( this, &LhsForm::SimulationsCompleted );
+    _simulationThreads->Add( worker );
+  }
 
-  _backgroundWorker = gcnew BackgroundWorker();
-  _backgroundWorker->WorkerReportsProgress = true;
-  _backgroundWorker->WorkerSupportsCancellation = true;
-  _backgroundWorker->DoWork += gcnew DoWorkEventHandler( this, &LhsForm::StartStudy);
-  _backgroundWorker->ProgressChanged += gcnew ProgressChangedEventHandler( this, &LhsForm::StudyProgressChanged);
-  _backgroundWorker->RunWorkerCompleted += gcnew RunWorkerCompletedEventHandler( this, &LhsForm::StudyCompleted);
+  // create per thread file lists
+  for( int i = 0; i < _simulationThreads->Count; ++i ) {
+    _simulationFilesByThread->Add( gcnew List<String^>() );
+  }
 }
 
 
@@ -101,108 +118,233 @@ LhsForm::OnRun(System::Object^  sender, System::EventArgs^  e)
     btnRun->Enabled = false;
     //btnRun->Text = "Pause";
 
-    // create and run study
-    _study = gcnew SensitivityAnalysisStudy( _backgroundWorker, tboxDml->Text, tboxLsp->Text, tboxOutput->Text, chkDiscrete->Checked, chkProcessOnly->Checked );
-    _backgroundWorker->RunWorkerAsync();
+    rboxOutput->AppendText( "Beginning sensitivity analysis study" );
+    rboxOutput->SelectionStart = rboxOutput->Text->Length;
+
+    // create study and start by reading and parsing input files
+    SensitivityAnalysisParser ^ parser = gcnew SensitivityAnalysisParser( tboxDml->Text, tboxLsp->Text, tboxOutput->Text );
+    _fileReader->RunWorkerAsync( parser );
   }
 
-  // run already in progress
-  else if( btnRun->Text == "Cancel" ) {
-    ::DialogResult dr = MessageBox::Show( "Are you sure you want to stop this study?", "Stop study?",
-                                        MessageBoxButtons::OKCancel, MessageBoxIcon::Question, MessageBoxDefaultButton::Button2 );
+  //// run already in progress
+  //else if( btnRun->Text == "Cancel" ) {
+  //  ::DialogResult dr = MessageBox::Show( "Are you sure you want to stop this study?", "Stop study?",
+  //                                      MessageBoxButtons::OKCancel, MessageBoxIcon::Question, MessageBoxDefaultButton::Button2 );
 
-    if( dr == ::DialogResult::OK ) {
-      // cancel study
-      _backgroundWorker->CancelAsync();
-    }
-    else if( dr == ::DialogResult::Cancel ) {
-      // do nothing
-    }
-  }
+  //  if( dr == ::DialogResult::OK ) {
+  //    // cancel study
+  //    //_backgroundWorker->CancelAsync();
+  //  }
+  //  else if( dr == ::DialogResult::Cancel ) {
+  //    // do nothing
+  //  }
+  //}
 }
 
 
 
-void
-LhsForm::StartStudy( Object ^ sender, DoWorkEventArgs ^ e )
+System::Void
+LhsForm::ReadFiles( Object ^ sender, DoWorkEventArgs ^ e )
 {
-  BackgroundWorker ^ bw = dynamic_cast<BackgroundWorker^>( sender );
-  _study->StartStudy( bw );
+  // background worker to read and parse files before moving onto simulation
+  BackgroundWorker ^ bw = static_cast<BackgroundWorker^>( sender );
+  List<String^> ^ filenames = gcnew List<String^>();
+  SensitivityAnalysisParser ^ parser = static_cast<SensitivityAnalysisParser^>( e->Argument );
+
+  // parse study passing bw to allow progress reporting
+  filenames = parser->ParseStudy( bw );
+
+  // return files that were parsed
+  e->Result = filenames;
+}  
+
+
+
+System::Void
+LhsForm::ReadFilesProgressChanged( Object ^ sender, ProgressChangedEventArgs ^ e )
+{
+  FileReadProgress ^ frp = static_cast<FileReadProgress^>( e->UserState );
+  double percent = (double) frp->TotalFileCount / frp->CurrentFileCount;
+  pbarRuns->Maximum = frp->TotalFileCount;
+  _numberOfRuns = frp->TotalFileCount;
+  pbarRuns->Value = frp->CurrentFileCount;
+  for each( String ^ s in frp->Messages ) {
+    rboxOutput->AppendText( s + Environment::NewLine );
+    rboxOutput->SelectionStart = rboxOutput->Text->Length;
+  }
+}
+
+
+
+System::Void
+LhsForm::ReadFilesCompleted( Object ^ sender, RunWorkerCompletedEventArgs ^ e )
+{
+  if( e->Error != nullptr ) {
+    rboxOutput->AppendText( "Error while reading input files: " + e->Error->Message + Environment::NewLine );
+    rboxOutput->SelectionStart = rboxOutput->Text->Length;
+  }
+  else if( e->Cancelled ) {
+  }
+  else {
+    // successful, process filenames
+    List<String^> ^ _simulationFiles = static_cast<List<String^>^>( e->Result );
+
+    // reset progress bar
+    pbarRuns->Value = 0;
+    pbarRuns->Maximum = _simulationFiles->Count;
+
+    // into per thread lists
+    for( int i = 0; i < _simulationFiles->Count; ) {
+      for( int j = 0; j < _simulationThreads->Count; ++j ) {
+        _simulationFilesByThread[j]->Add( _simulationFiles[i] );
+        ++i;
+        if( i == _simulationFiles->Count ) break;
+      }
+    }
+    
+    // move on to running simulation and spawn threads
+    _simulationThreadsCompleted = 0;
+    for( int i = 0; i < _simulationThreads->Count; ++i ) {
+      _simulationThreads[i]->RunWorkerAsync( _simulationFilesByThread[i] );
+    }   
+  }
 }
 
 
 
 void
-LhsForm::StudyProgressChanged( Object ^ sender, ProgressChangedEventArgs ^ e )
+LhsForm::StartSimulations( Object ^ sender, DoWorkEventArgs ^ e )
+{
+  // access simulation files for this thread
+  BackgroundWorker ^ bw = dynamic_cast<BackgroundWorker^>( sender );
+  List<String^> ^ filenames = static_cast<List<String^>^>( e->Argument );
+  
+  // open excel via interop and disable errors and warnings
+  Excel::Application ^ ea = gcnew Excel::Application();
+  ea->DisplayAlerts = false;
+
+  // filenames we will convert for each run
+  array<String^> ^ _outputFilenames;
+
+  for each( String ^ filename in filenames ) {
+    // open this file and location
+    gui::DmlFile ^ dmlFile = gcnew gui::DmlFile( filename );
+    gui::Location ^ location = dmlFile->Location;
+    DirectoryInfo ^ runDir = gcnew DirectoryInfo( Path::GetDirectoryName(filename) );
+    
+    // check for errors in location's parameters
+    location->Biology->PropertyValidationManager->ValidateAllProperties();
+    if( !location->Biology->IsValid ) {
+      // delete error log if already present
+      String ^ logFilename = Path::Combine( runDir->FullName, "errors.txt" );
+      if( File::Exists( logFilename ) ) {
+        File::Delete( logFilename );
+      }
+
+      // create log file with error message
+      FileStream ^ fs = gcnew FileStream( Path::Combine(runDir->FullName, "errorLog.txt"), System::IO::FileMode::Create );
+      StreamWriter ^ sw = gcnew StreamWriter( fs );
+      sw->Write( ValidationFramework::ResultFormatter::GetConcatenatedErrorMessages("\n", location->Biology->PropertyValidationManager->ValidatorResultsInError) );
+      sw->Close();
+
+      // abort this run (errors), continue with next run
+      StudyProgress ^ sp = gcnew StudyProgress();
+      sp->NumberOfRunsDiscarded = 1;
+      sp->NumberOfRunsCompleted = 0;
+      sp->Messages->Add( "Parameter errors in " + filename +". See errors.txt." );
+      bw->ReportProgress( 0, sp );
+      continue;
+    }
+
+    // report on starting a simulation
+    StudyProgress ^ sp = gcnew StudyProgress();
+    sp->NumberOfRunsDiscarded = 0;
+    sp->NumberOfRunsCompleted = 0;
+    sp->Messages->Add( "Starting simulation for " + filename +"." );
+    bw->ReportProgress( 0, sp );
+
+    // do simulation and save output
+    location->RunCimsim( true, false );
+    location->CimsimOutput->SaveToDisk( runDir );
+
+    // first time generate list of filenames that will be converted post simulation for each subsequent run
+    if( _outputFilenames == nullptr ) {
+      // first look for all excel .xml files in current run directory
+      array<FileInfo^> ^ xmlFiles = runDir->GetFiles( "*.xml", SearchOption::TopDirectoryOnly );
+      
+      // we only want the filename, not path (changes each time)
+      _outputFilenames = gcnew array<String^>(xmlFiles->Length);
+      for( int i = 0; i < xmlFiles->Length; ++i ) {
+        _outputFilenames[i] = xmlFiles[i]->Name;
+      }
+    }
+
+    // open excel via interop and disable errors and warnings
+    Excel::Application ^ ea = gcnew Excel::Application();
+    ea->DisplayAlerts = false;
+
+    // convert output files from Excel's xml format to binary format
+    for each( String ^ filename in _outputFilenames ) {
+      // open from this directory
+      String ^ xmlFilename = Path::Combine( runDir->FullName, filename );
+
+      // open and disable compatability check
+      Excel::Workbook ^ xmlFile = ea->Workbooks->Open(xmlFilename, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing );
+      xmlFile->CheckCompatibility = false;
+
+      // save as excel 97-2003 format, changing extension, close and delete old workbook
+      xmlFile->SaveAs( Path::ChangeExtension( xmlFilename, ".xls" ), Excel::XlFileFormat::xlExcel8, Type::Missing, Type::Missing, Type::Missing, false, Excel::XlSaveAsAccessMode::xlNoChange, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing );
+      ea->Workbooks->Close();
+      File::Delete( xmlFilename );
+    }
+
+    // report progress
+    sp = gcnew StudyProgress();
+    sp->NumberOfRunsDiscarded = 0;
+    sp->NumberOfRunsCompleted = 1;
+    sp->Messages->Add( "Completed simulation for " + filename +"." );
+    bw->ReportProgress( 0, sp );
+  }
+}
+
+
+
+System::Void
+LhsForm::SimulationsProgressChanged( Object ^ sender, ProgressChangedEventArgs ^ e )
 {
   // check current state
-  SensitivityAnalysisStudy::StudyState ^ ss = dynamic_cast<SensitivityAnalysisStudy::StudyState^>( e->UserState );
+  StudyProgress ^ sp = dynamic_cast<StudyProgress^>( e->UserState );
 
   // update progress bar
-  pbarRuns->Maximum = ss->NumberOfRuns;
-  pbarRuns->Value = static_cast<int>(pbarRuns->Maximum * ss->PercentCompleted);
+  pbarRuns->Value += sp->NumberOfRunsDiscarded;
+  pbarRuns->Value += sp->NumberOfRunsCompleted;
 
   // write message to output
-  for each( String ^ s in ss->Messages ) {
+  for each( String ^ s in sp->Messages ) {
     rboxOutput->AppendText( s + Environment::NewLine );
   }
 }
 
 
 
-void
-LhsForm::StudyCompleted( Object ^ sender, RunWorkerCompletedEventArgs ^ e )
-{
-  btnBrowseDml->Enabled = true;
-  btnBrowseLsp->Enabled = true;
-  btnBrowseOutput->Enabled = true;
-  chkDiscrete->Enabled = true;
-  tboxDml->Enabled = true;
-  tboxLsp->Enabled = true;
-  tboxOutput->Enabled = true;
-  btnRun->Enabled = true;
-}
-
-
-
-// This method is executed in a separate thread created by the background worker.
-// so don't try to access any UI controls here!! (unless you use a delegate to do it)
-// this attribute will prevent the debugger to stop here if any exception is raised.
-//[System.Diagnostics.DebuggerNonUserCodeAttribute()]
 System::Void
-LhsForm::ReadFiles( Object ^ sender, DoWorkEventArgs ^ e )
+LhsForm::SimulationsCompleted( Object ^ sender, RunWorkerCompletedEventArgs ^ e )
 {
-  // get reference to the BackgroundWorker
-  BackgroundWorker ^ bw = static_cast<BackgroundWorker^>( sender );
-  List<String^> ^ filenames = gcnew List<String^> ^ filenames;
+  // this is called each a thread completes
+  _simulationThreadsCompleted++;
 
-  for( int i = 0; i < threadOptions->TaskCount; ++i ) {
-    // loop for some amount of time between 20 and 30 seconds
-    Random ^ r = gcnew Random();
-    int taskTime = r->Next( minTime, maxTime );
-    //int startTime = Environment::TickCount;
-    //while( Environment::TickCount - startTime < taskTime ) {}
+  // so don't actually "complete" until all threads have finished
+  if( _simulationThreadsCompleted == _simulationThreads->Count ) {
+    btnBrowseDml->Enabled = true;
+    btnBrowseLsp->Enabled = true;
+    btnBrowseOutput->Enabled = true;
+    chkDiscrete->Enabled = true;
+    tboxDml->Enabled = true;
+    tboxLsp->Enabled = true;
+    tboxOutput->Enabled = true;
+    btnRun->Enabled = true;
 
-    managed_library::Simulation ^ simulation = gcnew managed_library::Simulation();
-    simulation->Start( taskTime );
-
-    // notify progress to main thread showing UserState property
-    double progress = (i+1) * 100.0 / threadOptions->TaskCount;
-    bw->ReportProgress( static_cast<int>( progress ), DateTime::Now );
-
-    // Error handling: uncomment this code if you want to test how an exception is
-    // handled by the background worker.  Also uncomment the mentioned attribute above
-    // so it doesn't stop in the debugger.  
-    //if( i == 34 ) {
-    //  throw gcnew Exception( "something wrong here!!" );
-    //}
-
-    // if cancellation is pending, cancel work.
-    if( bw->CancellationPending) {  
-      e->Cancel = true;
-      return;
-    }
-  }  
-
-  e->Result = filenames;
-}  
+    rboxOutput->AppendText( "Completed sensitivity analysis study" );
+    rboxOutput->SelectionStart = rboxOutput->Text->Length;
+  }
+}
