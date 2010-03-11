@@ -226,21 +226,16 @@ LhsForm::StartSimulations( Object ^ sender, DoWorkEventArgs ^ e )
   // filenames we will convert for each run
   array<String^> ^ _outputFilenames;
 
+  // run each simulation
   for each( String ^ filename in filenames ) {
-    // open this file and location
     gui::DmlFile ^ dmlFile = gcnew gui::DmlFile( filename );
     gui::Location ^ location = dmlFile->Location;
     DirectoryInfo ^ runDir = gcnew DirectoryInfo( Path::GetDirectoryName(filename) );
     
     // check for errors in location's parameters
     location->Biology->PropertyValidationManager->ValidateAllProperties();
-    if( !location->Biology->IsValid ) {
-      // delete error log if already present
-      String ^ logFilename = Path::Combine( runDir->FullName, "errors.txt" );
-      if( File::Exists( logFilename ) ) {
-        File::Delete( logFilename );
-      }
 
+    if( !location->Biology->IsValid ) {
       // create log file with error message
       FileStream ^ fs = gcnew FileStream( Path::Combine(runDir->FullName, "errorLog.txt"), System::IO::FileMode::Create );
       StreamWriter ^ sw = gcnew StreamWriter( fs );
@@ -266,6 +261,7 @@ LhsForm::StartSimulations( Object ^ sender, DoWorkEventArgs ^ e )
     // do simulation and save output
     location->RunCimsim( true, false );
     location->CimsimOutput->SaveToDisk( runDir );
+    delete location;
 
     // first time generate list of filenames that will be converted post simulation for each subsequent run
     if( _outputFilenames == nullptr ) {
@@ -279,10 +275,6 @@ LhsForm::StartSimulations( Object ^ sender, DoWorkEventArgs ^ e )
       }
     }
 
-    // open excel via interop and disable errors and warnings
-    Excel::Application ^ ea = gcnew Excel::Application();
-    ea->DisplayAlerts = false;
-
     // convert output files from Excel's xml format to binary format
     for each( String ^ filename in _outputFilenames ) {
       // open from this directory
@@ -294,7 +286,9 @@ LhsForm::StartSimulations( Object ^ sender, DoWorkEventArgs ^ e )
 
       // save as excel 97-2003 format, changing extension, close and delete old workbook
       xmlFile->SaveAs( Path::ChangeExtension( xmlFilename, ".xls" ), Excel::XlFileFormat::xlExcel8, Type::Missing, Type::Missing, Type::Missing, false, Excel::XlSaveAsAccessMode::xlNoChange, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing );
-      ea->Workbooks->Close();
+      xmlFile->Close( false, Type::Missing, Type::Missing );
+      //ea->Workbooks->Close();
+      delete xmlFile;
       File::Delete( xmlFilename );
     }
 
