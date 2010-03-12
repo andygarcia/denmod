@@ -18,8 +18,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.ui.objs", "gui\objs\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.simulation.output", "simulation\output\output.vcproj", "{D83788CB-CAE8-4537-B69B-65C06CC594E8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.ui.testgui", "gui\testgui\testgui.vcproj", "{7C77FDB7-9559-4488-BA99-B4DC7411DABC}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.util.xml2xls", "util\xml2xls\xml2xls.vcproj", "{9CE07BE8-D000-4536-A34E-09797DF753CE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.util.parsedos", "util\parsedos\parsedos.vcproj", "{DD4542A3-648F-4282-9B77-4786F6B917A6}"
@@ -70,10 +68,6 @@ Global
 		{D83788CB-CAE8-4537-B69B-65C06CC594E8}.Debug|Win32.Build.0 = Debug|Win32
 		{D83788CB-CAE8-4537-B69B-65C06CC594E8}.Release|Win32.ActiveCfg = Release|Win32
 		{D83788CB-CAE8-4537-B69B-65C06CC594E8}.Release|Win32.Build.0 = Release|Win32
-		{7C77FDB7-9559-4488-BA99-B4DC7411DABC}.Debug|Win32.ActiveCfg = Debug|Win32
-		{7C77FDB7-9559-4488-BA99-B4DC7411DABC}.Debug|Win32.Build.0 = Debug|Win32
-		{7C77FDB7-9559-4488-BA99-B4DC7411DABC}.Release|Win32.ActiveCfg = Release|Win32
-		{7C77FDB7-9559-4488-BA99-B4DC7411DABC}.Release|Win32.Build.0 = Release|Win32
 		{9CE07BE8-D000-4536-A34E-09797DF753CE}.Debug|Win32.ActiveCfg = Debug|Win32
 		{9CE07BE8-D000-4536-A34E-09797DF753CE}.Debug|Win32.Build.0 = Debug|Win32
 		{9CE07BE8-D000-4536-A34E-09797DF753CE}.Release|Win32.ActiveCfg = Release|Win32
