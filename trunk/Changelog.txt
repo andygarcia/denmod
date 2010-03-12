@@ -1,0 +1,118 @@
+3.24.4
+
+- NEW: Redesigned multithreaded code in lhs module for better CPU utilization on multicore machines.
+
+3.24.3
+
+- CHG: DENSiM per serotype output is now combined into one workbook with four worksheets.
+- CHG: DENSiM seroprevalence tab now has autofill functionality to set all serotype and age classes values to the same value.
+
+3.24.2
+
+- BUG: Fixed in execution of LHS module on Windows Server 2003 x64.
+- CHG: LHS directories and runs are all 1's indexed for consistency.
+- CHG: LHS output now saved using larger buffers for speed.
+
+
+3.24.1
+
+- BUG: Changed how output is handled in gui when "Save All" functionality is used.  Containers with a large number of containers or length of simultion will no longer cause an OutOfMemoryException when output is saved.
+- CHG: Fixed some dialogs that were showing up as separate entries in tasbar.
+
+3.24
+
+- NEW: Added data validation for all biology parameters.
+- NEW: lhs module now runs in multithreaded mode, running multiple simulations at once based on number of processors available.
+
+3.23
+
+- NEW: Better dynamic handling of DENSiM human population, population limits no longer hardcoded, only bounded by available memory and computer power where larger populations require more execution time.
+- NEW: Settings now allow running of CIMSiM with established population as a default.
+- CHG: DENSiM code reverified for sustained transmission behavior against older version.
+- CHG: Better error handling and interaction between available weather and infection introduction.
+- CHG: Main DENSiM output window now scales appropriately to better show transmission (especially for endemic areas).
+- CHG: Better handling of weather removal.
+
+3.22
+
+- NEW: Tools and option dialog now has program options.
+- NEW: Ability to run cimsim simulations with discrete cohort numbers.
+- NEW: Ability to toggle cimsim main output graph scaling off and on.
+- NEW: Lhs module also has option to run simulation using discrete numbers.
+
+3.21.35
+
+- BUG: Daily manually filled containers were not being filled correctly after recent hydrology changes.
+
+3.21.34
+
+- CHG: Containers with weekly or monthly manual fills and/or drawdowns that are subgrouped will have desynchronized hydrology for their individual subgroups by choosing a random day within the period for the fill or draw to occur.
+
+3.21.33
+
+- CHG: Daily totals for larvae fasting and larvae death from fasting now output in container worksheets.
+- CHG: Cadaver contributions to food now output in Food graph and container worksheet.
+- CHG: User interface now prompts user to save before closing file, whether about to open another file or exiting program.
+
+3.21.32
+
+- CHG: Fixed how Serology spreadsheet was generated for DENSiM save all functionality.
+- CHG: Added daily food addition and consumption as container output in CIMSiM.
+
+3.21.31
+
+- CHG: Removed initial population limit at Dana's request to allow for more extensive DENSiM testing.
+
+3.21.3
+
+- CHG: CIMSiM's main output graph now shows 100's of eggs and larvae, similar to the DOS version.
+- CHG: Adult feeding/biting parameters for DENSiM once again exposed in biology dialogs.
+- CHG: Added better error reporting for more of DENSiM's demographic/virology parameters.
+
+3.21.2
+
+- CHG: Drawdown in container dialog is now entered as a percentage of container's total capacity.
+- CHG: Host seeking females and ovipositing females now part of CIMSiM graphic and spreadsheet output.
+- CHG: Can now select multiple weather files at a time when importing weather.
+- CHG: Now able to view and edit previously imported weather.
+- CHG: CIMSiM's "Save All" functionality now saves all container data into one workbook, with a separate worksheet for each container.
+- CHG: Excel files are now better formatted with dates and numbers recognized as such.
+- CHG: Updated default values for larvae weight at hatch and larvae minimum weight for survival.
+- CHG: Added per serotype general serology distribution charts to DENSiM gui.
+- CHG: Added per serotype age specific seroprevalence charts to DENSiM gui.
+- CHG: Save All functionality for DENSiM now implemented.
+
+3.21.1
+
+- CHG: Changed maximum population size for DENSiM simulations to 1,000,000.
+- CHG: Added validation to container such that drawdown cannot exceed container capacity.
+- CHG: Last column in food fitter was renamed to reflect absolute difference.
+- CHG: Added labels to container graph selection dialog for clarity.
+
+3.21
+
+- CHG: Structural changes to gui and object code to accomodate LHS input and sensitivity analysis studies.
+- CHG: Added chart to CIMSiM output for immature development rates (per container).
+- CHG: "Clone" button in CIMSiM renamed to "Copy" so as not to clash with container dialog's cloning.
+- BUG: Fixed minor bugs in how temperature survival parameters are loaded
+- BUG: Fixed input problems for Notes textbox.
+
+
+3.20.1
+
+- BUG: Output was not varying between runs after closing and reopening CIMSiM with the same location and random food enabled.
+
+3.20
+
+- CHG: Added container cloning component to the CIMSiM gui and simulation.
+- CHG: Minor speed improvements in DENSiM simulation code.
+
+3.19.4
+
+- BUG: Double clicking a .dml file to open program caused exception.
+
+3.19.3
+
+- BUG: Clicking save in food fitter would not update initial food to 10x daily food unless daily food parameters had been explicitly changed.
+- BUG: In certain situations infection introduction schedule parameters would not update before DENSiM was run.
+- CHG: Schedules for infection introduction in DENSiM are now selected in the same manner as schedules for control interventions in CIMSiM.
