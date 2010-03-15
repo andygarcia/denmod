@@ -1,5 +1,6 @@
 #pragma once
 #include "SensitivityAnalysis.h"
+#include "SimulationStack.h"
 
 using namespace System;
 using namespace System::ComponentModel;
@@ -33,16 +34,25 @@ namespace lhsmod {
     System::Void SimulationsProgressChanged( Object ^ sender, ProgressChangedEventArgs ^ e );
     System::Void SimulationsCompleted( Object ^ sender, RunWorkerCompletedEventArgs ^ e );
 
+    void AppendToOutput( String ^ s );
+    System::Void OnAutoScrollChecked( Object ^ sender, EventArgs ^ e );
+
+    System::Void OnFormClosing( Object ^ sender, FormClosingEventArgs ^ e );
+    System::Void OnFormClosed( Object ^ sender, FormClosedEventArgs ^ e );
+    bool ConfirmStudyCancel(void);
+
   private:
     SensitivityAnalysisParser ^ _parser;
     int _numberOfRuns;
 
     BackgroundWorker ^ _fileReader;
+    SimulationStack ^ _simulationStack;
     List<BackgroundWorker^> ^ _simulationThreads;
-    List<String^> ^ _simulationFiles;
-    List<List<String^>^> ^ _simulationFilesByThread;
 
     int _simulationThreadsCompleted;
+
+    bool _closeForm;
+    bool _runningStudy;
 
   private: System::Windows::Forms::TextBox^  tboxLsp;
   private: System::Windows::Forms::TextBox^  tboxOutput;
@@ -57,9 +67,12 @@ namespace lhsmod {
   private: System::Windows::Forms::ProgressBar^  pbarRuns;
 
 
-  private: System::Windows::Forms::CheckBox^  chkDiscrete;
-  private: System::Windows::Forms::CheckBox^  chkProcessOnly;
+
+
   private: System::Windows::Forms::RichTextBox^  rboxOutput;
+  private: System::Windows::Forms::CheckBox^  chkAutoscroll;
+  private: System::Windows::Forms::Label^  lblActiveSimulationThreads;
+
 
 
 
@@ -93,9 +106,9 @@ namespace lhsmod {
       this->lblDml = (gcnew System::Windows::Forms::Label());
       this->btnBrowseDml = (gcnew System::Windows::Forms::Button());
       this->pbarRuns = (gcnew System::Windows::Forms::ProgressBar());
-      this->chkDiscrete = (gcnew System::Windows::Forms::CheckBox());
-      this->chkProcessOnly = (gcnew System::Windows::Forms::CheckBox());
       this->rboxOutput = (gcnew System::Windows::Forms::RichTextBox());
+      this->chkAutoscroll = (gcnew System::Windows::Forms::CheckBox());
+      this->lblActiveSimulationThreads = (gcnew System::Windows::Forms::Label());
       this->SuspendLayout();
       // 
       // tboxLsp
@@ -104,7 +117,7 @@ namespace lhsmod {
         | System::Windows::Forms::AnchorStyles::Right));
       this->tboxLsp->Location = System::Drawing::Point(105, 43);
       this->tboxLsp->Name = L"tboxLsp";
-      this->tboxLsp->Size = System::Drawing::Size(426, 20);
+      this->tboxLsp->Size = System::Drawing::Size(434, 20);
       this->tboxLsp->TabIndex = 0;
       // 
       // tboxOutput
@@ -113,7 +126,7 @@ namespace lhsmod {
         | System::Windows::Forms::AnchorStyles::Right));
       this->tboxOutput->Location = System::Drawing::Point(105, 72);
       this->tboxOutput->Name = L"tboxOutput";
-      this->tboxOutput->Size = System::Drawing::Size(426, 20);
+      this->tboxOutput->Size = System::Drawing::Size(434, 20);
       this->tboxOutput->TabIndex = 1;
       // 
       // lblLsp
@@ -137,7 +150,7 @@ namespace lhsmod {
       // btnBrowseLsp
       // 
       this->btnBrowseLsp->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
-      this->btnBrowseLsp->Location = System::Drawing::Point(537, 41);
+      this->btnBrowseLsp->Location = System::Drawing::Point(545, 40);
       this->btnBrowseLsp->Name = L"btnBrowseLsp";
       this->btnBrowseLsp->Size = System::Drawing::Size(75, 23);
       this->btnBrowseLsp->TabIndex = 3;
@@ -148,7 +161,7 @@ namespace lhsmod {
       // btnBrowseOutput
       // 
       this->btnBrowseOutput->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
-      this->btnBrowseOutput->Location = System::Drawing::Point(537, 70);
+      this->btnBrowseOutput->Location = System::Drawing::Point(545, 69);
       this->btnBrowseOutput->Name = L"btnBrowseOutput";
       this->btnBrowseOutput->Size = System::Drawing::Size(75, 23);
       this->btnBrowseOutput->TabIndex = 3;
@@ -158,7 +171,8 @@ namespace lhsmod {
       // 
       // btnRun
       // 
-      this->btnRun->Location = System::Drawing::Point(12, 143);
+      this->btnRun->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
+      this->btnRun->Location = System::Drawing::Point(545, 500);
       this->btnRun->Name = L"btnRun";
       this->btnRun->Size = System::Drawing::Size(75, 23);
       this->btnRun->TabIndex = 4;
@@ -172,7 +186,7 @@ namespace lhsmod {
         | System::Windows::Forms::AnchorStyles::Right));
       this->tboxDml->Location = System::Drawing::Point(105, 14);
       this->tboxDml->Name = L"tboxDml";
-      this->tboxDml->Size = System::Drawing::Size(426, 20);
+      this->tboxDml->Size = System::Drawing::Size(434, 20);
       this->tboxDml->TabIndex = 0;
       // 
       // lblDml
@@ -187,7 +201,7 @@ namespace lhsmod {
       // btnBrowseDml
       // 
       this->btnBrowseDml->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
-      this->btnBrowseDml->Location = System::Drawing::Point(537, 12);
+      this->btnBrowseDml->Location = System::Drawing::Point(545, 12);
       this->btnBrowseDml->Name = L"btnBrowseDml";
       this->btnBrowseDml->Size = System::Drawing::Size(75, 23);
       this->btnBrowseDml->TabIndex = 3;
@@ -199,30 +213,10 @@ namespace lhsmod {
       // 
       this->pbarRuns->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
         | System::Windows::Forms::AnchorStyles::Right));
-      this->pbarRuns->Location = System::Drawing::Point(105, 144);
+      this->pbarRuns->Location = System::Drawing::Point(12, 121);
       this->pbarRuns->Name = L"pbarRuns";
-      this->pbarRuns->Size = System::Drawing::Size(507, 23);
+      this->pbarRuns->Size = System::Drawing::Size(608, 23);
       this->pbarRuns->TabIndex = 5;
-      // 
-      // chkDiscrete
-      // 
-      this->chkDiscrete->AutoSize = true;
-      this->chkDiscrete->Location = System::Drawing::Point(105, 98);
-      this->chkDiscrete->Name = L"chkDiscrete";
-      this->chkDiscrete->Size = System::Drawing::Size(133, 17);
-      this->chkDiscrete->TabIndex = 8;
-      this->chkDiscrete->Text = L"Discrete cohort counts";
-      this->chkDiscrete->UseVisualStyleBackColor = true;
-      // 
-      // chkProcessOnly
-      // 
-      this->chkProcessOnly->AutoSize = true;
-      this->chkProcessOnly->Location = System::Drawing::Point(105, 121);
-      this->chkProcessOnly->Name = L"chkProcessOnly";
-      this->chkProcessOnly->Size = System::Drawing::Size(251, 17);
-      this->chkProcessOnly->TabIndex = 8;
-      this->chkProcessOnly->Text = L"Disable simulation - process DML and LSP only.";
-      this->chkProcessOnly->UseVisualStyleBackColor = true;
       // 
       // rboxOutput
       // 
@@ -230,20 +224,44 @@ namespace lhsmod {
         | System::Windows::Forms::AnchorStyles::Left) 
         | System::Windows::Forms::AnchorStyles::Right));
       this->rboxOutput->HideSelection = false;
-      this->rboxOutput->Location = System::Drawing::Point(105, 173);
+      this->rboxOutput->Location = System::Drawing::Point(12, 150);
       this->rboxOutput->Name = L"rboxOutput";
-      this->rboxOutput->Size = System::Drawing::Size(507, 261);
+      this->rboxOutput->Size = System::Drawing::Size(608, 275);
       this->rboxOutput->TabIndex = 9;
       this->rboxOutput->Text = L"";
+      // 
+      // chkAutoscroll
+      // 
+      this->chkAutoscroll->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
+      this->chkAutoscroll->AutoSize = true;
+      this->chkAutoscroll->Checked = true;
+      this->chkAutoscroll->CheckState = System::Windows::Forms::CheckState::Checked;
+      this->chkAutoscroll->Location = System::Drawing::Point(12, 504);
+      this->chkAutoscroll->Name = L"chkAutoscroll";
+      this->chkAutoscroll->Size = System::Drawing::Size(122, 17);
+      this->chkAutoscroll->TabIndex = 10;
+      this->chkAutoscroll->Text = L"Autoscroll output log";
+      this->chkAutoscroll->UseVisualStyleBackColor = true;
+      this->chkAutoscroll->CheckedChanged += gcnew System::EventHandler(this, &LhsForm::OnAutoScrollChecked);
+      // 
+      // lblActiveSimulationThreads
+      // 
+      this->lblActiveSimulationThreads->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
+      this->lblActiveSimulationThreads->AutoSize = true;
+      this->lblActiveSimulationThreads->Location = System::Drawing::Point(12, 438);
+      this->lblActiveSimulationThreads->Name = L"lblActiveSimulationThreads";
+      this->lblActiveSimulationThreads->Size = System::Drawing::Size(127, 13);
+      this->lblActiveSimulationThreads->TabIndex = 11;
+      this->lblActiveSimulationThreads->Text = L"Active simulation threads:";
       // 
       // LhsForm
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-      this->ClientSize = System::Drawing::Size(624, 446);
+      this->ClientSize = System::Drawing::Size(632, 535);
+      this->Controls->Add(this->lblActiveSimulationThreads);
+      this->Controls->Add(this->chkAutoscroll);
       this->Controls->Add(this->rboxOutput);
-      this->Controls->Add(this->chkProcessOnly);
-      this->Controls->Add(this->chkDiscrete);
       this->Controls->Add(this->pbarRuns);
       this->Controls->Add(this->btnRun);
       this->Controls->Add(this->btnBrowseOutput);
@@ -255,10 +273,11 @@ namespace lhsmod {
       this->Controls->Add(this->tboxDml);
       this->Controls->Add(this->tboxOutput);
       this->Controls->Add(this->tboxLsp);
-      this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::SizableToolWindow;
       this->MinimumSize = System::Drawing::Size(640, 480);
       this->Name = L"LhsForm";
       this->Text = L"LHSWIN -CIMSiM Sensitivity Analysis Study";
+      this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &LhsForm::OnFormClosed);
+      this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &LhsForm::OnFormClosing);
       this->ResumeLayout(false);
       this->PerformLayout();
 
