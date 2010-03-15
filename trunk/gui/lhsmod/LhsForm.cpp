@@ -12,8 +12,7 @@ using namespace System::Text::RegularExpressions;
 
 LhsForm::LhsForm(void)
 : _simulationThreads(gcnew List<BackgroundWorker^>()),
-  _simulationFiles(gcnew List<String^>()),
-  _simulationFilesByThread(gcnew List<List<String^>^>()),
+  _simulationStack(gcnew SimulationStack()),
   _simulationThreadsCompleted(0)
 {
 	InitializeComponent();
@@ -26,7 +25,7 @@ LhsForm::LhsForm(void)
   _fileReader->RunWorkerCompleted += gcnew RunWorkerCompletedEventHandler( this, &LhsForm::ReadFilesCompleted );
 
   // create a background worker thread
-  for( int i = 0; i < Environment::ProcessorCount * 1.5; ++i ) {
+  for( int i = 0; i < Environment::ProcessorCount * 1; ++i ) {
     BackgroundWorker ^ worker = gcnew BackgroundWorker();
     worker->WorkerReportsProgress = true;
     worker->WorkerSupportsCancellation = true;
@@ -34,11 +33,6 @@ LhsForm::LhsForm(void)
     worker->ProgressChanged += gcnew ProgressChangedEventHandler( this, &LhsForm::SimulationsProgressChanged );
     worker->RunWorkerCompleted += gcnew RunWorkerCompletedEventHandler( this, &LhsForm::SimulationsCompleted );
     _simulationThreads->Add( worker );
-  }
-
-  // create per thread file lists
-  for( int i = 0; i < _simulationThreads->Count; ++i ) {
-    _simulationFilesByThread->Add( gcnew List<String^>() );
   }
 }
 
@@ -118,7 +112,7 @@ LhsForm::OnRun(System::Object^  sender, System::EventArgs^  e)
     btnRun->Enabled = false;
     //btnRun->Text = "Pause";
 
-    rboxOutput->AppendText( "Beginning sensitivity analysis study" );
+    rboxOutput->AppendText( "Beginning sensitivity analysis study" + Environment::NewLine );
     rboxOutput->SelectionStart = rboxOutput->Text->Length;
 
     // create study and start by reading and parsing input files
@@ -152,10 +146,10 @@ LhsForm::ReadFiles( Object ^ sender, DoWorkEventArgs ^ e )
   SensitivityAnalysisParser ^ parser = static_cast<SensitivityAnalysisParser^>( e->Argument );
 
   // parse study passing bw to allow progress reporting
-  filenames = parser->ParseStudy( bw );
+  SimulationStack ^ ss = parser->ParseStudy( bw );
 
   // return files that were parsed
-  e->Result = filenames;
+  e->Result = ss;
 }  
 
 
@@ -184,28 +178,24 @@ LhsForm::ReadFilesCompleted( Object ^ sender, RunWorkerCompletedEventArgs ^ e )
     rboxOutput->SelectionStart = rboxOutput->Text->Length;
   }
   else if( e->Cancelled ) {
+    // cancelled
   }
   else {
-    // successful, process filenames
-    List<String^> ^ _simulationFiles = static_cast<List<String^>^>( e->Result );
+    // successful, save stack from parser, but flip flop given stack use
+    _simulationStack = gcnew SimulationStack();
+    SimulationStack ^ ss = static_cast<SimulationStack^>( e->Result );
+    while( ss->Count != 0 ) {
+      _simulationStack->Push(ss->Pop());
+    }
 
     // reset progress bar
     pbarRuns->Value = 0;
-    pbarRuns->Maximum = _simulationFiles->Count;
+    pbarRuns->Maximum = _simulationStack->Count;
 
-    // into per thread lists
-    for( int i = 0; i < _simulationFiles->Count; ) {
-      for( int j = 0; j < _simulationThreads->Count; ++j ) {
-        _simulationFilesByThread[j]->Add( _simulationFiles[i] );
-        ++i;
-        if( i == _simulationFiles->Count ) break;
-      }
-    }
-    
     // move on to running simulation and spawn threads
     _simulationThreadsCompleted = 0;
     for( int i = 0; i < _simulationThreads->Count; ++i ) {
-      _simulationThreads[i]->RunWorkerAsync( _simulationFilesByThread[i] );
+      _simulationThreads[i]->RunWorkerAsync( _simulationStack );
     }   
   }
 }
@@ -215,9 +205,9 @@ LhsForm::ReadFilesCompleted( Object ^ sender, RunWorkerCompletedEventArgs ^ e )
 void
 LhsForm::StartSimulations( Object ^ sender, DoWorkEventArgs ^ e )
 {
-  // access simulation files for this thread
+  // access simulation stack
   BackgroundWorker ^ bw = dynamic_cast<BackgroundWorker^>( sender );
-  List<String^> ^ filenames = static_cast<List<String^>^>( e->Argument );
+  SimulationStack ^ simStack = static_cast<SimulationStack^>( e->Argument );
   
   // open excel via interop and disable errors and warnings
   Excel::Application ^ ea = gcnew Excel::Application();
@@ -226,8 +216,19 @@ LhsForm::StartSimulations( Object ^ sender, DoWorkEventArgs ^ e )
   // filenames we will convert for each run
   array<String^> ^ _outputFilenames;
 
-  // run each simulation
-  for each( String ^ filename in filenames ) {
+  // process files from stack until empty
+  String ^ filename = nullptr;
+  while( true ) {
+    // attempt to pop next simulation filename
+    try {
+      filename = simStack->Pop();
+    }
+    catch (InvalidOperationException ^ ioe ) {
+      // stack should be empty
+      Diagnostics::Debug::WriteLine( ioe->ToString() );
+      break;
+    }
+
     gui::DmlFile ^ dmlFile = gcnew gui::DmlFile( filename );
     gui::Location ^ location = dmlFile->Location;
     DirectoryInfo ^ runDir = gcnew DirectoryInfo( Path::GetDirectoryName(filename) );

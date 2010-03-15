@@ -1,36 +1,13 @@
 #pragma once
 
+#include "SimulationStack.h"
+
 using namespace System;
 using namespace System::Collections;
 using namespace System::Collections::Generic;
 using namespace System::ComponentModel;
 using namespace System::Threading;
 using namespace Microsoft::Office::Interop;
-
-ref class SensitivityAnalysisParser;
-
-
-
-public ref class SensitivityAnalysisSimulation
-{
-public:
-  SensitivityAnalysisSimulation( SensitivityAnalysisParser ^ study, String ^ filename, int runId, ManualResetEvent ^ manualResetEvent );
-protected:
-  virtual ~SensitivityAnalysisSimulation(void);
-
-public:
-  void ThreadPoolCallback( Object ^ stateInfo );
-
-private:
-  SensitivityAnalysisParser ^ _study;
-  String ^ filename;
-  int _runId;
-  ManualResetEvent ^ _manualResetEvent;
-
-  Excel::Application ^ _excelApplication;
-  array<String^> ^ _outputFilenames;
-};
-
 
 
 
@@ -46,7 +23,7 @@ public:
 
 // Methods
 public:
-  List<String^> ^ ParseStudy( BackgroundWorker ^ bw );
+  SimulationStack ^ ParseStudy( BackgroundWorker ^ bw );
 
 private:
   void ModifyBaseLocation( Generic::List<String^> ^ paramNames, Generic::List<double> ^ paramValues );
@@ -61,11 +38,8 @@ private:
   String ^ _lspFilename;
   String ^ _outputDirectory;
 
-  int _numberOfRuns;
-  int _numberOfCompletedRuns;
-
-  List<String ^> ^ _simulationFiles;
-  List<SensitivityAnalysisSimulation^> ^ _simulations;
+  int _numberOfSimulations;
+  SimulationStack ^ _simulationStack;
 
   static Dictionary<String^,String^> ^ _saNamesToDmlNames;
 };

@@ -109,10 +109,8 @@ SensitivityAnalysisParser::SensitivityAnalysisParser( String ^ dmlFilename, Stri
 : _dmlFilename(dmlFilename),
   _lspFilename(lspFilename),
   _outputDirectory(outputDir),
-  _simulationFiles(gcnew List<String ^>()),
-  _simulations(gcnew List<SensitivityAnalysisSimulation^>()),
-  _numberOfRuns(0),
-  _numberOfCompletedRuns(0)
+  _simulationStack(gcnew SimulationStack()),
+  _numberOfSimulations(0)
 {}
 
 
@@ -122,7 +120,7 @@ SensitivityAnalysisParser::~SensitivityAnalysisParser(void)
 
 
 
-List<String^> ^
+SimulationStack ^
 SensitivityAnalysisParser::ParseStudy( BackgroundWorker ^ bw )
 {
   // read dml file for base location object
@@ -148,7 +146,7 @@ SensitivityAnalysisParser::ParseStudy( BackgroundWorker ^ bw )
   // read number of runs
   s = sr->ReadLine();
   m = r->Match( s );
-  _numberOfRuns = Convert::ToInt32( m->Value );
+  _numberOfSimulations = Convert::ToInt32( m->Value );
 
   // read number of parameters
   s = sr->ReadLine();
@@ -173,7 +171,7 @@ SensitivityAnalysisParser::ParseStudy( BackgroundWorker ^ bw )
   }
 
   // read parameters for each run and write file
-  for( int i = 0; i < _numberOfRuns; ++i ) {
+  for( int i = 0; i < _numberOfSimulations; ++i ) {
 
     // sampled parameters for current run
     Generic::List<double> ^ thisRun = gcnew Generic::List<double>();
@@ -211,17 +209,17 @@ SensitivityAnalysisParser::ParseStudy( BackgroundWorker ^ bw )
     gui::DmlFile ^ runFile = gcnew gui::DmlFile( runFilename, _baseLocation );
     runFile->Save();
 
-    _simulationFiles->Add( runFilename );
+    _simulationStack->Push( runFilename );
 
     FileReadProgress ^ frp = gcnew FileReadProgress();
-    frp->TotalFileCount = _numberOfRuns;
+    frp->TotalFileCount = _numberOfSimulations;
     frp->CurrentFileCount = i+1;
     frp->Messages->Add( "Created " + runFilename );
 
     bw->ReportProgress( 0, frp );
   }
 
-  return _simulationFiles;
+  return _simulationStack;
 }
 
 
@@ -310,91 +308,4 @@ String ^
 SensitivityAnalysisParser::GetDmlNameFromSa( String ^ saName )
 {
   return _saNamesToDmlNames[saName];
-}
-
-
-
-SensitivityAnalysisSimulation::SensitivityAnalysisSimulation( SensitivityAnalysisParser ^ study, String ^ filename, int runId, ManualResetEvent ^ manualResetEvent )
-: _study(study),
-  _runId(runId),
-  _manualResetEvent(manualResetEvent)
-{}
-
-
-
-SensitivityAnalysisSimulation::~SensitivityAnalysisSimulation( void )
-{}
-
-
-
-void SensitivityAnalysisSimulation::ThreadPoolCallback( Object ^ stateInfo )
-{
-  // open this file and location
-  gui::DmlFile ^ dmlFile = gcnew gui::DmlFile( filename );
-  gui::Location ^ location = dmlFile->Location;
-  DirectoryInfo ^ runDir = gcnew DirectoryInfo( Path::GetDirectoryName(filename) );
-  
-  // check for errors in location's parameters
-  location->Biology->PropertyValidationManager->ValidateAllProperties();
-  if( !location->Biology->IsValid ) {
-    // delete error log if already present
-    String ^ logFilename = Path::Combine( runDir->FullName, "errors.txt" );
-    if( File::Exists( logFilename ) ) {
-      File::Delete( logFilename );
-    }
-
-    // create log file with error message
-    FileStream ^ fs = gcnew FileStream( Path::Combine(runDir->FullName, "errorLog.txt"), System::IO::FileMode::Create );
-    StreamWriter ^ sw = gcnew StreamWriter( fs );
-    sw->Write( ValidationFramework::ResultFormatter::GetConcatenatedErrorMessages("\n", location->Biology->PropertyValidationManager->ValidatorResultsInError) );
-    sw->Close();
-
-    // abort this run (errors), continue with next run
-    //_study->ReportRunResult( _runId, true );
-    return;
-  }
-
-  // do simulation and save output
-  //location->RunCimsim( true, _useDiscrete );
-  //location->CimsimOutput->SaveToDisk( runDir );
-
-  // dummy code to chew cycles for testing, thread will consume cpu for 2 seconds
-  int taskTime = 10000;
-  int startTime = Environment::TickCount;
-  while( Environment::TickCount - startTime < taskTime ) {}
-
-
-  //// first time generate list of filenames that will be converted post simulation for each subsequent run
-  //if( _outputFilenames == nullptr ) {
-  //  // first look for all excel .xml files in current run directory
-  //  array<FileInfo^> ^ xmlFiles = runDir->GetFiles( "*.xml", SearchOption::TopDirectoryOnly );
-  //  
-  //  // we only want the filename, not path (changes each time)
-  //  _outputFilenames = gcnew array<String^>(xmlFiles->Length);
-  //  for( int i = 0; i < xmlFiles->Length; ++i ) {
-  //    _outputFilenames[i] = xmlFiles[i]->Name;
-  //  }
-  //}
-
-  //// open excel via interop and disable errors and warnings
-  //Excel::Application ^ ea = gcnew Excel::Application();
-  //ea->DisplayAlerts = false;
-
-  //// convert output files from Excel's xml format to binary format
-  //for each( String ^ filename in _outputFilenames ) {
-  //  // open from this directory
-  //  String ^ xmlFilename = Path::Combine( runDir->FullName, filename );
-
-  //  // open and disable compatability check
-  //  Excel::Workbook ^ xmlFile = ea->Workbooks->Open(xmlFilename, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing );
-  //  xmlFile->CheckCompatibility = false;
-
-  //  // save as excel 97-2003 format, changing extension, close and delete old workbook
-  //  xmlFile->SaveAs( Path::ChangeExtension( xmlFilename, ".xls" ), Excel::XlFileFormat::xlExcel8, Type::Missing, Type::Missing, Type::Missing, false, Excel::XlSaveAsAccessMode::xlNoChange, Type::Missing, Type::Missing, Type::Missing, Type::Missing, Type::Missing );
-  //  ea->Workbooks->Close();
-  //  File::Delete( xmlFilename );
-  //}
-
-  // completed run and saved output
-  //_study->ReportRunResult( _runId, false );
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "SensitivityAnalysis.h"
+#include "SimulationStack.h"
 
 using namespace System;
 using namespace System::ComponentModel;
@@ -38,9 +39,8 @@ namespace lhsmod {
     int _numberOfRuns;
 
     BackgroundWorker ^ _fileReader;
+    SimulationStack ^ _simulationStack;
     List<BackgroundWorker^> ^ _simulationThreads;
-    List<String^> ^ _simulationFiles;
-    List<List<String^>^> ^ _simulationFilesByThread;
 
     int _simulationThreadsCompleted;
 
