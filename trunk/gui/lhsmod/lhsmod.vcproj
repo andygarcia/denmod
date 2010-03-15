@@ -266,6 +266,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SimulationStack.h"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.h"
 				>
 			</File>

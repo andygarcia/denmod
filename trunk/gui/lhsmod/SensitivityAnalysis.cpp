@@ -109,10 +109,8 @@ SensitivityAnalysisParser::SensitivityAnalysisParser( String ^ dmlFilename, Stri
 : _dmlFilename(dmlFilename),
   _lspFilename(lspFilename),
   _outputDirectory(outputDir),
-  _simulationFiles(gcnew List<String ^>()),
-  _simulations(gcnew List<SensitivityAnalysisSimulation^>()),
-  _numberOfRuns(0),
-  _numberOfCompletedRuns(0)
+  _simulationStack(gcnew SimulationStack()),
+  _numberOfSimulations(0)
 {}
 
 
@@ -122,7 +120,7 @@ SensitivityAnalysisParser::~SensitivityAnalysisParser(void)
 
 
 
-List<String^> ^
+SimulationStack ^
 SensitivityAnalysisParser::ParseStudy( BackgroundWorker ^ bw )
 {
   // read dml file for base location object
@@ -148,7 +146,7 @@ SensitivityAnalysisParser::ParseStudy( BackgroundWorker ^ bw )
   // read number of runs
   s = sr->ReadLine();
   m = r->Match( s );
-  _numberOfRuns = Convert::ToInt32( m->Value );
+  _numberOfSimulations = Convert::ToInt32( m->Value );
 
   // read number of parameters
   s = sr->ReadLine();
@@ -173,7 +171,7 @@ SensitivityAnalysisParser::ParseStudy( BackgroundWorker ^ bw )
   }
 
   // read parameters for each run and write file
-  for( int i = 0; i < _numberOfRuns; ++i ) {
+  for( int i = 0; i < _numberOfSimulations; ++i ) {
 
     // sampled parameters for current run
     Generic::List<double> ^ thisRun = gcnew Generic::List<double>();
@@ -211,17 +209,17 @@ SensitivityAnalysisParser::ParseStudy( BackgroundWorker ^ bw )
     gui::DmlFile ^ runFile = gcnew gui::DmlFile( runFilename, _baseLocation );
     runFile->Save();
 
-    _simulationFiles->Add( runFilename );
+    _simulationStack->Push( runFilename );
 
     FileReadProgress ^ frp = gcnew FileReadProgress();
-    frp->TotalFileCount = _numberOfRuns;
+    frp->TotalFileCount = _numberOfSimulations;
     frp->CurrentFileCount = i+1;
     frp->Messages->Add( "Created " + runFilename );
 
     bw->ReportProgress( 0, frp );
   }
 
-  return _simulationFiles;
+  return _simulationStack;
 }
 
 

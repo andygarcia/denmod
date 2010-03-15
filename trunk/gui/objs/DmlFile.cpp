@@ -54,7 +54,6 @@ DmlFile::DmlFile( System::String ^ filename )
   }
   catch( Exception ^ e ) {
     System::Diagnostics::Debug::WriteLine( "DmlFile(): Exception in Deserialize(): ", e->Message );
-    System::Windows::Forms::MessageBox::Show( "Unable to open DML file: " + e->Message );
   }
 
   fs->Close();
@@ -87,7 +86,6 @@ DmlFile::DmlFile( String ^ filename, System::IO::Stream ^ stream )
   }
   catch( Exception ^ e ) {
     System::Diagnostics::Debug::WriteLine( "DmlFile(): Exception in Deserialize(): ", e->Message );
-    System::Windows::Forms::MessageBox::Show( "Unable to open DML file: " + e->Message );
   }
 }
 
@@ -98,7 +96,6 @@ DmlFile::DmlFile( System::String ^ filename, gui::Location ^ location )
   _location(location),
   _isValid(false)
 {}
-
 
 
 
@@ -125,7 +122,7 @@ DmlFile::Save()
     this->_isReadOnly = false;
   }
   catch( Exception ^ e ) {
-    Windows::Forms::MessageBox::Show( "Unabled to save DML file: " + e->Message );
+    System::Diagnostics::Debug::WriteLine( "DmlFile::Save():  " + e->Message );
   }
 }
 
