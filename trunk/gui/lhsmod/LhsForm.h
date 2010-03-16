@@ -35,7 +35,6 @@ namespace lhsmod {
     System::Void SimulationsCompleted( Object ^ sender, RunWorkerCompletedEventArgs ^ e );
 
     void AppendToOutput( String ^ s );
-    System::Void OnAutoScrollChecked( Object ^ sender, EventArgs ^ e );
 
     System::Void OnFormClosing( Object ^ sender, FormClosingEventArgs ^ e );
     System::Void OnFormClosed( Object ^ sender, FormClosedEventArgs ^ e );
@@ -70,8 +69,9 @@ namespace lhsmod {
 
 
   private: System::Windows::Forms::RichTextBox^  rboxOutput;
-  private: System::Windows::Forms::CheckBox^  chkAutoscroll;
+
   private: System::Windows::Forms::Label^  lblActiveSimulationThreads;
+
 
 
 
@@ -107,7 +107,6 @@ namespace lhsmod {
       this->btnBrowseDml = (gcnew System::Windows::Forms::Button());
       this->pbarRuns = (gcnew System::Windows::Forms::ProgressBar());
       this->rboxOutput = (gcnew System::Windows::Forms::RichTextBox());
-      this->chkAutoscroll = (gcnew System::Windows::Forms::CheckBox());
       this->lblActiveSimulationThreads = (gcnew System::Windows::Forms::Label());
       this->SuspendLayout();
       // 
@@ -150,7 +149,7 @@ namespace lhsmod {
       // btnBrowseLsp
       // 
       this->btnBrowseLsp->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
-      this->btnBrowseLsp->Location = System::Drawing::Point(545, 40);
+      this->btnBrowseLsp->Location = System::Drawing::Point(545, 41);
       this->btnBrowseLsp->Name = L"btnBrowseLsp";
       this->btnBrowseLsp->Size = System::Drawing::Size(75, 23);
       this->btnBrowseLsp->TabIndex = 3;
@@ -161,7 +160,7 @@ namespace lhsmod {
       // btnBrowseOutput
       // 
       this->btnBrowseOutput->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
-      this->btnBrowseOutput->Location = System::Drawing::Point(545, 69);
+      this->btnBrowseOutput->Location = System::Drawing::Point(545, 70);
       this->btnBrowseOutput->Name = L"btnBrowseOutput";
       this->btnBrowseOutput->Size = System::Drawing::Size(75, 23);
       this->btnBrowseOutput->TabIndex = 3;
@@ -172,7 +171,7 @@ namespace lhsmod {
       // btnRun
       // 
       this->btnRun->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
-      this->btnRun->Location = System::Drawing::Point(545, 500);
+      this->btnRun->Location = System::Drawing::Point(545, 561);
       this->btnRun->Name = L"btnRun";
       this->btnRun->Size = System::Drawing::Size(75, 23);
       this->btnRun->TabIndex = 4;
@@ -226,41 +225,27 @@ namespace lhsmod {
       this->rboxOutput->HideSelection = false;
       this->rboxOutput->Location = System::Drawing::Point(12, 150);
       this->rboxOutput->Name = L"rboxOutput";
-      this->rboxOutput->Size = System::Drawing::Size(608, 275);
+      this->rboxOutput->Size = System::Drawing::Size(608, 405);
       this->rboxOutput->TabIndex = 9;
       this->rboxOutput->Text = L"";
-      // 
-      // chkAutoscroll
-      // 
-      this->chkAutoscroll->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
-      this->chkAutoscroll->AutoSize = true;
-      this->chkAutoscroll->Checked = true;
-      this->chkAutoscroll->CheckState = System::Windows::Forms::CheckState::Checked;
-      this->chkAutoscroll->Location = System::Drawing::Point(12, 504);
-      this->chkAutoscroll->Name = L"chkAutoscroll";
-      this->chkAutoscroll->Size = System::Drawing::Size(122, 17);
-      this->chkAutoscroll->TabIndex = 10;
-      this->chkAutoscroll->Text = L"Autoscroll output log";
-      this->chkAutoscroll->UseVisualStyleBackColor = true;
-      this->chkAutoscroll->CheckedChanged += gcnew System::EventHandler(this, &LhsForm::OnAutoScrollChecked);
       // 
       // lblActiveSimulationThreads
       // 
       this->lblActiveSimulationThreads->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
       this->lblActiveSimulationThreads->AutoSize = true;
-      this->lblActiveSimulationThreads->Location = System::Drawing::Point(12, 438);
+      this->lblActiveSimulationThreads->Location = System::Drawing::Point(9, 566);
       this->lblActiveSimulationThreads->Name = L"lblActiveSimulationThreads";
       this->lblActiveSimulationThreads->Size = System::Drawing::Size(127, 13);
       this->lblActiveSimulationThreads->TabIndex = 11;
       this->lblActiveSimulationThreads->Text = L"Active simulation threads:";
+      this->lblActiveSimulationThreads->Visible = false;
       // 
       // LhsForm
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-      this->ClientSize = System::Drawing::Size(632, 535);
+      this->ClientSize = System::Drawing::Size(632, 596);
       this->Controls->Add(this->lblActiveSimulationThreads);
-      this->Controls->Add(this->chkAutoscroll);
       this->Controls->Add(this->rboxOutput);
       this->Controls->Add(this->pbarRuns);
       this->Controls->Add(this->btnRun);

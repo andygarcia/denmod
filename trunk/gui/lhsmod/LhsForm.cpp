@@ -14,7 +14,8 @@ LhsForm::LhsForm(void)
 : _simulationThreads(gcnew List<BackgroundWorker^>()),
   _simulationStack(gcnew SimulationStack()),
   _simulationThreadsCompleted(0),
-  _closeForm(false)
+  _closeForm(false),
+  _runningStudy(false)
 {
 	InitializeComponent();
 
@@ -199,6 +200,7 @@ LhsForm::ReadFilesCompleted( Object ^ sender, RunWorkerCompletedEventArgs ^ e )
     for( int i = 0; i < _simulationThreads->Count; ++i ) {
       _simulationThreads[i]->RunWorkerAsync( _simulationStack );
     }
+    lblActiveSimulationThreads->Visible = true;
     lblActiveSimulationThreads->Text = String::Format( "Active simulation threads: {0}", _simulationThreads->Count );
   }
 }
@@ -357,16 +359,17 @@ LhsForm::SimulationsCompleted( Object ^ sender, RunWorkerCompletedEventArgs ^ e 
   int activeThreads = _simulationThreads->Count - _simulationThreadsCompleted;
   lblActiveSimulationThreads->Text = String::Format("Active simulation threads: {0}", activeThreads);
 
-  // determine why and respond
   if( e->Error != nullptr ) {
     AppendToOutput( "Error while running simulations: " + e->Error->Message + Environment::NewLine );
+    // start a replacement thread
+
   }
   else if( e->Cancelled == true ) {
     AppendToOutput( "Simulation thread stopped." + Environment::NewLine );
     if( activeThreads == 0 && _closeForm ) {
       AppendToOutput( "Sensitivity analysis study cancelled during simulation phase." + Environment::NewLine );
       _runningStudy = false;
-      //Close();
+      Close();
       return;
     }
   }
@@ -382,6 +385,8 @@ LhsForm::SimulationsCompleted( Object ^ sender, RunWorkerCompletedEventArgs ^ e 
       btnRun->Enabled = true;
 
       AppendToOutput( "Completed sensitivity analysis study." + Environment::NewLine );
+      lblActiveSimulationThreads->Visible = false;
+      _runningStudy = false;
     }
   }
 }
@@ -392,21 +397,7 @@ void
 LhsForm::AppendToOutput( String ^ s )
 {
   rboxOutput->AppendText( s );
-  if( chkAutoscroll->Checked ) {
-    rboxOutput->SelectionStart = rboxOutput->Text->Length;
-  }
-}
-
-
-
-System::Void
-LhsForm::OnAutoScrollChecked(Object ^ sender, EventArgs ^ e)
-{
-  if( chkAutoscroll->Checked ) {
-    // auto scroll enabled, next output will move focus to latest text
-    // but for now lets force it so user sees immediate response
-    rboxOutput->SelectionStart = rboxOutput->Text->Length;
-  }
+  rboxOutput->SelectionStart = rboxOutput->Text->Length;
 }
 
 
@@ -415,8 +406,14 @@ System::Void
 LhsForm::OnFormClosing( Object ^ sender, FormClosingEventArgs ^ e )
 {
   if( _runningStudy && e->CloseReason == ::CloseReason::UserClosing ) {
-    // either study is cancelled or left running, either way we cancel this event
     e->Cancel = true;
+
+    // check if already in process of closing while study is running
+    if( _closeForm == true ) {
+      return;
+    }
+
+    // confirm user wants to stop study
     if( ConfirmStudyCancel() ) {
       AppendToOutput( "Program is closing, please while wait background operations are stopped." + Environment::NewLine );
       _fileReader->CancelAsync();
@@ -434,7 +431,9 @@ System::Void
 LhsForm::OnFormClosed( Object ^ sender, FormClosedEventArgs ^ e )
 {
   AppendToOutput( "Program closed." );
-  // save rboxOutput to file
+
+  String ^ filename = Path::Combine( tboxOutput->Text, "lhsmodlog.txt" );
+  rboxOutput->SaveFile( filename, RichTextBoxStreamType::PlainText );
 }
 
 
