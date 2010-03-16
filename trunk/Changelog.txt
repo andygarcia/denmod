@@ -1,3 +1,10 @@
+3.24.6
+
+- CHG: LHS module now processes simulations files in order using a queue.
+- NEW: LHS module now confirms with user before closing if a study is running.
+- NEW: LHS module now shows the number of active simulation threads.
+- NEW: LHS module now automatically saves output log when closing.
+
 3.24.4
 
 - NEW: Redesigned multithreaded code in lhs module for better CPU utilization on multicore machines.
