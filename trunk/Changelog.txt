@@ -1,3 +1,7 @@
+3.24.7
+
+- CHG: Disabled DENSiM runs until changes are finished.
+
 3.24.6
 
 - CHG: LHS module now processes simulations files in order using a queue.
