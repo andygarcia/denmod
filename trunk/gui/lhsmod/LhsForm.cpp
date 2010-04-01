@@ -240,51 +240,34 @@ LhsForm::StartSimulations( Object ^ sender, DoWorkEventArgs ^ e )
       break;
     }
 
-    gui::DmlFile ^ dmlFile = gcnew gui::DmlFile( filename );
-    gui::Location ^ location = dmlFile->Location;
-    DirectoryInfo ^ runDir = gcnew DirectoryInfo( Path::GetDirectoryName(filename) );
-    
-    // check for errors in location's parameters
-    location->Biology->PropertyValidationManager->ValidateAllProperties();
+    // create process info for running models in batch mode
+    Diagnostics::Process ^ proc = gcnew Diagnostics::Process();
+    proc->StartInfo->UseShellExecute = false;
+    String ^ execDir = Path::GetDirectoryName( Application::ExecutablePath );
+    proc->StartInfo->FileName = Path::Combine( execDir, "dmcli.exe" );
+    proc->StartInfo->Arguments = "/cimsim " + "\"" + filename + "\"";
 
-    if( !location->Biology->IsValid ) {
-      // create log file with error message
-      FileStream ^ fs = gcnew FileStream( Path::Combine(runDir->FullName, "errorLog.txt"), System::IO::FileMode::Create );
-      StreamWriter ^ sw = gcnew StreamWriter( fs );
-      sw->Write( ValidationFramework::ResultFormatter::GetConcatenatedErrorMessages("\n", location->Biology->PropertyValidationManager->ValidatorResultsInError) );
-      sw->Close();
+    // start dmcli and block until it has completed
+    proc->Start();
+    while( !proc->HasExited ) {
+      Thread::Sleep( 1000 );
+    }
 
-      // abort this run (errors), continue with next run
-      StudyProgress ^ sp = gcnew StudyProgress();
+    // report based on dmlcli's exit code
+    StudyProgress ^ sp = gcnew StudyProgress();
+    if( proc->ExitCode == 2 ) {
       sp->NumberOfRunsDiscarded = 1;
       sp->NumberOfRunsCompleted = 0;
       sp->Messages->Add( "Parameter errors in " + filename +". See errors.txt." );
       bw->ReportProgress( 0, sp );
       continue;
     }
-
-    // check for cancel
-    if( bw->CancellationPending ) {
-      e->Cancel = true;
-      return;
-    }
-
-    // report on starting a simulation
-    StudyProgress ^ sp = gcnew StudyProgress();
-    sp->NumberOfRunsDiscarded = 0;
-    sp->NumberOfRunsCompleted = 0;
-    sp->Messages->Add( "Starting simulation for " + filename +"." );
-    bw->ReportProgress( 0, sp );
-
-    // do simulation and save output
-    location->RunCimsim( true, false );
-    location->CimsimOutput->SaveToDisk( runDir );
-    delete location;
-
-    // check for cancel
-    if( bw->CancellationPending ) {
-      e->Cancel = true;
-      return;
+    else if( proc->ExitCode == 0 ) {
+      sp = gcnew StudyProgress();
+      sp->NumberOfRunsDiscarded = 0;
+      sp->NumberOfRunsCompleted = 1;
+      sp->Messages->Add( "Completed simulation for " + filename +"." );
+      bw->ReportProgress( 0, sp );
     }
 
     // first time generate list of filenames that will be converted post simulation for each subsequent run
@@ -315,13 +298,6 @@ LhsForm::StartSimulations( Object ^ sender, DoWorkEventArgs ^ e )
       delete xmlFile;
       File::Delete( xmlFilename );
     }
-
-    // report progress
-    sp = gcnew StudyProgress();
-    sp->NumberOfRunsDiscarded = 0;
-    sp->NumberOfRunsCompleted = 1;
-    sp->Messages->Add( "Completed simulation for " + filename +"." );
-    bw->ReportProgress( 0, sp );
 
     // check for cancel
     if( bw->CancellationPending ) {

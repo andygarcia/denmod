@@ -34,6 +34,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.ui.lhsmod", "gui\lhs
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.ui.output", "gui\output\gui.output.vcproj", "{BDA9AE2A-9845-4511-9E46-0E7AC284147B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.ui.cli", "gui\cli\cli.vcproj", "{A75C9E3A-EB0B-4473-9283-81492A667847}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -92,6 +94,10 @@ Global
 		{BDA9AE2A-9845-4511-9E46-0E7AC284147B}.Debug|Win32.Build.0 = Debug|Win32
 		{BDA9AE2A-9845-4511-9E46-0E7AC284147B}.Release|Win32.ActiveCfg = Release|Win32
 		{BDA9AE2A-9845-4511-9E46-0E7AC284147B}.Release|Win32.Build.0 = Release|Win32
+		{A75C9E3A-EB0B-4473-9283-81492A667847}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A75C9E3A-EB0B-4473-9283-81492A667847}.Debug|Win32.Build.0 = Debug|Win32
+		{A75C9E3A-EB0B-4473-9283-81492A667847}.Release|Win32.ActiveCfg = Release|Win32
+		{A75C9E3A-EB0B-4473-9283-81492A667847}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -52,8 +52,8 @@ int main( array<String ^> ^args )
       }
     }
 
-    Console::WriteLine( System::Environment::CurrentDirectory );
     // open dml file
+    Console::WriteLine( "Opening " + filename );
     gui::DmlFile ^ df = gcnew gui::DmlFile( filename );
     gui::Location ^ location = df->Location;
     DirectoryInfo ^ dir = gcnew DirectoryInfo( Path::GetDirectoryName(df->Filename) );
