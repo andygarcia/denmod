@@ -31,6 +31,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.simulation.densim", 
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.ui.lhsmod", "gui\lhsmod\lhsmod.vcproj", "{397D8A84-12D0-4BB5-B0C5-F6DDC633B545}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A75C9E3A-EB0B-4473-9283-81492A667847} = {A75C9E3A-EB0B-4473-9283-81492A667847}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.ui.output", "gui\output\gui.output.vcproj", "{BDA9AE2A-9845-4511-9E46-0E7AC284147B}"
 EndProject

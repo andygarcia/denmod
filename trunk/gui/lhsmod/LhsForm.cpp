@@ -240,17 +240,24 @@ LhsForm::StartSimulations( Object ^ sender, DoWorkEventArgs ^ e )
       break;
     }
 
-    // create process info for running models in batch mode
+    // create process info for running models in batch mode via dmcli.exe
     Diagnostics::Process ^ proc = gcnew Diagnostics::Process();
     proc->StartInfo->UseShellExecute = false;
     String ^ execDir = Path::GetDirectoryName( Application::ExecutablePath );
+    proc->StartInfo->CreateNoWindow = true;
     proc->StartInfo->FileName = Path::Combine( execDir, "dmcli.exe" );
     proc->StartInfo->Arguments = "/cimsim " + "\"" + filename + "\"";
 
     // start dmcli and block until it has completed
     proc->Start();
     while( !proc->HasExited ) {
+      // sleep, then check for cancel
       Thread::Sleep( 1000 );
+      if( bw->CancellationPending ) {
+        proc->Kill();
+        e->Cancel = true;
+        return;
+      }
     }
 
     // report based on dmlcli's exit code
@@ -270,7 +277,14 @@ LhsForm::StartSimulations( Object ^ sender, DoWorkEventArgs ^ e )
       bw->ReportProgress( 0, sp );
     }
 
+    // check for cancel
+    if( bw->CancellationPending ) {
+      e->Cancel = true;
+      return;
+    }
+
     // first time generate list of filenames that will be converted post simulation for each subsequent run
+    DirectoryInfo ^ runDir = gcnew DirectoryInfo( Path::GetDirectoryName(filename) );
     if( _outputFilenames == nullptr ) {
       // first look for all excel .xml files in current run directory
       array<FileInfo^> ^ xmlFiles = runDir->GetFiles( "*.xml", SearchOption::TopDirectoryOnly );
