@@ -5,6 +5,8 @@
 #include <sstream>
 #include <iomanip>
 
+#define _CRT_SECURE_NO_WARNINGS
+
 
 
 Worksheet::Worksheet( std::string title, std::vector<std::string> headers)
@@ -199,3 +201,5 @@ Worksheet::GetIsoDateTime(void)
   ss.width(2);
   return ss.str();
 }
+
+#undef _CRT_SECURE_NO_WARNINGS
