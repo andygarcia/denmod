@@ -1,3 +1,8 @@
+3.24.8
+
+- NEW: Command line access to models now available via dmcli.exe.
+- CHG: LHS module now processes simulations by spawning separate processes of dmcli.
+
 3.24.7
 
 - CHG: Disabled DENSiM runs until changes are finished.
@@ -27,7 +32,7 @@
 
 3.24.1
 
-- BUG: Changed how output is handled in gui when "Save All" functionality is used.  Containers with a large number of containers or length of simultion will no longer cause an OutOfMemoryException when output is saved.
+- BUG: Changed how output is handled in gui when "Save All" functionality is used.  Containers with a large number of containers or length of simulation will no longer cause an OutOfMemoryException when output is saved.
 - CHG: Fixed some dialogs that were showing up as separate entries in tasbar.
 
 3.24
