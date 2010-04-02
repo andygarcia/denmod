@@ -491,7 +491,7 @@ MainForm::ReadUserSettings(void)
     _userSettings = dynamic_cast<UserSettings^>( xs->Deserialize(fs) );
   }
   catch( Exception ^ e ) {
-    // unable to open/deserialize file, WriteSettings will create
+    // unable to open/deserialize file, WriteUserSettings will create
     Diagnostics::Trace::WriteLine(e->ToString());
     _userSettings = gcnew UserSettings();
   }

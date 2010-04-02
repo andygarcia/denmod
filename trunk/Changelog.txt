@@ -1,3 +1,7 @@
+3.24.9
+
+- BUG: Fixed minor issues with install program.
+
 3.24.8
 
 - NEW: Command line access to models now available via dmcli.exe.
