@@ -285,22 +285,7 @@ Location::RunCimsim( bool usePop, bool stochasticAdvancement, DateTime startDate
     delete cso;
   }
   else {
-    // using discrete numbers and stochastic advancement
-    sim::cs::DiscreteSimulation * cssim = new sim::cs::DiscreteSimulation( loc, bStartDate, bStopDate, usePop );
-    cssim->Start();
-    _isCimsimCompleted = true;
-
-    // simulation complete, process output for use by gui and densim
-    sim::output::CimsimOutput * cso = cssim->GetSimOutput();
-    MosData_ = cso->GetMosData();
-
-    // copy output to managed classes
-    CimsimOutput_ = ProcessCimsimOutput( cso, startDate, stopDate );
-
-    // delete input object, simulation, and managed output
-    delete loc;
-    delete cssim;
-    delete cso;
+    throw gcnew System::InvalidOperationException( "Location::RunCimsim(): discrete simulations disabled" );
   }
 }
 

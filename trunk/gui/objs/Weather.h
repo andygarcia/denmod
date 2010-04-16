@@ -24,6 +24,9 @@ namespace gui {
 [XmlRoot("Day")]
 public ref class WeatherDay : public NotifyValidateEditBase
 {
+// Constants
+  static const int MILLIMETERS_PER_CENTIMETERS = 10;
+
 // Enums
 public:
   enum class VaporPressureMethod {

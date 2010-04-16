@@ -50,7 +50,7 @@ WeatherDay::GetSimObject(void)
   wd->MinTemp_ = this->MinTemp_;
   wd->AvgTemp_ = this->AvgTemp_;
   wd->SatDef_ = this->SatDef_;
-  wd->Precip_ = this->Rain_;
+  wd->Precip_ = this->Rain_ / MILLIMETERS_PER_CENTIMETERS;
   wd->RelHum_ = this->RelHum_;
 
   return wd;
