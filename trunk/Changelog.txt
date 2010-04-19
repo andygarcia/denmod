@@ -1,3 +1,8 @@
+3.25
+
+- BUG: Fixed rain not being converted from mm to cm in user interface after loading weather data.
+- CHG: Removed option to run discrete simulations pending possible changes/removal.
+
 3.24.9
 
 - BUG: Fixed minor issues with install program.
