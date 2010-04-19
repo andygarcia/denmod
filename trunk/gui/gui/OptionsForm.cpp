@@ -29,7 +29,6 @@ OptionsForm::OnLoad(System::Object^  sender, System::EventArgs^  e)
   chkSplashScreen->DataBindings->Add( "Checked", _userSettings, "ShowSplashScreen" );
   chkDoSimulationDiskOutput->DataBindings->Add( "Checked", _userSettings, "DoSimulationDiskOutput" );
   chkEstablishedPopulationDefault->DataBindings->Add( "Checked", _userSettings, "EstablishedPopulationDefault" );
-  chkStochasticAdvancement->DataBindings->Add( "Checked", _userSettings, "StochasticAdvancement" );
   chkScaleCimsimMainGraph->DataBindings->Add( "Checked", _userSettings, "ScaleCimsimMainGraph" );
 }
 
