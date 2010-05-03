@@ -1,52 +1,7 @@
 #include "StdAfx.h"
 #include "SimClasses.h"
-#include <boost/random.hpp>
-#include <boost/math/distributions/binomial.hpp>
-
-// standard macros that collide in std namespace, must be undefined
-#undef min
-#undef max
 
 using namespace sim::cs;
-
-
-
-int StochasticAdvancement( int number, double advancementFactor )
-{
-  // rng related variables are static to persist between calls
-  static bool initialize = true;
-  static boost::mt19937 rng = boost::mt19937();
-  static double rngMin = rng.min();
-  static double rngMax = rng.max();
-
-  if( initialize ) {
-    // seed rng
-    rng.seed( static_cast<boost::uint32_t>(time(NULL)) );
-
-    // find limits of rng to standardize generates
-    rngMin = rng.min();
-    rngMax = rng.max();
-
-    // done with initialization
-    initialize = false;
-  }
-
-  // trivial special case, all advance
-  if( advancementFactor == 1.0 ) {
-    return number;
-  }
-
-  // create binomial distribution
-  boost::math::binomial bindist( number, advancementFactor );
-
-  // generate a probability between 0 and 1
-  double p = (rng() - rngMin) / rngMax;
-  
-  // calculated the variate representing the number of survivors that coincides with the above probability
-  int advancement = static_cast<int>( boost::math::quantile( bindist, p ) );
-
-  return advancement;
-}
 
 
 

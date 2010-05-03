@@ -201,18 +201,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\DiscreteSimContainer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\DiscreteSimLocation.h"
-				>
-			</File>
-			<File
-				RelativePath=".\DiscreteSimulation.h"
-				>
-			</File>
-			<File
 				RelativePath=".\SimClasses.h"
 				>
 			</File>
