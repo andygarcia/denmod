@@ -16,7 +16,6 @@
 #pragma managed(push, off)
 #include "../../simulation/input/Location.h"
 #include "../../simulation/cimsim/Simulation.h"
-#include "../../simulation/cimsim/DiscreteSimulation.h"
 #include "../../simulation/dsport/Simulation.h"
 #include "../../simulation/output/CimsimOutput.h"
 #include "../../simulation/output/DensimOutput.h"
