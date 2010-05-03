@@ -248,7 +248,6 @@ private: System::Windows::Forms::Button^  btnSeroAutoFill;
       // btnRunSim
       // 
       this->btnRunSim->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
-      this->btnRunSim->Enabled = false;
       this->btnRunSim->Location = System::Drawing::Point(679, 312);
       this->btnRunSim->Name = L"btnRunSim";
       this->btnRunSim->Size = System::Drawing::Size(101, 23);

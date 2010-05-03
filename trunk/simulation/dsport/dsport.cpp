@@ -43,7 +43,9 @@ dsport::dsport( const input::Location * location, sim::output::MosData * mosData
 #ifdef _DEBUG
   _pdsRng = PdsRng(0);
 #else
-  _pdsRng = PdsRng( static_cast<unsigned int>(time(NULL)) );
+  // change once done with densim issues
+  //_pdsRng = PdsRng( static_cast<unsigned int>(time(NULL)) );
+  _pdsRng = PdsRng(0);
 #endif
 
   // initialize human population
@@ -135,8 +137,10 @@ dsport::dsport( const input::Location * location, sim::output::MosData * mosData
 
 dsport::~dsport(void)
 {
-  _locationLog->Write();
-  delete _locationLog;
+  if( _doDiskOutput ) {
+    _locationLog->Write();
+    delete _locationLog;
+  }
 
   delete _humanPopulation;  
 }

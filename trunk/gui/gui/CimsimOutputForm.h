@@ -218,7 +218,6 @@ namespace gui {
       // btnRunDensim
       // 
       this->btnRunDensim->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
-      this->btnRunDensim->Enabled = false;
       this->btnRunDensim->Location = System::Drawing::Point(741, 706);
       this->btnRunDensim->Name = L"btnRunDensim";
       this->btnRunDensim->Size = System::Drawing::Size(101, 23);
