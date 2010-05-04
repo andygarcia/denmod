@@ -3,7 +3,7 @@
 
 #include <map>
 #include <vector>
-#include "../cimsim/SimClasses.h"
+#include "../cimsim/Controls.h"
 #include "../cimsim/Cohorts.h"
 
 
