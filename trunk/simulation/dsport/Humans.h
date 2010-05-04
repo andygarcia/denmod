@@ -1,5 +1,5 @@
-#ifndef DSPORT_POPULATION_H
-#define DSPORT_POPULATION_H
+#ifndef SIM_DSPORT_HUMANS_H
+#define SIM_DSPORT_HUMANS_H
 
 #include <algorithm>
 #include <deque>
@@ -7,7 +7,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "SimConstants.h"
 #include "../input/Location.h"
 
 

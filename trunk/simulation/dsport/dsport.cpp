@@ -7,8 +7,8 @@
 #include <iostream>
 #include <sstream>
 #include "dsport.h"
-#include "Population.h"
-#include "SimConstants.h"
+#include "Constants.h"
+#include "Humans.h"
 
 using namespace sim::dsport;
 

@@ -8,7 +8,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "DensimClasses.h"
+#include "Classes.h"
 #include "PdsRng.h"
 #include "../input/Location.h"
 #include "../cimsim/Cohorts.h"
@@ -165,11 +165,10 @@ public:
   float _minimumOvipositionTemperature;       // minimum air temperature allowing oviposition
 
   // new cohort code
-  PreOviAdultCohortCollection _nulliparousAdults;
-  OviAdultCohortCollection _parousAdults;
+  PreOviAdultCohortCollection _susceptibleNulliparousAdults;
+  OviAdultCohortCollection _susceptibleParousAdults;
 
-  PreOviAdultCohortCollection _ovipositingNulliparousAdults;
-  OviAdultCohortCollection _ovipositingParousAdults;
+
 };
 
 };

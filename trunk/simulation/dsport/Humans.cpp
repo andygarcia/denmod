@@ -1,6 +1,7 @@
 #include "StdAfx.h"
-#include "Population.h"
 #include "dsport.h"
+#include "Constants.h"
+#include "Humans.h"
 #include <numeric>
 
 using namespace sim::dsport;
