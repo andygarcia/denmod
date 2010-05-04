@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "SimClasses.h"
+#include "Controls.h"
 
 using namespace sim::cs;
 

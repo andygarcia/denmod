@@ -155,15 +155,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\SimClasses.cpp"
+				RelativePath=".\Container.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\SimContainer.cpp"
+				RelativePath=".\Controls.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\SimLocation.cpp"
+				RelativePath=".\Location.cpp"
 				>
 			</File>
 			<File
@@ -201,15 +201,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SimClasses.h"
+				RelativePath=".\Constants.h"
 				>
 			</File>
 			<File
-				RelativePath=".\SimContainer.h"
+				RelativePath=".\Container.h"
 				>
 			</File>
 			<File
-				RelativePath=".\SimLocation.h"
+				RelativePath=".\Controls.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Location.h"
 				>
 			</File>
 			<File

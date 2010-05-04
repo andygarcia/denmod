@@ -1,5 +1,5 @@
-#ifndef CS_SIM_COHORTS_H
-#define CS_SIM_COHORTS_H
+#ifndef SIM_CS_COHORTS_H
+#define SIM_CS_COHORTS_H
 
 #include <list>
 #include <map>

@@ -1,5 +1,6 @@
 #include "StdAfx.h"
-#include "SimLocation.h"
+#include "Constants.h"
+#include "Location.h"
 #include <cmath>
 #include <algorithm>
 

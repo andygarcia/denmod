@@ -1,8 +1,8 @@
-#ifndef CS_SIM_SIMULATION_H
-#define CS_SIM_SIMULATION_H
+#ifndef SIM_CS_SIMULATION_H
+#define SIM_CS_SIMULATION_H
 
 #include "../input/Location.h"
-#include "SimLocation.h"
+#include "Location.h"
 
 
 

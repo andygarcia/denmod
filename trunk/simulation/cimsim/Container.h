@@ -1,8 +1,9 @@
 #ifndef SIM_CS_CONTAINER_H
 #define SIM_CS_CONTAINER_H
 
-#include "SimClasses.h"
 #include "Cohorts.h"
+#include "Controls.h"
+#include "Constants.h"
 #include "../input/Location.h"
 #include "../output/CimsimOutput.h"
 
