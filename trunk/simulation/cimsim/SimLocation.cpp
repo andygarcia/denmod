@@ -495,7 +495,7 @@ SimLocation::DoYear(void)
       }
     }
 
-    // create new ovi adult cohort based on all females who will ovipositiong today, reseting dev cycle and "age"
+    // create new ovi adult cohort based on all females who will ovipositing today, reseting dev cycle and "age"
     if( newEggLayersCohorts + eggLayersCohorts > 0 ) {
       _oviAdults.push_back( OviAdultCohort(1, newEggLayersCohorts + eggLayersCohorts, DevRateAdult, GetOvipositingFemaleAverageWeight()) );
     }

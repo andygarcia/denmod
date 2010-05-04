@@ -11,11 +11,15 @@
 #include "DensimClasses.h"
 #include "PdsRng.h"
 #include "../input/Location.h"
+#include "../cimsim/Cohorts.h"
 #include "../output/MosData.h"
 #include "../output/DensimOutput.h"
 #include "../output/Log.h"
 
 #define EMULATE_PDS_RAND true
+
+using sim::cs::PreOviAdultCohortCollection;
+using sim::cs::OviAdultCohortCollection;
 
 
 
@@ -55,7 +59,8 @@ public:
   float EIPEnzKin( float temp );
   
   void MosquitoLifeCycle(void);
-  
+  void NewMosquitoLifeCycle(void);
+
   void HumanToMosquitoTransmission(void);
   void InoculateMosquitoes( int serotype );
 
@@ -156,6 +161,15 @@ public:
   std::vector<float> BitersInfdOldDB;         // Number of old double bloods from yesterday
 
   PdsRng _pdsRng;
+
+  float _minimumOvipositionTemperature;       // minimum air temperature allowing oviposition
+
+  // new cohort code
+  PreOviAdultCohortCollection _nulliparousAdults;
+  OviAdultCohortCollection _parousAdults;
+
+  PreOviAdultCohortCollection _ovipositingNulliparousAdults;
+  OviAdultCohortCollection _ovipositingParousAdults;
 };
 
 };

@@ -104,6 +104,8 @@ dsport::dsport( const input::Location * location, sim::output::MosData * mosData
   this->DBloodUWt = _location->Biology_->Adult->DoubleBloodMeal->HighWeightLimit;
   this->DBloodUProp = _location->Biology_->Adult->DoubleBloodMeal->HighWeightRatio;
 
+  this->_minimumOvipositionTemperature = _location->Biology_->Adult->MinimumOvipositionTemperature;
+
   // initialize mosquito population
   double initialArea = _humanPopulation->GetInitialPopulationSize() / HumHostDensity;
   for( sim::cs::PreOviAdultCohortCollection::iterator itAdult = _mosData->PreOviAdultCohorts.begin();
@@ -441,6 +443,234 @@ dsport::MosquitoLifeCycle(void)
   // Last position in the array does not accumulate
   BitersNew = 0;
   float EggersNew = 0;
+  for( int i = MaxAgeMosq; i >= 1; --i ) {
+    if( NewMosqSusc[i] <= 0 ) {
+      continue; // move to next youngest cohort
+    }
+    else {
+      if( NewMosqSuscCD[i] <= 1 ) {
+        NewMosqSusc[i + 1] = NewMosqSusc[i] * _dailyMosData.OverallSurvival;
+        NewMosqSuscCD[i + 1] = NewMosqSuscCD[i] + _dailyMosData.AdultDevelopment;
+      }
+      else {
+        EggersNew = EggersNew + (NewMosqSusc[i] * _dailyMosData.OverallSurvival);
+      }
+      NewMosqSusc[i] = 0;
+      NewMosqSuscCD[i] = 0;
+    }
+  }
+
+  //adjust cimsim mosq pop(per ha) for current population size
+  if( HumHostDensity == 0 ) {
+    throw; // STOP 
+  }
+  int numberOfHumans = _humanPopulation->GetPopulationSize();
+  NewMosqSusc[1] = _dailyMosData.NewFemales * (numberOfHumans / HumHostDensity) * _dailyMosData.OverallSurvival;
+  NewMosqSuscCD[1] = _dailyMosData.AdultDevelopment;
+  BitersNew = NewMosqSusc[2] + (NewMosqSusc[3] * DMealProp);
+
+  // Advance Susceptibles - Successive Gonotrophic Cycles
+  // Last position in the array does not accumulate
+  BitersOld = 0;
+  float EggersOld = 0;
+  for( int i = MaxAgeMosq; i >= 1; --i ) {
+    if( OldMosqSusc[i] <= 0 ) {
+      continue;
+    }
+    else {
+      if( OldMosqSuscCD[i] <= .58 ) {
+        OldMosqSusc[i + 1] = OldMosqSusc[i] * _dailyMosData.OverallSurvival;
+        OldMosqSuscCD[i + 1] = OldMosqSuscCD[i] + _dailyMosData.AdultDevelopment;
+      }
+      else {
+        EggersOld = EggersOld + (OldMosqSusc[i] * _dailyMosData.OverallSurvival);
+      }
+      OldMosqSusc[i] = 0;
+      OldMosqSuscCD[i] = 0;
+    }
+  }
+
+  OldMosqSusc[1] = EggersNew + EggersOld;
+  OldMosqSuscCD[1] = _dailyMosData.AdultDevelopment;
+  BitersOld = OldMosqSusc[1] + (OldMosqSusc[2] * DMealProp);
+
+  // Advance infected - From New Mosquitoes - First and successive Gonotrophic Cycles
+  // Last position in the array does not accumumlate
+  for( int j = 1; j <= 4; ++j ) {
+    BitersInfd[j] = BitersInfdNewDB[j];
+    BitersInfdNewDB[j] = 0;
+    for( int i = MaxAgeMosq; i >= 1; --i ) {
+      if( NewMosqInfd[i][j] <= 0 ) {
+        continue; //go to next cohort
+      }
+      else {
+        // calculate CD cutoff
+        float OldAdultDev = _yesterdayMosData.AdultDevelopment;
+
+        // superceeded by using _yesterdayMosData & _dailyMosData
+        //if( Day == 1 ) {
+        //  OldAdultDev = _yesterdayMosData.AdultDevelopment;
+        //}
+        //else {
+        //  OldAdultDev = _yesterdayMosData.AdultDevelopment;
+        //}
+
+        float CDYest = NewMosqInfdCD[i][j] - OldAdultDev;
+        float CDTest;
+        int CDFactor;
+        if( CDYest < 1 ) {
+          CDTest = 1;
+        }
+        else {
+          CDFactor = INT((CDYest - 1) / .58f) + 1;
+          CDTest = 1 + (CDFactor * .58f);
+        }
+
+        if( NewMosqInfdEIP[i][j] > 1 && NewMosqInfdCD[i][j] > CDTest ) {
+          EIPTranNew[j] = EIPTranNew[j] + (NewMosqInfd[i][j] * _dailyMosData.OverallSurvival);
+        }
+        else {
+          NewMosqInfd[i + 1][j] = NewMosqInfd[i][j] * _dailyMosData.OverallSurvival;
+          NewMosqInfdCD[i + 1][j] = NewMosqInfdCD[i][j] + _dailyMosData.AdultDevelopment;
+          NewMosqInfdEIP[i + 1][j] = NewMosqInfdEIP[i][j] + EIPDevRate[j];
+          if( NewMosqInfdCD[i][j] > CDTest ) {
+            BitersInfd[j] = BitersInfd[j] + NewMosqInfd[i + 1][j];
+            BitersInfdNewDB[j] = BitersInfdNewDB[j] + (NewMosqInfd[i + 1][j] * DMealProp);
+          }
+        }
+        NewMosqInfd[i][j] = 0;
+        NewMosqInfdCD[i][j] = 0;
+        NewMosqInfdEIP[i][j] = 0;
+      }
+    }
+  }
+
+  // Advance infected - From old Mosquitoes - Second and successive Gonotrophic Cycles
+  // Last position in the array does not accumumlate
+  for( int j = 1; j <= 4; ++j ) {
+    BitersInfd[j] = BitersInfd[j] + BitersInfdOldDB[j];
+    BitersInfdOldDB[j] = 0;
+    for( int i = MaxAgeMosq; i >= 1; --i ) {
+      if( OldMosqInfd[i][j] <= 0 ) {
+        continue; // go to next cohort
+      }
+      else {
+        if( OldMosqInfdEIP[i][j] > 1 && OldMosqInfdCD[i][j] > .58 ) {
+          EIPTranOld[j] = EIPTranOld[j] + (OldMosqInfd[i][j] * _dailyMosData.OverallSurvival);
+        }
+        else {
+          OldMosqInfd[i+1][j] = OldMosqInfd[i][j] * _dailyMosData.OverallSurvival;
+          if( OldMosqInfdCD[i][j] > .58 ) {
+            BitersInfd[j] = BitersInfd[j] + OldMosqInfd[i+1][j];
+            BitersInfdOldDB[j] = BitersInfdOldDB[j] + (OldMosqInfd[i+1][j] * DMealProp);
+            OldMosqInfdCD[i+1][j] = _dailyMosData.AdultDevelopment;
+          }
+          else {
+            OldMosqInfdCD[i+1][j] = OldMosqInfdCD[i][j] + _dailyMosData.AdultDevelopment;
+          }
+          OldMosqInfdEIP[i+1][j] = OldMosqInfdEIP[i][j] + EIPDevRate[j];
+        }
+        OldMosqInfd[i][j] = 0;
+        OldMosqInfdCD[i][j] = 0;
+        OldMosqInfdEIP[i][j] = 0;
+      }
+    }
+  }
+
+
+  // Advance infective - Successive Gonotrophic Cycles
+  // Last position in the array does not accumulate
+  for( int j = 1; j <= 4; ++j ) {   // serotypes
+    for( int i = MaxAgeMosq; i >= 1; --i ) {
+      if( MosqInfv[i][j] <= 0 ) {
+        continue;  // go to next cohort
+      }
+      else {
+        if( MosqInfvCD[i][j] <= .58 ) {
+          MosqInfv[i+1][j] = MosqInfv[i][j] * _dailyMosData.OverallSurvival;
+          MosqInfvCD[i+1][j] = MosqInfvCD[i][j] + _dailyMosData.AdultDevelopment;
+        }
+        else {
+          EggersInfv[j] = EggersInfv[j] + (MosqInfv[i][j] * _dailyMosData.OverallSurvival);
+        }
+        MosqInfv[i][j] = 0;
+        MosqInfvCD[i][j] = 0;
+      }
+    }
+
+    MosqInfv[1][j] = EggersInfv[j] + EIPTranNew[j] + EIPTranOld[j];
+    MosqInfvCD[1][j] = _dailyMosData.AdultDevelopment;
+    BitersInfv[j] = MosqInfv[1][j] + (MosqInfv[2][j] * DMealProp);
+  }
+
+  BitersTotal = BitersNew + BitersOld;
+  for( int j =1; j <= 4; ++j ) {
+    BitersTotal = BitersTotal + BitersInfd[j] + BitersInfv[j];
+  }
+  MosqTotal = 0;
+  MosqInfvTotal = std::vector<float>( 4+1, 0 );
+  for( int i = 1; i <= MaxAgeMosq; ++i ) {
+    MosqTotal = MosqTotal + NewMosqSusc[i] + OldMosqSusc[i];
+    for( int j =1; j <= 4; ++j ) {
+      MosqTotal = MosqTotal + NewMosqInfd[i][j] + OldMosqInfd[i][j] + MosqInfv[i][j];
+      MosqInfvTotal[j] = MosqInfvTotal[j] + MosqInfv[i][j];
+    }
+  }
+}
+
+
+
+void
+dsport::NewMosquitoLifeCycle(void)
+{
+  // BitersNew         - First time susceptible biters
+  // BitersOld         - Old susceptible biters
+  // BitersInfdNewDB() - Yesterdays double blood feeders from new infd - Global
+  // BitersInfdOldDB() - Yesterdays double blood feeders from old infd - Global
+  // BitersInfv()      - Infective biters - Global
+  // EggersNew         - First time egg layers
+  // EggersOld         - Old egg layers
+  // DMealProp         - Prop. taking double blood meals
+  // OldAdultDev       - Yesterdays adult development
+  // BitersTotal       - Total biters (susc/infd/infv).  Global
+  // InSurviving       - Indoor surviving mosquitoes
+  // OutSurviving      - Outdoor surviving mosquitoes
+
+  std::vector<float> BitersInfd( 4+1, 0 );        // infected biters
+  std::vector<float> EIPTranNew( 4+1, 0 );        // Infective class from infected new
+  std::vector<float> EIPTranOld( 4+1, 0 );        // Infective class from infected old
+  std::vector<float> EggersInfv( 4+1, 0 );        // Infective egg transfers
+  BitersInfv = std::vector<float>( 4+1, 0 );      // total infective biters
+  
+  if( _currentDate == _startDate )  {
+    // initialize static variables
+    BitersInfdNewDB = std::vector<float>( 4+1, 0 );
+    BitersInfdOldDB = std::vector<float>( 4+1, 0 );
+  }
+
+
+  // calculate proportion taking a double blood meal
+  float DMealProp = 0;
+  if( _dailyMosData.AverageWeight <= DBloodLWt ) {
+    DMealProp = DBloodUProp;
+  }
+  else if( _dailyMosData.AverageWeight >= DBloodUWt ) {
+    DMealProp = DBloodLProp;
+  }
+  else {
+    if( (DBloodUWt - DBloodLWt) == 0 ) {
+      throw;  // STOP
+    }
+    float Slope = (DBloodUProp - DBloodLProp) / (DBloodUWt - DBloodLWt);
+    DMealProp = DBloodUProp - ((_dailyMosData.AverageWeight - DBloodLWt) * Slope);
+  }
+
+  // advance susceptible nulliparous adult females
+
+  BitersNew = 0;
+  float EggersNew = 0;
+
+
   for( int i = MaxAgeMosq; i >= 1; --i ) {
     if( NewMosqSusc[i] <= 0 ) {
       continue; // move to next youngest cohort
