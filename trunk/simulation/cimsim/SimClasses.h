@@ -12,7 +12,6 @@ namespace sim {
 namespace cs {
 
 static const int DAYS_IN_WEEK = 7;
-static const int YrLen = 365;
 static const int MaxAgeEggs = 25;
 static const int MaxAgeLarv = 100;
 static const int MaxAgePupae = 25;
