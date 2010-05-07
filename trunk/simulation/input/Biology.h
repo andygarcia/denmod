@@ -253,8 +253,8 @@ public:
       DoubleBloodMealParameters(void);
       ~DoubleBloodMealParameters(void);
     public:
-      double LowWeightRatio;
       double LowWeightLimit;
+      double LowWeightRatio;
       double HighWeightLimit;
       double HighWeightRatio;
     };

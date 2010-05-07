@@ -162,6 +162,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Mosquitoes.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\PdsRng.cpp"
 				>
 			</File>
@@ -209,6 +213,10 @@
 			</File>
 			<File
 				RelativePath=".\Humans.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Mosquitoes.h"
 				>
 			</File>
 			<File

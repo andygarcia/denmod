@@ -34,12 +34,12 @@ public:
 public:
   int FirstDay;
   int LastDay;
-  float Proportion;             // proportion of population in age class
-  float YearlyDeathRate;        // yearly death rate per 1000 for age class
-  float YearlyBirthRate;        // yearly birth rate per 1000 for age class
+  double Proportion;             // proportion of population in age class
+  double YearlyDeathRate;        // yearly death rate per 1000 for age class
+  double YearlyBirthRate;        // yearly birth rate per 1000 for age class
 
-  float DailyDeathRate;
-  float DailyBirthRate;
+  double DailyDeathRate;
+  double DailyBirthRate;
 };
 
 
@@ -78,8 +78,8 @@ class HumanPopulation
 {
 // Typedefs
 public:
-  typedef std::map<int,std::map<int,float>> ClassSpecificSeroprevalence;
-  typedef std::map<int,std::map<int,float>> DailySequentialInfections;
+  typedef std::map<int,std::map<int,double>> ClassSpecificSeroprevalence;
+  typedef std::map<int,std::map<int,double>> DailySequentialInfections;
 
 // Constructors
 public:
@@ -94,13 +94,13 @@ public:
   int GetPopulationSize(void);
 
   std::vector<int> GetInitialAgeDistribution(void);
-  std::vector<float> GetInitialAgeProportions(void);
+  std::vector<double> GetInitialAgeProportions(void);
   std::vector<int> GetAgeDistribution(void);
-  std::vector<float> GetAgeProportions(void);
+  std::vector<double> GetAgeProportions(void);
   std::vector<int> GetBirthsByClass(void);
-  std::vector<float> GetBirthPercentagesByClass(void);
+  std::vector<double> GetBirthPercentagesByClass(void);
   std::vector<int> GetDeathsByClass(void);
-  std::vector<float> GetDeathPercentagesByClass(void);
+  std::vector<double> GetDeathPercentagesByClass(void);
 
   std::vector<std::vector<int>> GetInitialSeroDistribution(void);
   std::vector<std::vector<int>> GetSeroDistribution(void);
@@ -155,12 +155,12 @@ private:
   std::vector<int> _initialAgeDistribution;
   std::vector<int> _ageDistribution;
 
-  std::vector<float> _cumulativeDeaths;
-  std::vector<float> _cumulativeBirths;
+  std::vector<double> _cumulativeDeaths;
+  std::vector<double> _cumulativeBirths;
   std::vector<int> _totalDeaths;
   std::vector<int> _totalBirths;
 
-  std::vector<std::vector<float>> _initialSeroprevalence;
+  std::vector<std::vector<double>> _initialSeroprevalence;
   std::vector<std::vector<int>> _seroDistribution;
   std::vector<std::vector<int>> _initialSeroDistribution;
 
@@ -188,7 +188,7 @@ private:
 
   DailySequentialInfections _dailySequentialInfections;
 
-  std::vector<float> _cumulativeHfDeaths;
+  std::vector<double> _cumulativeHfDeaths;
 };
 
 };

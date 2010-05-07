@@ -900,8 +900,8 @@ AdultSaturationDeficit::GetSimObject(void)
 AdultDoubleBloodMeal::AdultDoubleBloodMeal(void)
 {
   input::Biology::AdultParameters::DoubleBloodMealParameters defVals;
-  this->LowWeightRatio_ = defVals.LowWeightRatio;
   this->LowWeightLimit_ = defVals.LowWeightLimit;
+  this->LowWeightRatio_ = defVals.LowWeightRatio;
   this->HighWeightLimit_ = defVals.HighWeightLimit;
   this->HighWeightRatio_ = defVals.HighWeightRatio;
 }
@@ -910,8 +910,8 @@ AdultDoubleBloodMeal::AdultDoubleBloodMeal(void)
 
 AdultDoubleBloodMeal::AdultDoubleBloodMeal( const AdultDoubleBloodMeal ^ adbm )
 {
-  this->LowWeightRatio = adbm->LowWeightRatio_;
   this->LowWeightLimit = adbm->LowWeightLimit_;
+  this->LowWeightRatio = adbm->LowWeightRatio_;
   this->HighWeightLimit = adbm->HighWeightLimit_;
   this->HighWeightRatio = adbm->HighWeightRatio_;
 }
@@ -923,8 +923,8 @@ AdultDoubleBloodMeal::GetSimObject(void)
 {
   input::Biology::AdultParameters::DoubleBloodMealParameters * dbmp = new input::Biology::AdultParameters::DoubleBloodMealParameters();
 
-  dbmp->LowWeightRatio = this->LowWeightRatio_;
   dbmp->LowWeightLimit = this->LowWeightLimit_;
+  dbmp->LowWeightRatio = this->LowWeightRatio_;
   dbmp->HighWeightLimit = this->HighWeightLimit_;
   dbmp->HighWeightRatio = this->HighWeightRatio_;
 

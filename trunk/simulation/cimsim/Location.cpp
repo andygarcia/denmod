@@ -606,7 +606,7 @@ SimLocation::DoYear(void)
         ++itAdult;
       }
       else {
-        // development will be set later
+        // development will be set later - todo this ignores individual cohort "overages" that get lost
         itAdult->Ovipositing = true;
         _ovipositingNulliparousAdults.push_back( *itAdult );
         itAdult = _nulliparousAdults.erase( itAdult );

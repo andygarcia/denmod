@@ -53,8 +53,8 @@ AdultBiologyPanel::OnLoad( System::Object ^ sender, System::EventArgs ^ e )
   snboxSatDefHighThreshold->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.SaturationDeficit.HighThreshold") );
   snboxSatDefHighSurvival->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.SaturationDeficit.HighSurvival") );
 
-  snboxDoubleBloodMealLowWeightRatio->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.DoubleBloodMeal.LowWeightRatio") );
   snboxDoubleBloodMealLowWeightLimit->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.DoubleBloodMeal.LowWeightLimit") );
+  snboxDoubleBloodMealLowWeightRatio->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.DoubleBloodMeal.LowWeightRatio") );
   snboxDoubleBloodMealHighWeightRatio->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.DoubleBloodMeal.HighWeightRatio") );
   snboxDoubleBloodMealHighWeightLimit->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.DoubleBloodMeal.HighWeightLimit") );
 
