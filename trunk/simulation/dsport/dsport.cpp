@@ -20,26 +20,12 @@ dsport::dsport( const input::Location * location, sim::output::MosData * mosData
 : _location(location),
   _mosData(mosData),
   _doDiskOutput(doDiskOutput),
+
   GasCoef(1.987f),
   Virus(std::vector<VirusDesc>( 4+1 )),
-  EIPFactor(std::vector<double>( 4+1, 0 )),
-  NewMosqSusc(std::vector<double>( (MaxAgeMosq+1) + 1, 0 )),
-  NewMosqSuscCD(std::vector<double>( (MaxAgeMosq+1) + 1, 0 )),
-  OldMosqSusc(std::vector<double>( (MaxAgeMosq+1) + 1, 0 )),
-  OldMosqSuscCD(std::vector<double>( (MaxAgeMosq+1) + 1, 0 )),
-  NewMosqInfd(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
-  NewMosqInfdCD(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
-  NewMosqInfdEIP(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
-  OldMosqInfd(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
-  OldMosqInfdCD(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
-  OldMosqInfdEIP(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
-  MosqInfv(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
-  MosqInfvCD(std::vector<std::vector<double>>( (MaxAgeMosq+1) + 1, std::vector<double>( 4+1, 0 ) )),
-  BitersInfdNewDB(std::vector<double>( 4+1, 0 )),
-  BitersInfdOldDB(std::vector<double>( 4+1, 0 )),
-  BitersInfv(std::vector<double>( 4+1, 0 )),
-  EIPDevRate(std::vector<double>( 4+1, 0 )),
-  MosqInfvTotal(std::vector<double>( 4+1, 0 )),
+  _eipAdjustmentFactor(std::vector<double>( 4+1, 0 )),
+  _eipDevelopmentRate(std::vector<double>( 4+1, 0 )),
+
   _infectedNulliparous(std::vector<MosquitoCollection>( 4+1 )),
   _infectedParous(std::vector<MosquitoCollection>( 4+1 )),
   _infectedBites(std::vector<double>( 4+1, 0 )),
@@ -52,8 +38,7 @@ dsport::dsport( const input::Location * location, sim::output::MosData * mosData
   _infectives(std::vector<MosquitoCollection>( 4+1 )),
   _infectiveOvipositing(std::vector<MosquitoCollection>( 4+1 )),
   _infectiveBites(std::vector<double>( 4+1, 0 )),
-  oldLog(std::ofstream( "oldLog.txt" )),
-  newLog(std::ofstream( "newLog.txt" ))
+  _infectiveMosquitoesBySerotype(std::vector<double>( 4+1, 0 ))
 {
   // initialize random number generator
 #ifdef _DEBUG
@@ -64,11 +49,10 @@ dsport::dsport( const input::Location * location, sim::output::MosData * mosData
   _pdsRng = PdsRng(0);
 #endif
 
-  // initialize human population
+  // human population and demographics
   _humanPopulation = new HumanPopulation( this, _location );
-  
-  // demographics
   this->HumHostDensity = _location->Demographics_->HumanHostDensity;
+
 
   // virology parameters
   this->Virus[1].Viremia = _location->Virology_->Dengue1_.Viremia_;
@@ -87,6 +71,8 @@ dsport::dsport( const input::Location * location, sim::output::MosData * mosData
   this->Virus[4].Incub = _location->Virology_->Dengue4_.IncubationDuration_;
   this->Virus[4].Durat = _location->Virology_->Dengue4_.ViremicDuration_;
 
+
+  // transmission parameters
   this->HumToMosLTiter = _location->Virology_->HumanToMosquitoInfection_.LowTiterSetPoint_;
   this->HumToMosLInf = _location->Virology_->HumanToMosquitoInfection_.LowTiterInfection_;
   this->HumToMosHTiter = _location->Virology_->HumanToMosquitoInfection_.HighTiterSetPoint_;
@@ -111,6 +97,8 @@ dsport::dsport( const input::Location * location, sim::output::MosData * mosData
 
 
   // biology parameters
+  this->_minimumOvipositionTemperature = _location->Biology_->Adult->MinimumOvipositionTemperature;
+
   this->PropOnHum = _location->Biology_->Adult->ProportionOfFeedsOnHumans;
   this->FdAttempts = _location->Biology_->Adult->InterruptedFeedsPerMeal;
   this->PropDifHost = _location->Biology_->Adult->ProportionOfInterruptedFeedsOnDifferentHost;
@@ -120,22 +108,9 @@ dsport::dsport( const input::Location * location, sim::output::MosData * mosData
   this->DBloodUWt = _location->Biology_->Adult->DoubleBloodMeal->HighWeightLimit;
   this->DBloodLProp = _location->Biology_->Adult->DoubleBloodMeal->HighWeightRatio;
 
-  this->_minimumOvipositionTemperature = _location->Biology_->Adult->MinimumOvipositionTemperature;
 
-  // initialize mosquito population
+  // initialize mosquito population from cimsim
   double initialArea = _humanPopulation->GetInitialPopulationSize() / HumHostDensity;
-  for( sim::cs::PreOviAdultCohortCollection::iterator itAdult = _mosData->PreOviAdultCohorts.begin();
-       itAdult != _mosData->PreOviAdultCohorts.end(); ++itAdult ) {
-    NewMosqSusc[itAdult->Age] = itAdult->Number * initialArea;
-    NewMosqSuscCD[itAdult->Age] = itAdult->Development;
-  }
-  for( sim::cs::OviAdultCohortCollection::iterator itAdult = _mosData->OviAdultCohorts.begin();
-       itAdult != _mosData->OviAdultCohorts.end(); ++itAdult ) {
-    OldMosqSusc[itAdult->Age] = itAdult->Number * initialArea;
-    OldMosqSuscCD[itAdult->Age] = itAdult->Development;
-  }
-
-  // initialize new mosquito collections
   for( sim::cs::PreOviAdultCohortCollection::iterator itAdult = _mosData->PreOviAdultCohorts.begin();
        itAdult != _mosData->PreOviAdultCohorts.end(); ++itAdult ) {
     AdultCohort cohort = AdultCohort( *itAdult );
@@ -150,10 +125,11 @@ dsport::dsport( const input::Location * location, sim::output::MosData * mosData
   }
 
 
-  // weather and default dates
+  // get default start/stop from available weather data
   boost::gregorian::date_period wxAvailable = _location->Weather_->GetWeatherPeriod();
   _startDate = wxAvailable.begin();
   _stopDate = wxAvailable.end();
+
 
   // initialize infection schedules
   _location->InfectionIntroduction_->Dengue1_->Schedule_->CalculateSchedule( _startDate, _stopDate );
@@ -164,9 +140,6 @@ dsport::dsport( const input::Location * location, sim::output::MosData * mosData
   if( _doDiskOutput ) {
     InitializeDiskLogs();
   }
-
-  oldLog << "Year , Day , Age , Number, Development, Weight" << std::endl;
-  newLog << "Year , Day , Age , Number, Development, Weight" << std::endl;
 }
 
 
@@ -179,9 +152,6 @@ dsport::~dsport(void)
   }
 
   delete _humanPopulation;
-
-  oldLog.close();
-  newLog.close();
 }
 
 
@@ -202,7 +172,7 @@ dsport::InitializeDiskLogs(void)
 void
 dsport::Start(void)
 {
-  denmain();  
+  RunSimulation();  
 }
 
 
@@ -221,7 +191,7 @@ dsport::Start( boost::gregorian::date startDate, boost::gregorian::date stopDate
 
 
 void
-dsport::denmain(void)
+dsport::RunSimulation(void)
 {
   CalculateEipFactors();
 
@@ -252,7 +222,7 @@ dsport::denmain(void)
         _location->InfectionIntroduction_->Dengue3_->Schedule_->IsDateScheduled( _currentDate ) ||
         _location->InfectionIntroduction_->Dengue4_->Schedule_->IsDateScheduled( _currentDate ) )
     {
-      InitInfectives();
+      IntroduceInfectives();
     }
 
     // purge maternal antibodies
@@ -260,22 +230,17 @@ dsport::denmain(void)
 
     // calculate daily eip development rate
     for( int k = 1; k <=4; ++k ) {
-      EIPDevRate[k] = EIPEnzKin( _averageAirTemperature + 273.15f ) / EIPFactor[k];
+      _eipDevelopmentRate[k] = EIPEnzKin( _averageAirTemperature + 273.15f ) / _eipAdjustmentFactor[k];
     }
 
-    if( _year == 1954 && _day == 145 ) {
-      std::cout << "Breakpoint" << std::endl;
-    }
-  
     // advance mosquitoes
     MosquitoLifeCycle();
-    NewMosquitoLifeCycle();
 
     // calculate transmission
     HumanToMosquitoTransmission();
     MosquitoToHumanTransmission();
 
-    // housekeeping
+    // tabulate and output
     _humanPopulation->RankPopulation();
     _humanPopulation->PurgeHfDeaths();
     SaveDailyOutput();
@@ -295,149 +260,36 @@ dsport::CalculateEipFactors(void)
   // calculate EIP by titer
   for( int i = 1; i <= 4; ++i ) {
     if( Virus[i].Viremia < EipLTiter ) {
-      EIPFactor[i] = EipLFactor;
+      _eipAdjustmentFactor[i] = EipLFactor;
     }
     else if( Virus[i].Viremia > EipHTiter ) {
-      EIPFactor[i] = EipHFactor;
+      _eipAdjustmentFactor[i] = EipHFactor;
     }
     else {
       double Slope = (EipLFactor - EipHFactor) / (EipHTiter - EipLTiter);
-      EIPFactor[i] = EipLFactor - (Virus[i].Viremia - EipLTiter) * Slope;
+      _eipAdjustmentFactor[i] = EipLFactor - (Virus[i].Viremia - EipLTiter) * Slope;
     }
-  }
-}
-
-
-
-// emulate DS 1.0 CINT() which does banker's rounding
-int
-dsport::CINT( double value )
-{
-  double absoluteValue = std::abs( value );
-  int sign = (value == 0) ? 0 : ( value < 0 ? -1 : 1 );
-  int floorValue = static_cast<int>( std::floor( absoluteValue ) );
-  int ceilingValue = static_cast<int>( std::ceil( absoluteValue ) );
-
-  if( absoluteValue - floorValue < 0.5f ) {
-    // round down
-    return floorValue * sign;
-  }
-  else if( absoluteValue - floorValue > 0.5f ) {
-    // round up
-    return ceilingValue * sign;
-  }
-  else {
-    // round to closest even integer
-    if( floorValue % 2 == 1 ) {
-      // floor is odd, round up to even ceiling
-      return ceilingValue * sign;
-    }
-    else {
-      // floor is even, round down
-      return floorValue * sign;
-    }
-  }
-}
-
-
-
-// emulate CS 1.0 Int()
-int
-dsport::INT( double value )
-{
-  return (int)floor(value);
-}
-
-
-
-// emulate PDS 7.1 RND
-// PDS 7.1 RND returns single precision values in the range of [0,1)
-// the only problem with our emulation is the exclusion of
-// ( RAND_MAX/(RAND_MAX+1), 1 ) from the range of generation
-double
-dsport::RND(std::string callingMethod)
-{
-  if( EMULATE_PDS_RAND ) {
-    double nextRnd = _pdsRng.Next();
-    return nextRnd;
-  }
-  else {
-    return rand() / (float) (RAND_MAX + 1); 
   }
 }
 
 
 
 void
-dsport::InitInfectives(void)
+dsport::IntroduceInfectives(void)
 {
+  // introduce infected mosquitoes (which will become infective on the same day)
   for( int serotype = 1; serotype <= 4; ++serotype ) {
-    // get serotype introduction object for this serotype
     input::SerotypeIntroduction * serotypeIntro = _location->InfectionIntroduction_->GetSerotype(serotype);
-
     if( serotypeIntro->Schedule_->IsDateScheduled( _currentDate ) && serotypeIntro->Mosquitoes_ > 0 ) {
-      // look for empty position in the old infected array and add.  This way the
-      // new infectives will drop to position 1 in the infective array and
-      // become new blood feeders on this day.
-      // If no free space is found, then add to last position in the array.
-      bool ifound = false;
-      for( int i = 1; i <= MaxAgeMosq; ++i ) {
-        if( OldMosqInfd[i][serotype] == 0 ) {
-          OldMosqInfd[i][serotype] = serotypeIntro->Mosquitoes_;
-          OldMosqInfdCD[i][serotype] = 1.1f;
-          OldMosqInfdEIP[i][serotype] = 1.1f;
-          ifound = true;
-
-          oldLog << "InitInfectives , "
-                 << serotype << " , "
-                 << i << " , "
-                 << OldMosqInfd[i][serotype] << " , "
-                 << std::endl;
-
-          // insert into new colletions
-          AdultCohort newCohort = AdultCohort( i, serotypeIntro->Mosquitoes_, 1.1, _dailyMosData.AverageWeight );
-          newCohort.Infected = true;
-          newCohort.Eip = 1.1;
-          newCohort.Serotype = serotype;
-          _infectedParous[serotype].push_back( newCohort );
-
-          newLog << "InitInfectives , "
-                 << serotype << " , "
-                 << newCohort.Age << " , "
-                 << newCohort.Number << " , "
-                 << std::endl;
-
-          break;
-        }
-      }
-      if( ifound != true ) {
-        // no open position found, accumulate into the oldest cohort of old infecteds
-        OldMosqInfd[MaxAgeMosq][serotype] = OldMosqInfd[MaxAgeMosq][serotype] + serotypeIntro->Mosquitoes_;
-        OldMosqInfdCD[MaxAgeMosq][serotype] = 1.1f;
-        OldMosqInfdEIP[MaxAgeMosq][serotype] = 1.1f;
-
-        oldLog << "InitInfectives , "
-               << serotype << " , "
-               << MaxAgeMosq << " , "
-               << OldMosqInfd[MaxAgeMosq][serotype] << " , "
-               << std::endl;
-
-        // accumulate into oldest infected parous cohort
-        MosquitoIterator itMosq = _infectedParous[serotype].begin();
-        itMosq->Number += serotypeIntro->Mosquitoes_;
-        itMosq->Development = 1.1;
-        itMosq->Eip = 1.1;
-
-        newLog << "InitInfectives , "
-               << serotype << " , "
-               << itMosq->Age << " , "
-               << itMosq->Number << " , "
-               << std::endl;
-      }
+      AdultCohort newCohort = AdultCohort( 1, serotypeIntro->Mosquitoes_, 1.1, _dailyMosData.AverageWeight );
+      newCohort.Infected = true;
+      newCohort.Eip = 1.1;
+      newCohort.Serotype = serotype;
+      _infectedParous[serotype].push_back( newCohort );
     }
   }
 
-  // initialize infective humans
+  // introduce infected human
   for( int serotype = 1; serotype <= 4; ++serotype ) {
     input::SerotypeIntroduction * serotypeIntro = _location->InfectionIntroduction_->GetSerotype(serotype);
     if( serotypeIntro->Schedule_->IsDateScheduled( _currentDate ) && serotypeIntro->Humans_ > 0 ) {
@@ -480,291 +332,44 @@ dsport::EIPEnzKin( double temp )
 void
 dsport::MosquitoLifeCycle(void)
 {
-  oldLog << "MosquitoLifeCycle" << std::endl;
-
-  // BitersNew         - First time susceptible biters
-  // BitersOld         - Old susceptible biters
-  // BitersInfdNewDB() - Yesterdays double blood feeders from new infd - Global
-  // BitersInfdOldDB() - Yesterdays double blood feeders from old infd - Global
-  // BitersInfv()      - Infective biters - Global
-  // EggersNew         - First time egg layers
-  // EggersOld         - Old egg layers
-  // DMealProp         - Prop. taking double blood meals
-  // OldAdultDev       - Yesterdays adult development
-  // BitersTotal       - Total biters (susc/infd/infv).  Global
-  // InSurviving       - Indoor surviving mosquitoes
-  // OutSurviving      - Outdoor surviving mosquitoes
-
-  std::vector<double> BitersInfd( 4+1, 0 );        // infected biters
-  std::vector<double> EIPTranNew( 4+1, 0 );        // Infective class from infected new
-  std::vector<double> EIPTranOld( 4+1, 0 );        // Infective class from infected old
-  std::vector<double> EggersInfv( 4+1, 0 );        // Infective egg transfers
-  BitersInfv = std::vector<double>( 4+1, 0 );      // total infective biters
-  
-  if( _currentDate == _startDate )  {
-    // initialize static variables
-    BitersInfdNewDB = std::vector<double>( 4+1, 0 );
-    BitersInfdOldDB = std::vector<double>( 4+1, 0 );
-  }
-
-
-  // calculate proportion taking a double blood meal
-  double DMealProp = 0;
-  if( _dailyMosData.AverageWeight <= DBloodLWt ) {
-    DMealProp = DBloodUProp;
-  }
-  else if( _dailyMosData.AverageWeight >= DBloodUWt ) {
-    DMealProp = DBloodLProp;
-  }
-  else {
-    // TODO - verify these equations
-    double Slope = (DBloodUProp - DBloodLProp) / (DBloodUWt - DBloodLWt);
-    DMealProp = DBloodUProp - ((_dailyMosData.AverageWeight - DBloodLWt) * Slope);
-  }
-
-  // Advance Susceptibles - First Gonotrophic Cycle
-  // Last position in the array does not accumulate
-  BitersNew = 0;
-  double EggersNew = 0;
-  for( int i = MaxAgeMosq; i >= 1; --i ) {
-    if( NewMosqSusc[i] <= 0 ) {
-      continue; // move to next youngest cohort
-    }
-    else {
-      if( NewMosqSuscCD[i] <= 1 ) {
-        NewMosqSusc[i + 1] = NewMosqSusc[i] * _dailyMosData.OverallSurvival;
-        NewMosqSuscCD[i + 1] = NewMosqSuscCD[i] + _dailyMosData.AdultDevelopment;
-      }
-      else {
-        EggersNew = EggersNew + (NewMosqSusc[i] * _dailyMosData.OverallSurvival);
-      }
-      NewMosqSusc[i] = 0;
-      NewMosqSuscCD[i] = 0;
-    }
-  }
-
-  //adjust cimsim mosq pop(per ha) for current population size
-  if( HumHostDensity == 0 ) {
-    throw; // STOP 
-  }
-  int numberOfHumans = _humanPopulation->GetPopulationSize();
-  NewMosqSusc[1] = _dailyMosData.NewFemales * (numberOfHumans / HumHostDensity) * _dailyMosData.OverallSurvival;
-  NewMosqSuscCD[1] = _dailyMosData.AdultDevelopment;
-  BitersNew = NewMosqSusc[2] + (NewMosqSusc[3] * DMealProp);
-
-  OutputNewMosqSusc();
-  oldLog << "  " << BitersNew << std::endl;
-
-  // Advance Susceptibles - Successive Gonotrophic Cycles
-  // Last position in the array does not accumulate
-  BitersOld = 0;
-  double EggersOld = 0;
-  for( int i = MaxAgeMosq; i >= 1; --i ) {
-    if( OldMosqSusc[i] <= 0 ) {
-      continue;
-    }
-    else {
-      if( OldMosqSuscCD[i] <= .58 ) {
-        OldMosqSusc[i + 1] = OldMosqSusc[i] * _dailyMosData.OverallSurvival;
-        OldMosqSuscCD[i + 1] = OldMosqSuscCD[i] + _dailyMosData.AdultDevelopment;
-      }
-      else {
-        EggersOld = EggersOld + (OldMosqSusc[i] * _dailyMosData.OverallSurvival);
-      }
-      OldMosqSusc[i] = 0;
-      OldMosqSuscCD[i] = 0;
-    }
-  }
-
-  OldMosqSusc[1] = EggersNew + EggersOld;
-  OldMosqSuscCD[1] = _dailyMosData.AdultDevelopment;
-  BitersOld = OldMosqSusc[1] + (OldMosqSusc[2] * DMealProp);
-
-  OutputOldMosqSusc();
-  oldLog << "  " << BitersOld << std::endl;
-
-  // Advance infected - From New Mosquitoes - First and successive Gonotrophic Cycles
-  // Last position in the array does not accumumlate
-  for( int j = 1; j <= 4; ++j ) {
-    // double blood meal parameters were used on yesterday's infected biters to calculate how many
-    // would bite again today, transfer into todays biting counts, then clear for today's calculations
-    BitersInfd[j] = BitersInfdNewDB[j];
-    BitersInfdNewDB[j] = 0;
-    for( int i = MaxAgeMosq; i >= 1; --i ) {
-      if( NewMosqInfd[i][j] <= 0 ) {
-        continue; //go to next cohort
-      }
-      else {
-        // calculate CD cutoff
-        double OldAdultDev = _yesterdayMosData.AdultDevelopment;
-
-        // superceeded by using _yesterdayMosData & _dailyMosData
-        //if( Day == 1 ) {
-        //  OldAdultDev = _yesterdayMosData.AdultDevelopment;
-        //}
-        //else {
-        //  OldAdultDev = _yesterdayMosData.AdultDevelopment;
-        //}
-
-        double CDYest = NewMosqInfdCD[i][j] - OldAdultDev;
-        double CDTest;
-        int CDFactor;
-        if( CDYest < 1 ) {
-          CDTest = 1;
-        }
-        else {
-          CDFactor = INT((CDYest - 1) / .58f) + 1;
-          CDTest = 1 + (CDFactor * .58f);
-        }
-
-        if( NewMosqInfdEIP[i][j] > 1 && NewMosqInfdCD[i][j] > CDTest ) {
-          EIPTranNew[j] = EIPTranNew[j] + (NewMosqInfd[i][j] * _dailyMosData.OverallSurvival);
-        }
-        else {
-          NewMosqInfd[i + 1][j] = NewMosqInfd[i][j] * _dailyMosData.OverallSurvival;
-          NewMosqInfdCD[i + 1][j] = NewMosqInfdCD[i][j] + _dailyMosData.AdultDevelopment;
-          NewMosqInfdEIP[i + 1][j] = NewMosqInfdEIP[i][j] + EIPDevRate[j];
-          if( NewMosqInfdCD[i][j] > CDTest ) {
-            BitersInfd[j] = BitersInfd[j] + NewMosqInfd[i + 1][j];
-            BitersInfdNewDB[j] = BitersInfdNewDB[j] + (NewMosqInfd[i + 1][j] * DMealProp);
-          }
-        }
-        NewMosqInfd[i][j] = 0;
-        NewMosqInfdCD[i][j] = 0;
-        NewMosqInfdEIP[i][j] = 0;
-      }
-    }
-  }
-
-  OutputNewMosqInfd();
-  oldLog << "  BitersInfd/_infectedBites , "
-         << BitersInfd[1] << " , "
-         << BitersInfd[2] << " , "
-         << BitersInfd[3] << " , "
-         << BitersInfd[4] << std::endl;
-
-  // Advance infected - From old Mosquitoes - Second and successive Gonotrophic Cycles
-  // Last position in the array does not accumumlate
-  for( int j = 1; j <= 4; ++j ) {
-    BitersInfd[j] = BitersInfd[j] + BitersInfdOldDB[j];
-    BitersInfdOldDB[j] = 0;
-    for( int i = MaxAgeMosq; i >= 1; --i ) {
-      if( OldMosqInfd[i][j] <= 0 ) {
-        continue; // go to next cohort
-      }
-      else {
-        if( OldMosqInfdEIP[i][j] > 1 && OldMosqInfdCD[i][j] > .58 ) {
-          EIPTranOld[j] = EIPTranOld[j] + (OldMosqInfd[i][j] * _dailyMosData.OverallSurvival);
-        }
-        else {
-          OldMosqInfd[i+1][j] = OldMosqInfd[i][j] * _dailyMosData.OverallSurvival;
-          if( OldMosqInfdCD[i][j] > .58 ) {
-            BitersInfd[j] = BitersInfd[j] + OldMosqInfd[i+1][j];
-            BitersInfdOldDB[j] = BitersInfdOldDB[j] + (OldMosqInfd[i+1][j] * DMealProp);
-            OldMosqInfdCD[i+1][j] = _dailyMosData.AdultDevelopment;
-          }
-          else {
-            OldMosqInfdCD[i+1][j] = OldMosqInfdCD[i][j] + _dailyMosData.AdultDevelopment;
-          }
-          OldMosqInfdEIP[i+1][j] = OldMosqInfdEIP[i][j] + EIPDevRate[j];
-        }
-        OldMosqInfd[i][j] = 0;
-        OldMosqInfdCD[i][j] = 0;
-        OldMosqInfdEIP[i][j] = 0;
-      }
-    }
-  }
-
-  OutputOldMosqInfd();
-  oldLog << "  BitersInfd/_infectedBites , "
-         << BitersInfd[1] << " , "
-         << BitersInfd[2] << " , "
-         << BitersInfd[3] << " , "
-         << BitersInfd[4] << std::endl;
-
-
-  // Advance infective - Successive Gonotrophic Cycles
-  // Last position in the array does not accumulate
-  for( int j = 1; j <= 4; ++j ) {   // serotypes
-    for( int i = MaxAgeMosq; i >= 1; --i ) {
-      if( MosqInfv[i][j] <= 0 ) {
-        continue;  // go to next cohort
-      }
-      else {
-        if( MosqInfvCD[i][j] <= .58 ) {
-          MosqInfv[i+1][j] = MosqInfv[i][j] * _dailyMosData.OverallSurvival;
-          MosqInfvCD[i+1][j] = MosqInfvCD[i][j] + _dailyMosData.AdultDevelopment;
-        }
-        else {
-          EggersInfv[j] = EggersInfv[j] + (MosqInfv[i][j] * _dailyMosData.OverallSurvival);
-        }
-        MosqInfv[i][j] = 0;
-        MosqInfvCD[i][j] = 0;
-      }
-    }
-
-    MosqInfv[1][j] = EggersInfv[j] + EIPTranNew[j] + EIPTranOld[j];
-    MosqInfvCD[1][j] = _dailyMosData.AdultDevelopment;
-    BitersInfv[j] = MosqInfv[1][j] + (MosqInfv[2][j] * DMealProp);
-  }
-
-  OutputMosqInfv();
-  oldLog << "  BitersInfv/_infectiveBites , "
-         << BitersInfv[1] << " , "
-         << BitersInfv[2] << " , "
-         << BitersInfv[3] << " , "
-         << BitersInfv[4] << std::endl;
-
-  BitersTotal = BitersNew + BitersOld;
-  for( int j =1; j <= 4; ++j ) {
-    BitersTotal = BitersTotal + BitersInfd[j] + BitersInfv[j];
-  }
-  MosqTotal = 0;
-  MosqInfvTotal = std::vector<double>( 4+1, 0 );
-  for( int i = 1; i <= MaxAgeMosq; ++i ) {
-    MosqTotal = MosqTotal + NewMosqSusc[i] + OldMosqSusc[i];
-    for( int j =1; j <= 4; ++j ) {
-      MosqTotal = MosqTotal + NewMosqInfd[i][j] + OldMosqInfd[i][j] + MosqInfv[i][j];
-      MosqInfvTotal[j] = MosqInfvTotal[j] + MosqInfv[i][j];
-    }
-  }
-}
-
-
-
-void
-dsport::NewMosquitoLifeCycle(void)
-{
-  newLog << "MosquitoLifeCycle" << std::endl;
-
+  // advance susceptible clearing transfer collections
   _susceptibleOvipositing.clear();
-
   AdvanceSusceptibleNulliparous();
   AdvanceSusceptibleParous();
 
+  // advance infected, clearing transfer collections
   _infectedBites = std::vector<double>( 4+1, 0 );
   _newlyInfectiveNulliparous = std::vector<MosquitoCollection>( 4+1 );
   _newlyInfectiveParous = std::vector<MosquitoCollection>( 4+1 );
-
   AdvanceInfectedNulliparous();
   AdvanceInfectedParous();
 
+  // advance infected, clearing transfer collections
   _infectiveBites = std::vector<double>( 4+1, 0 );
   _infectiveOvipositing = std::vector<MosquitoCollection>( 4+1 );
   AdvanceInfectives();
 
+  // tabulate biting
   _totalBites = _susceptibleNulliparousBites + _susceptibleParousBites;
   for( int iSerotype = 1; iSerotype <=4; ++iSerotype ) {
     _totalBites += _infectedBites[iSerotype] + _infectiveBites[iSerotype];
   }
 
-  _totalInfectiveMosquitoes = GetTotalMosquitoes( _infectives );
+  // tabulate infective mosquitoes by serotype and in total
+  for( int iSerotype = 1; iSerotype <= 4; ++iSerotype ) {
+    _infectiveMosquitoesBySerotype[iSerotype] = GetTotalMosquitoes( _infectives[iSerotype] );
+  }
+  _totalInfectiveMosquitoes = _infectiveMosquitoesBySerotype[1]
+                              + _infectiveMosquitoesBySerotype[2]
+                              + _infectiveMosquitoesBySerotype[3]
+                              + _infectiveMosquitoesBySerotype[4];
+
+  // tabulate all mosquitoes
   _totalMosquitoes = GetTotalMosquitoes( _susceptibleNulliparous )
                      + GetTotalMosquitoes( _susceptibleParous )
                      + GetTotalMosquitoes( _infectedNulliparous )
                      + GetTotalMosquitoes( _infectedParous )
                      + _totalInfectiveMosquitoes;
-
 }
 
 
@@ -827,9 +432,6 @@ dsport::AdvanceSusceptibleNulliparous(void)
       _susceptibleNulliparousBites += itMosq->Number * CalculateDoubleBloodMealProportion( _dailyMosData.AverageWeight );
     }
   }
-
-  OutputSusceptibleNulliparous();
-  newLog << "  " << _susceptibleNulliparousBites << std::endl;
 }
 
 
@@ -891,9 +493,6 @@ dsport::AdvanceSusceptibleParous(void)
       _susceptibleParousBites += itMosq->Number * CalculateDoubleBloodMealProportion( _dailyMosData.AverageWeight );
     }
   }
-
-  OutputSusceptibleParous();
-  newLog << "  " << _susceptibleParousBites << std::endl;
 }
 
 
@@ -940,7 +539,7 @@ dsport::AdvanceInfectedNulliparous(void)
         itMosq->Age++;
         itMosq->Number *= _dailyMosData.OverallSurvival;
         itMosq->Development += _dailyMosData.AdultDevelopment;
-        itMosq->Eip += EIPDevRate[iSerotype];
+        itMosq->Eip += _eipDevelopmentRate[iSerotype];
 
         // finished development, this isn't a transfer rather a count of infected
         if( (itMosq->Development - _dailyMosData.AdultDevelopment) > CDTest ) {
@@ -952,13 +551,6 @@ dsport::AdvanceInfectedNulliparous(void)
       }
     }
   }
-
-  OutputInfectedNulliparous();
-  newLog << "  BitersInfd/_infectedBites , "
-         << _infectedBites[1] << " , "
-         << _infectedBites[2] << " , "
-         << _infectedBites[3] << " , "
-         << _infectedBites[4] << std::endl;
 }
 
 
@@ -1003,18 +595,11 @@ dsport::AdvanceInfectedParous(void)
           // not finished with current gonotropic cycle
           itMosq->Development += _dailyMosData.AdultDevelopment;
         }
-        itMosq->Eip += EIPDevRate[iSerotype];
+        itMosq->Eip += _eipDevelopmentRate[iSerotype];
         ++itMosq;
       }
     }
   }
-
-  OutputInfectedParous();
-  newLog  << "  BitersInfd/_infectedBites , "
-         << _infectedBites[1] << " , "
-         << _infectedBites[2] << " , "
-         << _infectedBites[3] << " , "
-         << _infectedBites[4] << std::endl;
 }
 
 
@@ -1075,13 +660,6 @@ dsport::AdvanceInfectives(void)
       }
     }
   }
-
-  OutputInfectives();
-  newLog  << "  BitersInfv/_infectiveBites , "
-         << _infectiveBites[1] << " , "
-         << _infectiveBites[2] << " , "
-         << _infectiveBites[3] << " , "
-         << _infectiveBites[4] << std::endl;
 }
 
 
@@ -1089,29 +667,25 @@ dsport::AdvanceInfectives(void)
 void
 dsport::HumanToMosquitoTransmission(void)
 {
-  int numberOfHumans = _humanPopulation->GetPopulationSize();
-
   // handle dead population gracefully
+  int numberOfHumans = _humanPopulation->GetPopulationSize();
   if( numberOfHumans == 0 ) {
-    BitesPerPerson = 0;
+    _bitesPerPerson = 0;
     return;
   }
 
-  // number of susceptible probes per individual
-  BitesPerPerson = (BitersNew + BitersOld) * PropOnHum;
-  BitesPerPerson = BitesPerPerson + (BitesPerPerson * (FdAttempts - 1) * PropDifHost);
-  BitesPerPerson = BitesPerPerson / numberOfHumans;
 
-  // TODO - new code
+  // calcualte bites per person taking into account biting parameters
   _bitesPerPerson = (_susceptibleNulliparousBites + _susceptibleParousBites) * PropOnHum;
   _bitesPerPerson += _bitesPerPerson * (FdAttempts - 1) * PropDifHost;
   _bitesPerPerson /= numberOfHumans;
+
 
   // randomly calculate new mosquito infections for four serotypes
   std::vector<int> seroTypesCompleted;
   // loop until all four sero types are processed
   while(true) {
-    int i = INT( (4 - 1 + 1) * RND("HumanToMosquitoTransmission") + 1 );
+    int i = INT( (4 - 1 + 1) * RND() + 1 );
     std::vector<int>::iterator findResult;
     findResult = std::find( seroTypesCompleted.begin(), seroTypesCompleted.end(), i );
     if( findResult == seroTypesCompleted.end() ) {
@@ -1124,11 +698,6 @@ dsport::HumanToMosquitoTransmission(void)
       break;
     }
   }
-
-  OutputNewMosqInfd();
-  OutputOldMosqInfd();
-  OutputInfectedNulliparous();
-  OutputInfectedParous();
 }
 
 
@@ -1136,11 +705,8 @@ dsport::HumanToMosquitoTransmission(void)
 void
 dsport::InoculateMosquitoes( int iType )
 {
-  int r;                    // for poisson distribution
-  double InocEstimate;       // number of mosquitoes to be infected
-  int NewDlyMosqInoc;       // actual number of new infected mosq. (differs due to/if stochastic routines enabled)
-  int OldInfd = 0;          // new infected from old susceptible
-  int NewInfd = 0;          // new infected from new susceptible
+  // actual number of new infected mosq. (differs due to/if stochastic routines enabled)
+  int NewDlyMosqInoc;
 
   // calculate probability of infection and  estimate newly inoculated mosquitoes
   // Viremia is in scientific notation and Titers are in logs
@@ -1159,24 +725,24 @@ dsport::InoculateMosquitoes( int iType )
     ProbInf = HumToMosHInf - ((HumToMosHTiter - (log(Virus[iType].Viremia) / log(10.0f))) * Slope);
   }
 
-  InocEstimate = _humanPopulation->GetInfectiveBySerotype(iType) * BitesPerPerson * ProbInf;
+  double numInoculations = _humanPopulation->GetInfectiveBySerotype(iType) * _bitesPerPerson * ProbInf;
   
-  // find new infected mosquitoes
-  if( InocEstimate > StochTransNum ) {
-    // discrete
-    //NewDlyMosqInoc = CLNG(InocEstimate) where DS 1.0 used CLNG for a 4 bit integer, an int in c++, although machine dependent, can hold a word
-    NewDlyMosqInoc = CINT(InocEstimate);
+  // discrete
+  if( numInoculations > StochTransNum ) {
+    NewDlyMosqInoc = CINT(numInoculations);
   }
-  else if( InocEstimate > 0 ) {
+  // stochastic
+  else if( numInoculations > 0 ) {
     // stochastic
-    double num = RND("CalcNewInocMosquitoes");
+    double num = RND();
     double SumOfProb = 0;
+    int r;
     for( r = 0; r <= 150; ++r ) {
       double rfact = Factorial(r);
       if( rfact == 0 ) {
         break; // STOP
       }
-      SumOfProb = SumOfProb + ( (pow(InocEstimate,r) * exp(-InocEstimate)) / rfact);
+      SumOfProb = SumOfProb + ( (pow(numInoculations,r) * exp(-numInoculations)) / rfact);
       if( SumOfProb > num ) {
         break;  // exit for
       }
@@ -1187,67 +753,15 @@ dsport::InoculateMosquitoes( int iType )
     NewDlyMosqInoc = 0;
   }
 
-  // Adjust mosquito arrays - add/subtract infected/susceptible mosquitoes
+
+  // divide any new infections between parous and nulliparous susceptibles
   if( NewDlyMosqInoc > 0 ) {
-
-    if( _year == 1954 && _day == 144 ) {
-      std::cout << "Breakpoint" << std::endl;
-    }
-
-    // calculate new infected from new and old susceptible
-    OldInfd = CINT( (BitersOld / (BitersOld + BitersNew)) * NewDlyMosqInoc );
-    NewInfd = NewDlyMosqInoc - OldInfd;
-
-    oldLog << "Inoculate Mosquitoes , " << OldInfd << " , " << NewInfd << std::endl;
-
-    // divide infections between parous and nulliparous susceptibles
     double parousProportion = _susceptibleParousBites / (_susceptibleParousBites + _susceptibleNulliparousBites);
     int numParousInfections = CINT( parousProportion * NewDlyMosqInoc );
     int numNulliparousInfections = NewDlyMosqInoc - numParousInfections;
 
-    newLog << "Inoculate Mosquitoes , " << numParousInfections << " , " << numNulliparousInfections << std::endl;
-
-    // adjust susceptible arrays
-    // see if there are enough mosquitoes
-    if( OldMosqSusc[1] + OldMosqSusc[2] < OldInfd ) {
-      OldInfd = CINT( OldMosqSusc[1] + OldMosqSusc[2] );
-    }
-    OldMosqSusc[1] = OldMosqSusc[1] - OldInfd;
-    if( OldMosqSusc[1] < 0 ) {
-      OldMosqSusc[2] = OldMosqSusc[2] + OldMosqSusc[1];
-      OldMosqSusc[1] = 0;
-      OldMosqSuscCD[1] = 0;
-    }
-
-    if( NewMosqSusc[2] + NewMosqSusc[3] < NewInfd ) {
-      NewInfd = CINT( NewMosqSusc[2] + NewMosqSusc[3] );
-    }
-    NewMosqSusc[2] = NewMosqSusc[2] - NewInfd;
-    if( NewMosqSusc[2] < 0 ) {
-      NewMosqSusc[3] = NewMosqSusc[3] + NewMosqSusc[2];
-      NewMosqSusc[2] = 0;
-      NewMosqSuscCD[2] = 0;
-    }
-
-    // adjust infected mosquito arrays
-    OldMosqInfd[1][iType] = OldInfd;
-    NewMosqInfd[1][iType] = NewInfd;
-    OldMosqInfdCD[1][iType] = _dailyMosData.AdultDevelopment;
-    NewMosqInfdCD[1][iType] = _dailyMosData.AdultDevelopment;
-    OldMosqInfdEIP[1][iType] = EIPDevRate[iType];
-    NewMosqInfdEIP[1][iType] = EIPDevRate[iType];
-
-    if( _year == 1954 && (_day == 144 || _day == 145) ) {
-      OutputOldMosqSusc();
-    }
-
-    // NEW CODE
     InfectParous( numParousInfections, iType );
     InfectNulliparous( numNulliparousInfections, iType );
-
-    if( _year == 1954 && (_day == 144 || _day == 145) ) {
-      OutputSusceptibleParous();
-    }
   }
 }
 
@@ -1340,7 +854,7 @@ dsport::InfectParous( int numParousInfections, int iSerotype )
   AdultCohort newCohort = CombineCohorts( newlyInfected, 1, _dailyMosData.AdultDevelopment );
   newCohort.Infected = true;
   newCohort.Serotype = iSerotype;
-  newCohort.Eip = EIPDevRate[iSerotype];
+  newCohort.Eip = _eipDevelopmentRate[iSerotype];
   _infectedParous[iSerotype].push_back( newCohort );
 }
 
@@ -1430,7 +944,7 @@ dsport::InfectNulliparous( int numNulliparousInfections, int iSerotype )
   AdultCohort newCohort = CombineCohorts( newlyInfected, 1, _dailyMosData.AdultDevelopment );
   newCohort.Infected = true;
   newCohort.Serotype = iSerotype;
-  newCohort.Eip = EIPDevRate[iSerotype];
+  newCohort.Eip = _eipDevelopmentRate[iSerotype];
   _infectedNulliparous[iSerotype].push_back( newCohort );
 }
 
@@ -1444,7 +958,7 @@ dsport::MosquitoToHumanTransmission(void)
   // loop until all four sero types are processed
   while(true) {
     // select a serotype randomly
-    int serotype = INT( (4 - 1 + 1) * RND("MosquitoToHumanTransmission") + 1 );
+    int serotype = INT( (4 - 1 + 1) * RND() + 1 );
 
     // see if it has been previously selected or not
     std::vector<int>::iterator findResult;
@@ -1469,44 +983,38 @@ dsport::MosquitoToHumanTransmission(void)
 void
 dsport::InoculateHumans( int serotype )
 {
-  int r;                      // for poisson distribution
-  double InocEstimate;         // number of infv bites to humans
+  double numInoculations = _infectiveBites[serotype] * PropOnHum;
+  numInoculations += (_infectiveBites[serotype] * PropOnHum) * (FdAttempts - 1) * PropDifHost;
+  numInoculations *= MosqToHumProb;
 
-  InocEstimate = ((BitersInfv[serotype] * PropOnHum) + ((BitersInfv[serotype] * PropOnHum) * (FdAttempts - 1) * PropDifHost)) * MosqToHumProb;
-
-  double totalInoculations = _infectiveBites[serotype] * PropOnHum;
-  totalInoculations += (BitersInfv[serotype] * PropOnHum) * (FdAttempts - 1) * PropDifHost;
-  totalInoculations *= MosqToHumProb;
-
-  oldLog << "InoculateHumans , " << BitersInfv[serotype] << " , " << InocEstimate << std::endl;
-  newLog << "InoculateHumans , " << _infectiveBites[serotype] << " , " << totalInoculations << std::endl;
-
-  if( InocEstimate > StochTransNum ) {
-    // discrete
-    NewDlyHumInoc = CINT( InocEstimate );
+  // discrete
+  if( numInoculations > StochTransNum ) {
+    _newHumanInoculations = CINT( numInoculations );
   }
-
-  else if( InocEstimate > 0 ) {
-    // stochastic
-    double num = RND("CalcNewInocHumans");
+  // stochastic
+  else if( numInoculations > 0 ) {
+    double num = RND();
     double SumOfProb = 0;
+    int r;
     for( r = 0; r <= 150; ++r ) {
       double rfact = Factorial(r);
       if( rfact == 0 ) {
         throw; // STOP
       }
-      SumOfProb = SumOfProb + ((pow(InocEstimate,r) * exp(-InocEstimate)) / rfact);
+      SumOfProb = SumOfProb + ((pow(numInoculations,r) * exp(-numInoculations)) / rfact);
       if( SumOfProb > num ) {
         break;
       }
     }
-    NewDlyHumInoc = r;
+    _newHumanInoculations = r;
   }
   else {
-    NewDlyHumInoc = 0;
+    _newHumanInoculations = 0;
   }
   
-  for( int i = 1; i <= NewDlyHumInoc; ++i ) {
+
+  // distribute new human inoculations into the human population
+  for( int i = 1; i <= _newHumanInoculations; ++i ) {
     _humanPopulation->InoculateRandomHuman( serotype );
   }
 }
@@ -1528,14 +1036,14 @@ dsport::SaveDailyOutput(void)
   dlo.Viremic3 = _humanPopulation->GetInfectiveBySerotype( 3 );
   dlo.Viremic4 = _humanPopulation->GetInfectiveBySerotype( 4 );
 
-  dlo.MosqTotal = MosqTotal;
+  dlo.MosqTotal = _totalMosquitoes;
   for( int i = 1; i <= 4; ++i ) {
-    dlo.MosqInfvTotal[i] = MosqInfvTotal[i];
+    dlo.MosqInfvTotal[i] = _infectiveMosquitoesBySerotype[i];
     dlo.NewHumCases[i] = _humanPopulation->GetNewInfectiveBySerotype( i );
   }
-  dlo.InfvBites = NewDlyHumInoc;
+  dlo.InfvBites = _newHumanInoculations;
   for( int i = 1; i <= 4; ++i ) {
-    dlo.EIPDevRate[i] = EIPDevRate[i];
+    dlo.EIPDevRate[i] = _eipDevelopmentRate[i];
   }
   dlo.NumHumans = _humanPopulation->GetPopulationSize();
 
@@ -1568,8 +1076,8 @@ dsport::SaveDailyOutput(void)
 
   if( _doDiskOutput ) {
     _locationLog->AddData( _humanPopulation->GetPopulationSize() );
-    _locationLog->AddData( MosqTotal );
-    _locationLog->AddData( NewDlyHumInoc );
+    _locationLog->AddData( _totalMosquitoes );
+    _locationLog->AddData( _newHumanInoculations );
   }
 }
 
@@ -1700,208 +1208,59 @@ dsport::CombineCohorts( MosquitoCollection & collection, int age, double develop
 
 
 
-void
-dsport::OutputNewMosqSusc(void)
+// emulate DS 1.0 CINT() which does banker's rounding
+int
+dsport::CINT( double value )
 {
-  oldLog << "Susceptible Nulliparous" << std::endl;
-  for( int i = MaxAgeMosq; i >= 1; --i ) {
-    if( NewMosqSusc[i] <= 0 ) continue;
+  double absoluteValue = std::abs( value );
+  int sign = (value == 0) ? 0 : ( value < 0 ? -1 : 1 );
+  int floorValue = static_cast<int>( std::floor( absoluteValue ) );
+  int ceilingValue = static_cast<int>( std::ceil( absoluteValue ) );
+
+  if( absoluteValue - floorValue < 0.5f ) {
+    // round down
+    return floorValue * sign;
+  }
+  else if( absoluteValue - floorValue > 0.5f ) {
+    // round up
+    return ceilingValue * sign;
+  }
+  else {
+    // round to closest even integer
+    if( floorValue % 2 == 1 ) {
+      // floor is odd, round up to even ceiling
+      return ceilingValue * sign;
+    }
     else {
-      oldLog << _currentDate.year() << " , "
-             << _currentDate.day_of_year() << " , "
-             << i << " , "
-             << NewMosqSusc[i] << " , "
-             << NewMosqSuscCD[i] << " , "
-             //<< _dailyMosData.AverageWeight
-             << std::endl;
+      // floor is even, round down
+      return floorValue * sign;
     }
   }
 }
 
 
 
-void
-dsport::OutputOldMosqSusc(void)
+// emulate CS 1.0 Int()
+int
+dsport::INT( double value )
 {
-  oldLog << "Susceptible Parous" << std::endl;
-  for( int i = MaxAgeMosq; i >= 1; --i ) {
-    if( OldMosqSusc[i] <= 0 ) continue;
-    else {
-      oldLog << _currentDate.year() << " , "
-             << _currentDate.day_of_year() << " , "
-             << i << " , "
-             << OldMosqSusc[i] << " , "
-             << OldMosqSuscCD[i] << " , "
-             //<< _dailyMosData.AverageWeight
-             << std::endl;
-    }
-  }
+  return (int)floor(value);
 }
 
 
 
-void
-dsport::OutputNewMosqInfd(void)
+// emulate PDS 7.1 RND
+// PDS 7.1 RND returns single precision values in the range of [0,1)
+// the only problem with our emulation is the exclusion of
+// ( RAND_MAX/(RAND_MAX+1), 1 ) from the range of generation
+double
+dsport::RND(void)
 {
-  oldLog << "Infected Nulliparous" << std::endl;
-  for( int iSerotype = 1; iSerotype <= 4; ++iSerotype ) {
-    for( int i = MaxAgeMosq; i >= 1; --i ) {
-      if( NewMosqInfd[i][iSerotype] <= 0 ) continue;
-      else {
-        oldLog << _currentDate.year() << " , "
-               << _currentDate.day_of_year() << " , "
-               << iSerotype << " , "
-               << i << " , "
-               << NewMosqInfd[i][iSerotype] << " , "
-               << NewMosqInfdCD[i][iSerotype] << " , "
-               << NewMosqInfdEIP[i][iSerotype] << " , "
-               //<< _dailyMosData.AverageWeight
-               << std::endl;
-      }
-    }
+  if( EMULATE_PDS_RAND ) {
+    double nextRnd = _pdsRng.Next();
+    return nextRnd;
   }
-}
-
-
-
-void
-dsport::OutputOldMosqInfd(void)
-{
-  oldLog << "Infected Parous" << std::endl;
-  for( int iSerotype = 1; iSerotype <= 4; ++iSerotype ) {
-    for( int i = MaxAgeMosq; i >= 1; --i ) {
-      if( OldMosqInfd[i][iSerotype] <= 0 ) continue;
-      else {
-        oldLog << _currentDate.year() << " , "
-               << _currentDate.day_of_year() << " , "
-               << iSerotype << " , "
-               << i << " , "
-               << OldMosqInfd[i][iSerotype] << " , "
-               << OldMosqInfdCD[i][iSerotype] << " , "
-               << OldMosqInfdEIP[i][iSerotype] << " , "
-               //<< _dailyMosData.AverageWeight
-               << std::endl;
-      }
-    }
-  }
-}
-
-
-
-void
-dsport::OutputMosqInfv(void)
-{
-  oldLog << "Infectives" << std::endl;
-  for( int iSerotype = 1; iSerotype <= 4; ++iSerotype ) {
-    for( int i = MaxAgeMosq; i >= 1; --i ) {
-      if( MosqInfv[i][iSerotype] <= 0 ) continue;
-      else {
-        oldLog << _currentDate.year() << " , "
-               << _currentDate.day_of_year() << " , "
-               << iSerotype << " , "
-               << i << " , "
-               << MosqInfv[i][iSerotype] << " , "
-               << MosqInfvCD[i][iSerotype] << " , "
-               //<< _dailyMosData.AverageWeight
-               << std::endl;
-      }
-    }
-  }
-}
-
-
-
-void
-dsport::OutputSusceptibleNulliparous(void)
-{
-  newLog << "Susceptible Nulliparous" << std::endl;
-  for( MosquitoIterator itMosq = _susceptibleNulliparous.begin(); itMosq != _susceptibleNulliparous.end(); ++itMosq ) {
-    newLog << _currentDate.year() << " , "
-           << _currentDate.day_of_year() << " , "
-           << itMosq->Age << " , "
-           << itMosq->Number << " , "
-           << itMosq->Development << " , "
-           //<< itMosq->Weight
-           << std::endl;
-  }
-}
-
-
-
-void
-dsport::OutputSusceptibleParous(void)
-{
-  newLog << "Susceptible Parous" << std::endl;
-  for( MosquitoIterator itMosq = _susceptibleParous.begin(); itMosq != _susceptibleParous.end(); ++itMosq ) {
-    newLog << _currentDate.year() << " , "
-           << _currentDate.day_of_year() << " , "
-           << itMosq->Age << " , "
-           << itMosq->Number << " , "
-           << itMosq->Development << " , "
-           //<< itMosq->Weight
-           << std::endl;
-  }
-}
-
-
-
-void
-dsport::OutputInfectedNulliparous(void)
-{
-  newLog << "Infected Nulliparous" << std::endl;
-  for( int iSerotype = 1; iSerotype <= 4; ++iSerotype ) {
-    for( MosquitoIterator itMosq = _infectedNulliparous[iSerotype].begin(); itMosq != _infectedNulliparous[iSerotype].end(); ++itMosq ) {
-      newLog << _currentDate.year() << " , "
-             << _currentDate.day_of_year() << " , "
-             << iSerotype << " , "
-             << itMosq->Age << " , "
-             << itMosq->Number << " , "
-             << itMosq->Development << " , "
-             << itMosq->Eip << " , "
-             //<< itMosq->Weight
-             << std::endl;
-    }
-  }
-}
-
-
-
-void
-dsport::OutputInfectedParous(void)
-{
-  newLog << "Infected Parous" << std::endl;
-  for( int iSerotype = 1; iSerotype <= 4; ++iSerotype ) {
-    for( MosquitoIterator itMosq = _infectedParous[iSerotype].begin(); itMosq != _infectedParous[iSerotype].end(); ++itMosq ) {
-      newLog << _currentDate.year() << " , "
-             << _currentDate.day_of_year() << " , "
-             << iSerotype << " , "
-             << itMosq->Age << " , "
-             << itMosq->Number << " , "
-             << itMosq->Development << " , "
-             << itMosq->Eip << " , "
-             //<< itMosq->Weight
-             << std::endl;
-    }
-  }
-}
-
-
-
-
-void
-dsport::OutputInfectives(void)
-{
-  newLog << "Infectives" << std::endl;
-  for( int iSerotype = 1; iSerotype <= 4; ++iSerotype ) {
-    for( MosquitoIterator itMosq = _infectives[iSerotype].begin(); itMosq != _infectives[iSerotype].end(); ++itMosq ) {
-      newLog << _currentDate.year() << " , "
-             << _currentDate.day_of_year() << " , "
-             << iSerotype << " , "
-             << itMosq->Age << " , "
-             << itMosq->Number << " , "
-             << itMosq->Development << " , "
-             //<< itMosq->Weight
-             << std::endl;
-    }
+  else {
+    return rand() / (float) (RAND_MAX + 1); 
   }
 }

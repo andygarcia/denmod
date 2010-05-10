@@ -374,7 +374,7 @@ HumanPopulation::DoDailyDeaths(void)
     if( _cumulativeDeaths[i] >= 1 && _ageDistribution[i] > 0 ) {
       for( int j = 1; j <= _dsp->INT( _cumulativeDeaths[i] ); ++j ) {
         // pick radom individual within age class for death
-        double rndNum = _dsp->RND("CalcDeaths");
+        double rndNum = _dsp->RND();
         int index = _dsp->INT( _ageDistribution[i]  * rndNum);
 
         // index iterator and delete death
@@ -520,7 +520,7 @@ HumanPopulation::IntroduceInfectedHuman( unsigned int serotype )
   input::VirusSerotype & virus = _virology->GetSerotype( serotype );
 
   // randomly select age of new infected human and determine age class
-  int age = _dsp->INT( (_ageClasses[18].LastDay - (virus.IncubationDuration_ + 1) + 1) * _dsp->RND("InitInfectives") + (virus.IncubationDuration_ + 1) );
+  int age = _dsp->INT( (_ageClasses[18].LastDay - (virus.IncubationDuration_ + 1) + 1) * _dsp->RND() + (virus.IncubationDuration_ + 1) );
   int ageClass = GetAgeClassFromAge( age );
 
   // create human and mark as infected
@@ -742,7 +742,7 @@ HumanPopulation::CheckSequentialInfection( int serotype, HumanCollection::iterat
             _dailySequentialInfections[serotype][i] += (1 * si->Probability_);
             
             // possible death
-            if( si->Probability_ * si->Mortality_ > _dsp->RND("CalcSeqInfs") ) {
+            if( si->Probability_ * si->Mortality_ > _dsp->RND() ) {
               TabulateHfDeath( itHum->Age );
               itHum->Age = -999;
               return;
@@ -765,7 +765,7 @@ HumanPopulation::CheckSequentialInfection( int serotype, HumanCollection::iterat
 
     // human is viremic and enhancing
     _dailySequentialInfections[Maternal][serotype] += (1 * msi->Probability_);
-    if( msi->Probability_ * msi->Mortality_ > _dsp->RND("CalcSeqInfs") ) {
+    if( msi->Probability_ * msi->Mortality_ > _dsp->RND() ) {
       // individual dies
       TabulateHfDeath( itHum->Age );
       itHum->Age = -999;
@@ -909,7 +909,7 @@ HumanPopulation::InitializePopulation(void)
     // for all individual in this age class
     for( int j = 1; j <= ageClassCount; ++j ) {
       // ... select a random age in [minAge, maxAge]
-      int age = _dsp->INT( (maxAge - minAge + 1) * _dsp->RND("InitAgeClasses") + minAge);
+      int age = _dsp->INT( (maxAge - minAge + 1) * _dsp->RND() + minAge);
 
       // create individual and insert into population
       Human human(age);
@@ -957,7 +957,7 @@ Human &
 HumanPopulation::SelectHuman(void)
 {
   // select human out of entire population
-  int index = _dsp->INT( (_populationSize - 1) * _dsp->RND("SelectHuman") );
+  int index = _dsp->INT( (_populationSize - 1) * _dsp->RND() );
 
   // find age class where index maps into
   for( int i = 1; i <= 18; ++i ) {
@@ -981,7 +981,7 @@ HumanPopulation::SelectHumanByAgeClass( int ageClass )
   // number of humans available for selection in this age class
   int numHumans = _ageDistribution[ageClass];
 
-  double rndNum = _dsp->RND("InitSeroprevalence");
+  double rndNum = _dsp->RND();
 
   // indices in vector run from 0 to numHumans - 1
   // to select a number between [min,max], we multiply [0,1] by

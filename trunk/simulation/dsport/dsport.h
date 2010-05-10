@@ -38,34 +38,22 @@ public:
 
 // Methods
 public:
-  void InitializeDiskLogs(void);
-
   void Start(void);
   void Start( boost::gregorian::date startDate, boost::gregorian::date stopDate );
+  void RunSimulation(void);
+  output::DensimOutput * GetDensimOutput(void);
 
-  void denmain(void);
-
-  static int CINT( double value );
-  static int INT( double value );
-  double RND( std::string callingMethod );
-  double Factorial( int n );
-
-  void CalculateEipFactors(void);
-
-  void InitInfectives(void);
+// Simulation methods
+private:
+  void IntroduceInfectives(void);
   double EIPEnzKin( double temp );
   
   void MosquitoLifeCycle(void);
-
-  void NewMosquitoLifeCycle(void);
-  double CalculateDoubleBloodMealProportion( double weight );
   void AdvanceSusceptibleNulliparous(void);
   void AdvanceSusceptibleParous(void);
   void AdvanceInfectedNulliparous(void);
   void AdvanceInfectedParous(void);
   void AdvanceInfectives(void);
-
-  double GetSusceptibleOvipositingAverageWeight(void);
 
   void HumanToMosquitoTransmission(void);
   void InoculateMosquitoes( int serotype );
@@ -77,10 +65,20 @@ public:
 
   void SaveDailyOutput(void);
 
-  output::DensimOutput * GetDensimOutput(void);
+// Helper methods
+public:
+  static int CINT( double value );
+  static int INT( double value );
+  double RND(void);
+  double Factorial( int n );
 
-// Helpers
 private:
+  void InitializeDiskLogs(void);
+
+  void CalculateEipFactors(void);
+  double CalculateDoubleBloodMealProportion( double weight );
+
+  double GetSusceptibleOvipositingAverageWeight(void);
   double GetTotalMosquitoes( MosquitoCollection & collection );
   double GetTotalMosquitoes( std::vector<MosquitoCollection> & collections );
   AdultCohort CombineCohorts( MosquitoCollection & collection, int age, double development );
@@ -116,24 +114,8 @@ public:
   output::DailyMosData _dailyMosData;
   output::DailyMosData _yesterdayMosData;
 
-  std::vector<double> EIPFactor;
-
-  std::vector<double> NewMosqSusc;         // Susc. new mosquitoes
-  std::vector<double> NewMosqSuscCD;       // Gonotrophic development
-
-  std::vector<double> OldMosqSusc;         // Susc. old mosquitoes
-  std::vector<double> OldMosqSuscCD;       // Gonotrophic development
-
-  std::vector<std::vector<double>> NewMosqInfd;         // New Infd Mosq - 1 and gono. cycle
-  std::vector<std::vector<double>> NewMosqInfdCD;       // Gonotrophic dev.  CD>1
-  std::vector<std::vector<double>> NewMosqInfdEIP;      // Extrinsic incubation period
-
-  std::vector<std::vector<double>> OldMosqInfd;         // Old infd mosq - 2 gono. cycle
-  std::vector<std::vector<double>> OldMosqInfdCD;       // Gonotrophic dev.  CD>.58
-  std::vector<std::vector<double>> OldMosqInfdEIP;      // Extrinsic incubation period
-
-  std::vector<std::vector<double>> MosqInfv;            // Infective mosquitoes
-  std::vector<std::vector<double>> MosqInfvCD;          // Gonotrophic Development
+  std::vector<double> _eipDevelopmentRate;
+  std::vector<double> _eipAdjustmentFactor;
 
   double _minimumOvipositionTemperature;
 
@@ -145,40 +127,33 @@ public:
 
   double MosqToHumProb;            // Prob of Mosq to human transmission
 
-  // extrinsic incubation factor
-  double EipLTiter;                // low titer log
-  double EipLFactor;               // low titer factor
-  double EipHTiter;                // high titer log
-  double EipHFactor;               // high titer factor
-  std::vector<double> EIPDevRate;  // calculated EIP for the day
+
+  // extrinsic incubation period adjustment factor parameters
+  double EipLTiter;
+  double EipLFactor;
+  double EipHTiter;
+  double EipHFactor;
 
   double StochTransNum;            // numbers lower than this are proc. stochastically
 
-  double PropOnHum;                // Prop. of biters feeding on humans
-  double FdAttempts;               // Prop. of biters being interrupted
-  double PropDifHost;              // Prop. of inter. biters feeding on dif. host
-  double PropOutdoor;              // Prop. mosq. resting outdoors (space sprays)
+  // biting parameters
+  double PropOnHum;
+  double FdAttempts;
+  double PropDifHost;
 
-  double EnzKinDR;                 // 
-  double EnzKinEA;                 // Enzyme kinetics coefficients
-  double EnzKinEI;                 // 
-  double EnzKinTI;                 // 
+  // enzyme kinetics coefficients
+  double EnzKinDR;
+  double EnzKinEA;
+  double EnzKinEI;
+  double EnzKinTI;
 
-  double DBloodLWt;                // 
-  double DBloodUWt;                // Double blood meal parameters
-  double DBloodUProp;              // 
-  double DBloodLProp;              // 
+  // double blood meal parameters
+  double DBloodLWt;
+  double DBloodUWt;
+  double DBloodUProp;
+  double DBloodLProp;
 
-  double BitersTotal;                          // Total biters (susc/infd/infv)
-  double BitersNew;                            // New susceptible biters
-  double BitersOld;                            // Old susceptible biters
-  std::vector<double> BitersInfv;              // Infective biters
-  double BitesPerPerson;                       // feeds per person
-  double MosqTotal;                            // Total daily mosquitoes
-  std::vector<double> MosqInfvTotal;           // Total infective mosquitoes by type
-  int NewDlyHumInoc;                           // potential no. of new infected humans
-  std::vector<double> BitersInfdNewDB;         // Number of new double bloods from yesterday
-  std::vector<double> BitersInfdOldDB;         // Number of old double bloods from yesterday
+  int _newHumanInoculations;       // daily human inoculations resulting from infective bites
 
 
   // random number generator simulator to match PDS 7.1 libraries
@@ -224,23 +199,11 @@ public:
   // bite and mosquito totals
   double _totalBites;
   double _totalMosquitoes;
+
+  // infective mosquito count by serotype and total
+  std::vector<double> _infectiveMosquitoesBySerotype;
   double _totalInfectiveMosquitoes;
 
-
-  // verification members for densim refactor
-  std::ofstream oldLog;
-  void OutputNewMosqSusc(void);
-  void OutputOldMosqSusc(void);
-  void OutputNewMosqInfd(void);
-  void OutputOldMosqInfd(void);
-  void OutputMosqInfv(void);
-
-  std::ofstream newLog;
-  void OutputSusceptibleNulliparous(void);
-  void OutputSusceptibleParous(void);
-  void OutputInfectedNulliparous(void);
-  void OutputInfectedParous(void);
-  void OutputInfectives(void);
 };
 
 };
