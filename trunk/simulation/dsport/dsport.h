@@ -101,32 +101,39 @@ public:
   int _year;
   int _day;
 
+  // human population and demographics
   HumanPopulation * _humanPopulation;
   double HumHostDensity;
 
-  std::vector<VirusDesc> Virus;       // Virus parameters
+  // daily human inoculations resulting from infective bites
+  int _newHumanInoculations;
 
-  int MANADurat;                      // Duration of MANA in days
-  int MAEADurat;                      // Duration of MAEA in days
-  int HetImmunDurat;                  // Duration of heterologous immun. - days
+  // virus parameters
+  std::vector<VirusDesc> Virus;
 
+  // immunity parameters, in days
+  int MANADurat;
+  int MAEADurat;
+  int HetImmunDurat;
+
+  // weather and mosquito data from cimsim
+  double _minimumOvipositionTemperature;
   double _averageAirTemperature;
   output::DailyMosData _dailyMosData;
   output::DailyMosData _yesterdayMosData;
 
+  // eip rate and factors
   std::vector<double> _eipDevelopmentRate;
   std::vector<double> _eipAdjustmentFactor;
 
-  double _minimumOvipositionTemperature;
-
   // probability human to mosquito infection
-  double HumToMosLTiter;           // Low titer
-  double HumToMosLInf;             //  prob.
-  double HumToMosHTiter;           // High titer
-  double HumToMosHInf;             //  prob.
+  double HumToMosLTiter;
+  double HumToMosLInf;
+  double HumToMosHTiter;
+  double HumToMosHInf;
 
-  double MosqToHumProb;            // Prob of Mosq to human transmission
-
+  // probability mosquito to human infection
+  double MosqToHumProb;
 
   // extrinsic incubation period adjustment factor parameters
   double EipLTiter;
@@ -134,7 +141,8 @@ public:
   double EipHTiter;
   double EipHFactor;
 
-  double StochTransNum;            // numbers lower than this are proc. stochastically
+  // inoculation estimates lower than this are processed stochastically
+  double StochTransNum;
 
   // biting parameters
   double PropOnHum;
@@ -152,9 +160,6 @@ public:
   double DBloodUWt;
   double DBloodUProp;
   double DBloodLProp;
-
-  int _newHumanInoculations;       // daily human inoculations resulting from infective bites
-
 
   // random number generator simulator to match PDS 7.1 libraries
   PdsRng _pdsRng;
