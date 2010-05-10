@@ -1,5 +1,5 @@
-#ifndef SIM_DSPORT_MOSQUITOES_H
-#define SIM_DSPORT_MOSQUITOES_H
+#ifndef SIM_DS_MOSQUITOES_H
+#define SIM_DS_MOSQUITOES_H
 
 #include <list>
 #include <map>
@@ -8,7 +8,7 @@
 
 
 namespace sim {
-namespace dsport {
+namespace ds {
 
 class AdultCohort
 {

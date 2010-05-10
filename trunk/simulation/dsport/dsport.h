@@ -1,5 +1,5 @@
-#ifndef DSPORT_H
-#define DSPORT_H
+#ifndef SIM_DS_LOCATION_H
+#define SIM_DS_LOCATION_H
 
 #include <deque>
 #include <fstream>
@@ -22,7 +22,7 @@
 
 
 namespace sim {
-namespace dsport {
+namespace ds {
 
 class Location;
 class HumanPopulation;

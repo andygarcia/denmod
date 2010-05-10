@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Mosquitoes.h"
 
-using namespace sim::dsport;
+using namespace sim::ds;
 
 
 AdultCohort::AdultCohort(void)

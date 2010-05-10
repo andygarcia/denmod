@@ -32,7 +32,7 @@ public:
     int NumHumans;                                      // number of humans
     double SerPos[23+1][4+1];                           // percent of indiv. in age class that are seropositive
     double NewHumCases[4+1];                            // number of new human cases/day/serotype
-    sim::dsport::SequentialInfectionValues SeqInfVals;      // daily sequential value statistics
+    sim::ds::SequentialInfectionValues SeqInfVals;      // daily sequential value statistics
   };
 
 

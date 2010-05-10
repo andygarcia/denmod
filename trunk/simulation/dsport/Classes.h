@@ -1,11 +1,11 @@
-#ifndef SIMULATION_DENSIMCLASSES_H
-#define SIMULATION_DENSIMCLASSES_H
+#ifndef SIM_DS_CLASSES_H
+#define SIM_DS_CLASSES_H
 
 #include "stdafx.h"
 
 
 namespace sim {
-namespace dsport {
+namespace ds {
 
 
 

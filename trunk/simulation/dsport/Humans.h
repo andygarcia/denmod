@@ -1,5 +1,5 @@
-#ifndef SIM_DSPORT_HUMANS_H
-#define SIM_DSPORT_HUMANS_H
+#ifndef SIM_DS_HUMANS_H
+#define SIM_DS_HUMANS_H
 
 #include <algorithm>
 #include <deque>
@@ -12,7 +12,7 @@
 
 
 namespace sim {
-namespace dsport {
+namespace ds {
 
 class dsport;
 class MAEAInfectionParms;
