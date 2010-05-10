@@ -1,5 +1,5 @@
-#ifndef DSPORT_H
-#define DSPORT_H
+#ifndef SIM_DS_LOCATION_H
+#define SIM_DS_LOCATION_H
 
 #include <deque>
 #include <fstream>
@@ -22,7 +22,7 @@
 
 
 namespace sim {
-namespace dsport {
+namespace ds {
 
 class Location;
 class HumanPopulation;
@@ -38,40 +38,52 @@ public:
 
 // Methods
 public:
-  void InitializeDiskLogs(void);
-
   void Start(void);
   void Start( boost::gregorian::date startDate, boost::gregorian::date stopDate );
+  void RunSimulation(void);
+  output::DensimOutput * GetDensimOutput(void);
 
-
-  void denmain(void);
-
-  static int CINT( double value );
-  static int INT( double value );
-  double RND( std::string callingMethod );
-  double Factorial( int n );
-
-  void CalculateEipFactors(void);
-
-  void InitInfectives(void);
+// Simulation methods
+private:
+  void IntroduceInfectives(void);
   double EIPEnzKin( double temp );
   
   void MosquitoLifeCycle(void);
-
-  void NewMosquitoLifeCycle(void);
   void AdvanceSusceptibleNulliparous(void);
   void AdvanceSusceptibleParous(void);
+  void AdvanceInfectedNulliparous(void);
+  void AdvanceInfectedParous(void);
+  void AdvanceInfectives(void);
 
   void HumanToMosquitoTransmission(void);
   void InoculateMosquitoes( int serotype );
+  void InfectParous( int numParousInfections, int iSerotype );
+  void InfectNulliparous( int numNulliparousInfections, int iSerotype );
 
   void MosquitoToHumanTransmission(void);
-  void InoculateHumans( int serotype );
-  
+  int InoculateHumans( int serotype );
+
   void SaveDailyOutput(void);
 
-  output::DensimOutput * GetDensimOutput(void);
+// Helper methods
+public:
+  static int CINT( double value );
+  static int INT( double value );
+  double RND(void);
+  double Factorial( int n );
 
+private:
+  void InitializeDiskLogs(void);
+
+  void CalculateEipFactors(void);
+  double CalculateDoubleBloodMealProportion( double weight );
+
+  double GetSusceptibleOvipositingAverageWeight(void);
+  double GetTotalMosquitoes( MosquitoCollection & collection );
+  double GetTotalMosquitoes( std::vector<MosquitoCollection> & collections );
+  AdultCohort CombineCohorts( MosquitoCollection & collection, int age, double development );
+
+// Members
 public:
   const input::Location * _location;
   output::MosData * _mosData;
@@ -86,139 +98,118 @@ public:
   boost::gregorian::date _stopDate;
   boost::gregorian::date _currentDate;
 
+  int _year;
+  int _day;
+
+  // human population and demographics
   HumanPopulation * _humanPopulation;
   double HumHostDensity;
 
-  std::vector<VirusDesc> Virus;       // Virus parameters
+  // daily human inoculations resulting from infective bites
+  int _humanInoculations;
+  std::vector<int> _humanInoculationsBySerotype;
 
-  int MANADurat;                      // Duration of MANA in days
-  int MAEADurat;                      // Duration of MAEA in days
-  int HetImmunDurat;                  // Duration of heterologous immun. - days
+  // virus parameters
+  std::vector<VirusDesc> Virus;
 
+  // immunity parameters, in days
+  int MANADurat;
+  int MAEADurat;
+  int HetImmunDurat;
+
+  // weather and mosquito data from cimsim
+  double _minimumOvipositionTemperature;
   double _averageAirTemperature;
   output::DailyMosData _dailyMosData;
   output::DailyMosData _yesterdayMosData;
 
-  std::vector<double> EIPFactor;
-
-  std::vector<double> NewMosqSusc;         // Susc. new mosquitoes
-  std::vector<double> NewMosqSuscCD;       // Gonotrophic development
-
-  std::vector<double> OldMosqSusc;         // Susc. old mosquitoes
-  std::vector<double> OldMosqSuscCD;       // Gonotrophic development
-
-  std::vector<std::vector<double>> NewMosqInfd;         // New Infd Mosq - 1 and gono. cycle
-  std::vector<std::vector<double>> NewMosqInfdCD;       // Gonotrophic dev.  CD>1
-  std::vector<std::vector<double>> NewMosqInfdEIP;      // Extrinsic incubation period
-
-  std::vector<std::vector<double>> OldMosqInfd;         // Old infd mosq - 2 gono. cycle
-  std::vector<std::vector<double>> OldMosqInfdCD;       // Gonotrophic dev.  CD>.58
-  std::vector<std::vector<double>> OldMosqInfdEIP;      // Extrinsic incubation period
-
-  std::vector<std::vector<double>> MosqInfv;            // Infective mosquitoes
-  std::vector<std::vector<double>> MosqInfvCD;          // Gonotrophic Development
+  // eip rate and factors
+  std::vector<double> _eipDevelopmentRate;
+  std::vector<double> _eipAdjustmentFactor;
 
   // probability human to mosquito infection
-  double HumToMosLTiter;           // Low titer
-  double HumToMosLInf;             //  prob.
-  double HumToMosHTiter;           // High titer
-  double HumToMosHInf;             //  prob.
+  double HumToMosLTiter;
+  double HumToMosLInf;
+  double HumToMosHTiter;
+  double HumToMosHInf;
 
-  double MosqToHumProb;            // Prob of Mosq to human transmission
+  // probability mosquito to human infection
+  double MosqToHumProb;
 
-  // extrinsic incubation factor
-  double EipLTiter;                // low titer log
-  double EipLFactor;               // low titer factor
-  double EipHTiter;                // high titer log
-  double EipHFactor;               // high titer factor
-  std::vector<double> EIPDevRate;  // calculated EIP for the day
+  // extrinsic incubation period adjustment factor parameters
+  double EipLTiter;
+  double EipLFactor;
+  double EipHTiter;
+  double EipHFactor;
 
-  double StochTransNum;            // numbers lower than this are proc. stochastically
+  // inoculation estimates lower than this are processed stochastically
+  double StochTransNum;
 
-  double PropOnHum;                // Prop. of biters feeding on humans
-  double FdAttempts;               // Prop. of biters being interrupted
-  double PropDifHost;              // Prop. of inter. biters feeding on dif. host
-  double PropOutdoor;              // Prop. mosq. resting outdoors (space sprays)
+  // biting parameters
+  double PropOnHum;
+  double FdAttempts;
+  double PropDifHost;
 
-  double EnzKinDR;                 // 
-  double EnzKinEA;                 // Enzyme kinetics coefficients
-  double EnzKinEI;                 // 
-  double EnzKinTI;                 // 
+  // enzyme kinetics coefficients
+  double EnzKinDR;
+  double EnzKinEA;
+  double EnzKinEI;
+  double EnzKinTI;
 
-  double DBloodLWt;                // 
-  double DBloodUWt;                // Double blood meal parameters
-  double DBloodUProp;              // 
-  double DBloodLProp;              // 
-
-  double BitersTotal;                          // Total biters (susc/infd/infv)
-  double BitersNew;                            // New susceptible biters
-  double BitersOld;                            // Old susceptible biters
-  std::vector<double> BitersInfv;              // Infective biters
-  double BitesPerPerson;                       // feeds per person
-  double MosqTotal;                            // Total daily mosquitoes
-  std::vector<double> MosqInfvTotal;           // Total infective mosquitoes by type
-  int NewDlyHumInoc;                           // potential no. of new infected humans
-  std::vector<double> BitersInfdNewDB;         // Number of new double bloods from yesterday
-  std::vector<double> BitersInfdOldDB;         // Number of old double bloods from yesterday
-
+  // double blood meal parameters
+  double DBloodLWt;
+  double DBloodUWt;
+  double DBloodUProp;
+  double DBloodLProp;
 
   // random number generator simulator to match PDS 7.1 libraries
   PdsRng _pdsRng;
 
-  // biology
-  double _minimumOvipositionTemperature;
 
-  // MosquitoCollection is a primary collection of mosquitoes while
-
-  // susceptible nulliparous cohorts
+  // susceptible cohorts
   MosquitoCollection _susceptibleNulliparous;
   double _susceptibleNulliparousBites;
-  MosquitoReferenceCollection _susceptibleNulliparousFirstBiters
+  MosquitoReferenceCollection _susceptibleNulliparousBiters;
   MosquitoReferenceCollection _susceptibleNulliparousDoubleBiters;
 
-  // susceptible parous cohorts
   MosquitoCollection _susceptibleParous;
   double _susceptibleParousBites;
-  MosquitoReferenceCollection _susceptibleParousFirstBiters
+  MosquitoReferenceCollection _susceptibleParousBiters;
   MosquitoReferenceCollection _susceptibleParousDoubleBiters;
 
-  // susceptible nulliparous and parous ovipositing cohorts
   MosquitoCollection _susceptibleOvipositing;
-  double GetSusceptibleOvipositingAverageWeight(void);
+
 
   // infected cohorts
+  double _bitesPerPerson;
   std::vector<MosquitoCollection> _infectedNulliparous;
   std::vector<MosquitoCollection> _infectedParous;
+  std::vector<double> _infectedBites;
+  std::vector<double> _infectedNulliparousBites;
+  std::vector<double> _infectedNulliparousDoubleBites;
+  std::vector<double> _infectedParousBites;
+  std::vector<double> _infectedParousDoubleBites;
 
-  // infectious cohorts
-  std::vector<MosquitoCollection> _infectious;
-
-  // mosquito collection methods
-  double GetMosquitoCollectionCount( MosquitoCollection & collection );
-
-  double GetNulliparousBiters( MosquitoCollection & collection );
-  double GetParousBiters( MosquitoCollection & collection );
-
-  // double blood meals
-  double CalculateDoubleBloodMealProportion( double weight );
-
-  double _bitesPerPerson;
+  std::vector<MosquitoCollection> _newlyInfectiveNulliparous;
+  std::vector<MosquitoCollection> _newlyInfectiveParous;
 
 
+  // infective cohorts
+  std::vector<MosquitoCollection> _infectives;
+  std::vector<MosquitoCollection> _infectiveOvipositing;
+  std::vector<double> _infectiveBites;
+  std::vector<MosquitoCollection> _infectiveBiters;
+  std::vector<MosquitoCollection> _infectiveDoubleBiters;
 
+  
+  // bite and mosquito totals
+  double _totalBites;
+  double _totalMosquitoes;
 
+  // infective mosquito count by serotype and total
+  std::vector<double> _infectiveMosquitoesBySerotype;
+  double _totalInfectiveMosquitoes;
 
-
-  // verification members for densim refactor
-  void OutputNewMosq(void);
-  std::ofstream NewMosqLog;
-  void OutputOldMosq(void);
-  std::ofstream OldMosqLog;
-
-  void OutputSusceptibleNulliparous(void);
-  void OutputSusceptibleParous(void);
-  std::ofstream _susceptibleNulliparousLog;
-  std::ofstream _susceptibleParousLog;
 };
 
 };

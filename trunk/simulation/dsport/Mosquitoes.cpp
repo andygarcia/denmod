@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Mosquitoes.h"
 
-using namespace sim::dsport;
+using namespace sim::ds;
 
 
 AdultCohort::AdultCohort(void)
@@ -49,3 +49,32 @@ AdultCohort::AdultCohort( sim::cs::AdultCohort & ac )
 
 AdultCohort::~AdultCohort(void)
 {}
+
+
+
+bool
+AdultCohort::operator==( const AdultCohort & rhs )
+{
+  if( this == &rhs ) {
+    // simple case where comparing same object
+    return true;
+  }
+
+  if( this->Age == rhs.Age && 
+      this->Number == rhs.Number &&
+      this->Development == rhs.Development &&
+      this->Weight == rhs.Weight &&
+      this->SeekingBloodMeal == rhs.SeekingBloodMeal &&
+      this->SeekingDoubleBloodMeal == rhs.SeekingDoubleBloodMeal &&
+      this->Ovipositing == rhs.Ovipositing &&
+      this->DaysSinceOviposition == rhs.DaysSinceOviposition &&
+      this->Infected == rhs.Infected &&
+      this->Serotype == rhs.Serotype &&
+      this->Eip == rhs.Eip )
+  {
+    // all members are equal, consider objects equal
+    return true;
+  }
+
+  return false;
+}

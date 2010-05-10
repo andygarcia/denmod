@@ -1,5 +1,5 @@
-#ifndef SIM_DSPORT_MOSQUITOES_H
-#define SIM_DSPORT_MOSQUITOES_H
+#ifndef SIM_DS_MOSQUITOES_H
+#define SIM_DS_MOSQUITOES_H
 
 #include <list>
 #include <map>
@@ -8,7 +8,7 @@
 
 
 namespace sim {
-namespace dsport {
+namespace ds {
 
 class AdultCohort
 {
@@ -19,10 +19,16 @@ public:
   ~AdultCohort(void);
 
 public:
+  bool AdultCohort::operator==( const AdultCohort & rhs );
+
+public:
   int Age;
   double Number;
   double Development;
   double Weight;
+
+  bool SeekingBloodMeal;
+  bool SeekingDoubleBloodMeal;
 
   bool Ovipositing;
   int DaysSinceOviposition;
@@ -35,6 +41,7 @@ public:
 typedef std::list<AdultCohort> MosquitoCollection;
 typedef std::list<AdultCohort*> MosquitoReferenceCollection;
 typedef MosquitoCollection::iterator MosquitoIterator;
+typedef MosquitoReferenceCollection::iterator MosquitoReferenceIterator;
 
 };
 };

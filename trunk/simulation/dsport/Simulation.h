@@ -1,5 +1,5 @@
-#ifndef DSPORT_SIMULATION_H
-#define DSPORT_SIMULATION_H
+#ifndef SIM_DS_SIMULATION_H
+#define SIM_DS_SIMULATION_H
 
 #include "../input/Location.h"
 #include "../output/DensimOutput.h"
@@ -8,7 +8,7 @@
 
 
 namespace sim {
-namespace dsport {
+namespace ds {
   
 class Simulation
 {

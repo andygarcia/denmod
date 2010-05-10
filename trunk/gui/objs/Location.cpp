@@ -491,7 +491,7 @@ Location::RunDensim( DateTime startDate, DateTime stopDate )
   boost::gregorian::date bStopDate = boost::gregorian::date( stopYear, 12, 31 );
 
   // create and run simulation
-  sim::dsport::Simulation * dsp = new sim::dsport::Simulation( loc, MosData_, _userSettings->DoSimulationDiskOutput );
+  sim::ds::Simulation * dsp = new sim::ds::Simulation( loc, MosData_, _userSettings->DoSimulationDiskOutput );
   dsp->Start( bStartDate, bStopDate );
   _isDensimCompleted = true;
 
