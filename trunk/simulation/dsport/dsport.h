@@ -10,6 +10,7 @@
 #include <vector>
 #include "Classes.h"
 #include "PdsRng.h"
+#include "Mosquitoes.h"
 #include "../input/Location.h"
 #include "../cimsim/Cohorts.h"
 #include "../output/MosData.h"
@@ -17,9 +18,6 @@
 #include "../output/Log.h"
 
 #define EMULATE_PDS_RAND true
-
-using sim::cs::PreOviAdultCohortCollection;
-using sim::cs::OviAdultCohortCollection;
 
 
 
@@ -45,32 +43,49 @@ public:
   void Start(void);
   void Start( boost::gregorian::date startDate, boost::gregorian::date stopDate );
 
-
   void denmain(void);
 
-  static int CINT( float value );
-  static int INT( float value );
-  float RND( std::string callingMethod );
-  float Factorial( int n );
+  static int CINT( double value );
+  static int INT( double value );
+  double RND( std::string callingMethod );
+  double Factorial( int n );
 
   void CalculateEipFactors(void);
 
   void InitInfectives(void);
-  float EIPEnzKin( float temp );
+  double EIPEnzKin( double temp );
   
   void MosquitoLifeCycle(void);
+
   void NewMosquitoLifeCycle(void);
+  double CalculateDoubleBloodMealProportion( double weight );
+  void AdvanceSusceptibleNulliparous(void);
+  void AdvanceSusceptibleParous(void);
+  void AdvanceInfectedNulliparous(void);
+  void AdvanceInfectedParous(void);
+  void AdvanceInfectives(void);
+
+  double GetSusceptibleOvipositingAverageWeight(void);
 
   void HumanToMosquitoTransmission(void);
   void InoculateMosquitoes( int serotype );
+  void InfectParous( int numParousInfections, int iSerotype );
+  void InfectNulliparous( int numNulliparousInfections, int iSerotype );
 
   void MosquitoToHumanTransmission(void);
   void InoculateHumans( int serotype );
-  
+
   void SaveDailyOutput(void);
 
   output::DensimOutput * GetDensimOutput(void);
 
+// Helpers
+private:
+  double GetTotalMosquitoes( MosquitoCollection & collection );
+  double GetTotalMosquitoes( std::vector<MosquitoCollection> & collections );
+  AdultCohort CombineCohorts( MosquitoCollection & collection, int age, double development );
+
+// Members
 public:
   const input::Location * _location;
   output::MosData * _mosData;
@@ -79,14 +94,17 @@ public:
   bool _doDiskOutput;
   output::Log * _locationLog;
 
-  const float GasCoef;
+  const double GasCoef;
 
   boost::gregorian::date _startDate;
   boost::gregorian::date _stopDate;
   boost::gregorian::date _currentDate;
 
+  int _year;
+  int _day;
+
   HumanPopulation * _humanPopulation;
-  float HumHostDensity;
+  double HumHostDensity;
 
   std::vector<VirusDesc> Virus;       // Virus parameters
 
@@ -94,81 +112,135 @@ public:
   int MAEADurat;                      // Duration of MAEA in days
   int HetImmunDurat;                  // Duration of heterologous immun. - days
 
-  float _averageAirTemperature;
+  double _averageAirTemperature;
   output::DailyMosData _dailyMosData;
   output::DailyMosData _yesterdayMosData;
 
-  std::vector<float> EIPFactor;
+  std::vector<double> EIPFactor;
 
-  std::vector<float> NewMosqSusc;         // Susc. new mosquitoes
-  std::vector<float> NewMosqSuscCD;       // Gonotrophic development
+  std::vector<double> NewMosqSusc;         // Susc. new mosquitoes
+  std::vector<double> NewMosqSuscCD;       // Gonotrophic development
 
-  std::vector<float> OldMosqSusc;         // Susc. old mosquitoes
-  std::vector<float> OldMosqSuscCD;       // Gonotrophic development
+  std::vector<double> OldMosqSusc;         // Susc. old mosquitoes
+  std::vector<double> OldMosqSuscCD;       // Gonotrophic development
 
-  std::vector<std::vector<float>> NewMosqInfd;         // New Infd Mosq - 1 and gono. cycle
-  std::vector<std::vector<float>> NewMosqInfdCD;       // Gonotrophic dev.  CD>1
-  std::vector<std::vector<float>> NewMosqInfdEIP;      // Extrinsic incubation period
+  std::vector<std::vector<double>> NewMosqInfd;         // New Infd Mosq - 1 and gono. cycle
+  std::vector<std::vector<double>> NewMosqInfdCD;       // Gonotrophic dev.  CD>1
+  std::vector<std::vector<double>> NewMosqInfdEIP;      // Extrinsic incubation period
 
-  std::vector<std::vector<float>> OldMosqInfd;         // Old infd mosq - 2 gono. cycle
-  std::vector<std::vector<float>> OldMosqInfdCD;       // Gonotrophic dev.  CD>.58
-  std::vector<std::vector<float>> OldMosqInfdEIP;      // Extrinsic incubation period
+  std::vector<std::vector<double>> OldMosqInfd;         // Old infd mosq - 2 gono. cycle
+  std::vector<std::vector<double>> OldMosqInfdCD;       // Gonotrophic dev.  CD>.58
+  std::vector<std::vector<double>> OldMosqInfdEIP;      // Extrinsic incubation period
 
-  std::vector<std::vector<float>> MosqInfv;            // Infective mosquitoes
-  std::vector<std::vector<float>> MosqInfvCD;          // Gonotrophic Development
+  std::vector<std::vector<double>> MosqInfv;            // Infective mosquitoes
+  std::vector<std::vector<double>> MosqInfvCD;          // Gonotrophic Development
+
+  double _minimumOvipositionTemperature;
 
   // probability human to mosquito infection
-  float HumToMosLTiter;           // Low titer
-  float HumToMosLInf;             //  prob.
-  float HumToMosHTiter;           // High titer
-  float HumToMosHInf;             //  prob.
+  double HumToMosLTiter;           // Low titer
+  double HumToMosLInf;             //  prob.
+  double HumToMosHTiter;           // High titer
+  double HumToMosHInf;             //  prob.
 
-  float MosqToHumProb;            // Prob of Mosq to human transmission
+  double MosqToHumProb;            // Prob of Mosq to human transmission
 
   // extrinsic incubation factor
-  float EipLTiter;                // low titer log
-  float EipLFactor;               // low titer factor
-  float EipHTiter;                // high titer log
-  float EipHFactor;               // high titer factor
-  std::vector<float> EIPDevRate;  // calculated EIP for the day
+  double EipLTiter;                // low titer log
+  double EipLFactor;               // low titer factor
+  double EipHTiter;                // high titer log
+  double EipHFactor;               // high titer factor
+  std::vector<double> EIPDevRate;  // calculated EIP for the day
 
-  float StochTransNum;            // numbers lower than this are proc. stochastically
+  double StochTransNum;            // numbers lower than this are proc. stochastically
 
-  float PropOnHum;                // Prop. of biters feeding on humans
-  float FdAttempts;               // Prop. of biters being interrupted
-  float PropDifHost;              // Prop. of inter. biters feeding on dif. host
-  float PropOutdoor;              // Prop. mosq. resting outdoors (space sprays)
+  double PropOnHum;                // Prop. of biters feeding on humans
+  double FdAttempts;               // Prop. of biters being interrupted
+  double PropDifHost;              // Prop. of inter. biters feeding on dif. host
+  double PropOutdoor;              // Prop. mosq. resting outdoors (space sprays)
 
-  float EnzKinDR;                 // 
-  float EnzKinEA;                 // Enzyme kinetics coefficients
-  float EnzKinEI;                 // 
-  float EnzKinTI;                 // 
+  double EnzKinDR;                 // 
+  double EnzKinEA;                 // Enzyme kinetics coefficients
+  double EnzKinEI;                 // 
+  double EnzKinTI;                 // 
 
-  float DBloodLWt;                // 
-  float DBloodUWt;                // Double blood meal parameters
-  float DBloodUProp;              // 
-  float DBloodLProp;              // 
+  double DBloodLWt;                // 
+  double DBloodUWt;                // Double blood meal parameters
+  double DBloodUProp;              // 
+  double DBloodLProp;              // 
 
-  float BitersTotal;                          // Total biters (susc/infd/infv)
-  float BitersNew;                            // New susceptible biters
-  float BitersOld;                            // Old susceptible biters
-  std::vector<float> BitersInfv;              // Infective biters
-  float BitesPerPerson;                             // feeds per person
-  float MosqTotal;                            // Total daily mosquitoes
-  std::vector<float> MosqInfvTotal;           // Total infective mosquitoes by type
-  int NewDlyHumInoc;                          // potential no. of new infected humans
-  std::vector<float> BitersInfdNewDB;         // Number of new double bloods from yesterday
-  std::vector<float> BitersInfdOldDB;         // Number of old double bloods from yesterday
+  double BitersTotal;                          // Total biters (susc/infd/infv)
+  double BitersNew;                            // New susceptible biters
+  double BitersOld;                            // Old susceptible biters
+  std::vector<double> BitersInfv;              // Infective biters
+  double BitesPerPerson;                       // feeds per person
+  double MosqTotal;                            // Total daily mosquitoes
+  std::vector<double> MosqInfvTotal;           // Total infective mosquitoes by type
+  int NewDlyHumInoc;                           // potential no. of new infected humans
+  std::vector<double> BitersInfdNewDB;         // Number of new double bloods from yesterday
+  std::vector<double> BitersInfdOldDB;         // Number of old double bloods from yesterday
 
+
+  // random number generator simulator to match PDS 7.1 libraries
   PdsRng _pdsRng;
 
-  float _minimumOvipositionTemperature;       // minimum air temperature allowing oviposition
 
-  // new cohort code
-  PreOviAdultCohortCollection _susceptibleNulliparousAdults;
-  OviAdultCohortCollection _susceptibleParousAdults;
+  // susceptible cohorts
+  MosquitoCollection _susceptibleNulliparous;
+  double _susceptibleNulliparousBites;
+  MosquitoReferenceCollection _susceptibleNulliparousBiters;
+  MosquitoReferenceCollection _susceptibleNulliparousDoubleBiters;
+
+  MosquitoCollection _susceptibleParous;
+  double _susceptibleParousBites;
+  MosquitoReferenceCollection _susceptibleParousBiters;
+  MosquitoReferenceCollection _susceptibleParousDoubleBiters;
+
+  MosquitoCollection _susceptibleOvipositing;
 
 
+  // infected cohorts
+  double _bitesPerPerson;
+  std::vector<MosquitoCollection> _infectedNulliparous;
+  std::vector<MosquitoCollection> _infectedParous;
+  std::vector<double> _infectedBites;
+  std::vector<double> _infectedNulliparousBites;
+  std::vector<double> _infectedNulliparousDoubleBites;
+  std::vector<double> _infectedParousBites;
+  std::vector<double> _infectedParousDoubleBites;
+
+  std::vector<MosquitoCollection> _newlyInfectiveNulliparous;
+  std::vector<MosquitoCollection> _newlyInfectiveParous;
+
+
+  // infective cohorts
+  std::vector<MosquitoCollection> _infectives;
+  std::vector<MosquitoCollection> _infectiveOvipositing;
+  std::vector<double> _infectiveBites;
+  std::vector<MosquitoCollection> _infectiveBiters;
+  std::vector<MosquitoCollection> _infectiveDoubleBiters;
+
+  
+  // bite and mosquito totals
+  double _totalBites;
+  double _totalMosquitoes;
+  double _totalInfectiveMosquitoes;
+
+
+  // verification members for densim refactor
+  std::ofstream oldLog;
+  void OutputNewMosqSusc(void);
+  void OutputOldMosqSusc(void);
+  void OutputNewMosqInfd(void);
+  void OutputOldMosqInfd(void);
+  void OutputMosqInfv(void);
+
+  std::ofstream newLog;
+  void OutputSusceptibleNulliparous(void);
+  void OutputSusceptibleParous(void);
+  void OutputInfectedNulliparous(void);
+  void OutputInfectedParous(void);
+  void OutputInfectives(void);
 };
 
 };

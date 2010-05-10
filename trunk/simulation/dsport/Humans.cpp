@@ -61,11 +61,11 @@ HumanPopulation::HumanPopulation( dsport * dsp, const input::Location * location
   _humans(HumansByClass(18+1,HumanCollection())),
   _ageDistribution(std::vector<int>(18+1,0)),
   _initialAgeDistribution(std::vector<int>(18+1,0)),
-  _cumulativeDeaths(std::vector<float>(18+1, 0)),
-  _cumulativeBirths(std::vector<float>(18+1, 0)),
+  _cumulativeDeaths(std::vector<double>(18+1, 0)),
+  _cumulativeBirths(std::vector<double>(18+1, 0)),
   _totalDeaths(std::vector<int>(18+1, 0)),
   _totalBirths(std::vector<int>(18+1, 0)),
-  _initialSeroprevalence(std::vector<std::vector<float>>(18+1,std::vector<float>(4+1))),
+  _initialSeroprevalence(std::vector<std::vector<double>>(18+1,std::vector<double>(4+1))),
   _classSpecificSeroprevalence(ClassSpecificSeroprevalence()),
   _seroDistribution(std::vector<std::vector<int>>(18+1,std::vector<int>(4+1))),
   _initialSeroDistribution(std::vector<std::vector<int>>(18+1,std::vector<int>(4+1))),
@@ -79,7 +79,7 @@ HumanPopulation::HumanPopulation( dsport * dsp, const input::Location * location
   _totalInfective(std::vector<int>(4+1, 0)),
   _totalHomologousImmunity(std::vector<int>(4+1, 0)),
   _totalHeterologousImmunity(std::vector<int>(4+1, 0)),
-  _cumulativeHfDeaths(std::vector<float>(15+1, 0)),
+  _cumulativeHfDeaths(std::vector<double>(15+1, 0)),
   _dsp(dsp)
 {
   // demographics
@@ -165,13 +165,13 @@ HumanPopulation::GetInitialAgeDistribution(void)
 
 
 
-std::vector<float>
+std::vector<double>
 HumanPopulation::GetInitialAgeProportions(void)
 {
-  std::vector<float> initAgeProportions = std::vector<float>( 18+1, 0 );
+  std::vector<double> initAgeProportions = std::vector<double>( 18+1, 0 );
   for( int i = 1; i <= 18; ++i ) {
     if( _initialAgeDistribution[i] != 0 ) {
-      initAgeProportions[i] = _initialAgeDistribution[i] / static_cast<float>( _initialPopulationSize );
+      initAgeProportions[i] = _initialAgeDistribution[i] / static_cast<double>( _initialPopulationSize );
     }
     else {
       initAgeProportions[i] = 0;
@@ -191,13 +191,13 @@ HumanPopulation::GetAgeDistribution(void)
 
 
 
-std::vector<float>
+std::vector<double>
 HumanPopulation::GetAgeProportions(void)
 {
-  std::vector<float> ageProportions = std::vector<float>( 18+1, 0 );
+  std::vector<double> ageProportions = std::vector<double>( 18+1, 0 );
   for( int i = 1; i <= 18; ++i ) {
     if( _ageDistribution[i] != 0 ) {
-      ageProportions[i] = _ageDistribution[i] / static_cast<float>( _populationSize );
+      ageProportions[i] = _ageDistribution[i] / static_cast<double>( _populationSize );
     }
     else {
       ageProportions[i] = 0;
@@ -217,16 +217,16 @@ HumanPopulation::GetBirthsByClass(void)
 
 
 
-std::vector<float>
+std::vector<double>
 HumanPopulation::GetBirthPercentagesByClass(void)
 {
   // first calculate total births
   int totalBirths = std::accumulate( ++_totalBirths.begin(), _totalBirths.end(), 0 );
 
-  std::vector<float> birthPercentages = std::vector<float>( 18+1, 0 );
+  std::vector<double> birthPercentages = std::vector<double>( 18+1, 0 );
   for( int i = 1; i <= 18; ++i ) {
     if( _totalBirths[i] != 0 ) {
-      birthPercentages[i] = static_cast<float>( _totalBirths[i] ) / static_cast<float>( totalBirths ) * 100;
+      birthPercentages[i] = static_cast<double>( _totalBirths[i] ) / static_cast<double>( totalBirths ) * 100;
     }
     else {
       birthPercentages[i] = 0;
@@ -247,17 +247,17 @@ HumanPopulation::GetDeathsByClass(void)
 
 
 
-std::vector<float>
+std::vector<double>
 HumanPopulation::GetDeathPercentagesByClass(void)
 {
   // first calculate total deaths
   int totalDeaths = std::accumulate( ++_totalDeaths.begin(), _totalDeaths.end(), 0 );
 
   // calculate each class's proportion out of total deaths
-  std::vector<float> deathPercentages = std::vector<float>( 18+1, 0 );
+  std::vector<double> deathPercentages = std::vector<double>( 18+1, 0 );
   for( int i = 1; i <= 18; ++i ) {
     if( _totalDeaths[i] != 0 ) {
-      deathPercentages[i] = static_cast<float>( _totalDeaths[i] ) / static_cast<float>( totalDeaths ) * 100;
+      deathPercentages[i] = static_cast<double>( _totalDeaths[i] ) / static_cast<double>( totalDeaths ) * 100;
     }
     else {
       deathPercentages[i] = 0;
@@ -292,10 +292,10 @@ HumanPopulation::GetClassSpecificSeroprevalence(void)
   _classSpecificSeroprevalence.clear();
 
   for( int i = 1; i <= 23; ++i ) {
-    _classSpecificSeroprevalence[i] = std::map<int, float>();
+    _classSpecificSeroprevalence[i] = std::map<int, double>();
   }
 
-  std::map<int,float> allAges;
+  std::map<int,double> allAges;
 
   for( int i = 1; i <= 4; ++i ) {
     if( _ageDistribution[1] == 0 ) {
@@ -303,8 +303,8 @@ HumanPopulation::GetClassSpecificSeroprevalence(void)
       _classSpecificSeroprevalence[2][i] = 0;
     }
     else {
-      _classSpecificSeroprevalence[1][i] = (float) _maternalAntibodies[i].MANA / _ageDistribution[1] * 100;
-      _classSpecificSeroprevalence[2][i] = (float) _maternalAntibodies[i].MAEA / _ageDistribution[1] * 100;
+      _classSpecificSeroprevalence[1][i] = (double) _maternalAntibodies[i].MANA / _ageDistribution[1] * 100;
+      _classSpecificSeroprevalence[2][i] = (double) _maternalAntibodies[i].MAEA / _ageDistribution[1] * 100;
     }
   }
   for( int i = 1; i <= 18; ++i ) {
@@ -313,7 +313,7 @@ HumanPopulation::GetClassSpecificSeroprevalence(void)
         _classSpecificSeroprevalence[i + 2][j] = 0;
       }
       else {
-        _classSpecificSeroprevalence[i + 2][j] = (float) _seroDistribution[i][j] / _ageDistribution[i] * 100;
+        _classSpecificSeroprevalence[i + 2][j] = (double) _seroDistribution[i][j] / _ageDistribution[i] * 100;
       }
       allAges[j] = allAges[j] + _classSpecificSeroprevalence[i + 2][j];
     }
@@ -328,7 +328,7 @@ HumanPopulation::GetClassSpecificSeroprevalence(void)
         _classSpecificSeroprevalence[21][j] = 0;
       }
       else {
-        _classSpecificSeroprevalence[21][j] = _classSpecificSeroprevalence[21][j] + ((float) _seroDistribution[i][j] / _ageDistribution[i] * 100);
+        _classSpecificSeroprevalence[21][j] = _classSpecificSeroprevalence[21][j] + ((double) _seroDistribution[i][j] / _ageDistribution[i] * 100);
       }
     }
   }
@@ -345,7 +345,7 @@ HumanPopulation::GetClassSpecificSeroprevalence(void)
         _classSpecificSeroprevalence[22][j] = 0;
       }
       else {
-        _classSpecificSeroprevalence[22][j] = _classSpecificSeroprevalence[22][j] + ((float) _seroDistribution[i][j] / _ageDistribution[i] * 100);
+        _classSpecificSeroprevalence[22][j] = _classSpecificSeroprevalence[22][j] + ((double) _seroDistribution[i][j] / _ageDistribution[i] * 100);
       }
     }
   }
@@ -366,7 +366,7 @@ HumanPopulation::DoDailyDeaths(void)
 {
   for( int i = 18; i >= 1; --i ) {
     // calculate cumulative age class death rate
-    float DRate = (_ageClasses[i].YearlyDeathRate / 1000) * (1 / (float) YrLen);
+    double DRate = (_ageClasses[i].YearlyDeathRate / 1000) * (1 / (double) YrLen);
 
     // add deaths to previous fractional remainder
     _cumulativeDeaths[i] += (_ageDistribution[i] * DRate);
@@ -374,7 +374,7 @@ HumanPopulation::DoDailyDeaths(void)
     if( _cumulativeDeaths[i] >= 1 && _ageDistribution[i] > 0 ) {
       for( int j = 1; j <= _dsp->INT( _cumulativeDeaths[i] ); ++j ) {
         // pick radom individual within age class for death
-        float rndNum = _dsp->RND("CalcDeaths");
+        double rndNum = _dsp->RND("CalcDeaths");
         int index = _dsp->INT( _ageDistribution[i]  * rndNum);
 
         // index iterator and delete death
@@ -402,10 +402,10 @@ HumanPopulation::DoDailyBirths(void)
 {
   for( int i = 18; i >= 1; --i ) {
     // calculate cumulative age class birth rate
-    float BRate = (_ageClasses[i].YearlyBirthRate / 1000) * (1 / (float) YrLen);
+    double BRate = (_ageClasses[i].YearlyBirthRate / 1000) * (1 / (double) YrLen);
 
     // only females contribute to birth
-    _cumulativeBirths[i] += ((_ageDistribution[i] / (float) 2) * BRate);
+    _cumulativeBirths[i] += ((_ageDistribution[i] / (double) 2) * BRate);
 
     if( _cumulativeBirths[i] >= 1 ) {
       for( int j = 1; j <= _dsp->INT( _cumulativeBirths[i] ); ++j ) {
@@ -605,7 +605,7 @@ HumanPopulation::RankPopulation(void)
   _totalHomologousImmunity = std::vector<int>( 4+1, 0 );
   _totalHeterologousImmunity = std::vector<int>( 4+1, 0 );
 
-  std::map<int,float> seqInf;
+  std::map<int,double> seqInf;
   seqInf[D1] = 0;
   seqInf[D2] = 0;
   seqInf[D3] = 0;
@@ -981,7 +981,7 @@ HumanPopulation::SelectHumanByAgeClass( int ageClass )
   // number of humans available for selection in this age class
   int numHumans = _ageDistribution[ageClass];
 
-  float rndNum = _dsp->RND("InitSeroprevalence");
+  double rndNum = _dsp->RND("InitSeroprevalence");
 
   // indices in vector run from 0 to numHumans - 1
   // to select a number between [min,max], we multiply [0,1] by

@@ -370,8 +370,8 @@ Biology::AdultParameters::SaturationDeficitParameters::~SaturationDeficitParamet
 
 
 Biology::AdultParameters::DoubleBloodMealParameters::DoubleBloodMealParameters(void)
-: LowWeightRatio( 1 ),
-  LowWeightLimit( 0.5 ),
+: LowWeightLimit( 0.5 ),
+  LowWeightRatio( 1 ),
   HighWeightLimit( 3.5 ),
   HighWeightRatio( 0.1 )
 {}
