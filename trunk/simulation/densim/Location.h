@@ -24,17 +24,16 @@
 namespace sim {
 namespace ds {
 
-class Location;
 class HumanPopulation;
 
 
 
-class dsport
+class Location
 {
 // Constructors
 public:
-  dsport( const input::Location * location, sim::output::MosData * mosData, bool doDiskOutput = false );
-  virtual ~dsport(void);
+  Location( const input::Location * location, sim::output::MosData * mosData, bool doDiskOutput = false );
+  virtual ~Location(void);
 
 // Methods
 public:

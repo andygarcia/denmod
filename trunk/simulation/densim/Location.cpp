@@ -8,7 +8,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "dsport.h"
+#include "Location.h"
 #include "Constants.h"
 #include "Humans.h"
 
@@ -16,7 +16,7 @@ using namespace sim::ds;
 
 
 
-dsport::dsport( const input::Location * location, sim::output::MosData * mosData, bool doDiskOutput )
+Location::Location( const input::Location * location, sim::output::MosData * mosData, bool doDiskOutput )
 : _location(location),
   _mosData(mosData),
   _doDiskOutput(doDiskOutput),
@@ -145,7 +145,7 @@ dsport::dsport( const input::Location * location, sim::output::MosData * mosData
 
 
 
-dsport::~dsport(void)
+Location::~Location(void)
 {
   if( _doDiskOutput ) {
     _locationLog->Write();
@@ -158,7 +158,7 @@ dsport::~dsport(void)
 
 
 void
-dsport::InitializeDiskLogs(void)
+Location::InitializeDiskLogs(void)
 {
   std::vector<std::string> headers = std::vector<std::string>();
   headers.push_back( "Population Size" );
@@ -171,7 +171,7 @@ dsport::InitializeDiskLogs(void)
 
 
 void
-dsport::Start(void)
+Location::Start(void)
 {
   RunSimulation();  
 }
@@ -179,7 +179,7 @@ dsport::Start(void)
 
 
 void
-dsport::Start( boost::gregorian::date startDate, boost::gregorian::date stopDate )
+Location::Start( boost::gregorian::date startDate, boost::gregorian::date stopDate )
 {
   _startDate = startDate;
   _stopDate = stopDate;
@@ -192,7 +192,7 @@ dsport::Start( boost::gregorian::date startDate, boost::gregorian::date stopDate
 
 
 void
-dsport::RunSimulation(void)
+Location::RunSimulation(void)
 {
   CalculateEipFactors();
 
@@ -256,7 +256,7 @@ dsport::RunSimulation(void)
 
 
 void
-dsport::CalculateEipFactors(void)
+Location::CalculateEipFactors(void)
 {
   // calculate EIP by titer
   for( int i = 1; i <= 4; ++i ) {
@@ -276,7 +276,7 @@ dsport::CalculateEipFactors(void)
 
 
 void
-dsport::IntroduceInfectives(void)
+Location::IntroduceInfectives(void)
 {
   // introduce infected mosquitoes (which will become infective on the same day)
   for( int serotype = 1; serotype <= 4; ++serotype ) {
@@ -304,7 +304,7 @@ dsport::IntroduceInfectives(void)
 
 
 double
-dsport::EIPEnzKin( double temp )
+Location::EIPEnzKin( double temp )
 {
   double TempExpr1 = (EnzKinEA / GasCoef) * ((1 / (float) 298) - (1 / temp));
   double TempExpr2 = (EnzKinEI / GasCoef) * ((1 / EnzKinTI) - (1 / temp));
@@ -331,7 +331,7 @@ dsport::EIPEnzKin( double temp )
 
 
 void
-dsport::MosquitoLifeCycle(void)
+Location::MosquitoLifeCycle(void)
 {
   // advance susceptible clearing transfer collections
   _susceptibleOvipositing.clear();
@@ -376,7 +376,7 @@ dsport::MosquitoLifeCycle(void)
 
 
 void
-dsport::AdvanceSusceptibleNulliparous(void)
+Location::AdvanceSusceptibleNulliparous(void)
 {
   // clear susceptible nulliparous bite count and collections
   _susceptibleNulliparousBites = 0;
@@ -438,7 +438,7 @@ dsport::AdvanceSusceptibleNulliparous(void)
 
 
 void
-dsport::AdvanceSusceptibleParous(void)
+Location::AdvanceSusceptibleParous(void)
 {
   // clear susceptible parous bite count and collections
   _susceptibleParousBites = 0;
@@ -499,7 +499,7 @@ dsport::AdvanceSusceptibleParous(void)
 
 
 void
-dsport::AdvanceInfectedNulliparous(void)
+Location::AdvanceInfectedNulliparous(void)
 {
   for( int iSerotype = 1; iSerotype <= 4; ++iSerotype ) {
 
@@ -557,7 +557,7 @@ dsport::AdvanceInfectedNulliparous(void)
 
 
 void
-dsport::AdvanceInfectedParous(void)
+Location::AdvanceInfectedParous(void)
 {
   // Advance infected - From old Mosquitoes - Second and successive Gonotrophic Cycles
   // TODO - Last position in the array does not accumumlate
@@ -606,7 +606,7 @@ dsport::AdvanceInfectedParous(void)
 
 
 void
-dsport::AdvanceInfectives(void)
+Location::AdvanceInfectives(void)
 {
   // TODO - Last position in the array does not accumulate
   for( int iSerotype = 1; iSerotype <= 4; ++iSerotype ) {
@@ -666,7 +666,7 @@ dsport::AdvanceInfectives(void)
 
 
 void
-dsport::HumanToMosquitoTransmission(void)
+Location::HumanToMosquitoTransmission(void)
 {
   // handle dead population gracefully
   int numberOfHumans = _humanPopulation->GetPopulationSize();
@@ -704,7 +704,7 @@ dsport::HumanToMosquitoTransmission(void)
 
 
 void
-dsport::InoculateMosquitoes( int iType )
+Location::InoculateMosquitoes( int iType )
 {
   // actual number of new infected mosq. (differs due to/if stochastic routines enabled)
   int NewDlyMosqInoc;
@@ -769,7 +769,7 @@ dsport::InoculateMosquitoes( int iType )
 
 
 void
-dsport::InfectParous( int numParousInfections, int iSerotype )
+Location::InfectParous( int numParousInfections, int iSerotype )
 {
   if( numParousInfections == 0 ) {
     return;
@@ -862,7 +862,7 @@ dsport::InfectParous( int numParousInfections, int iSerotype )
 
 
 void
-dsport::InfectNulliparous( int numNulliparousInfections, int iSerotype )
+Location::InfectNulliparous( int numNulliparousInfections, int iSerotype )
 {
   if( numNulliparousInfections == 0 ) {
     return;
@@ -952,7 +952,7 @@ dsport::InfectNulliparous( int numNulliparousInfections, int iSerotype )
 
 
 void
-dsport::MosquitoToHumanTransmission(void)
+Location::MosquitoToHumanTransmission(void)
 {
   // clear daily human inoculation count
   _humanInoculations = 0;
@@ -984,7 +984,7 @@ dsport::MosquitoToHumanTransmission(void)
 
 
 int
-dsport::InoculateHumans( int serotype )
+Location::InoculateHumans( int serotype )
 {
   // first calculate a floating point value based off bites
   double inoculationEstimate = _infectiveBites[serotype] * PropOnHum;
@@ -1031,7 +1031,7 @@ dsport::InoculateHumans( int serotype )
 
 
 void
-dsport::SaveDailyOutput(void)
+Location::SaveDailyOutput(void)
 {
   output::DensimOutput::DailyLocationOutput dlo;
 
@@ -1093,7 +1093,7 @@ dsport::SaveDailyOutput(void)
 
 
 double
-dsport::Factorial( int n )
+Location::Factorial( int n )
 {
   int result = 1;
   for( int i = n; i > 0; --i ) {
@@ -1105,7 +1105,7 @@ dsport::Factorial( int n )
 
 
 sim::output::DensimOutput *
-dsport::GetDensimOutput(void)
+Location::GetDensimOutput(void)
 {
   return _densimOutput;
 }
@@ -1113,7 +1113,7 @@ dsport::GetDensimOutput(void)
 
 
 double
-dsport::GetTotalMosquitoes( MosquitoCollection & collection )
+Location::GetTotalMosquitoes( MosquitoCollection & collection )
 {
   double totalNumber = 0.0;
 
@@ -1127,7 +1127,7 @@ dsport::GetTotalMosquitoes( MosquitoCollection & collection )
 
 
 double
-dsport::GetTotalMosquitoes( std::vector<MosquitoCollection> & collections )
+Location::GetTotalMosquitoes( std::vector<MosquitoCollection> & collections )
 {
   double totalNumber = 0.0;
 
@@ -1144,7 +1144,7 @@ dsport::GetTotalMosquitoes( std::vector<MosquitoCollection> & collections )
 
   
 double
-dsport::CalculateDoubleBloodMealProportion( double weight )
+Location::CalculateDoubleBloodMealProportion( double weight )
 {
   const double & lowWeight = DBloodLWt;
   const double & lowWeightProportion = DBloodUProp;
@@ -1168,7 +1168,7 @@ dsport::CalculateDoubleBloodMealProportion( double weight )
 
 
 double
-dsport::GetSusceptibleOvipositingAverageWeight(void)
+Location::GetSusceptibleOvipositingAverageWeight(void)
 {
   // DS 1.0 takes all females that oviposit on the current day
   // and sticks them into a new OviAdultCohort (with AdultWt however, which was in error),
@@ -1193,7 +1193,7 @@ dsport::GetSusceptibleOvipositingAverageWeight(void)
 
 
 AdultCohort
-dsport::CombineCohorts( MosquitoCollection & collection, int age, double development )
+Location::CombineCohorts( MosquitoCollection & collection, int age, double development )
 {
   double totalWeight = 0.0;
   double totalNumber = 0.0;
@@ -1219,7 +1219,7 @@ dsport::CombineCohorts( MosquitoCollection & collection, int age, double develop
 
 // emulate DS 1.0 CINT() which does banker's rounding
 int
-dsport::CINT( double value )
+Location::CINT( double value )
 {
   double absoluteValue = std::abs( value );
   int sign = (value == 0) ? 0 : ( value < 0 ? -1 : 1 );
@@ -1251,7 +1251,7 @@ dsport::CINT( double value )
 
 // emulate CS 1.0 Int()
 int
-dsport::INT( double value )
+Location::INT( double value )
 {
   return (int)floor(value);
 }
@@ -1263,7 +1263,7 @@ dsport::INT( double value )
 // the only problem with our emulation is the exclusion of
 // ( RAND_MAX/(RAND_MAX+1), 1 ) from the range of generation
 double
-dsport::RND(void)
+Location::RND(void)
 {
   if( EMULATE_PDS_RAND ) {
     double nextRnd = _pdsRng.Next();

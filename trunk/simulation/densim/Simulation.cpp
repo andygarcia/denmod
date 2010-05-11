@@ -5,8 +5,8 @@ using namespace sim::ds;
 
 
 
-Simulation::Simulation( const input::Location * location, sim::output::MosData * mosData, bool doDiskOutput )
-: _dsport(new dsport(location, mosData, doDiskOutput)),
+Simulation::Simulation( const input::Location * inputLocation, sim::output::MosData * mosData, bool doDiskOutput )
+: _location(new Location(inputLocation, mosData, doDiskOutput)),
   _doDiskOutput(doDiskOutput)
 {}
 
@@ -14,7 +14,7 @@ Simulation::Simulation( const input::Location * location, sim::output::MosData *
 
 Simulation::~Simulation(void)
 {
-  delete _dsport;
+  delete _location;
 }
 
 
@@ -22,7 +22,7 @@ Simulation::~Simulation(void)
 void
 Simulation::Start(void)
 {
-  _dsport->Start();
+  _location->Start();
 }
 
 
@@ -30,7 +30,7 @@ Simulation::Start(void)
 void
 Simulation::Start( boost::gregorian::date startDate, boost::gregorian::date endDate )
 {
-  _dsport->Start( startDate, endDate );
+  _location->Start( startDate, endDate );
 }
 
 
@@ -38,5 +38,5 @@ Simulation::Start( boost::gregorian::date startDate, boost::gregorian::date endD
 sim::output::DensimOutput *
 Simulation::GetDensimOutput(void)
 {
-  return _dsport->GetDensimOutput();
+  return _location->GetDensimOutput();
 }

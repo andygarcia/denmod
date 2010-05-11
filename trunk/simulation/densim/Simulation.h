@@ -3,7 +3,7 @@
 
 #include "../input/Location.h"
 #include "../output/DensimOutput.h"
-#include "dsport.h"
+#include "Location.h"
 
 
 
@@ -25,7 +25,7 @@ public:
 
 // Members
 private:
-  dsport * _dsport;
+  Location * _location;
 
   bool _doDiskOutput;
 };

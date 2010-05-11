@@ -14,7 +14,7 @@
 namespace sim {
 namespace ds {
 
-class dsport;
+class Location;
 class MAEAInfectionParms;
 class SequentialInfectionParms;
 
@@ -83,7 +83,7 @@ public:
 
 // Constructors
 public:
-  HumanPopulation( dsport * dsport, const input::Location * location );
+  HumanPopulation( Location * simLocation, const input::Location * location );
   virtual ~HumanPopulation(void);
 
 // Methods
@@ -131,7 +131,7 @@ public:
   DailySequentialInfections GetDailySequentialInfections(void);
 
 private:
-  dsport * _dsp;
+  Location * _location;
   void InitializeAgeClasses(void);
   void InitializeDemographics(void);
 
