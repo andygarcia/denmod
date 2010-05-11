@@ -276,7 +276,7 @@ Biology::AdultParameters::AdultParameters(void)
   FecundityFactor( 45.9 ),
   MinimumOvipositionTemperature( 18 ),
   ProportionOfFeedsOnHumans( 0.9 ),
-  InterruptedFeedsPerMeal( 4 ),
+  InterruptedFeedsPerMeal( 2 ),
   ProportionOfInterruptedFeedsOnDifferentHost( 0.6 ),
   ProportionOfAdultsRestingOutdoors( 0.6 ),
   AgeDependentSurvival(new AgeDependentSurvivalParameters()),
