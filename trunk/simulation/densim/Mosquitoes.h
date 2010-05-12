@@ -27,11 +27,10 @@ public:
   double Development;
   double Weight;
 
-  bool SeekingBloodMeal;
-  bool SeekingDoubleBloodMeal;
-
   bool Ovipositing;
   int DaysSinceOviposition;
+  bool SeekingBloodMeal;
+  bool SeekingDoubleBloodMeal;
 
   bool Infected;
   int Serotype;

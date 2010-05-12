@@ -10,6 +10,8 @@ AdultCohort::AdultCohort(void)
   Development(0.0),
   Weight(0.0),
   Ovipositing(false),
+  SeekingBloodMeal(false),
+  SeekingDoubleBloodMeal(false),
   DaysSinceOviposition(0),
   Infected(false),
   Serotype(0),
@@ -24,6 +26,8 @@ AdultCohort::AdultCohort( int age, double number, double development, double wei
   Development(development),
   Weight(weight),
   Ovipositing(false),
+  SeekingBloodMeal(false),
+  SeekingDoubleBloodMeal(false),
   DaysSinceOviposition(0),
   Infected(false),
   Serotype(0),
@@ -32,13 +36,14 @@ AdultCohort::AdultCohort( int age, double number, double development, double wei
 
 
 
-// TODO, the oviposition related information should also be pulled from the cimsim cohort
 AdultCohort::AdultCohort( sim::cs::AdultCohort & ac )
 : Age(ac.Age),
   Number(ac.Number),
   Development(ac.Development),
   Weight(ac.Weight),
   Ovipositing(false),
+  SeekingBloodMeal(false),
+  SeekingDoubleBloodMeal(false),
   DaysSinceOviposition(0),
   Infected(false),
   Serotype(0),

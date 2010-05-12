@@ -106,17 +106,32 @@ Location::Location( const input::Location * location, sim::output::MosData * mos
 
 
   // initialize mosquito population from cimsim
+  // TODO - for now set oviposition and blood meal seeking status based off age until
+  // cimsim reports this as part of the cohort data
   double initialArea = _humanPopulation->GetInitialPopulationSize() / HumHostDensity;
   for( sim::cs::PreOviAdultCohortCollection::iterator itAdult = _mosData->PreOviAdultCohorts.begin();
        itAdult != _mosData->PreOviAdultCohorts.end(); ++itAdult ) {
     AdultCohort cohort = AdultCohort( *itAdult );
     cohort.Number *= initialArea;
+    if( cohort.Age == 2 ) {
+      cohort.SeekingBloodMeal = true;
+    }
+    if( cohort.Age == 3 ) {
+      cohort.SeekingDoubleBloodMeal = true;
+    }
     _susceptibleNulliparous.push_back( cohort );
   }
   for( sim::cs::OviAdultCohortCollection::iterator itAdult = _mosData->OviAdultCohorts.begin();
        itAdult != _mosData->OviAdultCohorts.end(); ++itAdult ) {
     AdultCohort cohort = AdultCohort( *itAdult );
     cohort.Number *= initialArea;
+    if( cohort.Age == 1 ) {
+      cohort.Ovipositing = true;
+      cohort.SeekingBloodMeal = true;
+    }
+    if( cohort.Age == 2 ) {
+      cohort.SeekingDoubleBloodMeal = true;
+    }
     _susceptibleParous.push_back( cohort );
   }
 
@@ -333,34 +348,21 @@ Location::EIPEnzKin( double temp )
 void
 Location::MosquitoLifeCycle(void)
 {
-  // advance susceptible clearing transfer collections
-  _susceptibleOvipositing.clear();
   AdvanceSusceptibleNulliparous();
   AdvanceSusceptibleParous();
-
-
-  // advance infected, clearing transfer collections
-  _infectedBites = std::vector<double>( 4+1, 0 );
-  _newlyInfectiveNulliparous = std::vector<MosquitoCollection>( 4+1 );
-  _newlyInfectiveParous = std::vector<MosquitoCollection>( 4+1 );
   AdvanceInfectedNulliparous();
   AdvanceInfectedParous();
-
-
-  // advance infected, clearing transfer collections
-  _infectiveBites = std::vector<double>( 4+1, 0 );
-  _infectiveOvipositing = std::vector<MosquitoCollection>( 4+1 );
   AdvanceInfectives();
 
 
-  // count biting
+  // count bites
   _totalBites = _susceptibleNulliparousBites + _susceptibleParousBites;
   for( int iSerotype = 1; iSerotype <=4; ++iSerotype ) {
     _totalBites += _infectedBites[iSerotype] + _infectiveBites[iSerotype];
   }
 
 
-  // count individual collections of mosquitoes
+  // count each of the five primary mosquitoes collections
   _totalSusceptibleNulliparous = GetTotalMosquitoes( _susceptibleNulliparous );
   _totalSusceptibleParous = GetTotalMosquitoes( _susceptibleParous );
   _totalInfectedNulliparous = GetTotalMosquitoes( _infectedNulliparous );
@@ -387,6 +389,7 @@ void
 Location::AdvanceSusceptibleNulliparous(void)
 {
   // clear susceptible nulliparous bite count and collections
+  _susceptibleOvipositing.clear();
   _susceptibleNulliparousBites = 0;
   _susceptibleNulliparousBiters.clear();
   _susceptibleNulliparousDoubleBiters.clear();
@@ -509,8 +512,12 @@ Location::AdvanceSusceptibleParous(void)
 void
 Location::AdvanceInfectedNulliparous(void)
 {
-  for( int iSerotype = 1; iSerotype <= 4; ++iSerotype ) {
+  _infectedBites = std::vector<double>( 4+1, 0 );
+  _newlyInfectiveNulliparous = std::vector<MosquitoCollection>( 4+1 );
+  _newlyInfectiveParous = std::vector<MosquitoCollection>( 4+1 );
 
+
+  for( int iSerotype = 1; iSerotype <= 4; ++iSerotype ) {
     // some proportion of yesterday's infected nulliparous biters were calculated as seeking another blood meal today
     // also track that count into a per serotype infected count, irregardless of nulli/parous
     _infectedBites[iSerotype] += _infectedNulliparousDoubleBites[iSerotype];
@@ -616,7 +623,10 @@ Location::AdvanceInfectedParous(void)
 void
 Location::AdvanceInfectives(void)
 {
-  // TODO - Last position in the array does not accumulate
+  _infectiveBites = std::vector<double>( 4+1, 0 );
+  _infectiveOvipositing = std::vector<MosquitoCollection>( 4+1 );
+
+
   for( int iSerotype = 1; iSerotype <= 4; ++iSerotype ) {
     for( MosquitoIterator itMosq = _infectives[iSerotype].begin(); itMosq != _infectives[iSerotype].end(); ) {
 
