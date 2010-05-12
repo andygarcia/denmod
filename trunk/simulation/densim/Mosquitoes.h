@@ -28,7 +28,6 @@ public:
   double Weight;
 
   bool Ovipositing;
-  int DaysSinceOviposition;
   bool SeekingBloodMeal;
   bool SeekingDoubleBloodMeal;
 

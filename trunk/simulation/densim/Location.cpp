@@ -174,6 +174,7 @@ Location::InitializeDiskLogs(void)
     headers.push_back( "Female Mosquitoes in Area" );
     headers.push_back( "Potentially Infective Bites" );
     headers.push_back( "Susceptible Nulliparous" );
+    headers.push_back( "Susceptible Nulliparous Ovipositing" );
     headers.push_back( "Susceptible Parous" );
     headers.push_back( "Infected Nulliparous" );
     headers.push_back( "Infected Parous" );
@@ -409,6 +410,7 @@ Location::AdvanceSusceptibleNulliparous(void)
     }
     else {
       // apply survival and move to ovipositing collection
+      itMosq->Ovipositing = true;
       _susceptibleOvipositing.push_back( *itMosq );
 
       // remove from current collection
@@ -1106,6 +1108,7 @@ Location::SaveDailyOutput(void)
     _locationLog->AddData( _totalMosquitoes );
     _locationLog->AddData( _humanInoculations );
     _locationLog->AddData( _totalSusceptibleNulliparous );
+    _locationLog->AddData( GetTotalMosquitoes( _susceptibleOvipositing ) );
     _locationLog->AddData( _totalSusceptibleParous );
     _locationLog->AddData( _totalInfectedNulliparous );
     _locationLog->AddData( _totalInfectedParous );

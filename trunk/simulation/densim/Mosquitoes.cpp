@@ -12,7 +12,6 @@ AdultCohort::AdultCohort(void)
   Ovipositing(false),
   SeekingBloodMeal(false),
   SeekingDoubleBloodMeal(false),
-  DaysSinceOviposition(0),
   Infected(false),
   Serotype(0),
   Eip(0)
@@ -28,7 +27,6 @@ AdultCohort::AdultCohort( int age, double number, double development, double wei
   Ovipositing(false),
   SeekingBloodMeal(false),
   SeekingDoubleBloodMeal(false),
-  DaysSinceOviposition(0),
   Infected(false),
   Serotype(0),
   Eip(0)
@@ -44,7 +42,6 @@ AdultCohort::AdultCohort( sim::cs::AdultCohort & ac )
   Ovipositing(false),
   SeekingBloodMeal(false),
   SeekingDoubleBloodMeal(false),
-  DaysSinceOviposition(0),
   Infected(false),
   Serotype(0),
   Eip(0)
@@ -69,10 +66,9 @@ AdultCohort::operator==( const AdultCohort & rhs )
       this->Number == rhs.Number &&
       this->Development == rhs.Development &&
       this->Weight == rhs.Weight &&
+      this->Ovipositing == rhs.Ovipositing &&
       this->SeekingBloodMeal == rhs.SeekingBloodMeal &&
       this->SeekingDoubleBloodMeal == rhs.SeekingDoubleBloodMeal &&
-      this->Ovipositing == rhs.Ovipositing &&
-      this->DaysSinceOviposition == rhs.DaysSinceOviposition &&
       this->Infected == rhs.Infected &&
       this->Serotype == rhs.Serotype &&
       this->Eip == rhs.Eip )
