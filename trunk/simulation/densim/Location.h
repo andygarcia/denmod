@@ -111,11 +111,6 @@ public:
   // virus parameters
   std::vector<VirusDesc> Virus;
 
-  // immunity parameters, in days
-  int MANADurat;
-  int MAEADurat;
-  int HetImmunDurat;
-
   // weather and mosquito data from cimsim
   double _minimumOvipositionTemperature;
   double _averageAirTemperature;
@@ -204,6 +199,12 @@ public:
   // bite and mosquito totals
   double _totalBites;
   double _totalMosquitoes;
+
+  // total mosquitoes by status
+  double _totalSusceptibleNulliparous;
+  double _totalSusceptibleParous;
+  double _totalInfectedNulliparous;
+  double _totalInfectedParous;
 
   // infective mosquito count by serotype and total
   std::vector<double> _infectiveMosquitoesBySerotype;

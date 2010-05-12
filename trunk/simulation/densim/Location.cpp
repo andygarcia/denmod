@@ -46,8 +46,8 @@ Location::Location( const input::Location * location, sim::output::MosData * mos
   _pdsRng = PdsRng(0);
 #else
   // change once done with densim issues
-  _pdsRng = PdsRng( static_cast<unsigned int>(time(NULL)) );
-  //_pdsRng = PdsRng(0);
+  //_pdsRng = PdsRng( static_cast<unsigned int>(time(NULL)) );
+  _pdsRng = PdsRng(0);
 #endif
 
   // human population and demographics
@@ -92,11 +92,6 @@ Location::Location( const input::Location * location, sim::output::MosData * mos
   this->EnzKinEI = _location->Virology_->Eip_.Development_.DHH;
   this->EnzKinTI = _location->Virology_->Eip_.Development_.THALF;
 
-  this->MANADurat = _location->Serology_->ManaDuration_;
-  this->MAEADurat = _location->Serology_->MaeaDuration_;
-  this->HetImmunDurat = _location->Serology_->HetDuration_;
-
-
   // biology parameters
   this->_minimumOvipositionTemperature = _location->Biology_->Adult->MinimumOvipositionTemperature;
 
@@ -138,9 +133,7 @@ Location::Location( const input::Location * location, sim::output::MosData * mos
   _location->InfectionIntroduction_->Dengue3_->Schedule_->CalculateSchedule( _startDate, _stopDate );
   _location->InfectionIntroduction_->Dengue4_->Schedule_->CalculateSchedule( _startDate, _stopDate );
 
-  if( _doDiskOutput ) {
-    InitializeDiskLogs();
-  }
+  InitializeDiskLogs();
 }
 
 
@@ -160,12 +153,19 @@ Location::~Location(void)
 void
 Location::InitializeDiskLogs(void)
 {
-  std::vector<std::string> headers = std::vector<std::string>();
-  headers.push_back( "Population Size" );
-  headers.push_back( "Female Mosquitoes in Area" );
-  headers.push_back( "Potentially Infective Bites" );
+  if( _doDiskOutput ) {
+    std::vector<std::string> headers = std::vector<std::string>();
+    headers.push_back( "Population Size" );
+    headers.push_back( "Female Mosquitoes in Area" );
+    headers.push_back( "Potentially Infective Bites" );
+    headers.push_back( "Susceptible Nulliparous" );
+    headers.push_back( "Susceptible Parous" );
+    headers.push_back( "Infected Nulliparous" );
+    headers.push_back( "Infected Parous" );
+    headers.push_back( "Infectives" );
 
-  _locationLog = new output::Log( "DENSiM Location Data.csv", headers );
+    _locationLog = new output::Log( "DENSiM Location Data.csv", headers );
+  }
 }
 
 
@@ -338,6 +338,7 @@ Location::MosquitoLifeCycle(void)
   AdvanceSusceptibleNulliparous();
   AdvanceSusceptibleParous();
 
+
   // advance infected, clearing transfer collections
   _infectedBites = std::vector<double>( 4+1, 0 );
   _newlyInfectiveNulliparous = std::vector<MosquitoCollection>( 4+1 );
@@ -345,31 +346,38 @@ Location::MosquitoLifeCycle(void)
   AdvanceInfectedNulliparous();
   AdvanceInfectedParous();
 
+
   // advance infected, clearing transfer collections
   _infectiveBites = std::vector<double>( 4+1, 0 );
   _infectiveOvipositing = std::vector<MosquitoCollection>( 4+1 );
   AdvanceInfectives();
 
-  // tabulate biting
+
+  // count biting
   _totalBites = _susceptibleNulliparousBites + _susceptibleParousBites;
   for( int iSerotype = 1; iSerotype <=4; ++iSerotype ) {
     _totalBites += _infectedBites[iSerotype] + _infectiveBites[iSerotype];
   }
 
-  // tabulate infective mosquitoes by serotype and in total
+
+  // count individual collections of mosquitoes
+  _totalSusceptibleNulliparous = GetTotalMosquitoes( _susceptibleNulliparous );
+  _totalSusceptibleParous = GetTotalMosquitoes( _susceptibleParous );
+  _totalInfectedNulliparous = GetTotalMosquitoes( _infectedNulliparous );
+  _totalInfectedParous = GetTotalMosquitoes( _infectedParous );
+
+  _totalInfectiveMosquitoes = 0;
   for( int iSerotype = 1; iSerotype <= 4; ++iSerotype ) {
     _infectiveMosquitoesBySerotype[iSerotype] = GetTotalMosquitoes( _infectives[iSerotype] );
+    _totalInfectiveMosquitoes += _infectiveMosquitoesBySerotype[iSerotype];
   }
-  _totalInfectiveMosquitoes = _infectiveMosquitoesBySerotype[1]
-                              + _infectiveMosquitoesBySerotype[2]
-                              + _infectiveMosquitoesBySerotype[3]
-                              + _infectiveMosquitoesBySerotype[4];
 
-  // tabulate all mosquitoes
-  _totalMosquitoes = GetTotalMosquitoes( _susceptibleNulliparous )
-                     + GetTotalMosquitoes( _susceptibleParous )
-                     + GetTotalMosquitoes( _infectedNulliparous )
-                     + GetTotalMosquitoes( _infectedParous )
+
+  // count all mosquitoes
+  _totalMosquitoes = _totalSusceptibleNulliparous
+                     + _totalSusceptibleParous
+                     + _totalInfectedNulliparous
+                     + _totalInfectedParous
                      + _totalInfectiveMosquitoes;
 }
 
@@ -1087,6 +1095,11 @@ Location::SaveDailyOutput(void)
     _locationLog->AddData( _humanPopulation->GetPopulationSize() );
     _locationLog->AddData( _totalMosquitoes );
     _locationLog->AddData( _humanInoculations );
+    _locationLog->AddData( _totalSusceptibleNulliparous );
+    _locationLog->AddData( _totalSusceptibleParous );
+    _locationLog->AddData( _totalInfectedNulliparous );
+    _locationLog->AddData( _totalInfectedParous );
+    _locationLog->AddData( _totalInfectiveMosquitoes );
   }
 }
 
