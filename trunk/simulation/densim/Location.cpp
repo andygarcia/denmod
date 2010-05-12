@@ -349,6 +349,7 @@ Location::EIPEnzKin( double temp )
 void
 Location::MosquitoLifeCycle(void)
 {
+  // advance cohorts in each of the five primary collections
   AdvanceSusceptibleNulliparous();
   AdvanceSusceptibleParous();
   AdvanceInfectedNulliparous();
@@ -395,7 +396,8 @@ Location::AdvanceSusceptibleNulliparous(void)
   _susceptibleNulliparousBiters.clear();
   _susceptibleNulliparousDoubleBiters.clear();
 
-  // susceptible nulliparous cohorts
+
+  // advance each susceptible nulliparous cohort
   for( MosquitoIterator itMosq = _susceptibleNulliparous.begin(); itMosq != _susceptibleNulliparous.end(); ) {
 
     // advance in age and apply survival
@@ -455,27 +457,23 @@ Location::AdvanceSusceptibleParous(void)
   _susceptibleParousBites = 0;
   _susceptibleParousBiters.clear();
   _susceptibleParousDoubleBiters.clear();
-  
-  // advance susceptible parous cohorts
+
+
+  // advance each susceptible parous cohort
   for( MosquitoIterator itMosq = _susceptibleParous.begin(); itMosq != _susceptibleParous.end(); ) {
 
-    // advance in age and apply survival
     itMosq->Age++;
     itMosq->Number *= _dailyMosData.OverallSurvival;
 
     if( itMosq->Development <= .58 ) {
-      // accumulate development
+      // still developing
       itMosq->Development += _dailyMosData.AdultDevelopment;
-        
       SetParousBloodMealStatus( *itMosq );
-
       ++itMosq;
     }
     else {
       // apply survival and move to ovipositing collection
       _susceptibleOvipositing.push_back( *itMosq );
-
-      // remove from current collection
       itMosq = _susceptibleParous.erase( itMosq );
     }
   }
@@ -531,24 +529,26 @@ Location::AdvanceInfectedNulliparous(void)
     _infectedNulliparousDoubleBites[iSerotype] = 0;
 
     for( MosquitoIterator itMosq = _infectedNulliparous[iSerotype].begin(); itMosq != _infectedNulliparous[iSerotype].end(); ) {
+      // TODO - this is bad, lets just move infected nulliparous into infected parous stage
+      // the reason this wasn't done (most likely) is that Eric's code calculated biting based on array positiong
+      // since array position was a proxy for age.  this was bad but neccesary given hardware contraints
 
-      // calculate CD cutoff
-      double OldAdultDev = _yesterdayMosData.AdultDevelopment;
-
-      double CDYest = itMosq->Development - OldAdultDev;
-      double CDTest;
-      int CDFactor;
-      if( CDYest < 1 ) {
-        CDTest = 1;
+      // calculate true development threshold since these nulliparous cohrots do not advance into parous stage
+      double developmentThreshold;
+      double developmentYesterday = itMosq->Development - _yesterdayMosData.AdultDevelopment;
+      if( developmentYesterday < 1 ) {
+        // development yesterday was less than 1.0, the threshold for the first gonotrophic cycle
+        // then the threshold today is still 1.0 since cohort has not finished cycle
+        developmentThreshold = 1.0;
       }
       else {
-        CDFactor = INT((CDYest - 1) / .58f) + 1;
-        CDTest = 1 + (CDFactor * .58f);
+        int numCyclesCompleted = 1 + INT((developmentYesterday - 1) / .58);
+        developmentThreshold = 1 + (numCyclesCompleted * .58);
       }
 
 
-      if( itMosq->Eip > 1.0 && itMosq->Development > CDTest ) {
-        // mosquito finished development and EIP, apply survival
+      if( itMosq->Eip > 1.0 && itMosq->Development > developmentThreshold ) {
+        // mosquito finished development and EIP
         // apply survival and transfer into newly infective nulliparous collection
         itMosq->Age++;
         itMosq->Number *= _dailyMosData.OverallSurvival;
@@ -564,7 +564,7 @@ Location::AdvanceInfectedNulliparous(void)
         itMosq->Eip += _eipDevelopmentRate[iSerotype];
 
         // finished development, this isn't a transfer rather a count of infected
-        if( (itMosq->Development - _dailyMosData.AdultDevelopment) > CDTest ) {
+        if( (itMosq->Development - _dailyMosData.AdultDevelopment) > developmentThreshold ) {
           _infectedBites[iSerotype] += itMosq->Number;
           _infectedNulliparousBites[iSerotype] += itMosq->Number;
           _infectedNulliparousDoubleBites[iSerotype] += itMosq->Number * CalculateDoubleBloodMealProportion( _dailyMosData.AverageWeight );
@@ -642,6 +642,7 @@ Location::AdvanceInfectives(void)
         itMosq->Age++;
         itMosq->Number *= _dailyMosData.OverallSurvival;
         itMosq->Development += _dailyMosData.AdultDevelopment;
+        SetParousBloodMealStatus( *itMosq );
         ++itMosq;
       }
       else {
@@ -671,16 +672,19 @@ Location::AdvanceInfectives(void)
     // if any of these exists, combine all of them into the new cohort
     if( mc.size() > 0 ) {
       AdultCohort newInfective = CombineCohorts( mc, 1, _dailyMosData.AdultDevelopment );
+      newInfective.Ovipositing = true;
+      newInfective.SeekingBloodMeal = true;
+      newInfective.SeekingDoubleBloodMeal = false;
       _infectives[iSerotype].push_back( newInfective );
 
     }
 
     // track infective biting
     for( MosquitoIterator itMosq = _infectives[iSerotype].begin(); itMosq != _infectives[iSerotype].end(); ++itMosq ) {
-      if( itMosq->Age == 1 ) {
+      if( itMosq->SeekingBloodMeal ) {
         _infectiveBites[iSerotype] += itMosq->Number;
       }
-      if( itMosq->Age ==2 ) {
+      if( itMosq->SeekingDoubleBloodMeal ) {
         _infectiveBites[iSerotype] += itMosq->Number * CalculateDoubleBloodMealProportion( _dailyMosData.AverageWeight );
       }
     }
