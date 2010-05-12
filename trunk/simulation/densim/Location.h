@@ -77,6 +77,9 @@ private:
   void CalculateEipFactors(void);
   double CalculateDoubleBloodMealProportion( double weight );
 
+  void SetNulliparousBloodMealStatus( AdultCohort & cohort );
+  void SetParousBloodMealStatus( AdultCohort & cohort );
+
   double GetSusceptibleOvipositingAverageWeight(void);
   double GetTotalMosquitoes( MosquitoCollection & collection );
   double GetTotalMosquitoes( std::vector<MosquitoCollection> & collections );

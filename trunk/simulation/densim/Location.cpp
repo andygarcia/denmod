@@ -404,19 +404,19 @@ Location::AdvanceSusceptibleNulliparous(void)
 
     // TODO include temperature check
     if( itMosq->Development <= 1 ) {
-      // not done developing, advance by applying survival and development
+      // not done developing
       itMosq->Development += _dailyMosData.AdultDevelopment;
+      SetNulliparousBloodMealStatus( *itMosq );
       ++itMosq;
     }
     else {
-      // apply survival and move to ovipositing collection
+      // finished developing, move to ovipositing collection
       itMosq->Ovipositing = true;
       _susceptibleOvipositing.push_back( *itMosq );
-
-      // remove from current collection
       itMosq = _susceptibleNulliparous.erase( itMosq );
     }
   }
+
 
   // create new nulliparous cohort from cimsim's emerged females
   if( _dailyMosData.NewFemales > 0 ) {
@@ -432,16 +432,14 @@ Location::AdvanceSusceptibleNulliparous(void)
     _susceptibleNulliparous.push_back( newCohort );
   }
 
-  // determine biting status
-  for( MosquitoIterator itMosq = _susceptibleNulliparous.begin(); itMosq != _susceptibleNulliparous.end(); ++itMosq ) {
 
-    // nulliparous seek blood meal on day after emergence
-    if( itMosq->Age == 2 ) {
+  // accumulate cohorts seeking blood meals
+  for( MosquitoIterator itMosq = _susceptibleNulliparous.begin(); itMosq != _susceptibleNulliparous.end(); ++itMosq ) {
+    if( itMosq->SeekingBloodMeal ) {
       _susceptibleNulliparousBiters.push_back( &*itMosq );
       _susceptibleNulliparousBites += itMosq->Number;
     }
-    // nulliparous also seek a potential second blood meal on second day after emergence based on weight
-    if( itMosq->Age == 3 ) {
+    if( itMosq->SeekingDoubleBloodMeal ) {
       _susceptibleNulliparousDoubleBiters.push_back( &*itMosq );
       _susceptibleNulliparousBites += itMosq->Number * CalculateDoubleBloodMealProportion( _dailyMosData.AverageWeight );
     }
@@ -468,6 +466,9 @@ Location::AdvanceSusceptibleParous(void)
     if( itMosq->Development <= .58 ) {
       // accumulate development
       itMosq->Development += _dailyMosData.AdultDevelopment;
+        
+      SetParousBloodMealStatus( *itMosq );
+
       ++itMosq;
     }
     else {
@@ -479,6 +480,7 @@ Location::AdvanceSusceptibleParous(void)
     }
   }
 
+
   // create new ovi adult cohort based on all susceptible ovipositing today, reseting dev cycle and "age"
   if( _susceptibleOvipositing.size()  > 0 ) {
     // pull values for new cohort
@@ -488,21 +490,23 @@ Location::AdvanceSusceptibleParous(void)
     // TODO - move to using true average as part of per cohort weights
     //double weight = GetSusceptibleOvipositingAverageWeight();
     double weight = _dailyMosData.AverageWeight;
-    
-    // insert new cohort return iterator
-    _susceptibleParous.push_back( AdultCohort(age, number, dev, weight) );
+
+    // parous cohorts seek blood meal on same day they oviposit
+    AdultCohort newParousCohort = AdultCohort( age, number, dev, weight );
+    newParousCohort.Ovipositing = true;
+    newParousCohort.SeekingBloodMeal = true;
+    newParousCohort.SeekingDoubleBloodMeal = false;
+    _susceptibleParous.push_back( newParousCohort );
   }
 
-  // track biting
-  for( MosquitoIterator itMosq = _susceptibleParous.begin(); itMosq != _susceptibleParous.end(); ++itMosq ) {
 
-    // parous always seek blood meal on same day they oviposit
-    if( itMosq->Age == 1 ) {
+  // accumulate cohorts seeking blood meals
+  for( MosquitoIterator itMosq = _susceptibleParous.begin(); itMosq != _susceptibleParous.end(); ++itMosq ) {
+    if( itMosq->SeekingBloodMeal ) {
       _susceptibleParousBiters.push_back( &*itMosq );
       _susceptibleParousBites += itMosq->Number;
     }
-    // parous also seek a second blood meal on the day after oviposition based on weight
-    if( itMosq->Age == 2 ) {
+    if( itMosq->SeekingDoubleBloodMeal ) {
       _susceptibleParousDoubleBiters.push_back( &*itMosq );
       _susceptibleParousBites += itMosq->Number * CalculateDoubleBloodMealProportion( _dailyMosData.AverageWeight );
     }
@@ -1298,4 +1302,52 @@ Location::RND(void)
   else {
     return rand() / (float) (RAND_MAX + 1); 
   }
+}
+
+
+
+void
+Location::SetNulliparousBloodMealStatus( AdultCohort & cohort )
+{
+  // nulliparous females seek a blood meal the day after emergence and a potential double blood meal the day after
+  if( cohort.Age == 2 ) {
+    cohort.SeekingBloodMeal = true;
+    cohort.SeekingDoubleBloodMeal = false;
+  }
+  else if( cohort.Age == 3 ) {
+    cohort.SeekingBloodMeal = false;
+    cohort.SeekingDoubleBloodMeal = true;
+  }
+  else {
+    cohort.SeekingBloodMeal = false;
+    cohort.SeekingDoubleBloodMeal = false;
+  }
+}
+
+
+
+void
+Location::SetParousBloodMealStatus( AdultCohort & cohort )
+{
+  // oviposited yesterday, sought blood meal yesterday, seek double blood meal today
+  if( cohort.SeekingBloodMeal == true ) {
+    cohort.Ovipositing = false;
+    cohort.SeekingBloodMeal = false;        
+    cohort.SeekingDoubleBloodMeal = true;        
+  }
+
+  // ovipositied 2 days ago, sought double blood meal yesterday
+  else if( cohort.SeekingDoubleBloodMeal == true ) {
+    cohort.Ovipositing = false;
+    cohort.SeekingBloodMeal = false;
+    cohort.SeekingDoubleBloodMeal = false;
+  }
+
+  // did not seek blood meal or double blood meal yesterday
+  else {
+    cohort.Ovipositing = false;
+    cohort.SeekingBloodMeal = false;
+    cohort.SeekingDoubleBloodMeal = false;
+  }
+
 }
