@@ -419,16 +419,13 @@ Location::AdvanceSusceptibleNulliparous(void)
   }
 
 
-  // create new nulliparous cohort from cimsim's emerged females
+  // create new nulliparous cohort from cimsim
   if( _dailyMosData.NewFemales > 0 ) {
-    // TODO this weight needs to be the newly emerged female weight not the average,
-    //AdultCohort newCohort = AdultCohort( 1, _dailyMosData.NewFemales, _dailyMosData.AdultDevelopment, _dailyMosData.NewFemaleWeight );
     AdultCohort newCohort = AdultCohort( 1, _dailyMosData.NewFemales, _dailyMosData.AdultDevelopment, _dailyMosData.AverageWeight );
 
-    // adjust cohort count for both simulation size and survival
-    // TODO - remove survival application, this cohort already had survival applied today at its pupae stage
+    // adjust cohort count for simulation size since cimsim reports per hectare counts
     int numberOfHumans = _humanPopulation->GetPopulationSize();
-    newCohort.Number *= (numberOfHumans / HumHostDensity) * _dailyMosData.OverallSurvival;
+    newCohort.Number *= numberOfHumans / HumHostDensity;
 
     _susceptibleNulliparous.push_back( newCohort );
   }
