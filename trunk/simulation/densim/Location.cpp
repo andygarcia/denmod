@@ -391,7 +391,7 @@ void
 Location::AdvanceSusceptibleNulliparous(void)
 {
   // clear susceptible nulliparous bite count and collections
-  _susceptibleOvipositing.clear();
+  _susceptibleNulliparousOvipositing.clear();
   _susceptibleNulliparousBites = 0;
   _susceptibleNulliparousBiters.clear();
   _susceptibleNulliparousDoubleBiters.clear();
@@ -413,7 +413,7 @@ Location::AdvanceSusceptibleNulliparous(void)
     else {
       // finished developing, move to ovipositing collection
       itMosq->Ovipositing = true;
-      _susceptibleOvipositing.push_back( *itMosq );
+      _susceptibleNulliparousOvipositing.push_back( *itMosq );
       itMosq = _susceptibleNulliparous.erase( itMosq );
     }
   }
@@ -459,41 +459,38 @@ Location::AdvanceSusceptibleParous(void)
 
 
   // advance each susceptible parous cohort
-  for( MosquitoIterator itMosq = _susceptibleParous.begin(); itMosq != _susceptibleParous.end(); ) {
+  for( MosquitoIterator itMosq = _susceptibleParous.begin(); itMosq != _susceptibleParous.end(); ++itMosq ) {
     // advance in age and apply survival
     itMosq->Age++;
     itMosq->Number *= _dailyMosData.OverallSurvival;
 
+    if( itMosq->Age > 50 ) {
+      itMosq = _susceptibleParous.erase( itMosq );
+    }
+
     if( itMosq->Development <= .58 ) {
-      // still developing
       itMosq->Development += _dailyMosData.AdultDevelopment;
       SetParousBloodMealStatus( *itMosq );
-      ++itMosq;
     }
     else {
-      // apply survival and move to ovipositing collection
-      _susceptibleOvipositing.push_back( *itMosq );
-      itMosq = _susceptibleParous.erase( itMosq );
+      // ovipositing
+      itMosq->Development = _dailyMosData.AdultDevelopment;
+      itMosq->Ovipositing = true;
+      itMosq->SeekingBloodMeal = true;
+      itMosq->SeekingDoubleBloodMeal = false;
     }
   }
 
 
-  // create new ovi adult cohort based on all susceptible ovipositing today, reseting dev cycle and "age"
-  if( _susceptibleOvipositing.size()  > 0 ) {
-    // pull values for new cohort
-    int age = 1;
-    double number = GetTotalMosquitoes( _susceptibleOvipositing );
-    double dev = _dailyMosData.AdultDevelopment;
-    // TODO - move to using true average as part of per cohort weights
-    //double weight = GetSusceptibleOvipositingAverageWeight();
-    double weight = _dailyMosData.AverageWeight;
-
-    // parous cohorts seek blood meal on same day they oviposit
-    AdultCohort newParousCohort = AdultCohort( age, number, dev, weight );
-    newParousCohort.Ovipositing = true;
-    newParousCohort.SeekingBloodMeal = true;
-    newParousCohort.SeekingDoubleBloodMeal = false;
-    _susceptibleParous.push_back( newParousCohort );
+  // move each susceptible nulliparous ovipositing cohort into the susceptible parous cohort collection
+  if( _susceptibleNulliparousOvipositing.size()  > 0 ) {
+    for( MosquitoIterator itMosq = _susceptibleNulliparousOvipositing.begin(); itMosq != _susceptibleNulliparousOvipositing.end(); ++itMosq ) {
+      itMosq->Development = _dailyMosData.AdultDevelopment;
+      itMosq->Ovipositing = true;
+      itMosq->SeekingBloodMeal = true;
+      itMosq->SeekingDoubleBloodMeal = false;
+      _susceptibleParous.push_back( *itMosq );
+    }
   }
 
 
@@ -1106,7 +1103,7 @@ Location::SaveDailyOutput(void)
     _locationLog->AddData( _totalMosquitoes );
     _locationLog->AddData( _humanInoculations );
     _locationLog->AddData( _totalSusceptibleNulliparous );
-    _locationLog->AddData( GetTotalMosquitoes( _susceptibleOvipositing ) );
+    _locationLog->AddData( GetTotalMosquitoes( _susceptibleNulliparousOvipositing ) );
     _locationLog->AddData( _totalSusceptibleParous );
     _locationLog->AddData( _totalInfectedNulliparous );
     _locationLog->AddData( _totalInfectedParous );
@@ -1201,7 +1198,7 @@ Location::GetSusceptibleOvipositingAverageWeight(void)
   double totalWeight = 0.0;
   double totalNumber = 0.0;
 
-  for( MosquitoIterator itMosq = _susceptibleOvipositing.begin(); itMosq != _susceptibleOvipositing.end(); ++itMosq ) {
+  for( MosquitoIterator itMosq = _susceptibleNulliparousOvipositing.begin(); itMosq != _susceptibleNulliparousOvipositing.end(); ++itMosq ) {
     totalNumber += itMosq->Number;
     totalWeight += itMosq->Weight * itMosq->Number;
   }

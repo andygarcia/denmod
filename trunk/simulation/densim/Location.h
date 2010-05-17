@@ -165,6 +165,7 @@ public:
 
   // susceptible cohorts
   MosquitoCollection _susceptibleNulliparous;
+  MosquitoCollection _susceptibleNulliparousOvipositing;
   double _susceptibleNulliparousBites;
   MosquitoReferenceCollection _susceptibleNulliparousBiters;
   MosquitoReferenceCollection _susceptibleNulliparousDoubleBiters;
@@ -174,7 +175,6 @@ public:
   MosquitoReferenceCollection _susceptibleParousBiters;
   MosquitoReferenceCollection _susceptibleParousDoubleBiters;
 
-  MosquitoCollection _susceptibleOvipositing;
 
 
   // infected cohorts
