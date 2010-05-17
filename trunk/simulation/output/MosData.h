@@ -21,6 +21,7 @@ public:
 
 public:
   double NewFemales;
+  double NewFemaleWeight;
   double AverageWeight;
   double OverallSurvival;
   double AdultDevelopment;

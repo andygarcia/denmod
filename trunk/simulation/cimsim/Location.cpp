@@ -380,8 +380,11 @@ SimLocation::DoYear(void)
     // calculate adult development rate
     double DevRateAdult = DevelopmentRate(_adultP25, TemperatureAvg[Day] + 273.15f, _adultDHA, _adultDHH, _adultTH2 );
 
-    // sum new female counts and weight for each container, scaling from per container to per ha
+    // clear today's new female count and weight
     NewFemales = 0;
+    NewFemaleWeight = 0;
+
+    // sum new female counts and weight for each container, scaling from per container to per ha
     double totalWeight = 0;
     for( itCont = _containers.begin(); itCont != _containers.end(); ++itCont ) {
       NewFemales += (*itCont)->CalculateDensityAdjustedNewFemaleCount();
@@ -1024,6 +1027,7 @@ SimLocation::UpdateOutput( date d, double adultDev, double newEggs )
   dlo.Females = GetNulliparousCount() + GetParousCount();
   dlo.Oviposition = newEggs;
   dlo.NewFemales = NewFemales;
+  dlo.NewFemaleWeight = NewFemaleWeight;
   dlo.HostSeekingFemales = _totalBiters;
   dlo.OvipositingFemales = _totalOvipositingFemales;
   dlo.AverageWeight = GetFemaleAverageWeight();

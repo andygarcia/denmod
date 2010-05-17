@@ -12,7 +12,6 @@ namespace sim {
 namespace output {
 
 class DailyLocationOutput;
-class DailyDensimOutput;
 class DailyContainerOutput;
 
 
@@ -55,6 +54,7 @@ public:
   std::vector<double> GetHostSeekingFemales( boost::gregorian::date startDate, boost::gregorian::date endDate );
   std::vector<double> GetOvipositingFemales( boost::gregorian::date startDate, boost::gregorian::date endDate );
   std::vector<double> GetNewFemales( boost::gregorian::date startDate, boost::gregorian::date endDate );
+  std::vector<double> GetNewFemaleWeight( boost::gregorian::date startDate, boost::gregorian::date endDate );
   std::vector<double> GetAverageFemaleWeight( boost::gregorian::date startDate, boost::gregorian::date endDate );
   std::vector<double> GetOviposition( boost::gregorian::date startDate, boost::gregorian::date endDate );
   std::vector<double> GetTotalPupae( boost::gregorian::date startDate, boost::gregorian::date endDate );
@@ -110,23 +110,13 @@ public:
   double Oviposition;
 
   double NewFemales;
+  double NewFemaleWeight;
   double AverageWeight;
   double OverallSurvival;
   double AdultDevelopment;
 
 public:
   DailyMosData GetDailyMosData(void);
-};
-
-
-
-class DailyDensimOutput
-{
-public:
-  double NewFemales;
-  double AverageWeight;
-  double OverallSurvival;
-  double AdultDevelopment;
 };
 
 

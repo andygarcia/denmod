@@ -268,6 +268,21 @@ CimsimOutput::GetNewFemales( date startDate, date endDate )
 
 
 std::vector<double>
+CimsimOutput::GetNewFemaleWeight( date startDate, date endDate )
+{
+  std::vector<double> newFemaleWeight;
+
+  day_iterator itDate = day_iterator(startDate);
+  for( ; *itDate <= endDate; ++itDate ) {
+    newFemaleWeight.push_back( LocationOutput_[*itDate].NewFemaleWeight );
+  }
+
+  return newFemaleWeight;
+}
+
+
+
+std::vector<double>
 CimsimOutput::GetAverageFemaleWeight( boost::gregorian::date startDate, boost::gregorian::date endDate )
 {
   std::vector<double> avgWeights;
