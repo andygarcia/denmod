@@ -11,22 +11,25 @@
 #include "Classes.h"
 #include "PdsRng.h"
 #include "Mosquitoes.h"
+#include <boost/random/variate_generator.hpp>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_01.hpp>
 #include "../input/Location.h"
 #include "../cimsim/Cohorts.h"
 #include "../output/MosData.h"
 #include "../output/DensimOutput.h"
 #include "../output/Log.h"
 
-#define EMULATE_PDS_RAND true
-
 
 
 namespace sim {
 namespace ds {
 
+int CINT( double value );
+int INT( double value );
+
+// Forward declarations
 class HumanPopulation;
-
-
 
 class Location
 {
@@ -56,8 +59,7 @@ private:
 
   void HumanToMosquitoTransmission(void);
   void InoculateMosquitoes( int serotype );
-  void InfectParous( int numParousInfections, int iSerotype );
-  void InfectNulliparous( int numNulliparousInfections, int iSerotype );
+  void InfectMosquitoes( int serotype, double numInfections, MosquitoCollection & bitingCollection, std::vector<MosquitoCollection> & infectedCollection );
 
   void MosquitoToHumanTransmission(void);
   int InoculateHumans( int serotype );
@@ -66,9 +68,6 @@ private:
 
 // Helper methods
 public:
-  static int CINT( double value );
-  static int INT( double value );
-  double RND(void);
   double Factorial( int n );
 
 private:
@@ -161,6 +160,7 @@ public:
 
   // random number generator simulator to match PDS 7.1 libraries
   PdsRng _pdsRng;
+  boost::variate_generator<boost::mt19937, boost::uniform_01<>> _rng;
 
 
   // susceptible cohorts

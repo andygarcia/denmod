@@ -7,6 +7,9 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <boost/random/variate_generator.hpp>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_01.hpp>
 #include "../input/Location.h"
 
 
@@ -83,7 +86,7 @@ public:
 
 // Constructors
 public:
-  HumanPopulation( Location * simLocation, const input::Location * location );
+  HumanPopulation( const input::Location * location, boost::variate_generator<boost::mt19937, boost::uniform_01<>> & rng );
   virtual ~HumanPopulation(void);
 
 // Methods
@@ -144,6 +147,9 @@ private:
   input::Demographics * _demographics;
   input::Virology * _virology;
   input::SequentialInfections * _sequentialInfections;
+
+  // random number generator
+  boost::variate_generator<boost::mt19937, boost::uniform_01<>> & _rng;
 
   // state
   std::map<int,AgeClass> _ageClasses;

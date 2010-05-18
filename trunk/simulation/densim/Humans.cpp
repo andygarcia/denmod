@@ -55,8 +55,9 @@ Human::SetSerotypeStatus( int serotype, int status )
 
 
 
-HumanPopulation::HumanPopulation( Location * simLocation, const input::Location * location )
-: _ageClasses(std::map<int,AgeClass>()),
+HumanPopulation::HumanPopulation( const input::Location * location, boost::variate_generator<boost::mt19937, boost::uniform_01<>> & rng )
+: _rng(rng),
+  _ageClasses(std::map<int,AgeClass>()),
   _populationSize(0),
   _humans(HumansByClass(18+1,HumanCollection())),
   _ageDistribution(std::vector<int>(18+1,0)),
@@ -79,8 +80,7 @@ HumanPopulation::HumanPopulation( Location * simLocation, const input::Location 
   _totalInfective(std::vector<int>(4+1, 0)),
   _totalHomologousImmunity(std::vector<int>(4+1, 0)),
   _totalHeterologousImmunity(std::vector<int>(4+1, 0)),
-  _cumulativeHfDeaths(std::vector<double>(15+1, 0)),
-  _location(simLocation)
+  _cumulativeHfDeaths(std::vector<double>(15+1, 0))
 {
   // demographics
   _demographics = location->Demographics_;
@@ -372,10 +372,10 @@ HumanPopulation::DoDailyDeaths(void)
     _cumulativeDeaths[i] += (_ageDistribution[i] * DRate);
 
     if( _cumulativeDeaths[i] >= 1 && _ageDistribution[i] > 0 ) {
-      for( int j = 1; j <= _location->INT( _cumulativeDeaths[i] ); ++j ) {
+      for( int j = 1; j <= INT( _cumulativeDeaths[i] ); ++j ) {
         // pick radom individual within age class for death
-        double rndNum = _location->RND();
-        int index = _location->INT( _ageDistribution[i]  * rndNum);
+        double rndNum = _rng();
+        int index = INT( _ageDistribution[i]  * rndNum );
 
         // index iterator and delete death
         HumanCollection::iterator itDead = _humans[i].begin() + index;
@@ -391,7 +391,7 @@ HumanPopulation::DoDailyDeaths(void)
         }
       }
     }
-    _cumulativeDeaths[i] = _cumulativeDeaths[i] - _location->INT(_cumulativeDeaths[i]);
+    _cumulativeDeaths[i] = _cumulativeDeaths[i] - INT(_cumulativeDeaths[i]);
   }
 }
 
@@ -408,7 +408,7 @@ HumanPopulation::DoDailyBirths(void)
     _cumulativeBirths[i] += ((_ageDistribution[i] / (double) 2) * BRate);
 
     if( _cumulativeBirths[i] >= 1 ) {
-      for( int j = 1; j <= _location->INT( _cumulativeBirths[i] ); ++j ) {
+      for( int j = 1; j <= INT( _cumulativeBirths[i] ); ++j ) {
         // create newborn
         Human newborn(1);
 
@@ -430,7 +430,7 @@ HumanPopulation::DoDailyBirths(void)
         _ageDistribution[1]++;
         _totalBirths[i]++;
       }
-      _cumulativeBirths[i] = _cumulativeBirths[i] - _location->INT(_cumulativeBirths[i]);
+      _cumulativeBirths[i] = _cumulativeBirths[i] - INT(_cumulativeBirths[i]);
     }
   }
 }
@@ -520,7 +520,7 @@ HumanPopulation::IntroduceInfectedHuman( unsigned int serotype )
   input::VirusSerotype & virus = _virology->GetSerotype( serotype );
 
   // randomly select age of new infected human and determine age class
-  int age = _location->INT( (_ageClasses[18].LastDay - (virus.IncubationDuration_ + 1) + 1) * _location->RND() + (virus.IncubationDuration_ + 1) );
+  int age = INT( (_ageClasses[18].LastDay - (virus.IncubationDuration_ + 1) + 1) * _rng() + (virus.IncubationDuration_ + 1) );
   int ageClass = GetAgeClassFromAge( age );
 
   // create human and mark as infected
@@ -742,7 +742,7 @@ HumanPopulation::CheckSequentialInfection( int serotype, HumanCollection::iterat
             _dailySequentialInfections[serotype][i] += (1 * si->Probability_);
             
             // possible death
-            if( si->Probability_ * si->Mortality_ > _location->RND() ) {
+            if( si->Probability_ * si->Mortality_ > _rng() ) {
               TabulateHfDeath( itHum->Age );
               itHum->Age = -999;
               return;
@@ -765,7 +765,7 @@ HumanPopulation::CheckSequentialInfection( int serotype, HumanCollection::iterat
 
     // human is viremic and enhancing
     _dailySequentialInfections[Maternal][serotype] += (1 * msi->Probability_);
-    if( msi->Probability_ * msi->Mortality_ > _location->RND() ) {
+    if( msi->Probability_ * msi->Mortality_ > _rng() ) {
       // individual dies
       TabulateHfDeath( itHum->Age );
       itHum->Age = -999;
@@ -899,7 +899,7 @@ HumanPopulation::InitializePopulation(void)
 
   for( int i = 18; i >= 1; --i ) {
     // determine number of individuals in this age class, along with min and max age possible
-    int ageClassCount = _location->CINT( _ageClasses[i].Proportion * _initialPopulationSize );
+    int ageClassCount = CINT( _ageClasses[i].Proportion * _initialPopulationSize );
     int minAge = _ageClasses[i].FirstDay;
     int maxAge = _ageClasses[i].LastDay;
 
@@ -909,7 +909,7 @@ HumanPopulation::InitializePopulation(void)
     // for all individual in this age class
     for( int j = 1; j <= ageClassCount; ++j ) {
       // ... select a random age in [minAge, maxAge]
-      int age = _location->INT( (maxAge - minAge + 1) * _location->RND() + minAge);
+      int age = INT( (maxAge - minAge + 1) * _rng() + minAge);
 
       // create individual and insert into population
       Human human(age);
@@ -933,7 +933,7 @@ HumanPopulation::InitializeSeroprevalence(void)
     for( int j = 1; j <= 4; ++j ) {
 
       // calculate the number of individuals with homologuos immunity to this serotype in this age class
-      int numInfected = _location->CINT( _initialSeroprevalence[i][j] * _ageDistribution[i]);
+      int numInfected = CINT( _initialSeroprevalence[i][j] * _ageDistribution[i]);
 
       while( numInfected > 0 ) {
         Human & human = SelectHumanByAgeClass( i );
@@ -957,7 +957,7 @@ Human &
 HumanPopulation::SelectHuman(void)
 {
   // select human out of entire population
-  int index = _location->INT( (_populationSize - 1) * _location->RND() );
+  int index = INT( (_populationSize - 1) * _rng() );
 
   // find age class where index maps into
   for( int i = 1; i <= 18; ++i ) {
@@ -981,12 +981,12 @@ HumanPopulation::SelectHumanByAgeClass( int ageClass )
   // number of humans available for selection in this age class
   int numHumans = _ageDistribution[ageClass];
 
-  double rndNum = _location->RND();
+  double rndNum = _rng();
 
   // indices in vector run from 0 to numHumans - 1
   // to select a number between [min,max], we multiply [0,1] by
   // (max - min + 1) = ((numHumans - 1) - (0) + 1) = numHumans
-  int index = _location->INT( numHumans * rndNum );
+  int index = INT( numHumans * rndNum );
 
   // return individual in specified age class and index
   return _humans[ageClass][index];
