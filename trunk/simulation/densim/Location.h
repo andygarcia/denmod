@@ -62,6 +62,7 @@ private:
   void InfectMosquitoes( int serotype, double numInfections, std::vector<AdultCohort*> & bitingCollection, MosquitoCollection & susceptibleCollection, std::vector<MosquitoCollection> & infectedCollection );
 
   void MosquitoToHumanTransmission(void);
+  int CalculateHumanInoculations( int serotype );
   int InoculateHumans( int serotype );
 
   void SaveDailyOutput(void);

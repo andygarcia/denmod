@@ -873,37 +873,58 @@ Location::InfectMosquitoes( int serotype, double numInfections, std::vector<Adul
 void
 Location::MosquitoToHumanTransmission(void)
 {
-  // clear daily human inoculation count
+  // clear daily human inoculation counts
   _humanInoculations = 0;
+  _humanInoculationsBySerotype = std::vector<int>( 4+1, 0 );
 
-  // randomly calculate new human infections for four serotypes
-  std::vector<int> seroTypesCompleted;
-  // loop until all four sero types are processed
-  while(true) {
-    // select a serotype randomly
-    int serotype = INT( (4 - 1 + 1) * _rng() + 1 );
+  // calculate per serotype inoculation counts while flagging serotypes with available inoculations
+  std::vector<int> availableSerotypes;
+  for( int i = 1; i <= 4; ++i ) {
+    int inoculations = CalculateHumanInoculations(i);
+    _humanInoculations += inoculations;
+    _humanInoculationsBySerotype[i] = inoculations;
 
-    // see if it has been previously selected or not
-    std::vector<int>::iterator findResult;
-    findResult = std::find( seroTypesCompleted.begin(), seroTypesCompleted.end(), serotype );
-
-    // do serotype innoculation if not previously selected
-    if( findResult == seroTypesCompleted.end() ) {
-      _humanInoculations += InoculateHumans( serotype );
-      seroTypesCompleted.push_back( serotype );
-    }
-
-    // continue until all 4 serotypes have been selected
-    if( seroTypesCompleted.size() == 4 ) {
-      break;
+    if( inoculations > 0 ) {
+      availableSerotypes.push_back( i );
     }
   }
+  // simple case where no inoculations occur
+  if( _humanInoculations == 0 ) {
+    return;
+  }
+
+
+  // now distribute bites...
+  std::vector<int> distributedBitesBySerotype( 4+1, 0 );
+
+  // randomly until until all bites are distributed
+  boost::uniform_int<> indices( 0, static_cast<int>(availableSerotypes.size())-1 );
+  for( int i = 0; i < _humanInoculations; ++i ) {
+    // select random serotype
+    boost::variate_generator< boost::mt19937&, boost::uniform_int<> > selectIndex( _mt19937, indices);
+    int index = selectIndex();
+    int serotype = availableSerotypes[index];
+
+    // inoculate human with selected serotype
+    _humanPopulation->InoculateRandomHuman( serotype );
+
+    distributedBitesBySerotype[serotype]++;
+    if( distributedBitesBySerotype[serotype] == _humanInoculationsBySerotype[serotype] ) {
+      // all bites for this serotype have been distributed, remove from available collection
+      availableSerotypes.erase( availableSerotypes.begin() + index );
+      if( availableSerotypes.size() == 0 ) {
+        break;
+      }
+      indices = boost::uniform_int<>( 0, static_cast<int>(availableSerotypes.size())-1 );
+    }
+  }
+
 }
 
 
 
 int
-Location::InoculateHumans( int serotype )
+Location::CalculateHumanInoculations( int serotype )
 {
   // first calculate a floating point value based off bites
   double inoculationEstimate = _infectiveBites[serotype] * PropOnHum;
@@ -923,9 +944,6 @@ Location::InoculateHumans( int serotype )
     int r;
     for( r = 0; r <= 150; ++r ) {
       double rfact = Factorial(r);
-      if( rfact == 0 ) {
-        throw; // STOP
-      }
       SumOfProb = SumOfProb + ((pow(inoculationEstimate,r) * exp(-inoculationEstimate)) / rfact);
       if( SumOfProb > num ) {
         break;
@@ -936,14 +954,7 @@ Location::InoculateHumans( int serotype )
   else {
     numInoculations = 0;
   }
-  _humanInoculationsBySerotype[serotype] = numInoculations;
   
-
-  // distribute new human inoculations into the human population
-  for( int i = 1; i <= numInoculations; ++i ) {
-    _humanPopulation->InoculateRandomHuman( serotype );
-  }
-
   return numInoculations;
 }
 
