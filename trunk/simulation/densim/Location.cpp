@@ -40,7 +40,6 @@ Location::Location( const input::Location * location, sim::output::MosData * mos
   _newlyInfectiveNulliparous(std::vector<MosquitoCollection>( 4+1 )),
   _newlyInfectiveParous(std::vector<MosquitoCollection>( 4+1 )),
   _infectives(std::vector<MosquitoCollection>( 4+1 )),
-  _infectiveOvipositing(std::vector<MosquitoCollection>( 4+1 )),
   _infectiveBites(std::vector<double>( 4+1, 0 )),
   _infectiveMosquitoesBySerotype(std::vector<double>( 4+1, 0 )),
   _humanInoculationsBySerotype(std::vector<int>( 4+1, 0 ))
@@ -51,8 +50,8 @@ Location::Location( const input::Location * location, sim::output::MosData * mos
   _rng = boost::variate_generator<boost::mt19937, boost::uniform_01<>>( _mt19937, boost::uniform_01<>() );
 #else
   // change once done with densim issues
-  //_mt19937 = boost::mt19937(time(0));
-  _mt19937 = boost::mt19937(0);
+  _mt19937 = boost::mt19937(time(0));
+  //_mt19937 = boost::mt19937(0);
   _rng = boost::variate_generator<boost::mt19937, boost::uniform_01<>>( _mt19937, boost::uniform_01<>() );
 #endif
 
@@ -465,10 +464,6 @@ Location::AdvanceSusceptibleParous(void)
     itMosq->Age++;
     itMosq->Number *= _dailyMosData.OverallSurvival;
 
-    //if( itMosq->Age > 720 ) {
-    //  itMosq = _susceptibleParous.erase( itMosq );
-    //}
-
     if( itMosq->Development <= .58 ) {
       itMosq->Development += _dailyMosData.AdultDevelopment;
       SetParousBloodMealStatus( *itMosq );
@@ -619,53 +614,48 @@ void
 Location::AdvanceInfectives(void)
 {
   _infectiveBites = std::vector<double>( 4+1, 0 );
-  _infectiveOvipositing = std::vector<MosquitoCollection>( 4+1 );
 
 
   for( int iSerotype = 1; iSerotype <= 4; ++iSerotype ) {
-    for( MosquitoIterator itMosq = _infectives[iSerotype].begin(); itMosq != _infectives[iSerotype].end(); ) {
+    for( MosquitoIterator itMosq = _infectives[iSerotype].begin(); itMosq != _infectives[iSerotype].end(); ++itMosq ) {
       // advance in age and apply survival
       itMosq->Age++;
       itMosq->Number *= _dailyMosData.OverallSurvival;
 
       if( itMosq->Development <= .58 ) {
         // not yet completed current gonotrophic cycle
-        // apply survival and accumulate development
         itMosq->Development += _dailyMosData.AdultDevelopment;
         SetParousBloodMealStatus( *itMosq );
-        ++itMosq;
       }
       else {
         // finish current gonotropic cycle
-        // apply survival and moving ovipositing collection
-        _infectiveOvipositing[iSerotype].push_back( *itMosq );
-        itMosq = _infectives[iSerotype].erase( itMosq );
+        itMosq->Development = _dailyMosData.AdultDevelopment;
+        itMosq->Ovipositing = true;
+        itMosq->SeekingBloodMeal = true;
+        itMosq->SeekingDoubleBloodMeal = false;
       }
     }
 
-    // three collections contribute to the newest infective cohort
-    MosquitoCollection mc;
-    // previously infective that are ovipositing and starting a new cycle
-    if( _infectiveOvipositing[iSerotype].size() > 0 ) {
-      mc.push_back( CombineCohorts(_infectiveOvipositing[iSerotype], 1, _dailyMosData.AdultDevelopment) );
-    }
+
     // newly infective nulliparous
-    if( _newlyInfectiveNulliparous[iSerotype].size() > 0 ) {
-      mc.push_back( CombineCohorts(_newlyInfectiveNulliparous[iSerotype], 1, _dailyMosData.AdultDevelopment) );
-    }
-    // newly infective parous
-    if( _newlyInfectiveParous[iSerotype].size() > 0 ) {
-      mc.push_back( CombineCohorts(_newlyInfectiveParous[iSerotype], 1, _dailyMosData.AdultDevelopment) );
-    }
-    // if any of these exists, combine all of them into the new cohort
-    if( mc.size() > 0 ) {
-      AdultCohort newInfective = CombineCohorts( mc, 1, _dailyMosData.AdultDevelopment );
+    for( MosquitoIterator itMosq = _newlyInfectiveNulliparous[iSerotype].begin(); itMosq != _newlyInfectiveNulliparous[iSerotype].end(); ++itMosq ) {
+      AdultCohort newInfective = *itMosq;
       newInfective.Ovipositing = true;
       newInfective.SeekingBloodMeal = true;
       newInfective.SeekingDoubleBloodMeal = false;
       _infectives[iSerotype].push_back( newInfective );
-
     }
+
+
+    // newly infective parous
+    for( MosquitoIterator itMosq = _newlyInfectiveParous[iSerotype].begin(); itMosq != _newlyInfectiveParous[iSerotype].end(); ++itMosq ) {
+      AdultCohort newInfective = *itMosq;
+      newInfective.Ovipositing = true;
+      newInfective.SeekingBloodMeal = true;
+      newInfective.SeekingDoubleBloodMeal = false;
+      _infectives[iSerotype].push_back( newInfective );
+    }
+
 
     // track infective biting
     for( MosquitoIterator itMosq = _infectives[iSerotype].begin(); itMosq != _infectives[iSerotype].end(); ++itMosq ) {
@@ -1099,56 +1089,6 @@ Location::CalculateDoubleBloodMealProportion( double weight )
     double DMealProp = lowWeightProportion - ((weight - lowWeight) * slope);
     return DMealProp;
   }
-}
-
-
-
-double
-Location::GetSusceptibleOvipositingAverageWeight(void)
-{
-  // DS 1.0 takes all females that oviposit on the current day
-  // and sticks them into a new OviAdultCohort (with AdultWt however, which was in error),
-  // we establish the same cohort (TODO: change?) but use the true average weight of
-  // females contributing to new cohort
-  double totalWeight = 0.0;
-  double totalNumber = 0.0;
-
-  for( MosquitoIterator itMosq = _susceptibleNulliparousOvipositing.begin(); itMosq != _susceptibleNulliparousOvipositing.end(); ++itMosq ) {
-    totalNumber += itMosq->Number;
-    totalWeight += itMosq->Weight * itMosq->Number;
-  }
-
-  if( totalNumber == 0.0 ) {
-    return 0.0;
-  }
-  else {
-    return totalWeight / totalNumber;
-  }
-}
-
-
-
-AdultCohort
-Location::CombineCohorts( MosquitoCollection & collection, int age, double development )
-{
-  double totalWeight = 0.0;
-  double totalNumber = 0.0;
-
-  for( MosquitoIterator itMosq = collection.begin(); itMosq != collection.end(); ++itMosq ) {
-    totalNumber += itMosq->Number;
-    totalWeight += itMosq->Weight * itMosq->Number;
-  }
-
-  double averageWeight;
-  if( totalNumber == 0.0 ) {
-    averageWeight = 0.0;
-  }
-  else {
-    averageWeight = totalWeight / totalNumber;
-  }
-
-  AdultCohort newCohort = AdultCohort( age, totalNumber, development, averageWeight );
-  return newCohort;
 }
 
 

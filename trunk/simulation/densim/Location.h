@@ -67,8 +67,6 @@ private:
 
   void SaveDailyOutput(void);
 
-// Helper methods
-public:
   double Factorial( int n );
 
 private:
@@ -80,10 +78,8 @@ private:
   void SetNulliparousBloodMealStatus( AdultCohort & cohort );
   void SetParousBloodMealStatus( AdultCohort & cohort );
 
-  double GetSusceptibleOvipositingAverageWeight(void);
   double GetTotalMosquitoes( MosquitoCollection & collection );
   double GetTotalMosquitoes( std::vector<MosquitoCollection> & collections );
-  AdultCohort CombineCohorts( MosquitoCollection & collection, int age, double development );
 
 // Members
 public:
@@ -192,10 +188,7 @@ public:
 
   // infective cohorts
   std::vector<MosquitoCollection> _infectives;
-  std::vector<MosquitoCollection> _infectiveOvipositing;
   std::vector<double> _infectiveBites;
-  std::vector<MosquitoCollection> _infectiveBiters;
-  std::vector<MosquitoCollection> _infectiveDoubleBiters;
 
   
   // bite and mosquito totals
