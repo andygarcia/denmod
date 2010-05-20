@@ -8,6 +8,8 @@
 #include <iostream>
 #include <sstream>
 
+#include <boost/random/uniform_int.hpp>
+
 #include "Location.h"
 #include "Constants.h"
 #include "Humans.h"
@@ -20,7 +22,8 @@ Location::Location( const input::Location * location, sim::output::MosData * mos
 : _location(location),
   _mosData(mosData),
   _doDiskOutput(doDiskOutput),
-  _rng( boost::variate_generator<boost::mt19937, boost::uniform_01<>>( boost::mt19937(time(0)), boost::uniform_01<>() ) ),
+  _mt19937( boost::mt19937(time(0)) ),
+  _rng( boost::variate_generator<boost::mt19937, boost::uniform_01<>>( _mt19937, boost::uniform_01<>() ) ),
 
   GasCoef(1.987f),
   Virus(std::vector<VirusDesc>( 4+1 )),
@@ -44,14 +47,13 @@ Location::Location( const input::Location * location, sim::output::MosData * mos
 {
   // initialize random number generator
 #ifdef _DEBUG
-  _pdsRng = PdsRng(0);
-  _rng = boost::variate_generator<boost::mt19937, boost::uniform_01<>>( boost::mt19937(0), boost::uniform_01<>() );
+  _mt19937 = boost::mt19937(0);
+  _rng = boost::variate_generator<boost::mt19937, boost::uniform_01<>>( _mt19937, boost::uniform_01<>() );
 #else
   // change once done with densim issues
-  //_pdsRng = PdsRng( static_cast<unsigned int>(time(NULL)) );
-  _pdsRng = PdsRng(0);
-  //_rng = boost::variate_generator<boost::mt19937, boost::uniform_01<>>( boost::mt19937(time(0)), boost::uniform_01<>() );
-  _rng = boost::variate_generator<boost::mt19937, boost::uniform_01<>>( boost::mt19937(0), boost::uniform_01<>() );
+  //_mt19937 = boost::mt19937(time(0));
+  _mt19937 = boost::mt19937(0);
+  _rng = boost::variate_generator<boost::mt19937, boost::uniform_01<>>( _mt19937, boost::uniform_01<>() );
 #endif
 
   // human population and demographics
@@ -398,7 +400,6 @@ Location::AdvanceSusceptibleNulliparous(void)
   _susceptibleNulliparousOvipositing.clear();
   _susceptibleNulliparousBites = 0;
   _susceptibleNulliparousBiters.clear();
-  _susceptibleNulliparousDoubleBiters.clear();
 
 
   // advance each susceptible nulliparous cohort
@@ -442,7 +443,7 @@ Location::AdvanceSusceptibleNulliparous(void)
       _susceptibleNulliparousBites += itMosq->Number;
     }
     if( itMosq->SeekingDoubleBloodMeal ) {
-      _susceptibleNulliparousDoubleBiters.push_back( &*itMosq );
+      _susceptibleNulliparousBiters.push_back( &*itMosq );
       _susceptibleNulliparousBites += itMosq->Number * CalculateDoubleBloodMealProportion( _dailyMosData.AverageWeight );
     }
   }
@@ -456,7 +457,6 @@ Location::AdvanceSusceptibleParous(void)
   // clear susceptible parous bite count and collections
   _susceptibleParousBites = 0;
   _susceptibleParousBiters.clear();
-  _susceptibleParousDoubleBiters.clear();
 
 
   // advance each susceptible parous cohort
@@ -465,9 +465,9 @@ Location::AdvanceSusceptibleParous(void)
     itMosq->Age++;
     itMosq->Number *= _dailyMosData.OverallSurvival;
 
-    if( itMosq->Age > 50 ) {
-      itMosq = _susceptibleParous.erase( itMosq );
-    }
+    //if( itMosq->Age > 720 ) {
+    //  itMosq = _susceptibleParous.erase( itMosq );
+    //}
 
     if( itMosq->Development <= .58 ) {
       itMosq->Development += _dailyMosData.AdultDevelopment;
@@ -502,7 +502,7 @@ Location::AdvanceSusceptibleParous(void)
       _susceptibleParousBites += itMosq->Number;
     }
     if( itMosq->SeekingDoubleBloodMeal ) {
-      _susceptibleParousDoubleBiters.push_back( &*itMosq );
+      _susceptibleParousBiters.push_back( &*itMosq );
       _susceptibleParousBites += itMosq->Number * CalculateDoubleBloodMealProportion( _dailyMosData.AverageWeight );
     }
   }
@@ -778,11 +778,11 @@ Location::InoculateMosquitoes( int iType )
     int numNulliparousInfections = NewDlyMosqInoc - numParousInfections;
 
     if( numParousInfections > 0 ) {
-      InfectMosquitoes( iType, numParousInfections, _susceptibleParous, _infectedParous );
+      InfectMosquitoes( iType, numParousInfections, _susceptibleParousBiters, _susceptibleParous, _infectedParous );
     }
 
     if( numNulliparousInfections > 0 ) {
-      InfectMosquitoes( iType, numNulliparousInfections, _susceptibleNulliparous, _infectedNulliparous );
+      InfectMosquitoes( iType, numNulliparousInfections, _susceptibleNulliparousBiters, _susceptibleNulliparous, _infectedNulliparous );
     }
   }
 }
@@ -790,50 +790,81 @@ Location::InoculateMosquitoes( int iType )
 
 
 void
-Location::InfectMosquitoes( int serotype, double numInfections, MosquitoCollection & bitingCollection, std::vector<MosquitoCollection> & infectedCollection )
+Location::InfectMosquitoes( int serotype, double numInfections, std::vector<AdultCohort*> & bitingCollection, MosquitoCollection & susceptibleCollection, std::vector<MosquitoCollection> & infectedCollection )
 {
-  for( MosquitoIterator itMosq = bitingCollection.begin(); itMosq != bitingCollection.end(); ) {
-    if( itMosq->SeekingBloodMeal || itMosq->SeekingDoubleBloodMeal ) {
-      // this cohort will contribute to a new infected cohort
-      AdultCohort newInfectedCohort;
+  boost::uniform_int<> indices( 0, static_cast<int>(bitingCollection.size())-1 );
 
-      // calculate how many mosquitoes will be in the new infected cohort
-      double numInfected = 0.0;
-      if( numInfections < itMosq->Number ) {
-        // all infections will be removed from this cohort
-        itMosq->Number -= numInfections;
-        numInfected = numInfections;
-        numInfections = 0;
+  while( bitingCollection.size() != 0 ) {
+    // create index generator
+    boost::variate_generator< boost::mt19937&, boost::uniform_int<> > selectIndex( _mt19937, indices);
 
-        // create new cohort
-        newInfectedCohort = AdultCohort( itMosq->Age, numInfected, itMosq->Development, itMosq->Weight );
-        ++itMosq;
-      }
-      else {
-        // entire cohort is infected, subtract from remaining infections
-        numInfected = itMosq->Number;
-        numInfections -= numInfected;
+    // randomly select a biting cohort ...
+    int index = selectIndex();
+    AdultCohort * bitingCohort = bitingCollection[index];
+    // ... that will contribute to a new infected cohort with all the same state but Number
+    int age = bitingCohort->Age;
+    double development = bitingCohort->Development;
+    double weight = bitingCohort->Weight;
+    bool ovipositing = bitingCohort->Ovipositing;
+    bool seekingBloodMeal = bitingCohort->SeekingBloodMeal;
+    bool seekingDoubleBloodMeal = bitingCohort->SeekingDoubleBloodMeal;
 
-        // remove cohort from biting collection
-        itMosq = bitingCollection.erase( itMosq );
 
-        // new cohort is entire cohort
-        newInfectedCohort = *itMosq;
-      }
-   
-      // create new infected cohort and add to serotype specific collection
-      newInfectedCohort.Infected = true;
-      newInfectedCohort.Serotype = serotype;
-      newInfectedCohort.Eip = _eipDevelopmentRate[serotype];
-      infectedCollection[serotype].push_back( newInfectedCohort );
-
-      if( numInfections <= 0 ) {
-        break;
-      }
+    // first calculate mosquito availability
+    double availableMosq = 0.0;
+    if( bitingCohort->SeekingBloodMeal ) {
+      // if cohort is seeking its first blood meal, all are biting
+      availableMosq = bitingCohort->Number;
+    }
+    else if( bitingCohort->SeekingDoubleBloodMeal ) {
+      // if cohort is seeking its double blood meal, only a proportion are biting
+      availableMosq = bitingCohort->Number * CalculateDoubleBloodMealProportion( bitingCohort->Weight );
     }
     else {
-      ++itMosq;
+      // exception, if cohort is not seeking blood meal or double blood meal it should not be in bitingCollection
+      throw;
     }
+
+
+    // next calculate mosquito infections
+    double infectedMosq = 0.0;
+    if( numInfections < availableMosq ) {
+      // all infections will be used on available mosquitoes
+      bitingCohort->Number -= numInfections;
+      infectedMosq = numInfections;
+      numInfections = 0;
+    }
+    else {
+      // all available mosquitoes are infected, subtract from remaining infections
+      infectedMosq = availableMosq;
+      numInfections -= infectedMosq;
+
+      if( availableMosq == bitingCohort->Number ) {
+        // entire cohort is infected cohort, remove biting cohort from its susceptible collection
+        susceptibleCollection.remove( *bitingCohort );
+      }
+      else {
+        bitingCohort->Number -= availableMosq;
+      }
+    }
+
+    // create new infected cohort and add to serotype specific collection
+    AdultCohort infectedCohort = AdultCohort( age, infectedMosq, development, weight );
+    infectedCohort.Ovipositing = ovipositing;
+    infectedCohort.SeekingBloodMeal = seekingBloodMeal;
+    infectedCohort.SeekingDoubleBloodMeal = seekingDoubleBloodMeal;
+    infectedCohort.Infected = true;
+    infectedCohort.Serotype = serotype;
+    infectedCohort.Eip = _eipDevelopmentRate[serotype];
+    infectedCollection[serotype].push_back( infectedCohort );
+
+    if( numInfections <= 0 ) {
+      break;
+    }
+
+    // remove this biting cohort from further selection and update indices for next generator
+    bitingCollection.erase( bitingCollection.begin() + index );
+    indices = boost::uniform_int<>( 0, static_cast<int>(bitingCollection.size())-1 );
   }
 }
 

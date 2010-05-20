@@ -59,7 +59,7 @@ private:
 
   void HumanToMosquitoTransmission(void);
   void InoculateMosquitoes( int serotype );
-  void InfectMosquitoes( int serotype, double numInfections, MosquitoCollection & bitingCollection, std::vector<MosquitoCollection> & infectedCollection );
+  void InfectMosquitoes( int serotype, double numInfections, std::vector<AdultCohort*> & bitingCollection, MosquitoCollection & susceptibleCollection, std::vector<MosquitoCollection> & infectedCollection );
 
   void MosquitoToHumanTransmission(void);
   int InoculateHumans( int serotype );
@@ -159,7 +159,7 @@ public:
   double DBloodLProp;
 
   // random number generator simulator to match PDS 7.1 libraries
-  PdsRng _pdsRng;
+  boost::mt19937 _mt19937;
   boost::variate_generator<boost::mt19937, boost::uniform_01<>> _rng;
 
 
@@ -167,14 +167,12 @@ public:
   MosquitoCollection _susceptibleNulliparous;
   MosquitoCollection _susceptibleNulliparousOvipositing;
   double _susceptibleNulliparousBites;
-  MosquitoReferenceCollection _susceptibleNulliparousBiters;
-  MosquitoReferenceCollection _susceptibleNulliparousDoubleBiters;
 
   MosquitoCollection _susceptibleParous;
   double _susceptibleParousBites;
-  MosquitoReferenceCollection _susceptibleParousBiters;
-  MosquitoReferenceCollection _susceptibleParousDoubleBiters;
 
+  std::vector<AdultCohort*> _susceptibleNulliparousBiters;
+  std::vector<AdultCohort*> _susceptibleParousBiters;
 
 
   // infected cohorts
