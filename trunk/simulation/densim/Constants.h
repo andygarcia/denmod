@@ -4,8 +4,8 @@
 namespace sim {
 namespace ds {
 
-static const int MaxAgeMosq = 50;
-static const int YrLen = 365;
+const double GasCoef = 1.987;
+const int YrLen = 365;
 
 };
 };

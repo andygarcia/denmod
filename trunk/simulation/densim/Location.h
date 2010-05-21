@@ -8,12 +8,14 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "Classes.h"
-#include "PdsRng.h"
-#include "Mosquitoes.h"
+
 #include <boost/random/variate_generator.hpp>
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_01.hpp>
+
+#include "Classes.h"
+#include "Mosquitoes.h"
+
 #include "../input/Location.h"
 #include "../cimsim/Cohorts.h"
 #include "../output/MosData.h"
@@ -35,7 +37,7 @@ class Location
 {
 // Constructors
 public:
-  Location( const input::Location * location, sim::output::MosData * mosData, bool doDiskOutput = false );
+  Location( input::Location const * location, sim::output::MosData * mosData, bool doDiskOutput = false );
   virtual ~Location(void);
 
 // Methods
@@ -70,6 +72,7 @@ private:
   double Factorial( int n );
 
 private:
+  void InitializeBiology( input::Biology * biology );
   void InitializeDiskLogs(void);
 
   void CalculateEipFactors(void);
@@ -83,42 +86,54 @@ private:
 
 // Members
 public:
+  // input and output
   const input::Location * _location;
   output::MosData * _mosData;
   output::DensimOutput * _densimOutput;
 
+
+  // extended output
   bool _doDiskOutput;
   output::Log * _locationLog;
 
-  const double GasCoef;
 
+  // simulation dates
   boost::gregorian::date _startDate;
   boost::gregorian::date _stopDate;
   boost::gregorian::date _currentDate;
-
   int _year;
   int _day;
+
+
+  // random number generator
+  boost::mt19937 _mt19937;
+  boost::variate_generator<boost::mt19937, boost::uniform_01<>> _rng;
+
+
+  // weather and mosquito data from cimsim
+  double _averageAirTemperature;
+  output::DailyMosData _dailyMosData;
+  output::DailyMosData _yesterdayMosData;
+
 
   // human population and demographics
   HumanPopulation * _humanPopulation;
   double HumHostDensity;
 
+
   // daily human inoculations resulting from infective bites
   int _humanInoculations;
   std::vector<int> _humanInoculationsBySerotype;
 
+
   // virus parameters
   std::vector<VirusDesc> Virus;
 
-  // weather and mosquito data from cimsim
-  double _minimumOvipositionTemperature;
-  double _averageAirTemperature;
-  output::DailyMosData _dailyMosData;
-  output::DailyMosData _yesterdayMosData;
 
   // eip rate and factors
   std::vector<double> _eipDevelopmentRate;
   std::vector<double> _eipAdjustmentFactor;
+
 
   // probability human to mosquito infection
   double HumToMosLTiter;
@@ -126,8 +141,10 @@ public:
   double HumToMosHTiter;
   double HumToMosHInf;
 
+
   // probability mosquito to human infection
   double MosqToHumProb;
+
 
   // extrinsic incubation period adjustment factor parameters
   double EipLTiter;
@@ -135,13 +152,10 @@ public:
   double EipHTiter;
   double EipHFactor;
 
+
   // inoculation estimates lower than this are processed stochastically
   double StochTransNum;
 
-  // biting parameters
-  double PropOnHum;
-  double FdAttempts;
-  double PropDifHost;
 
   // enzyme kinetics coefficients
   double EnzKinDR;
@@ -149,15 +163,19 @@ public:
   double EnzKinEI;
   double EnzKinTI;
 
-  // double blood meal parameters
-  double DBloodLWt;
-  double DBloodUWt;
-  double DBloodUProp;
-  double DBloodLProp;
 
-  // random number generator simulator to match PDS 7.1 libraries
-  boost::mt19937 _mt19937;
-  boost::variate_generator<boost::mt19937, boost::uniform_01<>> _rng;
+  // development and survival
+  double _firstDevelopmentThreshold;
+  double _secondDevelopmentThreshold;
+  double _minimumOvipositionTemperature;
+  const input::Biology::AdultParameters::AgeDependentSurvivalParameters * _ageDependentSurvival;
+
+
+  // biting and double blood meal parameters
+  double _proportionOfFeedsOnHumans;
+  int _interruptedFeedsPerMeal;
+  double _proportionOfInterruptedFeedsOnDifferentHost;
+  const input::Biology::AdultParameters::DoubleBloodMealParameters * _doubleBloodMeals;
 
 
   // susceptible cohorts
@@ -195,11 +213,13 @@ public:
   double _totalBites;
   double _totalMosquitoes;
 
+
   // total mosquitoes by status
   double _totalSusceptibleNulliparous;
   double _totalSusceptibleParous;
   double _totalInfectedNulliparous;
   double _totalInfectedParous;
+
 
   // infective mosquito count by serotype and total
   std::vector<double> _infectiveMosquitoesBySerotype;

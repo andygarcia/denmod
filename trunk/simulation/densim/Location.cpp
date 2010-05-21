@@ -10,22 +10,21 @@
 
 #include <boost/random/uniform_int.hpp>
 
-#include "Location.h"
 #include "Constants.h"
 #include "Humans.h"
+#include "Location.h"
 
 using namespace sim::ds;
 
 
 
-Location::Location( const input::Location * location, sim::output::MosData * mosData, bool doDiskOutput )
-: _location(location),
-  _mosData(mosData),
-  _doDiskOutput(doDiskOutput),
-  _mt19937( boost::mt19937(time(0)) ),
+Location::Location( input::Location const * location, sim::output::MosData * mosData, bool doDiskOutput )
+: _location( location ),
+  _mosData( mosData ),
+  _doDiskOutput( doDiskOutput ),
+  _mt19937( boost::mt19937(static_cast<boost::uint32_t>(time(0))) ),
   _rng( boost::variate_generator<boost::mt19937, boost::uniform_01<>>( _mt19937, boost::uniform_01<>() ) ),
 
-  GasCoef(1.987f),
   Virus(std::vector<VirusDesc>( 4+1 )),
   _eipAdjustmentFactor(std::vector<double>( 4+1, 0 )),
   _eipDevelopmentRate(std::vector<double>( 4+1, 0 )),
@@ -50,8 +49,8 @@ Location::Location( const input::Location * location, sim::output::MosData * mos
   _rng = boost::variate_generator<boost::mt19937, boost::uniform_01<>>( _mt19937, boost::uniform_01<>() );
 #else
   // change once done with densim issues
-  _mt19937 = boost::mt19937(time(0));
-  //_mt19937 = boost::mt19937(0);
+  //_mt19937 = boost::mt19937(time(0));
+  _mt19937 = boost::mt19937(0);
   _rng = boost::variate_generator<boost::mt19937, boost::uniform_01<>>( _mt19937, boost::uniform_01<>() );
 #endif
 
@@ -78,6 +77,10 @@ Location::Location( const input::Location * location, sim::output::MosData * mos
   this->Virus[4].Durat = _location->Virology_->Dengue4_.ViremicDuration_;
 
 
+  // initialize parameters
+  InitializeBiology( location->Biology_ );
+
+
   // transmission parameters
   this->HumToMosLTiter = _location->Virology_->HumanToMosquitoInfection_.LowTiterSetPoint_;
   this->HumToMosLInf = _location->Virology_->HumanToMosquitoInfection_.LowTiterInfection_;
@@ -97,22 +100,8 @@ Location::Location( const input::Location * location, sim::output::MosData * mos
   this->EnzKinEI = _location->Virology_->Eip_.Development_.DHH;
   this->EnzKinTI = _location->Virology_->Eip_.Development_.THALF;
 
-  // biology parameters
-  this->_minimumOvipositionTemperature = _location->Biology_->Adult->MinimumOvipositionTemperature;
-
-  this->PropOnHum = _location->Biology_->Adult->ProportionOfFeedsOnHumans;
-  this->FdAttempts = _location->Biology_->Adult->InterruptedFeedsPerMeal;
-  this->PropDifHost = _location->Biology_->Adult->ProportionOfInterruptedFeedsOnDifferentHost;
-
-  this->DBloodLWt = _location->Biology_->Adult->DoubleBloodMeal->LowWeightLimit;
-  this->DBloodUProp = _location->Biology_->Adult->DoubleBloodMeal->LowWeightRatio;
-  this->DBloodUWt = _location->Biology_->Adult->DoubleBloodMeal->HighWeightLimit;
-  this->DBloodLProp = _location->Biology_->Adult->DoubleBloodMeal->HighWeightRatio;
-
 
   // initialize mosquito population from cimsim
-  // TODO - for now set oviposition and blood meal seeking status based off age until
-  // cimsim reports this as part of the cohort data
   double initialArea = _humanPopulation->GetInitialPopulationSize() / HumHostDensity;
   for( sim::cs::PreOviAdultCohortCollection::iterator itAdult = _mosData->PreOviAdultCohorts.begin();
        itAdult != _mosData->PreOviAdultCohorts.end(); ++itAdult ) {
@@ -166,6 +155,25 @@ Location::~Location(void)
   }
 
   delete _humanPopulation;
+}
+
+
+
+void
+Location::InitializeBiology( input::Biology * biology )
+{
+  // development and survival
+  _firstDevelopmentThreshold = 1.0;
+  _secondDevelopmentThreshold = biology->Adult->SecondDevelopmentThreshold;
+  _minimumOvipositionTemperature = biology->Adult->MinimumOvipositionTemperature;
+  _ageDependentSurvival = biology->Adult->AgeDependentSurvival;  
+
+
+  // feeding and double blood meals
+  _doubleBloodMeals = biology->Adult->DoubleBloodMeal;
+  _proportionOfFeedsOnHumans = biology->Adult->ProportionOfFeedsOnHumans;
+  _interruptedFeedsPerMeal = biology->Adult->InterruptedFeedsPerMeal;
+  _proportionOfInterruptedFeedsOnDifferentHost = biology->Adult->ProportionOfInterruptedFeedsOnDifferentHost;
 }
 
 
@@ -303,7 +311,7 @@ Location::IntroduceInfectives(void)
   for( int serotype = 1; serotype <= 4; ++serotype ) {
     input::SerotypeIntroduction * serotypeIntro = _location->InfectionIntroduction_->GetSerotype(serotype);
     if( serotypeIntro->Schedule_->IsDateScheduled( _currentDate ) && serotypeIntro->Mosquitoes_ > 0 ) {
-      AdultCohort newCohort = AdultCohort( 1, serotypeIntro->Mosquitoes_, 1.1, _dailyMosData.AverageWeight );
+      AdultCohort newCohort = AdultCohort( 1, serotypeIntro->Mosquitoes_, 1.1, _dailyMosData.NewFemaleWeight );
       newCohort.Infected = true;
       newCohort.Eip = 1.1;
       newCohort.Serotype = serotype;
@@ -425,7 +433,7 @@ Location::AdvanceSusceptibleNulliparous(void)
 
   // create new nulliparous cohort from cimsim
   if( _dailyMosData.NewFemales > 0 ) {
-    AdultCohort newCohort = AdultCohort( 1, _dailyMosData.NewFemales, _dailyMosData.AdultDevelopment, _dailyMosData.AverageWeight );
+    AdultCohort newCohort = AdultCohort( 1, _dailyMosData.NewFemales, _dailyMosData.AdultDevelopment, _dailyMosData.NewFemaleWeight );
 
     // adjust cohort count for simulation size since cimsim reports per hectare counts
     int numberOfHumans = _humanPopulation->GetPopulationSize();
@@ -443,7 +451,7 @@ Location::AdvanceSusceptibleNulliparous(void)
     }
     if( itMosq->SeekingDoubleBloodMeal ) {
       _susceptibleNulliparousBiters.push_back( &*itMosq );
-      _susceptibleNulliparousBites += itMosq->Number * CalculateDoubleBloodMealProportion( _dailyMosData.AverageWeight );
+      _susceptibleNulliparousBites += itMosq->Number * CalculateDoubleBloodMealProportion( itMosq->Weight );
     }
   }
 }
@@ -498,7 +506,7 @@ Location::AdvanceSusceptibleParous(void)
     }
     if( itMosq->SeekingDoubleBloodMeal ) {
       _susceptibleParousBiters.push_back( &*itMosq );
-      _susceptibleParousBites += itMosq->Number * CalculateDoubleBloodMealProportion( _dailyMosData.AverageWeight );
+      _susceptibleParousBites += itMosq->Number * CalculateDoubleBloodMealProportion( itMosq->Weight );
     }
   }
 }
@@ -555,7 +563,7 @@ Location::AdvanceInfectedNulliparous(void)
         if( (itMosq->Development - _dailyMosData.AdultDevelopment) > developmentThreshold ) {
           _infectedBites[iSerotype] += itMosq->Number;
           _infectedNulliparousBites[iSerotype] += itMosq->Number;
-          _infectedNulliparousDoubleBites[iSerotype] += itMosq->Number * CalculateDoubleBloodMealProportion( _dailyMosData.AverageWeight );
+          _infectedNulliparousDoubleBites[iSerotype] += itMosq->Number * CalculateDoubleBloodMealProportion( itMosq->Weight );
         }
         ++itMosq;
       }
@@ -589,7 +597,7 @@ Location::AdvanceInfectedParous(void)
           // finished a gonotropic cycle
           _infectedBites[iSerotype] += itMosq->Number;
           _infectedParousBites[iSerotype] += itMosq->Number;
-          _infectedParousDoubleBites[iSerotype] += itMosq->Number * CalculateDoubleBloodMealProportion( _dailyMosData.AverageWeight );
+          _infectedParousDoubleBites[iSerotype] += itMosq->Number * CalculateDoubleBloodMealProportion( itMosq->Weight );
 
           // TODO - why is development simply set here?
           // this means if a cohort is just shy of developing today, with development = .57
@@ -663,7 +671,7 @@ Location::AdvanceInfectives(void)
         _infectiveBites[iSerotype] += itMosq->Number;
       }
       if( itMosq->SeekingDoubleBloodMeal ) {
-        _infectiveBites[iSerotype] += itMosq->Number * CalculateDoubleBloodMealProportion( _dailyMosData.AverageWeight );
+        _infectiveBites[iSerotype] += itMosq->Number * CalculateDoubleBloodMealProportion( itMosq->Weight );
       }
     }
   }
@@ -683,8 +691,8 @@ Location::HumanToMosquitoTransmission(void)
 
 
   // calcualte bites per person taking into account biting parameters
-  _bitesPerPerson = (_susceptibleNulliparousBites + _susceptibleParousBites) * PropOnHum;
-  _bitesPerPerson += _bitesPerPerson * (FdAttempts - 1) * PropDifHost;
+  _bitesPerPerson = (_susceptibleNulliparousBites + _susceptibleParousBites) * _proportionOfFeedsOnHumans;
+  _bitesPerPerson += _bitesPerPerson * (_interruptedFeedsPerMeal - 1) * _proportionOfInterruptedFeedsOnDifferentHost;
   _bitesPerPerson /= numberOfHumans;
 
 
@@ -917,8 +925,8 @@ int
 Location::CalculateHumanInoculations( int serotype )
 {
   // first calculate a floating point value based off bites
-  double inoculationEstimate = _infectiveBites[serotype] * PropOnHum;
-  inoculationEstimate += (_infectiveBites[serotype] * PropOnHum) * (FdAttempts - 1) * PropDifHost;
+  double inoculationEstimate = _infectiveBites[serotype] * _proportionOfFeedsOnHumans;
+  inoculationEstimate += (_infectiveBites[serotype] * _proportionOfFeedsOnHumans) * (_interruptedFeedsPerMeal - 1) * _proportionOfInterruptedFeedsOnDifferentHost;
   inoculationEstimate *= MosqToHumProb;
 
   // then change into a discrete value
@@ -1068,15 +1076,16 @@ Location::GetTotalMosquitoes( std::vector<MosquitoCollection> & collections )
   return totalNumber;
 }
 
-  
+
+
 double
 Location::CalculateDoubleBloodMealProportion( double weight )
 {
-  const double & lowWeight = DBloodLWt;
-  const double & lowWeightProportion = DBloodUProp;
-  
-  const double & highWeight = DBloodUWt;
-  const double & highWeightProportion = DBloodLProp;
+  static const double & lowWeight = _doubleBloodMeals->LowWeightLimit;
+  static const double & lowWeightProportion = _doubleBloodMeals->LowWeightRatio;
+
+  static const double & highWeight = _doubleBloodMeals->HighWeightLimit;
+  static const double & highWeightProportion = _doubleBloodMeals->HighWeightRatio;
 
   if( weight <= lowWeight) {
     return lowWeightProportion;

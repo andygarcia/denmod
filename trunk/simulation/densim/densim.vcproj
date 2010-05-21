@@ -166,10 +166,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PdsRng.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Simulation.cpp"
 				>
 			</File>
@@ -217,10 +213,6 @@
 			</File>
 			<File
 				RelativePath=".\Mosquitoes.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PdsRng.h"
 				>
 			</File>
 			<File
