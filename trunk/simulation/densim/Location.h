@@ -76,6 +76,7 @@ private:
   void InitializeDiskLogs(void);
 
   void CalculateEipFactors(void);
+  double CalculateAgeDependentSurvival( int age );
   double CalculateDoubleBloodMealProportion( double weight );
 
   void SetNulliparousBloodMealStatus( AdultCohort & cohort );
@@ -168,6 +169,7 @@ public:
   double _firstDevelopmentThreshold;
   double _secondDevelopmentThreshold;
   double _minimumOvipositionTemperature;
+  double _ageIndependentSurvival;
   const input::Biology::AdultParameters::AgeDependentSurvivalParameters * _ageDependentSurvival;
 
 

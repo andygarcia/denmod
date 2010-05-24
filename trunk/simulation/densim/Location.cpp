@@ -362,6 +362,9 @@ Location::EIPEnzKin( double temp )
 void
 Location::MosquitoLifeCycle(void)
 {
+  // set age independent survival used by all cohorts
+  _ageIndependentSurvival = _dailyMosData.AgeIndependentSurvival;
+
   // advance cohorts in each of the five primary collections
   AdvanceSusceptibleNulliparous();
   AdvanceSusceptibleParous();
@@ -413,7 +416,9 @@ Location::AdvanceSusceptibleNulliparous(void)
   for( MosquitoIterator itMosq = _susceptibleNulliparous.begin(); itMosq != _susceptibleNulliparous.end(); ) {
     // advance in age and apply survival
     itMosq->Age++;
-    itMosq->Number *= _dailyMosData.OverallSurvival;
+    double ageDependentSurvival = CalculateAgeDependentSurvival( itMosq->Age );
+    itMosq->Number *= _ageIndependentSurvival * ageDependentSurvival;
+
 
     // TODO include temperature check
     if( itMosq->Development <= 1 ) {
@@ -470,7 +475,8 @@ Location::AdvanceSusceptibleParous(void)
   for( MosquitoIterator itMosq = _susceptibleParous.begin(); itMosq != _susceptibleParous.end(); ++itMosq ) {
     // advance in age and apply survival
     itMosq->Age++;
-    itMosq->Number *= _dailyMosData.OverallSurvival;
+    double ageDependentSurvival = CalculateAgeDependentSurvival( itMosq->Age );
+    itMosq->Number *= _ageIndependentSurvival * ageDependentSurvival;
 
     if( itMosq->Development <= .58 ) {
       itMosq->Development += _dailyMosData.AdultDevelopment;
@@ -545,17 +551,17 @@ Location::AdvanceInfectedNulliparous(void)
 
       // advance in age and apply survival
       itMosq->Age++;
-      itMosq->Number *= _dailyMosData.OverallSurvival;
+      double ageDependentSurvival = CalculateAgeDependentSurvival( itMosq->Age );
+      itMosq->Number *= _ageIndependentSurvival * ageDependentSurvival;
 
       if( itMosq->Eip > 1.0 && itMosq->Development > developmentThreshold ) {
-        // mosquito finished development and EIP
-        // apply survival and transfer into newly infective nulliparous collection
+        // mosquito finished development and EIP, transfer into newly infective nulliparous collection
         _newlyInfectiveNulliparous[iSerotype].push_back( *itMosq );
         itMosq = _infectedNulliparous[iSerotype].erase( itMosq );
       }
       else {
         // not finished with eip but not neccesarily not finished development
-        // apply survival, accumulate development, and accumulate eip
+        // accumulate development and eip
         itMosq->Development += _dailyMosData.AdultDevelopment;
         itMosq->Eip += _eipDevelopmentRate[iSerotype];
 
@@ -585,7 +591,10 @@ Location::AdvanceInfectedParous(void)
 
     for( MosquitoIterator itMosq = _infectedParous[iSerotype].begin(); itMosq != _infectedParous[iSerotype].end(); ) {
       itMosq->Age++;
-      itMosq->Number *= _dailyMosData.OverallSurvival;
+      double ageDependentSurvival = CalculateAgeDependentSurvival( itMosq->Age );
+      itMosq->Number *= _ageIndependentSurvival * ageDependentSurvival;
+
+
       if( itMosq->Eip > 1 && itMosq->Development > .58 ) {
         // finished eip and development, transfer to newly infective parous collection
         _newlyInfectiveParous[iSerotype].push_back( *itMosq );
@@ -628,7 +637,8 @@ Location::AdvanceInfectives(void)
     for( MosquitoIterator itMosq = _infectives[iSerotype].begin(); itMosq != _infectives[iSerotype].end(); ++itMosq ) {
       // advance in age and apply survival
       itMosq->Age++;
-      itMosq->Number *= _dailyMosData.OverallSurvival;
+      double ageDependentSurvival = CalculateAgeDependentSurvival( itMosq->Age );
+      itMosq->Number *= _ageIndependentSurvival * ageDependentSurvival;
 
       if( itMosq->Development <= .58 ) {
         // not yet completed current gonotrophic cycle
@@ -1097,6 +1107,23 @@ Location::CalculateDoubleBloodMealProportion( double weight )
     double slope = (lowWeightProportion - highWeightProportion) / (highWeight - lowWeight);
     double DMealProp = lowWeightProportion - ((weight - lowWeight) * slope);
     return DMealProp;
+  }
+}
+
+
+
+double
+Location::CalculateAgeDependentSurvival( int age )
+{
+  const double & youngSurvival = _ageDependentSurvival->YoungSurvival;
+  const double & oldSurvival = _ageDependentSurvival->OldSurvival;
+  const double & cutOffAge = _ageDependentSurvival->CutoffAge;
+
+  if( age <= cutOffAge ) {
+    return youngSurvival;
+  }
+  else {
+    return oldSurvival;
   }
 }
 
