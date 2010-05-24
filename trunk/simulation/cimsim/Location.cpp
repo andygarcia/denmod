@@ -123,16 +123,14 @@ SimLocation::InitializePopulation( const sim::output::PopData * population )
 {
   _usingPop = true;
 
-  // initialize adults
-  _preOviAdults = population->PreOviAdultCohorts;
-  _oviAdults = population->OviAdultCohorts;
+  // initilize cimsim population
+  _nulliparousAdults = population->PreOviAdultCohorts;
+  _parousAdults = population->OviAdultCohorts;
   _adultAgeDistribution = population->MosqAgeDistr;
 
-  _nulliparousAdults = _preOviAdults;
-  _parousAdults = _oviAdults;
-
-  _initialPreOviAdults = _preOviAdults;
-  _initialOviAdults = _oviAdults;
+  // save initial population for densim
+  _initialPreOviAdults = _nulliparousAdults;
+  _initialOviAdults = _parousAdults;
 
   // initialize immatures and containers
   std::vector<input::Container*>::const_iterator itCtnr;
@@ -379,6 +377,9 @@ SimLocation::DoYear(void)
 
     // calculate adult development rate
     double DevRateAdult = DevelopmentRate(_adultP25, TemperatureAvg[Day] + 273.15f, _adultDHA, _adultDHH, _adultTH2 );
+    // calculate today's development thresholds
+    double firstTargetThreshold = 1.0 - (DevRateAdult / 2.0);
+    double secondTargetThreshold = _adultSecondDevelopmentThreshold - (DevRateAdult / 2.0);
 
     // clear today's new female count and weight
     NewFemales = 0;
@@ -402,204 +403,21 @@ SimLocation::DoYear(void)
     // calculate adult survival
     CalculateAdultTemperatureSurvival();
     CalculateAdultSatDefSurvival();
+    // calculate non age dependent survival to combine with age dependent survival
+    _ageIndependentSurvival = AdultSurvivalTemperature * AdultSurvivalSatDef;
+
+
+    // AdultSurvival is still used by sterile males
     AdultSurvival = _adultNominalSurvival * AdultSurvivalTemperature * AdultSurvivalSatDef;
-
-
-    // clear today's ovipositing cohort collection
-    _ovipositingAdults.clear();
-
-    // advance pre-oviposition adults
-    double newEggLayersCohorts = 0.0;
-    double firstTargetThreshold = 1.0 - (DevRateAdult / 2.0);
-    for( PreOviAdultIterator itAdult = _preOviAdults.begin(); itAdult != _preOviAdults.end(); ) {
-      if( itAdult->Development < firstTargetThreshold || TemperatureAvg[Day] <= _minimumOvipositionTemperature ) {
-        itAdult->Age++;
-        itAdult->Number = itAdult->Number * AdultSurvival;
-        itAdult->Development += DevRateAdult;
-        ++itAdult;
-      }
-      else {
-        itAdult->Number = itAdult->Number * AdultSurvival;
-        newEggLayersCohorts += itAdult->Number;
-        _ovipositingAdults.push_back( *itAdult );
-        itAdult = _preOviAdults.erase( itAdult );
-      }
-    }
-
-    // establish newly emerged female cohort, since this occurs after above block, newly emerged females
-    // are not subjected to adult survival - this makes sense since they were subjected to pupae survival
-    if( NewFemales > 0 ) {
-      _preOviAdults.push_back( PreOviAdultCohort(1, NewFemales, DevRateAdult, NewFemaleWeight) );
-    }
-    // they are however subjected to residual and space sprays from the following two code blocks
-
-
-    // apply space spray to pre ovi adults
-    for( std::vector<SpaceSpray*>::iterator itSs = SpaceSprays_.begin(); itSs != SpaceSprays_.end(); ++itSs ) {
-      if( (*itSs)->IsDateScheduled(_currentDate) ) {
-        SpaceSpray * ss = *itSs;
-
-        for( PreOviAdultIterator itAdult = _preOviAdults.begin(); itAdult != _preOviAdults.end(); ) {
-          double indoorSurvival = itAdult->Number * (1 - ss->GetIndoorMortality()) * (1 - _proportionAdultsOutdoor);
-          double outdoorSurvival = itAdult->Number * (1 - ss->GetOutdoorMortality()) * _proportionAdultsOutdoor;
-          itAdult->Number = indoorSurvival + outdoorSurvival;
-          if( itAdult->Number == 0 ) {
-            itAdult = _preOviAdults.erase(itAdult);
-          }
-          else {
-            ++itAdult;
-          }
-        }
-      }
-    }
-
-    // apply residual spray to pre ovi adults
-    if( ResidualSprays_.size() > 0 ) {
-      ResidualSpray * rs = ResidualSprays_.at(0);
-      if( rs->GetSurvival(_currentDate) < 1 ) {
-        double surfaceRatio = rs->GetTreatedInteriorProportion();
-        double houseRatio = rs->GetTreatedHousesProportion();
-        double survival = rs->GetSurvival(_currentDate);
-        double mortality = 1 - survival;
-
-        for( PreOviAdultIterator itAdult = _preOviAdults.begin(); itAdult != _preOviAdults.end(); ) {
-          double indoorCount = itAdult->Number * (1 - _proportionAdultsOutdoor);
-          double indoorMortality = itAdult->Number * (1 - _proportionAdultsOutdoor) * mortality * houseRatio * surfaceRatio;
-          double indoorSurvival = indoorCount - indoorMortality;
-
-          double outdoorCount = itAdult->Number * _proportionAdultsOutdoor;
-
-          itAdult->Number = indoorSurvival + outdoorCount;
-          if( itAdult->Number == 0 ) {
-            itAdult = _preOviAdults.erase(itAdult);
-          }
-          else {
-            ++itAdult;
-          }
-        }
-      }
-    }
-
-
-    // advanced post oviposition adults
-    double eggLayersCohorts = 0.0;
-    double secondTargetThreshold = _adultSecondDevelopmentThreshold - (DevRateAdult / 2.0);
-    for( OviAdultIterator itAdult = _oviAdults.begin(); itAdult != _oviAdults.end(); ) {
-      if( itAdult->Development < secondTargetThreshold || TemperatureAvg[Day] <= _minimumOvipositionTemperature ) {
-        itAdult->Age++;
-        itAdult->Number = itAdult->Number * AdultSurvival;
-        itAdult->Development += DevRateAdult;
-        ++itAdult;
-      }
-      else {
-        itAdult->Number = itAdult->Number * AdultSurvival;
-        eggLayersCohorts += itAdult->Number;
-        _ovipositingAdults.push_back( *itAdult );
-        itAdult = _oviAdults.erase( itAdult );
-      }
-    }
-
-    // create new ovi adult cohort based on all females who will ovipositing today, reseting dev cycle and "age"
-    if( newEggLayersCohorts + eggLayersCohorts > 0 ) {
-      _oviAdults.push_back( OviAdultCohort(1, newEggLayersCohorts + eggLayersCohorts, DevRateAdult, GetOvipositingFemaleAverageWeight()) );
-    }
-
-    // apply space spray to ovi adults
-    for( std::vector<SpaceSpray*>::iterator itSs = SpaceSprays_.begin(); itSs != SpaceSprays_.end(); ++itSs ) {
-      if( (*itSs)->IsDateScheduled(_currentDate) ) {
-        SpaceSpray * ss = *itSs;
-
-        for( OviAdultIterator itAdult = _oviAdults.begin(); itAdult != _oviAdults.end(); ) {
-          double indoorSurvival = itAdult->Number * (1 - ss->GetIndoorMortality()) * (1 - _proportionAdultsOutdoor);
-          double outdoorSurvival = itAdult->Number * (1 - ss->GetOutdoorMortality()) * _proportionAdultsOutdoor;
-          itAdult->Number = indoorSurvival + outdoorSurvival;
-          if( itAdult->Number == 0 ) {
-            itAdult = _oviAdults.erase(itAdult);
-          }
-          else {
-            ++itAdult;
-          }
-        }
-      }
-    }
-
-    // apply residual spray to ovi adults
-    if( ResidualSprays_.size() > 0 ) {
-      ResidualSpray * rs = ResidualSprays_.at(0);
-      if( rs->GetSurvival(_currentDate) < 1 ) {
-        double surfaceRatio = rs->GetTreatedInteriorProportion();
-        double houseRatio = rs->GetTreatedHousesProportion();
-        double survival = rs->GetSurvival(_currentDate);
-        double mortality = 1 - survival;
-
-        for( OviAdultIterator itAdult = _oviAdults.begin(); itAdult != _oviAdults.end(); ) {
-          double indoorCount = itAdult->Number * (1 - _proportionAdultsOutdoor);
-          double indoorMortality = itAdult->Number * (1 - _proportionAdultsOutdoor) * mortality * houseRatio * surfaceRatio;
-          double indoorSurvival = indoorCount - indoorMortality;
-
-          double outdoorCount = itAdult->Number * _proportionAdultsOutdoor;
-
-          itAdult->Number = indoorSurvival + outdoorCount;
-          if( itAdult->Number == 0 ) {
-            itAdult = _oviAdults.erase(itAdult);
-          }
-          else {
-            ++itAdult;
-          }
-        }
-      }
-    }
-
-
-    // advance adult age distribution
-    for( int Age = MaxAgeOviAdults - 1; Age >= 1; Age-- ) {
-      _adultAgeDistribution[Age + 1] = _adultAgeDistribution[Age] * AdultSurvival;
-    }
-    _adultAgeDistribution[1] = NewFemales;
-
-    // apply space spray to age distribution
-    for( std::vector<SpaceSpray*>::iterator itSs = SpaceSprays_.begin(); itSs != SpaceSprays_.end(); ++itSs ) {
-      if( (*itSs)->IsDateScheduled(_currentDate) ) {
-        SpaceSpray * ss = *itSs;
-        for( int Age = MaxAgeOviAdults; Age >= 1; Age-- ) {
-          double IndoorSurviving = _adultAgeDistribution[Age] * (1 - ss->GetIndoorMortality()) * (1 - _proportionAdultsOutdoor);
-          double OutdoorSurviving = _adultAgeDistribution[Age] * (1 - ss->GetOutdoorMortality()) * _proportionAdultsOutdoor;
-          _adultAgeDistribution[Age] = IndoorSurviving + OutdoorSurviving;
-        }
-      }
-    }
-
-    // apply residual spray to mosquito age distr
-    if( ResidualSprays_.size() > 0 ) {    
-      ResidualSpray * rs = ResidualSprays_.at(0);
-      if( rs->GetSurvival(_currentDate) < 1 ) {
-        double surfaceRatio = rs->GetTreatedInteriorProportion();
-        double houseRatio = rs->GetTreatedHousesProportion();
-        double survival = rs->GetSurvival(_currentDate);
-        double mortality = 1 - survival;
-
-        // TODO incorrect, doesn't accumulate outdoor??
-        for( int Age = MaxAgeOviAdults; Age >= 1; --Age ) {
-          _adultAgeDistribution[Age] = _adultAgeDistribution[Age] * (1 - _proportionAdultsOutdoor) * surfaceRatio * houseRatio * survival;
-        }
-      }
-    }
-
-
-    // BEGIN NEW ADULT CODE
 
     // prepare to track today's ovipositing nulliparous and parous cohorts
     _ovipositingNulliparousAdults.clear();
     _ovipositingParousAdults.clear();
 
-    // calculate survival before applying age dependence
-    double nonAgeDependentSurvival = AdultSurvivalTemperature * AdultSurvivalSatDef;
-
     // advance nulliparous cohorts
     for( PreOviAdultIterator itAdult = _nulliparousAdults.begin(); itAdult != _nulliparousAdults.end(); ) {
-      // TODO: should we use the age at beginning of the day or the age at the end of the day?
       itAdult->Age++;
-      double survival = nonAgeDependentSurvival * CalculateAdultAgeDependentSurvival( itAdult->Age );
+      double survival = _ageIndependentSurvival * CalculateAdultAgeDependentSurvival( itAdult->Age );
       itAdult->Number = itAdult->Number * survival;
 
       // check if development and temperature allow for oviposition
@@ -671,7 +489,7 @@ SimLocation::DoYear(void)
     for( OviAdultIterator itAdult = _parousAdults.begin(); itAdult != _parousAdults.end(); ++itAdult ) {
       itAdult->Age++;
       itAdult->OvipositionAge++;
-      double survival = nonAgeDependentSurvival * CalculateAdultAgeDependentSurvival( itAdult->Age );
+      double survival = _ageIndependentSurvival * CalculateAdultAgeDependentSurvival( itAdult->Age );
       itAdult->Number = itAdult->Number * survival;
 
       // check if devleopment and temperature allow for subsequent oviposition
@@ -1033,6 +851,7 @@ SimLocation::UpdateOutput( date d, double adultDev, double newEggs )
   dlo.AverageWeight = GetFemaleAverageWeight();
   dlo.AdultDevelopment = adultDev;
   dlo.OverallSurvival = AdultSurvival;
+  dlo.AgeIndependentSurvival = _ageIndependentSurvival;
   _output->AddDailyLocationOutput( dlo, d );
 
   // record container outputs for current date
@@ -1061,8 +880,8 @@ SimLocation::GeneratePopData(void)
 {
   sim::output::PopData * pd = new output::PopData();
 
-  pd->PreOviAdultCohorts = _preOviAdults;
-  pd->OviAdultCohorts = _oviAdults;
+  pd->PreOviAdultCohorts = _nulliparousAdults;
+  pd->OviAdultCohorts = _parousAdults;
   pd->MosqAgeDistr = _adultAgeDistribution;
 
   ContainerCollection::iterator itCont;
@@ -1097,31 +916,6 @@ SimLocation::GetFemaleAverageWeight(void)
   }
 
   for( OviAdultIterator itAdult = _parousAdults.begin(); itAdult != _parousAdults.end(); ++itAdult) {
-    totalNumber += itAdult->Number;
-    totalWeight += itAdult->Weight * itAdult->Number;
-  }
-
-  if( totalNumber == 0.0 ) {
-    return 0.0;
-  }
-  else {
-    return totalWeight / totalNumber;
-  }
-}
-
-
-
-double
-SimLocation::GetOvipositingFemaleAverageWeight(void)
-{
-  // CS 1.0 takes all females that oviposit on the current day
-  // and sticks them into a new OviAdultCohort (with AdultWt however, which was in error),
-  // we establish the same cohort (TODO: change?) but use the true average weight of
-  // females contributing to new cohort
-  double totalWeight = 0.0;
-  double totalNumber = 0.0;
-
-  for( AdultCohortCollection::iterator itAdult = _ovipositingAdults.begin(); itAdult != _ovipositingAdults.end(); ++itAdult) {
     totalNumber += itAdult->Number;
     totalWeight += itAdult->Weight * itAdult->Number;
   }

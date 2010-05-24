@@ -24,6 +24,7 @@ public:
   double NewFemaleWeight;
   double AverageWeight;
   double OverallSurvival;
+  double AgeIndependentSurvival;
   double AdultDevelopment;
 };
 

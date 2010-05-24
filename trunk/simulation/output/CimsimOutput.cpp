@@ -747,8 +747,10 @@ DailyLocationOutput::GetDailyMosData(void)
   DailyMosData dmd;
 
   dmd.NewFemales = this->NewFemales;
+  dmd.NewFemaleWeight = this->NewFemaleWeight;
   dmd.AverageWeight = this->AverageWeight;
   dmd.OverallSurvival = this->OverallSurvival;
+  dmd.AgeIndependentSurvival = this->AgeIndependentSurvival;
   dmd.AdultDevelopment = this->AdultDevelopment;
 
   return dmd;

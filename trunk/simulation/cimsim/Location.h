@@ -48,8 +48,6 @@ private:
   double GetFemaleAverageWeight(void);
 
   std::pair<double,double> GetOvipositingTotals(void);
-  // deprecated - removed once new adult aging system in place in DENSiM
-  double GetOvipositingFemaleAverageWeight(void);
 
   double GetNulliparousBiters(void);
   double GetParousBiters(void);
@@ -117,11 +115,6 @@ private:
   PreOviAdultCohortCollection _initialPreOviAdults;
   OviAdultCohortCollection _initialOviAdults;
 
-  // TODO deprecated - remove once changes replicated to DENSiM
-  PreOviAdultCohortCollection _preOviAdults;
-  OviAdultCohortCollection _oviAdults;
-  AdultCohortCollection _ovipositingAdults;
-
   // adult population
   PreOviAdultCohortCollection _nulliparousAdults;
   OviAdultCohortCollection _parousAdults;
@@ -138,6 +131,7 @@ private:
   double AdultSurvival;
   double AdultSurvivalTemperature;
   double AdultSurvivalSatDef;
+  double _ageIndependentSurvival;
 
   // new female cohort
   double NewFemales;
