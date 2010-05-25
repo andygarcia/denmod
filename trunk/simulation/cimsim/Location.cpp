@@ -28,8 +28,8 @@ SimLocation::SimLocation( const input::Location * location, boost::gregorian::da
   srand( 0 );
 #else
   // TODO - change once done w/ densim issues
-  // srand( time(NULL) );
-  srand( 0 );
+  srand( time(NULL) );
+  //srand( 0 );
 #endif
 
   // initialize population/containers
