@@ -11,7 +11,6 @@ public:
   : _showSplashScreen(true),
     _doSimulationDiskOutput(false),
     _scaleCimsimMainGraph(false),
-    _stochasticAdvancement(false),
     _establishedPopulationDefault(true)
   {}
 
@@ -53,18 +52,6 @@ public:
     }
   }
 
-  property bool StochasticAdvancement {
-    bool get(void) {
-      return _stochasticAdvancement;
-    }
-    void set(bool b) {
-      if( b != _stochasticAdvancement ) {
-        _stochasticAdvancement = b;
-        NotifyPropertyChanged( "StochasticAdvancement" );
-      }
-    }
-  }
-
   property bool EstablishedPopulationDefault {
     bool get(void) {
       return _establishedPopulationDefault;
@@ -81,7 +68,6 @@ private:
   bool _showSplashScreen;
   bool _doSimulationDiskOutput;
   bool _scaleCimsimMainGraph;
-  bool _stochasticAdvancement;
   bool _establishedPopulationDefault;
 };
 

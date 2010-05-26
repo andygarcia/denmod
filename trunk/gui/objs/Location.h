@@ -77,8 +77,8 @@ public:
 
   void ResetBiology(void);
 
-  void RunCimsim( bool usePop, bool stochasticAdvancement );
-  void RunCimsim( bool usePop, bool stochasticAdvancement, DateTime startDate, DateTime stopDate );
+  void RunCimsim( bool usePop );
+  void RunCimsim( bool usePop, DateTime startDate, DateTime stopDate );
   gui::output::CimsimOutput ^ ProcessCimsimOutput( sim::output::CimsimOutput * co, DateTime startDate, DateTime stopDate );
 
   void BeginFoodFit(void);

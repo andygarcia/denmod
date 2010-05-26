@@ -218,18 +218,18 @@ Location::ResetBiology(System::Void)
 
 
 void
-Location::RunCimsim( bool usePop, bool stochasticAdvancement )
+Location::RunCimsim( bool usePop )
 {
   // default to using all available weather
   DateTime startDate = Weather_->MinDate;
   DateTime stopDate = Weather_->MaxDate;
-  RunCimsim( usePop, stochasticAdvancement, startDate, stopDate );
+  RunCimsim( usePop, startDate, stopDate );
 }
 
 
 
 void
-Location::RunCimsim( bool usePop, bool stochasticAdvancement, DateTime startDate, DateTime stopDate )
+Location::RunCimsim( bool usePop, DateTime startDate, DateTime stopDate )
 {
   if( _userSettings == nullptr ) {
     // invoked via batch or lhsmod, use defaults
@@ -264,29 +264,23 @@ Location::RunCimsim( bool usePop, bool stochasticAdvancement, DateTime startDate
   boost::gregorian::date bStopDate = boost::gregorian::date( stopYear, 12, 31 );
 
 
-  // run actual simulation, continuous or discrete
-  if( !stochasticAdvancement ) {
-    // not using discrete numbers or stochastic advancement
-    // run simulation, optionally using equillbrium population
-    sim::cs::Simulation * cssim = new sim::cs::Simulation( loc, bStartDate, bStopDate, usePop, _userSettings->DoSimulationDiskOutput );
-    cssim->Start();
-    _isCimsimCompleted = true;
+  // not using discrete numbers or stochastic advancement
+  // run simulation, optionally using equillbrium population
+  sim::cs::Simulation * cssim = new sim::cs::Simulation( loc, bStartDate, bStopDate, usePop, _userSettings->DoSimulationDiskOutput );
+  cssim->Start();
+  _isCimsimCompleted = true;
 
-    // simulation complete, process output for use by gui and densim
-    sim::output::CimsimOutput * cso = cssim->GetSimOutput();
-    MosData_ = cso->GetMosData();
+  // simulation complete, process output for use by gui and densim
+  sim::output::CimsimOutput * cso = cssim->GetSimOutput();
+  MosData_ = cso->GetMosData();
 
-    // copy output to managed classes
-    CimsimOutput_ = ProcessCimsimOutput( cso, startDate, stopDate );
+  // copy output to managed classes
+  CimsimOutput_ = ProcessCimsimOutput( cso, startDate, stopDate );
 
-    // delete input object, simulation, and managed output
-    delete loc;
-    delete cssim;
-    delete cso;
-  }
-  else {
-    throw gcnew System::InvalidOperationException( "Location::RunCimsim(): discrete simulations disabled" );
-  }
+  // delete input object, simulation, and managed output
+  delete loc;
+  delete cssim;
+  delete cso;
 }
 
 

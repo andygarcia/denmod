@@ -98,7 +98,7 @@ CimsimPanel::RunCimsim(void)
   if( rcf->ShowDialog(this) == ::DialogResult::OK ) {
     // run simulation
     gui::Location::RunCimsimOptions ^ rco = rcf->RunCimsimOptions;
-    GetLocation()->RunCimsim( rco->UsePop, userSettings->StochasticAdvancement, rco->StartDate, rco->StopDate );
+    GetLocation()->RunCimsim( rco->UsePop, rco->StartDate, rco->StopDate );
     rcf->Close();
 
     // process output

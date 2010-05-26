@@ -81,12 +81,18 @@ int main( array<String ^> ^args )
 
     bool saveCimsim = slashArgs->Contains( "cimsim" );
     bool saveDensim = slashArgs->Contains( "densim" );
+    bool doExtendedOutput = slashArgs->Contains( "extoutput" );
 
+    // create user settings
+    gui::UserSettings ^ us = gcnew UserSettings();
+    us->DoSimulationDiskOutput = false;
+    us->EstablishedPopulationDefault = true;
+    location->UserSettings = us;
 
     // run and save cimsim only
     if( saveCimsim && !saveDensim ) {
       Console::WriteLine( "Running cimsim" );
-      location->RunCimsim( true, false);
+      location->RunCimsim( true );
       Console::WriteLine( "Saving cimsim output" );
       location->CimsimOutput->SaveToDisk( dir );
     }
@@ -95,7 +101,7 @@ int main( array<String ^> ^args )
     // run densim (and cimsim) and save densim only
     if( !saveCimsim && saveDensim ) {
       Console::WriteLine( "Running cimsim" );
-      location->RunCimsim( true, false);
+      location->RunCimsim( true );
       Console::WriteLine( "Running densim " );
       location->RunDensim();
       Console::WriteLine( "Saving densim output" );
@@ -106,7 +112,7 @@ int main( array<String ^> ^args )
     // run and save densim and cimsim
     if( slashArgs->Contains("densim") ) {
       Console::WriteLine( "Running cimsim" );
-      location->RunCimsim( true, false);
+      location->RunCimsim( true );
       Console::WriteLine( "Saving cimsim output" );
       location->CimsimOutput->SaveToDisk( dir );
       Console::WriteLine( "Running densim " );
