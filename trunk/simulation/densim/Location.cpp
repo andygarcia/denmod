@@ -20,6 +20,7 @@ Location::Location( const input::Location * location, sim::output::MosData * mos
 : _location(location),
   _mosData(mosData),
   _doDiskOutput(doDiskOutput),
+  _rng( boost::variate_generator<boost::mt19937, boost::uniform_01<>>( boost::mt19937(time(0)), boost::uniform_01<>() ) ),
 
   GasCoef(1.987f),
   Virus(std::vector<VirusDesc>( 4+1 )),
@@ -44,14 +45,17 @@ Location::Location( const input::Location * location, sim::output::MosData * mos
   // initialize random number generator
 #ifdef _DEBUG
   _pdsRng = PdsRng(0);
+  _rng = boost::variate_generator<boost::mt19937, boost::uniform_01<>>( boost::mt19937(0), boost::uniform_01<>() );
 #else
   // change once done with densim issues
   //_pdsRng = PdsRng( static_cast<unsigned int>(time(NULL)) );
   _pdsRng = PdsRng(0);
+  //_rng = boost::variate_generator<boost::mt19937, boost::uniform_01<>>( boost::mt19937(time(0)), boost::uniform_01<>() );
+  _rng = boost::variate_generator<boost::mt19937, boost::uniform_01<>>( boost::mt19937(0), boost::uniform_01<>() );
 #endif
 
   // human population and demographics
-  _humanPopulation = new HumanPopulation( this, _location );
+  _humanPopulation = new HumanPopulation( _location, _rng );
   this->HumHostDensity = _location->Demographics_->HumanHostDensity;
 
 
@@ -419,16 +423,13 @@ Location::AdvanceSusceptibleNulliparous(void)
   }
 
 
-  // create new nulliparous cohort from cimsim's emerged females
+  // create new nulliparous cohort from cimsim
   if( _dailyMosData.NewFemales > 0 ) {
-    // TODO this weight needs to be the newly emerged female weight not the average,
-    //AdultCohort newCohort = AdultCohort( 1, _dailyMosData.NewFemales, _dailyMosData.AdultDevelopment, _dailyMosData.NewFemaleWeight );
     AdultCohort newCohort = AdultCohort( 1, _dailyMosData.NewFemales, _dailyMosData.AdultDevelopment, _dailyMosData.AverageWeight );
 
-    // adjust cohort count for both simulation size and survival
-    // TODO - remove survival application, this cohort already had survival applied today at its pupae stage
+    // adjust cohort count for simulation size since cimsim reports per hectare counts
     int numberOfHumans = _humanPopulation->GetPopulationSize();
-    newCohort.Number *= (numberOfHumans / HumHostDensity) * _dailyMosData.OverallSurvival;
+    newCohort.Number *= numberOfHumans / HumHostDensity;
 
     _susceptibleNulliparous.push_back( newCohort );
   }
@@ -701,7 +702,7 @@ Location::HumanToMosquitoTransmission(void)
   std::vector<int> seroTypesCompleted;
   // loop until all four sero types are processed
   while(true) {
-    int i = INT( (4 - 1 + 1) * RND() + 1 );
+    int i = INT( (4 - 1 + 1) * _rng() + 1 );
     std::vector<int>::iterator findResult;
     findResult = std::find( seroTypesCompleted.begin(), seroTypesCompleted.end(), i );
     if( findResult == seroTypesCompleted.end() ) {
@@ -750,7 +751,7 @@ Location::InoculateMosquitoes( int iType )
   // stochastic
   else if( numInoculations > 0 ) {
     // stochastic
-    double num = RND();
+    double num = _rng();
     double SumOfProb = 0;
     int r;
     for( r = 0; r <= 150; ++r ) {
@@ -776,192 +777,64 @@ Location::InoculateMosquitoes( int iType )
     int numParousInfections = CINT( parousProportion * NewDlyMosqInoc );
     int numNulliparousInfections = NewDlyMosqInoc - numParousInfections;
 
-    InfectParous( numParousInfections, iType );
-    InfectNulliparous( numNulliparousInfections, iType );
-  }
-}
-
-
-
-void
-Location::InfectParous( int numParousInfections, int iSerotype )
-{
-  if( numParousInfections == 0 ) {
-    return;
-  }
-
-  // TODO don't infect seperate cohorts for now
-  // track newly infected cohorts to create combination
-  MosquitoCollection newlyInfected;
-
-  // first, distribute infectious among susceptible parous mosquitoes seeking a first blood meal
-  for( MosquitoReferenceIterator itMosq = _susceptibleParousBiters.begin(); itMosq != _susceptibleParousBiters.end(); ++itMosq ) {
-    // pull values from cohort to be infected
-    AdultCohort & cohort = **itMosq;
-    int age = cohort.Age;
-    double numInfected = 0.0;
-    double development = _dailyMosData.AdultDevelopment;
-    double weight = cohort.Weight;
-
-    if( numParousInfections < cohort.Number ) {
-      // some portion infected
-      numInfected = numParousInfections;
-      cohort.Number -= numInfected;
-      numParousInfections = 0;
-    }
-    else {
-      // entire cohort infected
-      numInfected = cohort.Number;
-      numParousInfections -= numParousInfections;
-
-      // remove cohort from susceptible parous collection
-      _susceptibleParous.remove( cohort );
-    }
- 
-    // create new infected cohort and add to serotype specific collection
-    AdultCohort newlyInfectedCohort = AdultCohort( age, numInfected, development, weight );
-    newlyInfectedCohort.Infected = true;
-    newlyInfectedCohort.Serotype = iSerotype;
-    // TODO don't make separet cohorts for now
-    //_infectedParous[iSerotype].push_back( newlyInfectedCohort );
-    newlyInfected.push_back( newlyInfectedCohort );
-
-    // stop if all infections distributed
     if( numParousInfections > 0 ) {
-      break;
+      InfectMosquitoes( iType, numParousInfections, _susceptibleParous, _infectedParous );
+    }
+
+    if( numNulliparousInfections > 0 ) {
+      InfectMosquitoes( iType, numNulliparousInfections, _susceptibleNulliparous, _infectedNulliparous );
     }
   }
-
-  // second, if parous infections remaining, distribute among susceptible parous mosquitoes seeking a double blood meal
-  if( numParousInfections > 0 ) {
-    for( MosquitoReferenceIterator itMosq = _susceptibleParousDoubleBiters.begin(); itMosq != _susceptibleParousDoubleBiters.end(); ++itMosq ) {
-      // pull values from cohort to be infected
-      AdultCohort & cohort = **itMosq;
-      int age = cohort.Age;
-      double numInfected = 0.0;
-      double development = _dailyMosData.AdultDevelopment;
-      double weight = cohort.Weight;
-
-      if( numParousInfections < cohort.Number ) {
-        // some portion infected
-        numInfected = numParousInfections;
-        cohort.Number -= numInfected;
-        numParousInfections = 0;
-      }
-      else {
-        // entire cohort infected
-        numInfected = cohort.Number;
-        numParousInfections -= numParousInfections;
-
-        // remove cohort from susceptible parous collection
-        _susceptibleParous.remove( cohort );
-      }
-   
-      // create new infected cohort and add to serotype specific collection
-      AdultCohort newlyInfectedCohort = AdultCohort( age, numInfected, development, weight );
-      newlyInfectedCohort.Infected = true;
-      newlyInfectedCohort.Serotype = iSerotype;
-      //_infectedParous[iSerotype].push_back( newlyInfectedCohort );
-      newlyInfected.push_back( newlyInfectedCohort );
-    }
-  }
-
-  // TODO - combine cohort for now
-  AdultCohort newCohort = CombineCohorts( newlyInfected, 1, _dailyMosData.AdultDevelopment );
-  newCohort.Infected = true;
-  newCohort.Serotype = iSerotype;
-  newCohort.Eip = _eipDevelopmentRate[iSerotype];
-  _infectedParous[iSerotype].push_back( newCohort );
 }
 
 
 
 void
-Location::InfectNulliparous( int numNulliparousInfections, int iSerotype )
+Location::InfectMosquitoes( int serotype, double numInfections, MosquitoCollection & bitingCollection, std::vector<MosquitoCollection> & infectedCollection )
 {
-  if( numNulliparousInfections == 0 ) {
-    return;
-  }
+  for( MosquitoIterator itMosq = bitingCollection.begin(); itMosq != bitingCollection.end(); ) {
+    if( itMosq->SeekingBloodMeal || itMosq->SeekingDoubleBloodMeal ) {
+      // this cohort will contribute to a new infected cohort
+      AdultCohort newInfectedCohort;
 
-  MosquitoCollection newlyInfected;
-
-  // now distribute infectious among susceptible nullparous mosquitoes seeking a first blood meal
-  for( MosquitoReferenceIterator itMosq = _susceptibleNulliparousBiters.begin(); itMosq != _susceptibleNulliparousBiters.end(); ++itMosq ) {
-    // pull values from cohort to be infected
-    AdultCohort & cohort = **itMosq;
-    int age = cohort.Age;
-    double numInfected = 0.0;
-    double development = _dailyMosData.AdultDevelopment;
-    double weight = cohort.Weight;
-
-    if( numNulliparousInfections < cohort.Number ) {
-      // some portion infected
-      numInfected = numNulliparousInfections;
-      cohort.Number -= numInfected;
-      numNulliparousInfections = 0;
-    }
-    else {
-      // entire cohort infected
-      numInfected = cohort.Number;
-      numNulliparousInfections -= numNulliparousInfections;
-
-      // remove cohort from susceptible nulliparous collection
-      _susceptibleNulliparous.remove( cohort );
-    }
- 
-    // create new infected cohort and add to serotype specific collection
-    AdultCohort newlyInfectedCohort = AdultCohort( age, numInfected, development, weight );
-    newlyInfectedCohort.Infected = true;
-    newlyInfectedCohort.Serotype = iSerotype;
-    //_infectedNulliparous[iSerotype].push_back( newlyInfectedCohort );
-    newlyInfected.push_back( newlyInfectedCohort );
-
-    // stop once infections are all distributed
-    if( numNulliparousInfections > 0 ) {
-      break;
-    }
-  }
-
-  // second, if infections remain, distribute among susceptible nulliparous mosquitoes seeking a double blood meal
-  if( numNulliparousInfections > 0 ) {
-    for( MosquitoReferenceIterator itMosq = _susceptibleNulliparousDoubleBiters.begin(); itMosq != _susceptibleNulliparousDoubleBiters.end(); ++itMosq ) {
-      // pull values from cohort to be infected
-      AdultCohort & cohort = **itMosq;
-      int age = cohort.Age;
+      // calculate how many mosquitoes will be in the new infected cohort
       double numInfected = 0.0;
-      double development = _dailyMosData.AdultDevelopment;
-      double weight = cohort.Weight;
+      if( numInfections < itMosq->Number ) {
+        // all infections will be removed from this cohort
+        itMosq->Number -= numInfections;
+        numInfected = numInfections;
+        numInfections = 0;
 
-      if( numNulliparousInfections < cohort.Number ) {
-        // some portion infected
-        numInfected = numNulliparousInfections;
-        cohort.Number -= numInfected;
-        numNulliparousInfections = 0;
+        // create new cohort
+        newInfectedCohort = AdultCohort( itMosq->Age, numInfected, itMosq->Development, itMosq->Weight );
+        ++itMosq;
       }
       else {
-        // all infected
-        numInfected = cohort.Number;
-        numNulliparousInfections -= numNulliparousInfections;
+        // entire cohort is infected, subtract from remaining infections
+        numInfected = itMosq->Number;
+        numInfections -= numInfected;
 
-        // remove cohort from susceptible Nulliparous collection
-        _susceptibleNulliparous.remove( cohort );
+        // remove cohort from biting collection
+        itMosq = bitingCollection.erase( itMosq );
+
+        // new cohort is entire cohort
+        newInfectedCohort = *itMosq;
       }
    
       // create new infected cohort and add to serotype specific collection
-      AdultCohort newlyInfectedCohort = AdultCohort( age, numInfected, development, weight );
-      newlyInfectedCohort.Infected = true;
-      newlyInfectedCohort.Serotype = iSerotype;
-      //_infectedNulliparous[iSerotype].push_back( newlyInfectedCohort );
-      newlyInfected.push_back( newlyInfectedCohort );
+      newInfectedCohort.Infected = true;
+      newInfectedCohort.Serotype = serotype;
+      newInfectedCohort.Eip = _eipDevelopmentRate[serotype];
+      infectedCollection[serotype].push_back( newInfectedCohort );
+
+      if( numInfections <= 0 ) {
+        break;
+      }
+    }
+    else {
+      ++itMosq;
     }
   }
-
-  // TODO - combine cohort for now
-  AdultCohort newCohort = CombineCohorts( newlyInfected, 1, _dailyMosData.AdultDevelopment );
-  newCohort.Infected = true;
-  newCohort.Serotype = iSerotype;
-  newCohort.Eip = _eipDevelopmentRate[iSerotype];
-  _infectedNulliparous[iSerotype].push_back( newCohort );
 }
 
 
@@ -977,7 +850,7 @@ Location::MosquitoToHumanTransmission(void)
   // loop until all four sero types are processed
   while(true) {
     // select a serotype randomly
-    int serotype = INT( (4 - 1 + 1) * RND() + 1 );
+    int serotype = INT( (4 - 1 + 1) * _rng() + 1 );
 
     // see if it has been previously selected or not
     std::vector<int>::iterator findResult;
@@ -1014,7 +887,7 @@ Location::InoculateHumans( int serotype )
   }
   else if( inoculationEstimate > 0 ) {
     // stochasticity
-    double num = RND();
+    double num = _rng();
     double SumOfProb = 0;
     int r;
     for( r = 0; r <= 150; ++r ) {
@@ -1240,7 +1113,7 @@ Location::CombineCohorts( MosquitoCollection & collection, int age, double devel
 
 // emulate DS 1.0 CINT() which does banker's rounding
 int
-Location::CINT( double value )
+sim::ds::CINT( double value )
 {
   double absoluteValue = std::abs( value );
   int sign = (value == 0) ? 0 : ( value < 0 ? -1 : 1 );
@@ -1272,27 +1145,9 @@ Location::CINT( double value )
 
 // emulate CS 1.0 Int()
 int
-Location::INT( double value )
+sim::ds::INT( double value )
 {
   return (int)floor(value);
-}
-
-
-
-// emulate PDS 7.1 RND
-// PDS 7.1 RND returns single precision values in the range of [0,1)
-// the only problem with our emulation is the exclusion of
-// ( RAND_MAX/(RAND_MAX+1), 1 ) from the range of generation
-double
-Location::RND(void)
-{
-  if( EMULATE_PDS_RAND ) {
-    double nextRnd = _pdsRng.Next();
-    return nextRnd;
-  }
-  else {
-    return rand() / (float) (RAND_MAX + 1); 
-  }
 }
 
 
