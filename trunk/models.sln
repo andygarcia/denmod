@@ -35,6 +35,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.ui.cli", "gui\cli\cl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.simulation.densim", "simulation\densim\densim.vcproj", "{54E8551C-CB5B-48F7-A5ED-C6DCA877E842}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.lhs.cimsim", "lhs\cimsim\lhs.cimsim.vcproj", "{FF9958C8-CE3A-423C-A2B3-D9C90CAB3F2E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "denmod.lhs.densim", "lhs\densim\lhs.densim.vcproj", "{D166FEC3-5B68-4A93-8240-A8069CE6F7CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -97,6 +101,14 @@ Global
 		{54E8551C-CB5B-48F7-A5ED-C6DCA877E842}.Debug|Win32.Build.0 = Debug|Win32
 		{54E8551C-CB5B-48F7-A5ED-C6DCA877E842}.Release|Win32.ActiveCfg = Release|Win32
 		{54E8551C-CB5B-48F7-A5ED-C6DCA877E842}.Release|Win32.Build.0 = Release|Win32
+		{FF9958C8-CE3A-423C-A2B3-D9C90CAB3F2E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FF9958C8-CE3A-423C-A2B3-D9C90CAB3F2E}.Debug|Win32.Build.0 = Debug|Win32
+		{FF9958C8-CE3A-423C-A2B3-D9C90CAB3F2E}.Release|Win32.ActiveCfg = Release|Win32
+		{FF9958C8-CE3A-423C-A2B3-D9C90CAB3F2E}.Release|Win32.Build.0 = Release|Win32
+		{D166FEC3-5B68-4A93-8240-A8069CE6F7CA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D166FEC3-5B68-4A93-8240-A8069CE6F7CA}.Debug|Win32.Build.0 = Debug|Win32
+		{D166FEC3-5B68-4A93-8240-A8069CE6F7CA}.Release|Win32.ActiveCfg = Release|Win32
+		{D166FEC3-5B68-4A93-8240-A8069CE6F7CA}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

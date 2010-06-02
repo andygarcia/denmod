@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="denmod.ui.lhsmod"
-	ProjectGUID="{397D8A84-12D0-4BB5-B0C5-F6DDC633B545}"
+	Name="denmod.lhs.cimsim"
+	ProjectGUID="{FF9958C8-CE3A-423C-A2B3-D9C90CAB3F2E}"
 	RootNamespace="lhsmod"
 	Keyword="ManagedCProj"
 	>
@@ -135,7 +135,6 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="$(NoInherit)"
-				OutputFile="$(OutDir)\dmlhs.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
