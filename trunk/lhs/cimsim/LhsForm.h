@@ -11,7 +11,8 @@ using namespace System::Drawing;
 
 
 
-namespace lhsmod {
+namespace lhs {
+namespace cimsim {
 
 	public ref class LhsForm : public System::Windows::Forms::Form
 	{
@@ -269,4 +270,5 @@ namespace lhsmod {
     }
 #pragma endregion
   };
+}
 }

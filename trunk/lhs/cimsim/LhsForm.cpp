@@ -2,7 +2,7 @@
 #include "LhsForm.h"
 #include "SensitivityAnalysis.h"
 
-using namespace lhsmod;
+using namespace lhs::cimsim;
 using namespace System::IO;
 using namespace System::Collections;
 using namespace System::Text;

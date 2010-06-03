@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "LhsForm.h"
 
-using namespace lhsmod;
+using namespace lhs::cimsim;
 
 
 

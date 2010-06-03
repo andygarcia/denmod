@@ -246,7 +246,7 @@ LhsForm::StartSimulations( Object ^ sender, DoWorkEventArgs ^ e )
     String ^ execDir = Path::GetDirectoryName( Application::ExecutablePath );
     proc->StartInfo->CreateNoWindow = true;
     proc->StartInfo->FileName = Path::Combine( execDir, "dmcli.exe" );
-    proc->StartInfo->Arguments = "/cimsim " + "\"" + filename + "\"";
+    proc->StartInfo->Arguments = "/densim" + "\"" + filename + "\"";
 
     // start dmcli and block until it has completed
     proc->Start();
