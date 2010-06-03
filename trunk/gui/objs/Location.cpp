@@ -446,11 +446,32 @@ Location::GetFoodFitTotals(void)
 void
 Location::RunDensim( void )
 {
-  // run densim using all available cimsim data
-  DateTime startDate;
-  DateTime stopDate;
+  if( !_isCimsimCompleted ) {
+    throw gcnew System::Exception( "IsCimsimCompleted == false.  No cimsim data exists for densim." );
+  }
 
-  throw gcnew System::InvalidOperationException( "RunDensim() not implemented" );
+  // TODO - why regenerate a new object - especially if old one was what was used for CIMSiM
+  // possibly even different?
+  const input::Location * loc = GetSimObject();
+
+  // run densim using all available cimsim data
+  boost::gregorian::date_period dp = MosData_->GetMosDataPeriod();
+  boost::gregorian::date bStartDate = dp.begin();
+  boost::gregorian::date bStopDate = dp.end();
+  DateTime startDate = DateTime( bStartDate.year(), bStartDate.month(), bStartDate.day() );
+  DateTime stopDate = DateTime( bStopDate.year(), bStopDate.month(), bStopDate.day() );
+
+  // create and run simulation
+  sim::ds::Simulation * dsp = new sim::ds::Simulation( loc, MosData_, _userSettings->DoSimulationDiskOutput );
+  dsp->Start( bStartDate, bStopDate );
+  _isDensimCompleted = true;
+
+  // simulation complete, process output for use by gui
+  sim::output::DensimOutput * dso = dsp->GetDensimOutput();
+  DensimOutput_ = ProcessDensimOutput( dso, startDate, stopDate );
+
+  delete loc;
+  delete dsp;
 }
 
 
