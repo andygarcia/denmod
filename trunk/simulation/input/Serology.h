@@ -34,7 +34,7 @@ public:
   std::vector<SerologyClass> SerologyData_;
   int ManaDuration_;
   int MaeaDuration_;
-  int HetDuration_;
+  int HeterologousImmunityDuration_;
 };
 
 };

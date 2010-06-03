@@ -59,7 +59,7 @@ DensimPanel::OnLoad(System::Object^  sender, System::EventArgs^  e)
 
   snboxManaDuration->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Serology.MANADuration") );
   snboxMaeaDuration->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Serology.MAEADuration") );
-  snboxHetDuration->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Serology.HetDuration") );
+  snboxHetDuration->DataBindings->Add( gcnew ParameterDisplayBinding("Value", _locationBinding, "Serology.HeterologousImmunityDuration") );
 
   errproSerology->DataSource = _locationBinding;
   errproSerology->DataMember = "Serology";

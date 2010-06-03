@@ -94,7 +94,7 @@ HumanPopulation::HumanPopulation( const input::Location * location, boost::varia
   }
   _neutralizingDuration = location->Serology_->ManaDuration_;
   _enhancingDuration = location->Serology_->MaeaDuration_;
-  _heterologousImmunityDuration = location->Serology_->HetDuration_;
+  _heterologousImmunityDuration = location->Serology_->HeterologousImmunityDuration_;
 
   // virology
   _virology = location->Virology_;

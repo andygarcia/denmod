@@ -151,13 +151,13 @@ public:
   [XmlElement(ElementName="HeterologousImmunityDuration",Order=3)]
   [CompareIntRule( 0, CompareOperator::GreaterThan, ErrorMessage = "Duration must be greater than 0 days." )]
   [ParameterDisplayAttribute(0,true,ScientificNotationOptions::Never)]
-  property int HetDuration{
+  property int HeterologousImmunityDuration {
     int get(void) {
-      return HetDuration_;
+      return HeterologousImmunityDuration_;
     }
     void set(int i) {
-      HetDuration_ = i;
-      NotifyAndValidate( "HetDuration" );
+      HeterologousImmunityDuration_ = i;
+      NotifyAndValidate( "HeterologousImmunityDuration" );
     }
   }
 
@@ -165,7 +165,7 @@ private:
   BindingList<SerologyClass^> ^ SeroClasses_;
   int MANADuration_;
   int MAEADuration_;
-  int HetDuration_;
+  int HeterologousImmunityDuration_;
 };
 
 };

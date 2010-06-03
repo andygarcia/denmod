@@ -51,7 +51,7 @@ SerologyParameters::SerologyParameters(void)
   input::Serology defVals;
   this->MANADuration = defVals.ManaDuration_;
   this->MAEADuration = defVals.MaeaDuration_;
-  this->HetDuration = defVals.HetDuration_;
+  this->HeterologousImmunityDuration = defVals.HeterologousImmunityDuration_;
 }
 
 
@@ -85,10 +85,11 @@ SerologyParameters::GetSimObject(void)
   }
   s->ManaDuration_ = this->MANADuration_;
   s->MaeaDuration_ = this->MAEADuration_;
-  s->HetDuration_ = this->HetDuration_;
+  s->HeterologousImmunityDuration_ = this->HeterologousImmunityDuration_;
 
   return s;
 }
+
 
 
 void
