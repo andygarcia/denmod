@@ -260,7 +260,7 @@ namespace lhsmod {
       this->Controls->Add(this->tboxLsp);
       this->MinimumSize = System::Drawing::Size(640, 480);
       this->Name = L"LhsForm";
-      this->Text = L"LHSWIN -CIMSiM Sensitivity Analysis Study";
+      this->Text = L"CIMSiM Sensitivity Analysis Study";
       this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &LhsForm::OnFormClosed);
       this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &LhsForm::OnFormClosing);
       this->ResumeLayout(false);
