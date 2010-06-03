@@ -110,7 +110,7 @@ int main( array<String ^> ^args )
 
 
     // run and save densim and cimsim
-    if( slashArgs->Contains("densim") ) {
+    if( saveCimsim && saveDensim ) {
       Console::WriteLine( "Running cimsim" );
       location->RunCimsim( true );
       Console::WriteLine( "Saving cimsim output" );
