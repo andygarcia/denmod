@@ -12,7 +12,7 @@ using namespace System::Drawing;
 
 
 namespace lhsmod {
-
+  
 	public ref class LhsForm : public System::Windows::Forms::Form
 	{
 	public:

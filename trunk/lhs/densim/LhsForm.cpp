@@ -242,23 +242,23 @@ LhsForm::StartSimulations( Object ^ sender, DoWorkEventArgs ^ e )
 
     // create process info for running models in batch mode via dmcli.exe
     Diagnostics::Process ^ proc = gcnew Diagnostics::Process();
+
     proc->StartInfo->UseShellExecute = false;
-    String ^ execDir = Path::GetDirectoryName( Application::ExecutablePath );
     proc->StartInfo->CreateNoWindow = true;
-    proc->StartInfo->FileName = Path::Combine( execDir, "dmcli.exe" );
-    proc->StartInfo->Arguments = "/densim" + "\"" + filename + "\"";
+
+    proc->StartInfo->FileName = Path::Combine( Path::GetDirectoryName(Application::ExecutablePath), "dmcli.exe" );
+    proc->StartInfo->Arguments = "/densim " + "\"" + filename + "\"";
 
     // start dmcli and block until it has completed
     proc->Start();
-    while( !proc->HasExited ) {
-      // sleep, then check for cancel
-      Thread::Sleep( 1000 );
-      if( bw->CancellationPending ) {
-        proc->Kill();
-        e->Cancel = true;
-        return;
-      }
+    proc->BeginOutputReadLine();
+    proc->WaitForExit();
+
+    if( bw->CancellationPending ) {
+      e->Cancel = true;
+      return;
     }
+
 
     // report based on dmlcli's exit code
     StudyProgress ^ sp = gcnew StudyProgress();
