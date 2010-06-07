@@ -27,7 +27,7 @@ LhsForm::LhsForm(void)
   _fileReader->RunWorkerCompleted += gcnew RunWorkerCompletedEventHandler( this, &LhsForm::ReadFilesCompleted );
 
   // create a background worker thread
-  for( int i = 0; i < Environment::ProcessorCount * 2; ++i ) {
+  for( int i = 0; i < Environment::ProcessorCount; ++i ) {
     BackgroundWorker ^ worker = gcnew BackgroundWorker();
     worker->WorkerReportsProgress = true;
     worker->WorkerSupportsCancellation = true;
@@ -251,7 +251,6 @@ LhsForm::StartSimulations( Object ^ sender, DoWorkEventArgs ^ e )
 
     // start dmcli and block until it has completed
     proc->Start();
-    proc->BeginOutputReadLine();
     proc->WaitForExit();
 
     if( bw->CancellationPending ) {
