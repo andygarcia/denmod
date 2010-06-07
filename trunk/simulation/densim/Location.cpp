@@ -48,9 +48,7 @@ Location::Location( input::Location const * location, sim::output::MosData * mos
   _mt19937 = boost::mt19937(0);
   _rng = boost::variate_generator<boost::mt19937, boost::uniform_01<>>( _mt19937, boost::uniform_01<>() );
 #else
-  // change once done with densim issues
-  //_mt19937 = boost::mt19937(time(0));
-  _mt19937 = boost::mt19937(0);
+  _mt19937 = boost::mt19937(time(0));
   _rng = boost::variate_generator<boost::mt19937, boost::uniform_01<>>( _mt19937, boost::uniform_01<>() );
 #endif
 
