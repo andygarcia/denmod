@@ -14,6 +14,7 @@ MainForm::MainForm(void)
   LocationBinding(gcnew BindingSource())
 {
 	InitializeComponent();
+  ReadUserSettings();
   NewDocument();
   Initialize();
 }
@@ -25,6 +26,7 @@ MainForm::MainForm( String ^ filename )
   LocationBinding(gcnew BindingSource())
 {
 	InitializeComponent();
+  ReadUserSettings();
   OpenDocument(filename);
   Initialize();
 }
@@ -34,8 +36,6 @@ MainForm::MainForm( String ^ filename )
 void
 MainForm::Initialize(void)
 {
-  ReadUserSettings();
-
   // create cimsim and densim panels
   _cimsimPanel = gcnew CimsimPanel( LocationBinding );
   _densimPanel = gcnew DensimPanel( LocationBinding );
