@@ -1089,11 +1089,11 @@ Location::GetTotalMosquitoes( std::vector<MosquitoCollection> & collections )
 double
 Location::CalculateDoubleBloodMealProportion( double weight )
 {
-  static const double & lowWeight = _doubleBloodMeals->LowWeightLimit;
-  static const double & lowWeightProportion = _doubleBloodMeals->LowWeightRatio;
+  const double & lowWeight = _doubleBloodMeals->LowWeightLimit;
+  const double & lowWeightProportion = _doubleBloodMeals->LowWeightRatio;
 
-  static const double & highWeight = _doubleBloodMeals->HighWeightLimit;
-  static const double & highWeightProportion = _doubleBloodMeals->HighWeightRatio;
+  const double & highWeight = _doubleBloodMeals->HighWeightLimit;
+  const double & highWeightProportion = _doubleBloodMeals->HighWeightRatio;
 
   if( weight <= lowWeight) {
     return lowWeightProportion;
