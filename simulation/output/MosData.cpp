@@ -99,6 +99,49 @@ MosData::WriteMstFiles(void)
 
 
 
+void
+MosData::WriteMosFiles(void)
+{
+  // dump in csv format
+  date_period dp = GetMosDataPeriod();
+
+  int firstYear = dp.begin().year();
+  int lastYear = dp.end().year();
+
+  for( int i = firstYear; i <= lastYear; ++i ) {
+    std::stringstream ss;
+    ss << i;
+    std::string fourDigitYear = ss.str();
+
+    std::string filename = fourDigitYear + ".mos";
+
+    std::ofstream mosFile;
+    mosFile.open( filename.c_str() );
+
+    YearlyMosData yearMosData = _yearlyMosData[i];
+
+    day_iterator itDay = day_iterator( date(i,1,1) );
+    date endOfYear = date(i,12,31);
+
+    // output from jan 1st to feb 28th
+    for( itDay = day_iterator(date(i,1,1)); itDay <= endOfYear; ++itDay ) {
+      date d = *itDay;
+      DailyMosData & dmd = yearMosData.GetDailyMosData(d);
+
+      mosFile << " " << dmd.NewFemales << " , " << dmd.AverageWeight << " , "
+              << dmd.OverallSurvival << " , " << dmd.AdultDevelopment << " , "
+              << dmd.NewFemaleWeight << dmd.AgeIndependentSurvival << " "
+              << std::endl;
+    }
+
+    mosFile.close();
+  }
+
+
+}
+
+
+
 date_period
 MosData::GetMosDataPeriod(void)
 {

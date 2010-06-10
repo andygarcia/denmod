@@ -63,6 +63,7 @@ public:
 // Methods
 public:
   void WriteMstFiles(void);
+  void WriteMosFiles(void);
   boost::gregorian::date_period GetMosDataPeriod(void);
   DailyMosData & GetMosData( boost::gregorian::date d );
   YearlyMosData & GetYearlyMosData( int year );
