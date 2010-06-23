@@ -36,7 +36,7 @@ namespace gui {
 
   private: System::Windows::Forms::Label^  lblFecundityFactor;
   private: System::Windows::Forms::Label^  lblDryToWetWeightFactor;
-  private: System::Windows::Forms::Label^  lblNominalSurvival;
+
 
   private: System::Windows::Forms::Label^  lblSecondDevelopmentThreshold;
 
@@ -98,7 +98,7 @@ namespace gui {
 
 
   private: ctrl::ScientificNotationTextBox^  snboxSecondDevelopmentThreshold;
-  private: ctrl::ScientificNotationTextBox^  snboxNominalSurvival;
+
   private: ctrl::ScientificNotationTextBox^  snboxDryToWetWeightFactor;
   private: ctrl::ScientificNotationTextBox^  snboxMinimumOvipositionTemperature;
   private: ctrl::ScientificNotationTextBox^  snboxFecundityFactor;
@@ -200,7 +200,6 @@ private: System::ComponentModel::IContainer^  components;
       this->lblRO25 = (gcnew System::Windows::Forms::Label());
       this->lblFecundityFactor = (gcnew System::Windows::Forms::Label());
       this->lblDryToWetWeightFactor = (gcnew System::Windows::Forms::Label());
-      this->lblNominalSurvival = (gcnew System::Windows::Forms::Label());
       this->lblSecondDevelopmentThreshold = (gcnew System::Windows::Forms::Label());
       this->lblMinimumOvipositionTemperature = (gcnew System::Windows::Forms::Label());
       this->lblInterruptedFeedsPerMeal = (gcnew System::Windows::Forms::Label());
@@ -236,7 +235,6 @@ private: System::ComponentModel::IContainer^  components;
       this->lblDoubleBloodMealLowWeightThreshold = (gcnew System::Windows::Forms::Label());
       this->lblDoubleBloodMealHighWeightThreshold = (gcnew System::Windows::Forms::Label());
       this->snboxSecondDevelopmentThreshold = (gcnew ctrl::ScientificNotationTextBox());
-      this->snboxNominalSurvival = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxDryToWetWeightFactor = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxMinimumOvipositionTemperature = (gcnew ctrl::ScientificNotationTextBox());
       this->snboxFecundityFactor = (gcnew ctrl::ScientificNotationTextBox());
@@ -281,7 +279,7 @@ private: System::ComponentModel::IContainer^  components;
       this->gboxDev->Controls->Add(this->lblDHH);
       this->gboxDev->Controls->Add(this->lblDHA);
       this->gboxDev->Controls->Add(this->lblRO25);
-      this->gboxDev->Location = System::Drawing::Point(0, 247);
+      this->gboxDev->Location = System::Drawing::Point(0, 221);
       this->gboxDev->Name = L"gboxDev";
       this->gboxDev->Size = System::Drawing::Size(374, 123);
       this->gboxDev->TabIndex = 11;
@@ -367,7 +365,7 @@ private: System::ComponentModel::IContainer^  components;
       // lblFecundityFactor
       // 
       this->lblFecundityFactor->AutoSize = true;
-      this->lblFecundityFactor->Location = System::Drawing::Point(9, 92);
+      this->lblFecundityFactor->Location = System::Drawing::Point(9, 66);
       this->lblFecundityFactor->Name = L"lblFecundityFactor";
       this->lblFecundityFactor->Size = System::Drawing::Size(86, 13);
       this->lblFecundityFactor->TabIndex = 6;
@@ -376,20 +374,11 @@ private: System::ComponentModel::IContainer^  components;
       // lblDryToWetWeightFactor
       // 
       this->lblDryToWetWeightFactor->AutoSize = true;
-      this->lblDryToWetWeightFactor->Location = System::Drawing::Point(9, 66);
+      this->lblDryToWetWeightFactor->Location = System::Drawing::Point(9, 40);
       this->lblDryToWetWeightFactor->Name = L"lblDryToWetWeightFactor";
       this->lblDryToWetWeightFactor->Size = System::Drawing::Size(122, 13);
       this->lblDryToWetWeightFactor->TabIndex = 4;
       this->lblDryToWetWeightFactor->Text = L"Dry to wet weight factor:";
-      // 
-      // lblNominalSurvival
-      // 
-      this->lblNominalSurvival->AutoSize = true;
-      this->lblNominalSurvival->Location = System::Drawing::Point(9, 40);
-      this->lblNominalSurvival->Name = L"lblNominalSurvival";
-      this->lblNominalSurvival->Size = System::Drawing::Size(87, 13);
-      this->lblNominalSurvival->TabIndex = 2;
-      this->lblNominalSurvival->Text = L"Nominal survival:";
       // 
       // lblSecondDevelopmentThreshold
       // 
@@ -403,7 +392,7 @@ private: System::ComponentModel::IContainer^  components;
       // lblMinimumOvipositionTemperature
       // 
       this->lblMinimumOvipositionTemperature->AutoSize = true;
-      this->lblMinimumOvipositionTemperature->Location = System::Drawing::Point(9, 118);
+      this->lblMinimumOvipositionTemperature->Location = System::Drawing::Point(9, 92);
       this->lblMinimumOvipositionTemperature->Name = L"lblMinimumOvipositionTemperature";
       this->lblMinimumOvipositionTemperature->Size = System::Drawing::Size(163, 13);
       this->lblMinimumOvipositionTemperature->TabIndex = 8;
@@ -428,7 +417,7 @@ private: System::ComponentModel::IContainer^  components;
       this->gboxSatDef->Controls->Add(this->lblSatDefLowSurvival);
       this->gboxSatDef->Controls->Add(this->lblSatDefLowThreshold);
       this->gboxSatDef->Controls->Add(this->lblSatDefHighThreshold);
-      this->gboxSatDef->Location = System::Drawing::Point(0, 557);
+      this->gboxSatDef->Location = System::Drawing::Point(0, 531);
       this->gboxSatDef->Name = L"gboxSatDef";
       this->gboxSatDef->Size = System::Drawing::Size(374, 123);
       this->gboxSatDef->TabIndex = 13;
@@ -525,7 +514,7 @@ private: System::ComponentModel::IContainer^  components;
       this->gboxTemp->Controls->Add(this->lblTempLowThreshold);
       this->gboxTemp->Controls->Add(this->lblTempHighLethalThreshold);
       this->gboxTemp->Controls->Add(this->lblTempLowLethalThreshold);
-      this->gboxTemp->Location = System::Drawing::Point(0, 376);
+      this->gboxTemp->Location = System::Drawing::Point(0, 350);
       this->gboxTemp->Name = L"gboxTemp";
       this->gboxTemp->Size = System::Drawing::Size(374, 175);
       this->gboxTemp->TabIndex = 12;
@@ -656,7 +645,7 @@ private: System::ComponentModel::IContainer^  components;
       this->gboxDBM->Controls->Add(this->lblDoubleBloodMealLowWeightRatio);
       this->gboxDBM->Controls->Add(this->lblDoubleBloodMealLowWeightThreshold);
       this->gboxDBM->Controls->Add(this->lblDoubleBloodMealHighWeightThreshold);
-      this->gboxDBM->Location = System::Drawing::Point(0, 686);
+      this->gboxDBM->Location = System::Drawing::Point(0, 660);
       this->gboxDBM->Name = L"gboxDBM";
       this->gboxDBM->Size = System::Drawing::Size(374, 123);
       this->gboxDBM->TabIndex = 14;
@@ -749,19 +738,9 @@ private: System::ComponentModel::IContainer^  components;
       this->snboxSecondDevelopmentThreshold->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
       this->snboxSecondDevelopmentThreshold->Value = L"0";
       // 
-      // snboxNominalSurvival
-      // 
-      this->snboxNominalSurvival->Location = System::Drawing::Point(280, 37);
-      this->snboxNominalSurvival->Name = L"snboxNominalSurvival";
-      this->snboxNominalSurvival->Size = System::Drawing::Size(80, 20);
-      this->snboxNominalSurvival->TabIndex = 3;
-      this->snboxNominalSurvival->Text = L"0";
-      this->snboxNominalSurvival->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-      this->snboxNominalSurvival->Value = L"0";
-      // 
       // snboxDryToWetWeightFactor
       // 
-      this->snboxDryToWetWeightFactor->Location = System::Drawing::Point(280, 63);
+      this->snboxDryToWetWeightFactor->Location = System::Drawing::Point(280, 37);
       this->snboxDryToWetWeightFactor->Name = L"snboxDryToWetWeightFactor";
       this->snboxDryToWetWeightFactor->Size = System::Drawing::Size(80, 20);
       this->snboxDryToWetWeightFactor->TabIndex = 5;
@@ -771,7 +750,7 @@ private: System::ComponentModel::IContainer^  components;
       // 
       // snboxMinimumOvipositionTemperature
       // 
-      this->snboxMinimumOvipositionTemperature->Location = System::Drawing::Point(280, 115);
+      this->snboxMinimumOvipositionTemperature->Location = System::Drawing::Point(280, 89);
       this->snboxMinimumOvipositionTemperature->Name = L"snboxMinimumOvipositionTemperature";
       this->snboxMinimumOvipositionTemperature->Size = System::Drawing::Size(80, 20);
       this->snboxMinimumOvipositionTemperature->TabIndex = 9;
@@ -781,7 +760,7 @@ private: System::ComponentModel::IContainer^  components;
       // 
       // snboxFecundityFactor
       // 
-      this->snboxFecundityFactor->Location = System::Drawing::Point(280, 89);
+      this->snboxFecundityFactor->Location = System::Drawing::Point(280, 63);
       this->snboxFecundityFactor->Name = L"snboxFecundityFactor";
       this->snboxFecundityFactor->Size = System::Drawing::Size(80, 20);
       this->snboxFecundityFactor->TabIndex = 7;
@@ -807,7 +786,7 @@ private: System::ComponentModel::IContainer^  components;
       this->gboxAgeSurvival->Controls->Add(this->label2);
       this->gboxAgeSurvival->Controls->Add(this->snboxCutoffAge);
       this->gboxAgeSurvival->Controls->Add(this->label3);
-      this->gboxAgeSurvival->Location = System::Drawing::Point(0, 141);
+      this->gboxAgeSurvival->Location = System::Drawing::Point(0, 115);
       this->gboxAgeSurvival->Name = L"gboxAgeSurvival";
       this->gboxAgeSurvival->Size = System::Drawing::Size(373, 100);
       this->gboxAgeSurvival->TabIndex = 10;
@@ -879,9 +858,9 @@ private: System::ComponentModel::IContainer^  components;
       this->groupBox1->Controls->Add(this->lblFeedingHumanProportion);
       this->groupBox1->Controls->Add(this->lblFeedingProportionInterrupedDifferentHost);
       this->groupBox1->Controls->Add(this->lblInterruptedFeedsPerMeal);
-      this->groupBox1->Location = System::Drawing::Point(0, 815);
+      this->groupBox1->Location = System::Drawing::Point(0, 789);
       this->groupBox1->Name = L"groupBox1";
-      this->groupBox1->Size = System::Drawing::Size(374, 99);
+      this->groupBox1->Size = System::Drawing::Size(374, 97);
       this->groupBox1->TabIndex = 15;
       this->groupBox1->TabStop = false;
       this->groupBox1->Text = L"Micellaneous Parameters";
@@ -953,7 +932,6 @@ private: System::ComponentModel::IContainer^  components;
       this->Controls->Add(this->snboxFecundityFactor);
       this->Controls->Add(this->snboxMinimumOvipositionTemperature);
       this->Controls->Add(this->snboxSecondDevelopmentThreshold);
-      this->Controls->Add(this->snboxNominalSurvival);
       this->Controls->Add(this->groupBox1);
       this->Controls->Add(this->gboxDBM);
       this->Controls->Add(this->gboxSatDef);
@@ -963,9 +941,8 @@ private: System::ComponentModel::IContainer^  components;
       this->Controls->Add(this->lblDryToWetWeightFactor);
       this->Controls->Add(this->lblMinimumOvipositionTemperature);
       this->Controls->Add(this->lblSecondDevelopmentThreshold);
-      this->Controls->Add(this->lblNominalSurvival);
       this->Name = L"AdultBiologyPanel";
-      this->Size = System::Drawing::Size(380, 917);
+      this->Size = System::Drawing::Size(380, 889);
       this->Load += gcnew System::EventHandler(this, &AdultBiologyPanel::OnLoad);
       this->gboxDev->ResumeLayout(false);
       this->gboxDev->PerformLayout();

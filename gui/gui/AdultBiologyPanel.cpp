@@ -27,7 +27,6 @@ System::Void
 AdultBiologyPanel::OnLoad( System::Object ^ sender, System::EventArgs ^ e )
 {
   snboxSecondDevelopmentThreshold->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.SecondDevelopmentThreshold") );
-  snboxNominalSurvival->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.NominalSurvival") );
   snboxDryToWetWeightFactor->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.DryToWetWeightFactor") );
   snboxFecundityFactor->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.FecundityFactor") );
   snboxMinimumOvipositionTemperature->DataBindings->Add( gcnew ParameterDisplayBinding("Value", LocationBinding, "Biology.Adult.MinimumOvipositionTemperature") );
