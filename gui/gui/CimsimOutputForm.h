@@ -20,7 +20,10 @@ namespace gui {
 
   private:
     System::Void OnLoad(System::Object^  sender, System::EventArgs^  e);
-    System::Void OnMore( System::Object ^ sender, System::EventArgs ^ e );
+    System::Void OnView(System::Object^  sender, System::EventArgs^  e);
+    System::Void OnViewLocationGraph( System::Object^  sender, System::EventArgs^  e );
+    System::Void OnViewContainerGraph( System::Object^  sender, System::EventArgs^  e );
+    void DisplayChart( output::Chart ^ chartData, output::TimePeriod timePeriod, output::TimePeriodFunction timePeriodFunction );
     System::Void OnSave( System::Object ^ sender, System::EventArgs ^ e );
     System::Void OnSaveAll( System::Object ^ sender, System::EventArgs ^ e );
     System::Void OnRunDensim(System::Object^  sender, System::EventArgs^  e);
@@ -29,11 +32,22 @@ namespace gui {
     gui::Location ^ _location;
 
   private: System::Windows::Forms::Button^  btnExit;
-  private: System::Windows::Forms::Button^  btnMore;
   private: System::Windows::Forms::Button^  btnSave;
   private: System::Windows::Forms::Button^  btnSaveAll;
-  private: Dundas::Charting::WinControl::Chart^  chartOutput;
+  private: Dundas::Charting::WinControl::Chart^  _chart;
+
   private: System::Windows::Forms::Button^  btnRunDensim;
+  private: System::Windows::Forms::ComboBox^  cboxContainers;
+  private: System::Windows::Forms::ComboBox^  cboxTimePeriodFunction;
+  private: System::Windows::Forms::ComboBox^  cboxTimePeriod;
+  private: System::Windows::Forms::Label^  lblSummaryFunction;
+  private: System::Windows::Forms::Label^  lblSummaryPeriod;
+  private: System::Windows::Forms::ListBox^  lboxContainerGraphs;
+  private: System::Windows::Forms::ListBox^  lboxLocationGraphs;
+  private: System::Windows::Forms::TabPage^  tabPageContainers;
+  private: System::Windows::Forms::TabPage^  tabPageLocation;
+  private: System::Windows::Forms::TabControl^  tabGraphs;
+  private: System::Windows::Forms::Button^  btnView;
   private: System::ComponentModel::IContainer^  components;
 
 	private:
@@ -52,40 +66,42 @@ namespace gui {
       Dundas::Charting::WinControl::ChartArea^  chartArea1 = (gcnew Dundas::Charting::WinControl::ChartArea());
       Dundas::Charting::WinControl::Legend^  legend1 = (gcnew Dundas::Charting::WinControl::Legend());
       this->btnExit = (gcnew System::Windows::Forms::Button());
-      this->btnMore = (gcnew System::Windows::Forms::Button());
       this->btnSave = (gcnew System::Windows::Forms::Button());
       this->btnSaveAll = (gcnew System::Windows::Forms::Button());
-      this->chartOutput = (gcnew Dundas::Charting::WinControl::Chart());
+      this->_chart = (gcnew Dundas::Charting::WinControl::Chart());
       this->btnRunDensim = (gcnew System::Windows::Forms::Button());
-      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->chartOutput))->BeginInit();
+      this->cboxContainers = (gcnew System::Windows::Forms::ComboBox());
+      this->cboxTimePeriodFunction = (gcnew System::Windows::Forms::ComboBox());
+      this->cboxTimePeriod = (gcnew System::Windows::Forms::ComboBox());
+      this->lboxContainerGraphs = (gcnew System::Windows::Forms::ListBox());
+      this->lboxLocationGraphs = (gcnew System::Windows::Forms::ListBox());
+      this->lblSummaryFunction = (gcnew System::Windows::Forms::Label());
+      this->lblSummaryPeriod = (gcnew System::Windows::Forms::Label());
+      this->tabPageContainers = (gcnew System::Windows::Forms::TabPage());
+      this->tabPageLocation = (gcnew System::Windows::Forms::TabPage());
+      this->tabGraphs = (gcnew System::Windows::Forms::TabControl());
+      this->btnView = (gcnew System::Windows::Forms::Button());
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->_chart))->BeginInit();
+      this->tabPageContainers->SuspendLayout();
+      this->tabPageLocation->SuspendLayout();
+      this->tabGraphs->SuspendLayout();
       this->SuspendLayout();
       // 
       // btnExit
       // 
       this->btnExit->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
       this->btnExit->DialogResult = System::Windows::Forms::DialogResult::Cancel;
-      this->btnExit->Location = System::Drawing::Point(929, 706);
+      this->btnExit->Location = System::Drawing::Point(1097, 731);
       this->btnExit->Name = L"btnExit";
       this->btnExit->Size = System::Drawing::Size(75, 23);
       this->btnExit->TabIndex = 4;
       this->btnExit->Text = L"Close";
       this->btnExit->UseVisualStyleBackColor = true;
       // 
-      // btnMore
-      // 
-      this->btnMore->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
-      this->btnMore->Location = System::Drawing::Point(848, 706);
-      this->btnMore->Name = L"btnMore";
-      this->btnMore->Size = System::Drawing::Size(75, 23);
-      this->btnMore->TabIndex = 3;
-      this->btnMore->Text = L"Graphs...";
-      this->btnMore->UseVisualStyleBackColor = true;
-      this->btnMore->Click += gcnew System::EventHandler(this, &CimsimOutputForm::OnMore);
-      // 
       // btnSave
       // 
       this->btnSave->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
-      this->btnSave->Location = System::Drawing::Point(12, 706);
+      this->btnSave->Location = System::Drawing::Point(229, 731);
       this->btnSave->Name = L"btnSave";
       this->btnSave->Size = System::Drawing::Size(75, 23);
       this->btnSave->TabIndex = 1;
@@ -96,7 +112,7 @@ namespace gui {
       // btnSaveAll
       // 
       this->btnSaveAll->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
-      this->btnSaveAll->Location = System::Drawing::Point(93, 706);
+      this->btnSaveAll->Location = System::Drawing::Point(310, 731);
       this->btnSaveAll->Name = L"btnSaveAll";
       this->btnSaveAll->Size = System::Drawing::Size(75, 23);
       this->btnSaveAll->TabIndex = 2;
@@ -104,21 +120,21 @@ namespace gui {
       this->btnSaveAll->UseVisualStyleBackColor = true;
       this->btnSaveAll->Click += gcnew System::EventHandler(this, &CimsimOutputForm::OnSaveAll);
       // 
-      // chartOutput
+      // _chart
       // 
-      this->chartOutput->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom) 
+      this->_chart->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom) 
         | System::Windows::Forms::AnchorStyles::Left) 
         | System::Windows::Forms::AnchorStyles::Right));
-      this->chartOutput->BackColor = System::Drawing::Color::WhiteSmoke;
-      this->chartOutput->BackGradientEndColor = System::Drawing::Color::White;
-      this->chartOutput->BackGradientType = Dundas::Charting::WinControl::GradientType::DiagonalLeft;
-      this->chartOutput->BorderLineColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(26)), 
-        static_cast<System::Int32>(static_cast<System::Byte>(59)), static_cast<System::Int32>(static_cast<System::Byte>(105)));
-      this->chartOutput->BorderLineStyle = Dundas::Charting::WinControl::ChartDashStyle::Solid;
-      this->chartOutput->BorderSkin->FrameBackColor = System::Drawing::Color::CornflowerBlue;
-      this->chartOutput->BorderSkin->FrameBackGradientEndColor = System::Drawing::Color::CornflowerBlue;
-      this->chartOutput->BorderSkin->PageColor = System::Drawing::SystemColors::Control;
-      this->chartOutput->BorderSkin->SkinStyle = Dundas::Charting::WinControl::BorderSkinStyle::Emboss;
+      this->_chart->BackColor = System::Drawing::Color::WhiteSmoke;
+      this->_chart->BackGradientEndColor = System::Drawing::Color::White;
+      this->_chart->BackGradientType = Dundas::Charting::WinControl::GradientType::DiagonalLeft;
+      this->_chart->BorderLineColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(26)), static_cast<System::Int32>(static_cast<System::Byte>(59)), 
+        static_cast<System::Int32>(static_cast<System::Byte>(105)));
+      this->_chart->BorderLineStyle = Dundas::Charting::WinControl::ChartDashStyle::Solid;
+      this->_chart->BorderSkin->FrameBackColor = System::Drawing::Color::CornflowerBlue;
+      this->_chart->BorderSkin->FrameBackGradientEndColor = System::Drawing::Color::CornflowerBlue;
+      this->_chart->BorderSkin->PageColor = System::Drawing::SystemColors::Control;
+      this->_chart->BorderSkin->SkinStyle = Dundas::Charting::WinControl::BorderSkinStyle::Emboss;
       chartArea1->AxisX->LabelStyle->IntervalOffset = 0;
       chartArea1->AxisX->LabelStyle->IntervalOffsetType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
       chartArea1->AxisX->LabelStyle->IntervalType = Dundas::Charting::WinControl::DateTimeIntervalType::Auto;
@@ -199,7 +215,7 @@ namespace gui {
       chartArea1->Position->X = 3.756811F;
       chartArea1->Position->Y = 15.82769F;
       chartArea1->ShadowOffset = 2;
-      this->chartOutput->ChartAreas->Add(chartArea1);
+      this->_chart->ChartAreas->Add(chartArea1);
       legend1->Alignment = System::Drawing::StringAlignment::Far;
       legend1->BackColor = System::Drawing::Color::White;
       legend1->BorderColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(26)), static_cast<System::Int32>(static_cast<System::Byte>(59)), 
@@ -207,18 +223,18 @@ namespace gui {
       legend1->Docking = Dundas::Charting::WinControl::LegendDocking::Top;
       legend1->Name = L"Default";
       legend1->ShadowOffset = 2;
-      this->chartOutput->Legends->Add(legend1);
-      this->chartOutput->Location = System::Drawing::Point(12, 12);
-      this->chartOutput->Name = L"chartOutput";
-      this->chartOutput->Palette = Dundas::Charting::WinControl::ChartColorPalette::Dundas;
-      this->chartOutput->Size = System::Drawing::Size(992, 688);
-      this->chartOutput->TabIndex = 0;
-      this->chartOutput->Text = L"chartOutput";
+      this->_chart->Legends->Add(legend1);
+      this->_chart->Location = System::Drawing::Point(229, 12);
+      this->_chart->Name = L"_chart";
+      this->_chart->Palette = Dundas::Charting::WinControl::ChartColorPalette::Dundas;
+      this->_chart->Size = System::Drawing::Size(943, 713);
+      this->_chart->TabIndex = 0;
+      this->_chart->Text = L"chartOutput";
       // 
       // btnRunDensim
       // 
       this->btnRunDensim->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
-      this->btnRunDensim->Location = System::Drawing::Point(741, 706);
+      this->btnRunDensim->Location = System::Drawing::Point(990, 731);
       this->btnRunDensim->Name = L"btnRunDensim";
       this->btnRunDensim->Size = System::Drawing::Size(101, 23);
       this->btnRunDensim->TabIndex = 5;
@@ -226,18 +242,138 @@ namespace gui {
       this->btnRunDensim->UseVisualStyleBackColor = true;
       this->btnRunDensim->Click += gcnew System::EventHandler(this, &CimsimOutputForm::OnRunDensim);
       // 
+      // cboxContainers
+      // 
+      this->cboxContainers->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
+        | System::Windows::Forms::AnchorStyles::Right));
+      this->cboxContainers->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
+      this->cboxContainers->FormattingEnabled = true;
+      this->cboxContainers->Location = System::Drawing::Point(3, 6);
+      this->cboxContainers->Name = L"cboxContainers";
+      this->cboxContainers->Size = System::Drawing::Size(194, 21);
+      this->cboxContainers->TabIndex = 7;
+      // 
+      // cboxTimePeriodFunction
+      // 
+      this->cboxTimePeriodFunction->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
+      this->cboxTimePeriodFunction->FormattingEnabled = true;
+      this->cboxTimePeriodFunction->Location = System::Drawing::Point(57, 438);
+      this->cboxTimePeriodFunction->Name = L"cboxTimePeriodFunction";
+      this->cboxTimePeriodFunction->Size = System::Drawing::Size(166, 21);
+      this->cboxTimePeriodFunction->TabIndex = 15;
+      // 
+      // cboxTimePeriod
+      // 
+      this->cboxTimePeriod->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
+      this->cboxTimePeriod->FormattingEnabled = true;
+      this->cboxTimePeriod->Location = System::Drawing::Point(57, 411);
+      this->cboxTimePeriod->Name = L"cboxTimePeriod";
+      this->cboxTimePeriod->Size = System::Drawing::Size(166, 21);
+      this->cboxTimePeriod->TabIndex = 14;
+      // 
+      // lboxContainerGraphs
+      // 
+      this->lboxContainerGraphs->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
+        | System::Windows::Forms::AnchorStyles::Right));
+      this->lboxContainerGraphs->FormattingEnabled = true;
+      this->lboxContainerGraphs->Location = System::Drawing::Point(3, 32);
+      this->lboxContainerGraphs->Name = L"lboxContainerGraphs";
+      this->lboxContainerGraphs->Size = System::Drawing::Size(194, 329);
+      this->lboxContainerGraphs->TabIndex = 8;
+      this->lboxContainerGraphs->DoubleClick += gcnew System::EventHandler(this, &CimsimOutputForm::OnView);
+      // 
+      // lboxLocationGraphs
+      // 
+      this->lboxLocationGraphs->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
+        | System::Windows::Forms::AnchorStyles::Right));
+      this->lboxLocationGraphs->FormattingEnabled = true;
+      this->lboxLocationGraphs->Location = System::Drawing::Point(3, 6);
+      this->lboxLocationGraphs->Name = L"lboxLocationGraphs";
+      this->lboxLocationGraphs->Size = System::Drawing::Size(194, 355);
+      this->lboxLocationGraphs->TabIndex = 6;
+      this->lboxLocationGraphs->DoubleClick += gcnew System::EventHandler(this, &CimsimOutputForm::OnView);
+      // 
+      // lblSummaryFunction
+      // 
+      this->lblSummaryFunction->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
+        | System::Windows::Forms::AnchorStyles::Right));
+      this->lblSummaryFunction->AutoSize = true;
+      this->lblSummaryFunction->Location = System::Drawing::Point(16, 441);
+      this->lblSummaryFunction->Name = L"lblSummaryFunction";
+      this->lblSummaryFunction->Size = System::Drawing::Size(35, 13);
+      this->lblSummaryFunction->TabIndex = 19;
+      this->lblSummaryFunction->Text = L"using:";
+      // 
+      // lblSummaryPeriod
+      // 
+      this->lblSummaryPeriod->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
+        | System::Windows::Forms::AnchorStyles::Right));
+      this->lblSummaryPeriod->AutoSize = true;
+      this->lblSummaryPeriod->Location = System::Drawing::Point(18, 414);
+      this->lblSummaryPeriod->Name = L"lblSummaryPeriod";
+      this->lblSummaryPeriod->Size = System::Drawing::Size(33, 13);
+      this->lblSummaryPeriod->TabIndex = 17;
+      this->lblSummaryPeriod->Text = L"View:";
+      // 
+      // tabPageContainers
+      // 
+      this->tabPageContainers->Controls->Add(this->lboxContainerGraphs);
+      this->tabPageContainers->Controls->Add(this->cboxContainers);
+      this->tabPageContainers->Location = System::Drawing::Point(4, 22);
+      this->tabPageContainers->Name = L"tabPageContainers";
+      this->tabPageContainers->Padding = System::Windows::Forms::Padding(3);
+      this->tabPageContainers->Size = System::Drawing::Size(203, 367);
+      this->tabPageContainers->TabIndex = 1;
+      this->tabPageContainers->Text = L"Containers";
+      this->tabPageContainers->UseVisualStyleBackColor = true;
+      // 
+      // tabPageLocation
+      // 
+      this->tabPageLocation->Controls->Add(this->lboxLocationGraphs);
+      this->tabPageLocation->Location = System::Drawing::Point(4, 22);
+      this->tabPageLocation->Name = L"tabPageLocation";
+      this->tabPageLocation->Padding = System::Windows::Forms::Padding(3);
+      this->tabPageLocation->Size = System::Drawing::Size(203, 367);
+      this->tabPageLocation->TabIndex = 0;
+      this->tabPageLocation->Text = L"Location";
+      this->tabPageLocation->UseVisualStyleBackColor = true;
+      // 
+      // tabGraphs
+      // 
+      this->tabGraphs->Controls->Add(this->tabPageLocation);
+      this->tabGraphs->Controls->Add(this->tabPageContainers);
+      this->tabGraphs->Location = System::Drawing::Point(12, 12);
+      this->tabGraphs->Name = L"tabGraphs";
+      this->tabGraphs->SelectedIndex = 0;
+      this->tabGraphs->Size = System::Drawing::Size(211, 393);
+      this->tabGraphs->TabIndex = 10;
+      // 
+      // btnView
+      // 
+      this->btnView->Location = System::Drawing::Point(148, 465);
+      this->btnView->Name = L"btnView";
+      this->btnView->Size = System::Drawing::Size(75, 23);
+      this->btnView->TabIndex = 13;
+      this->btnView->Text = L"View";
+      this->btnView->UseVisualStyleBackColor = true;
+      this->btnView->Click += gcnew System::EventHandler(this, &CimsimOutputForm::OnView);
+      // 
       // CimsimOutputForm
       // 
-      this->AcceptButton = this->btnMore;
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
       this->CancelButton = this->btnExit;
-      this->ClientSize = System::Drawing::Size(1016, 741);
+      this->ClientSize = System::Drawing::Size(1184, 766);
+      this->Controls->Add(this->cboxTimePeriod);
+      this->Controls->Add(this->lblSummaryFunction);
+      this->Controls->Add(this->cboxTimePeriodFunction);
+      this->Controls->Add(this->tabGraphs);
+      this->Controls->Add(this->lblSummaryPeriod);
       this->Controls->Add(this->btnRunDensim);
-      this->Controls->Add(this->chartOutput);
+      this->Controls->Add(this->_chart);
+      this->Controls->Add(this->btnView);
       this->Controls->Add(this->btnSaveAll);
       this->Controls->Add(this->btnSave);
-      this->Controls->Add(this->btnMore);
       this->Controls->Add(this->btnExit);
       this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::SizableToolWindow;
       this->Name = L"CimsimOutputForm";
@@ -245,8 +381,12 @@ namespace gui {
       this->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;
       this->Text = L"CIMSiM Output";
       this->Load += gcnew System::EventHandler(this, &CimsimOutputForm::OnLoad);
-      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->chartOutput))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->_chart))->EndInit();
+      this->tabPageContainers->ResumeLayout(false);
+      this->tabPageLocation->ResumeLayout(false);
+      this->tabGraphs->ResumeLayout(false);
       this->ResumeLayout(false);
+      this->PerformLayout();
 
     }
 #pragma endregion

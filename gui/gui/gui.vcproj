@@ -201,7 +201,7 @@
 			AssemblyName="System.Xml, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 		/>
 		<AssemblyReference
-			RelativePath="..\..\..\..\..\..\..\Program Files (x86)\Dundas Software\Charting\WinControlVS2005\bin\DundasWinChart.dll"
+			RelativePath="..\..\..\..\..\..\Program Files (x86)\Dundas Software\Charting\WinControlVS2005\bin\DundasWinChart.dll"
 			AssemblyName="DundasWinChart, Version=5.5.1.1711, PublicKeyToken=a4c03dce5db22406, processorArchitecture=MSIL"
 		/>
 		<AssemblyReference
@@ -245,10 +245,6 @@
 			</File>
 			<File
 				RelativePath=".\ChartForm.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CimsimExtOutputForm.cpp"
 				>
 			</File>
 			<File
@@ -457,16 +453,6 @@
 				>
 				<File
 					RelativePath=".\ChartForm.resx"
-					SubType="Designer"
-					>
-				</File>
-			</File>
-			<File
-				RelativePath=".\CimsimExtOutputForm.h"
-				FileType="3"
-				>
-				<File
-					RelativePath=".\CimsimExtOutputForm.resx"
 					SubType="Designer"
 					>
 				</File>
