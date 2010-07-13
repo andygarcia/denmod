@@ -101,6 +101,7 @@ MainForm::OpenDocument( String ^ newFilename )
   if( df->IsValid == false ) {
     return false;
   }
+  Environment::CurrentDirectory = IO::Path::GetDirectoryName( newFilename );
   
   _activeDocument = df;
   _activeDocument->Location->UserSettings = _userSettings;

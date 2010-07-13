@@ -4,6 +4,7 @@
 #include "Cohorts.h"
 #include "Controls.h"
 #include "Constants.h"
+#include <fstream>
 #include "../input/Location.h"
 #include "../output/CimsimOutput.h"
 
@@ -19,7 +20,7 @@ double DevelopmentRate( double p25, double tempt, double dha, double dh, double 
 class SimContainer
 {
 public:
-  SimContainer( const input::Container * container, const input::Biology * bio, output::ContainerPopData * containerPopData = NULL );
+  SimContainer( const input::Container * container, const input::Biology * bio, bool doDiskOutput, output::ContainerPopData * containerPopData = NULL );
   ~SimContainer(void);
 
 public:
@@ -141,6 +142,10 @@ public:
 private:
   // current date in simulation
   boost::gregorian::date _currentDate;
+
+  // disk output
+  bool _doDiskOutput;
+  std::ofstream _diskOutput;
 
   // water level
   double _waterDepth;

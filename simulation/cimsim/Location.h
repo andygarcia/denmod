@@ -17,7 +17,7 @@ class SimLocation
 {
 // Constructors and Initializers
 public:
-  SimLocation( const input::Location * location, boost::gregorian::date startDate, boost::gregorian::date stopDate, const output::PopData * popData = NULL, bool doDiskOutput = false );
+  SimLocation( const input::Location * location, boost::gregorian::date startDate, boost::gregorian::date stopDate, bool doDiskOutput, const output::PopData * popData = NULL );
   ~SimLocation(void);
 
 // Initializers

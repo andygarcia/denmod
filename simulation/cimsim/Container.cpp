@@ -3,13 +3,14 @@
 #include <algorithm>
 #include <cmath>
 #include <numeric>
+#include <sstream>
 
 using namespace boost::gregorian;
 using namespace sim::cs;
 
 
 
-SimContainer::SimContainer( const input::Container * container, const input::Biology * bio, sim::output::ContainerPopData * containerPopData )
+SimContainer::SimContainer( const input::Container * container, const input::Biology * bio, bool doDiskOutput, sim::output::ContainerPopData * containerPopData )
 : Name(container->Name_),
   Id(container->Id_),
   Shape(container->Shape_),
@@ -36,7 +37,8 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
   CloneId(0),
   NumberOfClones(0),
   _nextDrawdownPeriod(date(boost::date_time::not_a_date_time),date(boost::date_time::not_a_date_time)),
-  _nextManualFillPeriod(date(boost::date_time::not_a_date_time),date(boost::date_time::not_a_date_time))
+  _nextManualFillPeriod(date(boost::date_time::not_a_date_time),date(boost::date_time::not_a_date_time)),
+  _doDiskOutput(doDiskOutput)
 {
   // copy daily food additions by month
   MonthlyFoodAdditions[boost::date_time::Jan] = container->FoodGainJan_;
@@ -198,6 +200,9 @@ SimContainer::SimContainer( const input::Container * container, const input::Bio
 
 SimContainer::~SimContainer(void)
 {
+  if( _doDiskOutput ) {
+    _diskOutput.close();
+  }
 }
 
 
@@ -220,6 +225,25 @@ SimContainer::MakeClone( int cloneId, int numOfClones, double newDensity )
 void
 SimContainer::Initialize( date startDate )
 {
+  // initialize disk file if required
+  if( _doDiskOutput ) {
+    // create filename
+    std::stringstream ss;
+    ss << this->Name;
+    if( this->IsCloned ) {
+      ss << " - Clone #" << CloneId;
+    }
+    ss << ".csv";
+
+    // open and write headers
+    _diskOutput.open( ss.str().c_str() );
+    _diskOutput << "Year , Day , ";
+    _diskOutput << "Depth , Food , FoodAdditions, FoodConsumption, CadaverContribution, MaxTemp, MinTemp , ";
+    _diskOutput << "Eggs, Larvae, LarvaeFasting, LarvaeDeathFromFasting, Pupae, AvgDryPupWt, NewFemales, CumulativeFemales, Oviposition , ";
+    _diskOutput << "TotalDensity, UntreatedDensity, TreatedDensity, ExcludedDensity , ";
+    _diskOutput << "EggDev, LarvaeDev, PupaeDev" << std::endl;
+  }
+
   // set previous food addition date
   _previousFoodAdditionDate = startDate - days(3);
 
@@ -1603,15 +1627,51 @@ SimContainer::GetOutput( boost::gregorian::date d )
   dco.LarvaeDevelopment = _larvaeDevRate;
   dco.PupaeDevelopment = _pupaeDevRate;
 
+  if( _doDiskOutput ) {
+    _diskOutput << d.year() << " , ";
+    _diskOutput << day << " , ";
+
+    _diskOutput << dco.Depth << " , ";
+    _diskOutput << dco.Food << " , ";
+    _diskOutput << dco.FoodAddition << " , ";
+    _diskOutput << dco.FoodConsumption << " , ";
+    _diskOutput << dco.CadaverFoodContribution << " , ";
+    _diskOutput << dco.MaxTemp << " , ";
+    _diskOutput << dco.MinTemp << " , ";
+
+    _diskOutput << dco.Eggs << " , ";
+    _diskOutput << dco.Larvae << " , ";
+    _diskOutput << dco.LarvaeFasting << " , ";
+    _diskOutput << dco.LarvaeDeathFromFasting << " , ";
+    _diskOutput << dco.Pupae << " , ";
+    _diskOutput << dco.AvgDryPupWt << " , ";
+    _diskOutput << dco.NewFemales << " , ";
+    _diskOutput << dco.CumulativeFemales << " , ";
+    _diskOutput << dco.Oviposition << " , ";
+
+    _diskOutput << dco.TotalDensity << " , ";
+    _diskOutput << dco.UntreatedDensity << " , ";
+    _diskOutput << dco.TreatedDensity << " , ";
+    _diskOutput << dco.ExcludedDensity << " , ";
+
+    _diskOutput << dco.EggDevelopment << " , ";
+    _diskOutput << dco.LarvaeDevelopment << " , ";
+    _diskOutput << dco.PupaeDevelopment << " , ";
+
+    _diskOutput << std::endl;
+
+  }
+
+
+  // downscale mosquito counts according to number of clones
+  // this already occurs for what female emergence the location
+  // sees from this container via the CalculateDensityAdjustedNewFemaleWeight
+  // and CalculateDensityAdjustedNewFemaleCount methods
+  //
+  // alternatively we could leave counts as is, and allow CimsimOutput to
+  // average these mosquito counts
   dco.IsCloned = IsCloned;
   if( dco.IsCloned ) {
-    // downscale mosquito counts according to number of clones
-    // this already occurs for what female emergence the location
-    // sees from this container via the CalculateDensityAdjustedNewFemaleWeight
-    // and CalculateDensityAdjustedNewFemaleCount methods
-    //
-    // alternatively we could leave counts as is, and allow CimsimOutput to
-    // average these mosquito counts
     double scale = 1.0 / NumberOfClones;
     dco.Eggs *= scale;
     dco.Larvae *= scale;

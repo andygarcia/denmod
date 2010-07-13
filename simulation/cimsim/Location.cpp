@@ -12,7 +12,7 @@ extern double DevelopmentRate( double p25, double tempt, double dha, double dh, 
 
 
 
-SimLocation::SimLocation( const input::Location * location, boost::gregorian::date startDate, boost::gregorian::date stopDate, const sim::output::PopData * popData, bool doDiskOutput )
+SimLocation::SimLocation( const input::Location * location, boost::gregorian::date startDate, boost::gregorian::date stopDate, bool doDiskOutput, const sim::output::PopData * popData )
 : _location(location),
   _startDate(startDate),
   _stopDate(stopDate),
@@ -78,13 +78,13 @@ SimLocation::AddContainer( input::Container * container )
 
     // create each clone
     for( int cloneId = 1; cloneId <= container->NumberOfClones_; cloneId++ ) {
-      SimContainer * newContainer = new SimContainer( container, _location->Biology_ );
+      SimContainer * newContainer = new SimContainer( container, _location->Biology_, _doDiskOutput );
       newContainer->MakeClone( cloneId, container->NumberOfClones_, cloneDensity );
       _containers.push_back( newContainer );
     }
   }
   else {
-    SimContainer * newContainer = new SimContainer( container, _location->Biology_ );
+    SimContainer * newContainer = new SimContainer( container, _location->Biology_, _doDiskOutput );
     _containers.push_back( newContainer );
   }
 }
@@ -102,14 +102,14 @@ void SimLocation::AddPopContainer( input::Container * container, const sim::outp
     // create each clone with its correspond population data
     for( int cloneId = 1; cloneId <= container->NumberOfClones_; cloneId++ ) {
       output::ContainerPopData * cpd = population->GetClonedContainerData( container->Id_, cloneId );
-      SimContainer * newContainer = new SimContainer( container, _location->Biology_, cpd );
+      SimContainer * newContainer = new SimContainer( container, _location->Biology_, _doDiskOutput, cpd );
       newContainer->MakeClone( cloneId, container->NumberOfClones_, cloneDensity );
       _containers.push_back( newContainer );
     }
   }
   else {
     output::ContainerPopData * cpd = population->GetContainerData( container->Id_ );
-    SimContainer * newContainer = new SimContainer( container, _location->Biology_, cpd );
+    SimContainer * newContainer = new SimContainer( container, _location->Biology_, _doDiskOutput, cpd );
     _containers.push_back( newContainer );
   }
 }

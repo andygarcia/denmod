@@ -22,8 +22,8 @@ Simulation::Simulation( input::Location * location, boost::gregorian::date start
     std::vector<input::Control*> disabledControls = std::vector<input::Control*>( location->Controls_ );
     location->Controls_.clear();
 
-    // run simulation for year
-    SimLocation * popSim = new SimLocation( location, popStartDate, popStopDate );
+    // run simulation for year, no disk output even if _doDiskOutput is true
+    SimLocation * popSim = new SimLocation( location, popStartDate, popStopDate, false );
     popSim->RunSimulation();
     output::CimsimOutput * output = popSim->GetSimOutput();
 
@@ -35,7 +35,7 @@ Simulation::Simulation( input::Location * location, boost::gregorian::date start
     location->Controls_ = disabledControls;
   }
 
-  SimLocation_ = new SimLocation( location, startDate, stopDate, _popData );
+  SimLocation_ = new SimLocation( location, startDate, stopDate, _doDiskOutput, _popData );
 }
 
 
@@ -76,7 +76,9 @@ FoodFitSimulation::FoodFitSimulation( input::Location * location, boost::gregori
   boost::gregorian::date popStartDate = boost::gregorian::date( surveyStartDate.year(), 1, 1 );
   boost::gregorian::date popStopDate = boost::gregorian::date( surveyStartDate.year(), 12, 31 );
   std::vector<input::Control*> disabledControls = std::vector<input::Control*>( location->Controls_ );
-  SimLocation * popSim = new SimLocation( location, popStartDate, popStopDate );
+
+  // make sure no disk output occurs during food fit runs, regardless of value of _doDiskOutput
+  SimLocation * popSim = new SimLocation( location, popStartDate, popStopDate, false );
   popSim->RunSimulation();
   output::CimsimOutput * output = popSim->GetSimOutput();
   _popData = output->GetPopData();
@@ -98,6 +100,7 @@ FoodFitSimulation::~FoodFitSimulation(void)
 {
   delete _popData;
 }
+
 
 
 // TODO use container id to pass info back to managed code

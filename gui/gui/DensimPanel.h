@@ -940,7 +940,6 @@ private: System::Windows::Forms::Button^  btnSeroAutoFill;
       // 
       // snboxEipRo25
       // 
-      this->snboxEipRo25->Enabled = false;
       this->snboxEipRo25->Location = System::Drawing::Point(261, 13);
       this->snboxEipRo25->Name = L"snboxEipRo25";
       this->snboxEipRo25->Size = System::Drawing::Size(100, 20);
@@ -960,7 +959,6 @@ private: System::Windows::Forms::Button^  btnSeroAutoFill;
       // 
       // snboxEipEnthAct
       // 
-      this->snboxEipEnthAct->Enabled = false;
       this->snboxEipEnthAct->Location = System::Drawing::Point(261, 39);
       this->snboxEipEnthAct->Name = L"snboxEipEnthAct";
       this->snboxEipEnthAct->Size = System::Drawing::Size(100, 20);
@@ -980,7 +978,6 @@ private: System::Windows::Forms::Button^  btnSeroAutoFill;
       // 
       // snboxEipTempInact
       // 
-      this->snboxEipTempInact->Enabled = false;
       this->snboxEipTempInact->Location = System::Drawing::Point(261, 91);
       this->snboxEipTempInact->Name = L"snboxEipTempInact";
       this->snboxEipTempInact->Size = System::Drawing::Size(100, 20);
@@ -1000,7 +997,6 @@ private: System::Windows::Forms::Button^  btnSeroAutoFill;
       // 
       // snboxEipEnthInact
       // 
-      this->snboxEipEnthInact->Enabled = false;
       this->snboxEipEnthInact->Location = System::Drawing::Point(261, 65);
       this->snboxEipEnthInact->Name = L"snboxEipEnthInact";
       this->snboxEipEnthInact->Size = System::Drawing::Size(100, 20);
