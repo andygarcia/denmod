@@ -5,6 +5,6 @@
 
 
 // pretty print version
-#define DM_VERSION "3.27.3"
+#define DM_VERSION "3.27.6"
 
 // TODO: reference additional headers your program requires here

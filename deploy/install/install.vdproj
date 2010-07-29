@@ -15,12 +15,6 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_12C6F86CAFA74828BDFC0A46CB78DCDE"
-        "OwnerKey" = "8:_D9296218BE974045AB902D4152EA50DE"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_280ECF0BFF096DFFD757D30FF25687B9"
         "OwnerKey" = "8:_83AD76B44D7749AD8738AE8FEEC10773"
         "MsmSig" = "8:_UNDEFINED"
@@ -51,6 +45,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_28E173F04D0D4147AC354C84D7CF9E2B"
+        "OwnerKey" = "8:_3BA9E6D135864F6B8DC7D452E25E545D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_30C6A5A04A3A3C11FD3BD49DC6D3B993"
         "OwnerKey" = "8:_83AD76B44D7749AD8738AE8FEEC10773"
         "MsmSig" = "8:_UNDEFINED"
@@ -83,6 +83,30 @@
         {
         "MsmKey" = "8:_36117A175C67E0119583E8008B24102F"
         "OwnerKey" = "8:_DB25A9AF932E4602AE92F0F05762A392"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_3BA9E6D135864F6B8DC7D452E25E545D"
+        "OwnerKey" = "8:_83AD76B44D7749AD8738AE8FEEC10773"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_3BA9E6D135864F6B8DC7D452E25E545D"
+        "OwnerKey" = "8:_DB25A9AF932E4602AE92F0F05762A392"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_3BA9E6D135864F6B8DC7D452E25E545D"
+        "OwnerKey" = "8:_D9296218BE974045AB902D4152EA50DE"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_3BA9E6D135864F6B8DC7D452E25E545D"
+        "OwnerKey" = "8:_BB13C4E8915C447F8B45D41EDCBC5316"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -125,12 +149,6 @@
         {
         "MsmKey" = "8:_59EC0D4B7B025DE0BA143FC130DB2E64"
         "OwnerKey" = "8:_83AD76B44D7749AD8738AE8FEEC10773"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6FA7679E691D4BAFA1CBCB522A55ABA2"
-        "OwnerKey" = "8:_12C6F86CAFA74828BDFC0A46CB78DCDE"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -208,7 +226,19 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_280ECF0BFF096DFFD757D30FF25687B9"
+        "OwnerKey" = "8:_EC0E7CD55A8C158A9BE5EE1314296FFA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_43FC4B0ED25448E5789B75FD8E08B044"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_36117A175C67E0119583E8008B24102F"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -244,24 +274,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_36117A175C67E0119583E8008B24102F"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_43FC4B0ED25448E5789B75FD8E08B044"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_EC0E7CD55A8C158A9BE5EE1314296FFA"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_30C6A5A04A3A3C11FD3BD49DC6D3B993"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -275,6 +287,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_D422054D6D5353DE0A33A73CA20FDB9E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_280ECF0BFF096DFFD757D30FF25687B9"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -397,7 +415,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:denmod.ui.objs, Version=1.0.3846.15878, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:denmod.ui.objs, Version=1.0.3859.22737, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_30C6A5A04A3A3C11FD3BD49DC6D3B993"
@@ -433,11 +451,11 @@
                 {
                     "_36117A175C67E0119583E8008B24102F"
                     {
-                    "Name" = "8:microsoft.office.interop.excel.dll"
+                    "Name" = "8:Microsoft.Office.Interop.Excel.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:microsoft.office.interop.excel.dll"
+            "SourcePath" = "8:Microsoft.Office.Interop.Excel.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_75C6813F7B784E39B6E50D6637F00123"
@@ -490,7 +508,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:denmod.ui.ctrls, Version=1.0.3845.20006, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:denmod.ui.ctrls, Version=1.0.3846.19452, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_4CB6F974A1A722F05DB2078EE524BB48"
@@ -572,7 +590,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:denmod.ui.output, Version=1.0.3846.14480, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:denmod.ui.output, Version=1.0.3846.19452, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_D422054D6D5353DE0A33A73CA20FDB9E"
@@ -763,14 +781,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Dengue Models"
-        "ProductCode" = "8:{71DDF32A-38C2-4CF8-B23B-B8CC9EE25F51}"
-        "PackageCode" = "8:{C8E50083-F099-4008-B6E9-81FBEC1C5815}"
+        "ProductCode" = "8:{F2940E0D-C5E9-40FB-974E-42977EAF070E}"
+        "PackageCode" = "8:{B3D719EE-A98A-40B5-B560-4DA99E84F399}"
         "UpgradeCode" = "8:{EED99F1C-8421-42B5-9763-21628AF82B25}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:3.27.3"
+        "ProductVersion" = "8:3.27.5"
         "Manufacturer" = "8:ID-Analysis"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -1321,11 +1339,11 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_12C6F86CAFA74828BDFC0A46CB78DCDE"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_28E173F04D0D4147AC354C84D7CF9E2B"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:Microsoft_VC80_CRT_x86.msm"
+            "SourcePath" = "8:policy_8_0_microsoft_vc80_crt_x86.msm"
                 "Properties"
                 {
                 }
@@ -1335,11 +1353,11 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_6FA7679E691D4BAFA1CBCB522A55ABA2"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_3BA9E6D135864F6B8DC7D452E25E545D"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:policy_8_0_microsoft_vc80_crt_x86.msm"
+            "SourcePath" = "8:Microsoft_VC80_CRT_x86.msm"
                 "Properties"
                 {
                 }

@@ -184,7 +184,9 @@ SensitivityAnalysisParser::ParseStudy( BackgroundWorker ^ bw, DoWorkEventArgs ^ 
     while( true ) {
       // parse line into separate values
       s = sr->ReadLine();
-      Regex ^ rr = gcnew Regex( "\\-?\\d+(\\.\\d+)?([E|D]\\-?\\d+)?" );
+      //Regex ^ rr = gcnew Regex( "\\-?\\d+(\\.\\d+)?([E|D]\\-?\\d+)?" );
+      Regex ^ rr = gcnew Regex( "\\-?\\d+(\\.\\d+)?([E|D]\\-?\\+?\\d+)?" );
+      
       MatchCollection ^ mc = rr->Matches( s );
       for each( Match ^ m in mc ) {
         thisRun->Add( Convert::ToDouble(m->Value) );
