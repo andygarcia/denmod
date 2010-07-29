@@ -326,8 +326,13 @@ SimContainer::CalculateWaterDepth( double todaysRain, double relHumid )
 {
   double currentDepth;
 
-  // rain adjusted for watershed ratio
-  double waterGain = todaysRain * WatershedRatio;
+  // only rain filled container have rain water gains
+  double waterGain = 0;
+  if( FillMethod == input::Container::RainFill ) {
+    // rain adjusted for watershed ratio
+    waterGain = todaysRain * WatershedRatio;
+  }
+
 
   double coverEffect;
   if( !IsCovered ) {

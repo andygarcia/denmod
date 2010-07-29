@@ -112,7 +112,7 @@ FoodFitSimulation::DoIteration( int numberOfRuns )
 
   for( int i = 0; i < numberOfRuns; ++i ) {
     // do run and save output
-    SimLocation * foodRun = new SimLocation( _location, _startDate, _stopDate, _popData );
+    SimLocation * foodRun = new SimLocation( _location, _startDate, _stopDate, false, _popData );
     foodRun->RunSimulation();
     output::CimsimOutput * output = foodRun->GetSimOutput();
     delete foodRun;
